@@ -1,227 +1,293 @@
 # Implementation Overview
 
+**Document Status:** Draft  
 **Version:** 1.0  
-**Status:** Draft  
-**Audience:** Contributors, Developers, Architects
+**Owner:** DiaperScout Project  
+**Last Updated:** 2026-08-02
 
 ---
 
-# Purpose
+# 1. Purpose
 
-This document defines the implementation philosophy for DiaperScout.
+The purpose of the Implementation documentation is to define **how** the DiaperScout platform is built.
 
-Where the Architecture documentation describes **what the platform is and how it behaves**, the Implementation documentation describes **how that architecture is realised in software**.
+Where the Architecture documentation describes the structure, behaviour and guiding principles of the platform, the Implementation documentation describes the technologies, patterns and development practices used to realise that architecture.
 
-The implementation should faithfully translate the architectural vision into a maintainable, secure and production-ready application while remaining adaptable to future growth.
+Implementation should not redefine the architecture.
 
-This document acts as the foundation for all implementation decisions.
-
----
-
-# Relationship to the Architecture
-
-The Architecture documentation is considered the authoritative description of DiaperScout's behaviour and system design.
-
-Implementation documents exist to realise that architecture using specific technologies, frameworks and engineering practices.
-
-Implementation decisions may optimise or clarify the architecture but should not fundamentally alter architectural intent without first proposing an architectural change.
-
-This separation allows architectural thinking to remain technology-independent while enabling implementation to evolve as technologies improve.
+Instead, it provides a technology-specific blueprint that translates the architectural vision into a maintainable, production-ready software platform.
 
 ---
 
-# Implementation Goals
+# 2. Relationship to the Architecture
 
-The implementation should:
+The Architecture documentation remains the authoritative description of the DiaperScout platform.
 
-- Produce a maintainable and readable codebase.
-- Be understandable by new contributors.
-- Encourage consistency across all projects.
-- Support incremental delivery of features.
-- Be resilient, observable and testable.
-- Scale from a proof-of-concept into a production platform.
-- Minimise unnecessary complexity.
+Architecture answers questions such as:
 
-Success is measured not only by working software, but by software that remains easy to evolve over time.
+- Why does DiaperScout exist?
+- What are the core concepts of the platform?
+- How does information flow through the system?
+- What are the long-term design principles?
 
----
+Implementation answers different questions:
 
-# Implementation Principles
+- Which technologies are used?
+- How are projects organised?
+- How is data persisted?
+- How are APIs implemented?
+- How is the application deployed?
 
-## Architecture First
+Implementation decisions should support the architecture rather than redefine it.
 
-The implementation follows the architecture.
-
-Features should not be implemented in ways that contradict documented architectural decisions.
-
-Where implementation exposes a weakness in the architecture, the issue should be raised and reviewed rather than silently worked around.
+If implementation identifies a significant architectural issue, the proposed change should be reviewed within the Architecture documentation before being adopted.
 
 ---
 
-## Simplicity Over Cleverness
+# 3. Objectives
 
-Simple solutions are preferred over technically impressive ones.
+The implementation phase aims to produce a platform that is:
 
-Code should optimise for readability and maintainability rather than novelty.
+- Maintainable
+- Testable
+- Secure
+- Performant
+- Observable
+- Scalable
+- Easy to understand
+- Pleasant to develop
 
-Future contributors should be able to understand the system without specialist knowledge.
-
----
-
-## Convention Over Configuration
-
-Where the chosen technology stack provides sensible conventions, those conventions should be followed unless there is a clear benefit to deviating from them.
-
-Reducing unnecessary configuration improves consistency and lowers maintenance costs.
-
----
-
-## Incremental Development
-
-DiaperScout will be developed iteratively.
-
-Each feature should build upon existing capabilities while maintaining a working, deployable system.
-
-Large architectural rewrites should be avoided wherever practical.
+The objective is not simply to create working software, but to create a codebase that can continue to evolve over many years.
 
 ---
 
-## Client-Agnostic Platform
+# 4. Guiding Principles
 
-The platform is designed to support multiple client applications.
+## 4.1 Architecture First
 
-Initial development focuses on a responsive website and installable Progressive Web App (PWA).
+Technology exists to realise the architecture.
 
-Future native applications, including iOS and Android, should consume the same platform APIs and business rules wherever practical.
-
-Business logic should reside within the platform rather than individual client applications.
+Implementation should never compromise architectural principles simply because a particular technology makes an alternative approach easier.
 
 ---
 
-## Production Quality from the Beginning
+## 4.2 C# First
 
-Although the initial release is a proof of concept, implementation should follow production-quality engineering practices.
+DiaperScout adopts a C#-first development philosophy.
 
-This includes:
+Where practical, the platform should remain within the .NET ecosystem to minimise context switching, simplify development, and encourage a cohesive codebase.
 
-- automated testing
-- structured logging
-- configuration management
-- security best practices
-- observability
-- deployment automation
-
-Early adoption of good engineering practices reduces future technical debt.
+This philosophy influenced the selection of Blazor Web App for the initial client implementation.
 
 ---
 
-# Technology Philosophy
+## 4.3 Pragmatism Over Purity
 
-Technology choices should always be driven by project requirements rather than popularity.
+Technology should be selected because it solves a problem—not because it aligns with a particular ideology.
 
-Before adopting any technology, the following questions should be considered:
+Where mature browser technologies or specialist libraries provide clear advantages, they should be integrated rather than unnecessarily reimplemented.
 
-- What problem does it solve?
-- Does it simplify implementation?
-- Does it improve maintainability?
-- Does it introduce unnecessary complexity?
-- Is it well supported?
-- Does it fit naturally within the existing platform?
+Examples include:
 
-Technologies should be chosen because they improve DiaperScout rather than because they represent current industry trends.
+- Barcode scanning
+- Image processing
+- Browser APIs
 
----
-
-# Engineering Decision Process
-
-Implementation decisions should follow a consistent process.
-
-1. Identify the problem.
-2. Understand the available options.
-3. Evaluate advantages and disadvantages.
-4. Consider long-term maintenance.
-5. Select the option that best supports DiaperScout's goals.
-6. Document the rationale.
-
-Where practical, significant engineering decisions should be recorded to provide future contributors with historical context.
+The objective is to build DiaperScout—not replacements for existing technologies.
 
 ---
 
-# Scope of the Implementation Documentation
+## 4.4 API First
 
-The implementation documentation covers topics including:
+All clients communicate through the same platform APIs.
 
-- Technology stack
+The initial Blazor PWA is treated as one client of the platform rather than being tightly coupled to the server implementation.
+
+This allows future clients, including native iOS and Android applications, to be developed without changing the underlying platform.
+
+---
+
+## 4.5 Platform Optimisation
+
+DiaperScout is a hosted platform rather than software installed by customers.
+
+Technology choices should therefore optimise for the selected platform rather than preserve unnecessary portability.
+
+Examples include:
+
+- Leveraging PostgreSQL features where beneficial.
+- Using Cloudflare services where they improve delivery.
+- Taking advantage of modern ASP.NET Core capabilities.
+
+Artificial limitations introduced solely for hypothetical future portability should be avoided.
+
+---
+
+## 4.6 Reduce Friction
+
+Implementation decisions should reduce friction for both developers and users.
+
+Examples include:
+
+For developers:
+
+- Cohesive tooling
+- Consistent language
+- Simple deployment
+- Clear solution structure
+
+For users:
+
+- Fast search
+- Passwordless authentication
+- Responsive interfaces
+- Progressive Web App support
+
+---
+
+## 4.7 Build for Evolution
+
+The implementation should support future growth without unnecessary complexity.
+
+The platform should be capable of supporting:
+
+- Native mobile clients
+- Additional authentication providers
+- Expanded Atlas capabilities
+- Community growth
+
+However, future possibilities should not justify unnecessary complexity today.
+
+---
+
+# 5. Technology Philosophy
+
+DiaperScout intentionally adopts a cohesive technology stack selected through architectural evaluation rather than vendor preference.
+
+Current implementation decisions include:
+
+| Area | Technology |
+|-------|------------|
+| Language | C# |
+| Framework | .NET |
+| Backend | ASP.NET Core |
+| Frontend | Blazor Web App |
+| Data Access | Entity Framework Core |
+| Database | PostgreSQL |
+| Local Orchestration | .NET Aspire |
+| CDN / Edge | Cloudflare |
+| Object Storage | Cloudflare R2 |
+| Version Control | GitHub |
+
+Each technology has been selected because it aligns with the project's implementation goals.
+
+The project intentionally favours a small number of well-integrated technologies over a fragmented technology stack.
+
+---
+
+# 6. Scope
+
+This implementation documentation covers:
+
 - Solution structure
 - Project organisation
+- Technology stack
 - Coding standards
-- Configuration
-- Authentication and authorisation
+- API implementation
 - Data access
-- Entity design
-- API design
+- Database strategy
+- Authentication
+- Storage
+- Search
 - Testing
-- Logging
-- Observability
 - Deployment
-- Performance
-- Security
+- Observability
+- Operational practices
 
-Each topic is documented independently while remaining consistent with the overall implementation philosophy.
+The following topics remain outside the scope of these documents:
 
----
-
-# Out of Scope
-
-The implementation documentation does not define:
-
-- Product requirements
-- Community processes
-- User experience
-- Business rules
+- Product vision
+- Community design
+- Business strategy
 - Architectural principles
 
-These concerns remain within the Product, Community and Architecture documentation.
+These are defined by the Architecture documentation.
 
 ---
 
-# Expected Technology Stack
+# 7. Success Criteria
 
-The initial implementation is expected to be based upon the Microsoft .NET ecosystem together with proven open-source technologies.
+The implementation will be considered successful when:
 
-At the time of writing, the anticipated stack includes:
-
-- ASP.NET Core
-- .NET
-- Entity Framework Core
-- PostgreSQL
-- .NET Aspire
-- OpenAPI
-- Docker
-- GitHub
-- Cloudflare
-
-Specific technologies may evolve over time provided they continue to satisfy the architectural requirements.
+- The architecture has been faithfully realised.
+- The solution is understandable by new contributors.
+- Individual components have clear responsibilities.
+- The codebase is maintainable.
+- Automated testing is straightforward.
+- Deployment is repeatable.
+- The platform is production ready.
+- Future clients can be added without architectural redesign.
 
 ---
 
-# Definition of Success
+# 8. Implementation Roadmap
 
-A successful implementation is one that:
+Implementation is expected to progress through several stages.
 
-- faithfully realises the documented architecture;
-- remains understandable and maintainable;
-- can evolve without major redesign;
-- supports multiple client applications;
-- is reliable in production; and
-- enables contributors to work efficiently and confidently.
+## Foundation
 
-Implementation quality should be judged not only by feature completeness but by the long-term sustainability of the platform.
+Establish the technical platform.
+
+Includes:
+
+- Solution structure
+- Authentication
+- Products
+- Reviews
+- Images
+- Search
+- Deployment
+- Observability
 
 ---
 
-# Next Steps
+## Community
 
-Following this overview, the implementation documentation defines the engineering standards and technical decisions that guide development.
+Implement collaborative functionality.
 
-The next document establishes the technology stack and explains why each major technology has been selected for DiaperScout.
+Includes:
+
+- Atlas
+- Moderation
+- Scout reputation
+- Community workflows
+
+---
+
+## Growth
+
+Expand platform capabilities.
+
+Potential areas include:
+
+- Native mobile applications
+- Advanced search capabilities
+- Additional authentication providers
+- Platform optimisation
+- Operational improvements
+
+The roadmap is expected to evolve as DiaperScout matures.
+
+---
+
+# 9. Design Philosophy
+
+Every implementation decision should answer a simple question:
+
+> **Does this make DiaperScout easier to understand, easier to maintain, or better for its users?**
+
+Technology should remain a means to achieve the platform's goals rather than becoming a goal in itself.
+
+The implementation should favour clarity over cleverness, consistency over novelty, and long-term maintainability over short-term convenience.
+
+By following these principles, DiaperScout aims to become not only a successful platform for its users, but also a software project whose implementation remains coherent, approachable and enjoyable to develop for many years.

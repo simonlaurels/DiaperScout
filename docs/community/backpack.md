@@ -6,7 +6,7 @@ Every Scout has a Backpack.
 
 The Backpack is the Scout's public identity within DiaperScout.
 
-It records the Scout's journey, celebrates meaningful contribution and provides provenance for the knowledge they have added to the Guide.
+It records the Scout's journey, provides provenance for the knowledge they have contributed, and contains the tools that support their exploration of the Guide.
 
 The Backpack exists to support the Guide.
 
@@ -22,9 +22,20 @@ The Backpack should:
 - encourage exploration
 - provide provenance
 - remain personal
+- feel practical
 - avoid competition
 
-The Backpack should never encourage popularity, engagement farming or social networking.
+The Backpack should never encourage:
+
+- popularity
+- engagement farming
+- social networking
+- status seeking
+
+Every feature within the Backpack should help an Explorer understand either:
+
+- where they have been, or
+- how they have contributed to the Guide.
 
 ---
 
@@ -44,17 +55,17 @@ Real names are never required.
 
 ---
 
-# Scout Pins
+# Explorer's Scrapbook
 
-Scout Pins are displayed on the Backpack.
+Every Backpack contains an Explorer's Scrapbook.
 
-Pins represent meaningful contribution rather than achievement.
+The Scrapbook is a personal collection of discoveries, contributions and memorable moments gathered throughout a Scout's journey.
 
-Scouts choose which Pins to display.
+Rather than displaying achievements or status, the Scrapbook preserves the stories that make each Scout's experience unique.
 
-The Backpack should display only a small number of featured Pins.
+Every page represents something worth remembering rather than something to compete over.
 
-This allows every Backpack to tell a different story.
+No two Scrapbooks are expected to be identical.
 
 ---
 
@@ -72,7 +83,7 @@ Examples include:
 - measurements
 - historical research
 
-Every entry links back to the corresponding observation.
+Every entry links back to the corresponding Community Observation.
 
 The Field Journal provides provenance for the Guide.
 
@@ -80,7 +91,7 @@ The Field Journal provides provenance for the Guide.
 
 # Discoveries
 
-The Backpack should celebrate discoveries.
+The Backpack celebrates discoveries.
 
 Notable discoveries may be highlighted.
 
@@ -89,9 +100,9 @@ Examples include:
 - first product documented
 - first country explored
 - significant historical discovery
-- major contribution to a product
+- major contribution to a Product Specification
 
-These highlights help tell the Scout's story.
+These highlights exist to tell the Scout's story rather than measure progress.
 
 ---
 
@@ -107,7 +118,7 @@ Examples include:
 - photographs contributed
 - measurements recorded
 
-These summaries exist to provide context rather than comparison.
+These summaries provide context rather than comparison.
 
 ---
 
@@ -118,8 +129,9 @@ Occasionally the Guide may reflect on the impact of a Scout's work.
 Examples include:
 
 - Explorers helped
-- products improved
-- observations contributing to evidence
+- Product Specifications improved
+- observations contributing to verified knowledge
+- historical information preserved
 
 Impact summaries should remain infrequent.
 
@@ -155,8 +167,10 @@ The Backpack intentionally excludes:
 - popularity rankings
 - public trust scores
 - leaderboards
+- achievement percentages
+- experience points
 
-These concepts do not contribute to the Guide.
+These concepts do not contribute to the purpose of the Guide.
 
 ---
 
@@ -167,6 +181,8 @@ The Backpack exists because the Guide values provenance.
 Every discovery has an author.
 
 Every observation has a history.
+
+Every contribution becomes part of the Guide's collective knowledge.
 
 The Backpack allows Explorers to understand the journey behind those discoveries without distracting from the Guide itself.
 
@@ -180,10 +196,10 @@ Not the story of popularity.
 
 The story of curiosity.
 
-Every Pin.
-
 Every observation.
 
 Every discovery.
 
-Together they describe one Scout's journey through the world.
+Every page in the Scrapbook.
+
+Together they describe one Scout's journey through the world and the knowledge they have helped preserve.

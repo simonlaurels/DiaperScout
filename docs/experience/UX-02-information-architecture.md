@@ -9,51 +9,47 @@
 
 # Purpose
 
-The purpose of this document is to define how information is organised throughout DiaperScout.
+This document defines how information is organised throughout DiaperScout.
 
-Rather than reflecting the underlying database structure, the information architecture is designed around the way Scouts naturally think while exploring products and places.
+The information architecture is intentionally designed around user intentions rather than technical entities or database structures.
 
-Users should never need to understand the internal data model.
-
-Instead, the application should present a small number of clear destinations that reflect user intent.
+Visitors should always know where to go without needing to understand how the platform is implemented.
 
 ---
 
-# Design Philosophy
+# Philosophy
 
-DiaperScout is organised around questions rather than entities.
+DiaperScout is organised around exploration.
 
-People do not think:
+People do not think in terms of products, retailers or observations.
 
-> "I want to browse Retailers."
+Instead they naturally ask questions such as:
 
-Instead they think:
+- What's happening?
+- I'm looking for something.
+- What is this?
+- Where can I explore?
+- What have I collected?
 
-- "What's happening?"
-- "I'm looking for a product."
-- "What's this?"
-- "Where can I find things?"
-- "What have I collected?"
-
-The navigation reflects these intentions.
+The information architecture is designed around these questions.
 
 ---
 
 # Mental Model
 
-The application consists of five primary destinations.
+DiaperScout consists of five primary destinations.
 
-```
-Explore
-Products
-Scan
-Atlas
-Backpack
-```
+- 🌿 Explore
+- 📦 Products
+- 📷 Scan
+- 🗺️ Atlas
+- 🎒 Backpack
 
-Each destination has a distinct purpose.
+Each destination has a clear purpose.
 
-There should be as little overlap as possible.
+Overlap should be minimised.
+
+Users should rarely wonder where a feature belongs.
 
 ---
 
@@ -63,48 +59,46 @@ There should be as little overlap as possible.
 
 Explore is the living heartbeat of DiaperScout.
 
-It is not a dashboard.
+It is the place where the world feels alive.
 
-It is not a home page.
-
-Instead it surfaces activity from across the community.
+Rather than acting as a dashboard, Explore surfaces interesting activity from across the Atlas.
 
 Typical content includes:
 
 - Recent discoveries
 - Community observations
+- Newly documented products
 - Atlas highlights
 - Nearby activity
-- Newly added products
-- Scout Tasks (authenticated users)
-- Seasonal or featured content
+- Ways to help
+- Seasonal stories
+- Interesting historical discoveries
 
-Explore should encourage curiosity.
+Explore exists to encourage curiosity.
 
-Users should regularly discover something unexpected.
+Visitors should regularly discover something they were not actively searching for.
 
 ---
 
 ## 📦 Products
 
-Products is the primary destination for exploring the product catalogue.
+Products is the primary destination for discovering products.
 
-This section contains the tools required to locate and compare products.
+It contains everything needed to browse and understand the product catalogue.
 
 Capabilities include:
 
 - Search
-- Browse
-- Filters
 - Categories
 - Brands
+- Filters
 - Product comparison
-- Recently added products
-- Recently updated products
+- Recently added
+- Recently updated
 
 Search is considered a capability within Products rather than a separate destination.
 
-Products answer the question:
+Products answer one question:
 
 > "What am I looking for?"
 
@@ -112,45 +106,43 @@ Products answer the question:
 
 ## 📷 Scan
 
-Scan is one of DiaperScout's defining interactions.
+Scan is one of DiaperScout's defining experiences.
 
 Selecting Scan immediately opens the barcode scanner.
 
-Barcode scanning performs a product lookup using the scanned barcode.
+Possible outcomes include:
 
-Possible outcomes are:
-
-### Product Found
+### Product recognised
 
 Open the existing product page.
 
-### Product Unknown
+### Product unknown
 
-Transition directly into the "Become the First Scout" discovery workflow.
+Invite the visitor to help document the product for the community.
 
-Scanning is not considered a contribution feature.
+Scanning is primarily an identification experience.
 
-It is a product identification feature.
+Contribution begins only after the user chooses to help.
 
 ---
 
 ## 🗺️ Atlas
 
-Atlas represents geographical exploration.
+Atlas represents places.
 
 It is not simply a map.
 
-Atlas allows Scouts to explore places where products have been observed.
+Atlas allows visitors to explore the real-world locations where products have been observed.
 
 Atlas contains multiple views including:
 
 - Interactive map
+- Nearby places
 - Retailer list
-- Nearby locations
 - Online retailers
-- Branch pages
+- Individual locations
 
-Atlas answers the question:
+Atlas answers:
 
 > "Where can I explore?"
 
@@ -158,20 +150,19 @@ Atlas answers the question:
 
 ## 🎒 Backpack
 
-Backpack represents the Scout's personal expedition.
+Backpack represents the visitor's personal journey.
 
-Rather than functioning purely as a profile page, Backpack contains everything belonging to the Scout.
+Rather than functioning as a traditional profile page, Backpack contains everything belonging to the individual.
 
 Examples include:
 
-- Draft observations
+- Draft contributions
 - Saved products
 - Collections
-- Observation history
-- Profile
+- Contribution history
 - Settings
 - Downloads
-- Offline content
+- Offline items
 
 Backpack answers:
 
@@ -179,32 +170,22 @@ Backpack answers:
 
 ---
 
-# Core Information Model
+# Core Concepts
 
-The information architecture intentionally differs from the database architecture.
-
-Users primarily navigate between:
-
-- Products
-- Places
-- Their own journey
-
-rather than database entities.
-
----
+Although navigation is organised around user intentions, several concepts underpin the platform.
 
 ## Products
 
-Products represent individual absorbent products.
+Individual absorbent products.
 
 Products contain:
 
-- Product information
-- Gallery
+- Information
+- Images
 - Reviews
 - Observations
+- Product history
 - Availability evidence
-- History
 
 ---
 
@@ -212,76 +193,69 @@ Products contain:
 
 Observations are the foundation of DiaperScout.
 
-Every observation represents evidence collected by a Scout.
+Every observation records a genuine discovery made at a specific place and time.
 
 Observations connect:
 
 - Product
 - Location
 - Time
-- Scout
+- Contributor
 - Evidence
 
-Many features throughout the application derive from observations.
+Everything within the Atlas ultimately derives from observations.
 
 ---
 
 ## Retailers
 
-Retailers represent organisations capable of stocking products.
+Retailers represent organisations that sell products.
 
 Examples include:
 
 - Supermarkets
 - Pharmacies
 - Mobility retailers
-- ABDL retailers
+- Specialist retailers
 - Online retailers
 
-Retailers are explored primarily through Atlas.
+Retailers are primarily explored through Atlas.
 
 ---
 
 ## Locations
 
-Locations represent specific physical branches.
+Locations represent individual branches or online destinations.
 
-Examples:
+Examples include:
 
 - Tesco Extra Yate
-- Boots Bristol Broadmead
+- Boots Broadmead
+- Rearz
 
-Observations belong to locations rather than retailers.
+Observations belong to locations rather than retailer brands.
 
-This distinction allows different branches of the same retailer to maintain independent histories.
-
----
-
-# Evidence-Driven Atlas
-
-Atlas is not a business directory.
-
-Atlas is a collection of verified discoveries.
-
-A retailer or location becomes part of the Atlas only after a Scout has documented at least one relevant observation there.
-
-This ensures every place within Atlas has demonstrated relevance to the community.
-
-The Atlas grows organically through exploration.
+This distinction allows every location to build its own independent history.
 
 ---
 
-# Evidence Philosophy
+# The Atlas
 
-DiaperScout distinguishes between observed evidence and inferred information.
+The Atlas is not a business directory.
 
-The platform does **not** assume:
+It is a record of verified discoveries.
 
-- Every Tesco stocks the same products.
-- Every pharmacy stocks continence products.
-- Historical observations represent current availability.
+A location becomes part of the Atlas only after at least one relevant observation has been recorded there.
 
-Instead, DiaperScout records what Scouts have actually observed.
+The Atlas therefore grows naturally through community exploration.
+
+Every new contribution expands the world.
+
+---
+
+# Evidence Model
+
+DiaperScout presents evidence rather than assumptions.
 
 For example:
 
@@ -289,74 +263,77 @@ Correct:
 
 > TENA Slip Maxi was observed at Tesco Extra Yate on 3 August 2026.
 
-Incorrect:
+Avoid:
 
 > Tesco stocks TENA Slip Maxi.
 
-Future integrations with retailer stock systems may provide additional evidence sources.
+Observations describe what has been seen.
 
-These complement community observations rather than replacing them.
+They do not imply current stock availability.
+
+Future retailer integrations may provide additional evidence.
+
+These should complement community observations rather than replace them.
 
 ---
 
 # Navigation Principles
 
-Every primary destination answers a different user intention.
+Every destination answers a different question.
 
 | Destination | User Question |
 |--------------|---------------|
-| Explore | What's happening? |
-| Products | What am I looking for? |
-| Scan | What is this? |
-| Atlas | Where can I explore? |
-| Backpack | What belongs to me? |
+| 🌿 Explore | What's happening? |
+| 📦 Products | What am I looking for? |
+| 📷 Scan | What is this? |
+| 🗺️ Atlas | Where can I explore? |
+| 🎒 Backpack | What belongs to me? |
 
-This separation minimises cognitive load while encouraging exploration.
+This separation keeps navigation simple while encouraging exploration.
 
 ---
 
 # Contextual Experiences
 
-DiaperScout may provide contextual suggestions throughout the application.
+DiaperScout may provide helpful contextual suggestions throughout the experience.
 
 Examples include:
 
-- Nearby retailer suggestions
-- Continue unfinished observation
-- Offline upload reminders
-- Recent scans
-- Scout Tasks
+- Continue unfinished contribution
+- Nearby discoveries
+- Products recently observed nearby
+- Ways to improve existing information
 
-Context should remain supportive rather than interruptive.
+Context should support rather than interrupt.
 
-Suggestions should appear as lightweight cards rather than modal dialogs wherever possible.
+Suggestions should appear naturally within existing screens instead of taking control of the experience.
 
 ---
 
-# Future Evolution
+# Future Growth
 
-The information architecture is intentionally flexible.
+The information architecture is intentionally designed to evolve.
 
-Future additions should reinforce existing destinations rather than creating new top-level navigation.
+Future capabilities should strengthen existing destinations rather than introducing additional top-level navigation.
 
 Examples include:
 
 - Retail stock integrations
 - Route planning
-- Collection challenges
 - Personal recommendations
-- Advanced search
+- Collection challenges
+- Advanced filtering
 - Community events
 
-Whenever possible, new functionality should integrate into the existing five-destination model.
+The five-destination model should remain stable as the application grows.
 
 ---
 
 # Summary
 
-DiaperScout is organised around user intent rather than internal data structures.
+DiaperScout is organised around exploration rather than data structures.
 
-The platform encourages exploration through five clear destinations:
+Its five destinations—
 
 - 🌿 Explore
 - 📦 Products
@@ -364,6 +341,6 @@ The platform encourages exploration through five clear destinations:
 - 🗺️ Atlas
 - 🎒 Backpack
 
-This architecture reflects the philosophy that DiaperScout is an explorer's companion rather than a searchable database.
+—reflect how people naturally think while discovering products and places.
 
-Everything ultimately derives from evidence gathered by Scouts, allowing the Atlas to grow organically through genuine community discovery.
+Everything ultimately grows from observations, allowing the Atlas to evolve organically through genuine community discoveries while remaining transparent about what is known and how that knowledge was obtained.

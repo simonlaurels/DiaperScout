@@ -1,224 +1,212 @@
 # Experience Principles
 
-> *How DiaperScout should feel to use.*
+**Document ID:** UX-01  
+**Phase:** Experience Design  
+**Status:** Draft  
+**Depends On:** North Star, Product Design, World Design
 
 ---
 
-## Purpose
+# Purpose
 
-DiaperScout exists to help people discover, understand and document absorbent products through a community-driven atlas of observations.
+This document defines the guiding principles for every user experience within DiaperScout.
 
-The interface should encourage curiosity and exploration rather than simply providing answers.
+Rather than describing individual screens or interface components, it establishes how the platform should feel to use.
 
-Every interaction should reinforce that users are Scouts contributing to a shared body of knowledge.
+Every interaction, illustration, animation and workflow should reinforce these principles.
 
-These principles guide every future design decision, from navigation and component design to microcopy and animation.
-
-When trade-offs arise, these principles should take precedence over aesthetic trends or implementation convenience.
+Whenever a design decision is unclear, these principles should take precedence over convenience or convention.
 
 ---
 
-# Core Principles
+# Vision
 
-## 1. Discovery Before Search
+DiaperScout is more than a searchable catalogue of absorbent products.
 
-Searching is a means to an end.
+It is a living atlas built by a community of explorers documenting real-world discoveries for the benefit of others.
 
-Discovery is the experience.
-
-Although search is one of DiaperScout's most powerful features, users should never feel as though they are interacting with a sterile database.
-
-Every successful search should naturally encourage further exploration.
-
-Products should lead to observations.
-
-Observations should lead to places.
-
-Places should lead to other products.
-
-The interface should constantly provide opportunities to continue scouting.
+The platform should inspire curiosity, reward exploration and make every contribution feel meaningful.
 
 ---
 
-## 2. Unknown Is Opportunity
+# Core Experience
 
-Unknown products are among the most valuable moments in the platform.
+Using DiaperScout should feel like stepping into a world waiting to be explored.
 
-An unrecognised barcode is not a failure.
+Visitors should feel welcome.
 
-It is an invitation.
+Explorers should feel encouraged.
 
-Instead of presenting an error, the experience should encourage the user to become the first Scout to document a new discovery.
+Helpers should feel appreciated.
 
-Every unknown product strengthens the atlas.
-
-The platform should celebrate these moments.
+The experience should remain calm, optimistic and quietly rewarding.
 
 ---
 
-## 3. Evidence Creates Trust
+# Emotional Design Goals
 
-Knowledge should be supported by evidence wherever possible.
+Every interaction should reinforce one or more of the following emotions.
 
-Users should understand where information comes from.
+## Curiosity
 
-Observations should display:
+The platform should encourage exploration.
 
-- when they were made
-- where they were made
-- who submitted them
-- supporting photographs
-- community verification
-
-Facts should feel earned rather than assumed.
+Users should regularly discover products, places or observations they were not actively searching for.
 
 ---
 
-## 4. The Community Is the Product
+## Confidence
 
-DiaperScout is not simply a catalogue of products.
+Information should feel trustworthy.
 
-It is a community documenting an evolving world.
+The application should clearly distinguish between verified observations, historical evidence and future integrations.
 
-The interface should regularly remind users that every observation, photograph and review exists because another Scout contributed it.
-
-People should feel they are joining an ongoing expedition rather than consuming static content.
+The platform should never imply certainty where none exists.
 
 ---
 
-## 5. Contribution Should Feel Effortless
+## Encouragement
 
-Browsing should never require authentication.
+Contribution should never feel intimidating.
 
-Contribution should require as little effort as possible.
+The application should gently invite people to help rather than demanding participation.
 
-The platform should remove unnecessary friction through:
-
-- passwordless authentication
-- progressive disclosure
-- sensible defaults
-- automatic saving
-- contextual guidance
-
-Every unnecessary field is a barrier to contribution.
+Small contributions should feel valuable.
 
 ---
 
-## 6. Reward Curiosity
+## Pride
 
-Exploration should feel rewarding.
+Helping the community should feel rewarding.
 
-Users should regularly encounter:
-
-- unexpected discoveries
-- nearby observations
-- historical changes
-- popular products
-- newly documented items
-- rare finds
-
-The goal is to create moments of delight that encourage continued exploration.
+Every contribution should feel like making the Atlas a little richer for everyone.
 
 ---
 
-## 7. Calm Over Busy
+## Belonging
 
-Information should never compete for attention.
-
-Interfaces should breathe.
-
-Whitespace should be used generously.
-
-Only the most important action should receive emphasis.
-
-Animations should support understanding rather than demand attention.
-
-The platform should feel calm, welcoming and approachable.
+Although browsing is anonymous, contributors should gradually feel part of a welcoming community built around shared discoveries.
 
 ---
 
-## 8. Progress Over Perfection
+# Design Principles
 
-Scouting is incremental.
+## Exploration before Search
 
-Users should feel comfortable contributing partial knowledge.
+Discovery is a defining characteristic of DiaperScout.
 
-An observation with one photograph is better than none.
+Search remains important, but users should regularly encounter interesting information they were not actively seeking.
 
-A product with limited information can improve over time.
-
-The interface should celebrate contribution without demanding completeness.
+Curiosity should be rewarded.
 
 ---
 
-## 9. Respect the User's Time
+## Evidence before Assumption
 
-The interface should minimise unnecessary effort.
+DiaperScout records observations rather than making claims.
 
-Common tasks should require as few interactions as possible.
-
-Returning users should be able to continue where they left off.
-
-Frequently used actions should become increasingly efficient through familiarity.
-
----
-
-## 10. Accessible by Default
-
-Accessibility is not an enhancement.
-
-It is a design requirement.
-
-Every interaction should be usable with:
-
-- keyboard navigation
-- screen readers
-- reduced motion
-- high contrast
-- touch devices
-- desktop devices
-
-Accessibility should be considered from the beginning rather than added later.
-
----
-
-# Emotional Tone
-
-DiaperScout should consistently communicate:
-
-- curiosity
-- encouragement
-- optimism
-- humility
-- trust
-- friendliness
-
-The platform should never feel:
-
-- corporate
-- clinical
-- judgmental
-- competitive
-- intimidating
-- elitist
-
----
-
-# Voice Principles
-
-Interface copy should be:
-
-- conversational
-- concise
-- encouraging
-- informative
-- respectful
-
-The application should speak like an experienced Scout welcoming someone new to the community.
-
-Whenever possible, language should invite participation rather than simply report information.
+The platform should present what has been observed rather than what is assumed.
 
 For example:
+
+Correct:
+
+> TENA Slip Maxi was observed at Tesco Extra Yate on 3 August 2026.
+
+Avoid:
+
+> Tesco stocks TENA Slip Maxi.
+
+The application should remain transparent about the source of its knowledge.
+
+---
+
+## Helping before Collecting
+
+The purpose of contribution is to help future visitors.
+
+The platform should celebrate useful contributions rather than encouraging contribution for its own sake.
+
+Helping others is the reward.
+
+---
+
+## Calm before Busy
+
+The interface should remain spacious, readable and uncluttered.
+
+Avoid unnecessary visual noise.
+
+Information should feel approachable rather than overwhelming.
+
+---
+
+## Progress before Perfection
+
+Visitors should feel comfortable making small improvements.
+
+Better photographs.
+
+Additional observations.
+
+Corrected information.
+
+Every improvement strengthens the Atlas.
+
+---
+
+# The Guide
+
+The Guide is the welcoming face of DiaperScout.
+
+The Guide introduces visitors to the world, celebrates discoveries and gently explains features when appropriate.
+
+The Guide is not the hero of the story.
+
+The Explorer is.
+
+The Guide should feel:
+
+- Friendly
+- Calm
+- Curious
+- Helpful
+- Encouraging
+
+The Guide should never become intrusive or dominate the interface.
+
+---
+
+# The Fox
+
+The Fox is The Guide's stuffed toy companion.
+
+The Fox exists to add warmth, personality and moments of delight throughout the application.
+
+The Fox should quietly appear throughout illustrations and environments without distracting from the primary experience.
+
+Discovering the Fox should feel like a recurring Easter egg rather than a gameplay mechanic.
+
+---
+
+# Language
+
+The application should use warm, natural language.
+
+Prefer:
+
+- Discover
+- Explore
+- Observe
+- Help
+- Share
+- Atlas
+
+Avoid unnecessarily technical language wherever possible.
+
+The application should invite rather than instruct.
+
+Examples:
 
 Instead of:
 
@@ -226,51 +214,89 @@ Instead of:
 
 Prefer:
 
-> Nobody has discovered this product yet. Would you like to become the first Scout?
+> It looks like nobody has documented this product yet.
 
 Instead of:
 
-> Upload failed.
+> Submit Observation
 
 Prefer:
 
-> We couldn't upload that photo this time. Let's try again.
+> Share your observation.
 
 ---
 
-# Experience Goals
+# First-Time Experience
 
-A first-time visitor should leave thinking:
+The first launch experience should briefly introduce the world of DiaperScout.
 
-> "This is interesting."
+It should be:
 
-A returning Scout should feel:
+- Visual
+- Friendly
+- Skippable
+- Under thirty seconds
 
-> "Let's see what's new."
+The purpose is to welcome visitors into the world rather than teach every feature.
 
-A contributor should think:
-
-> "That was easier than I expected."
-
-Someone documenting a new product should feel:
-
-> "I helped improve the atlas."
-
-A long-term community member should feel:
-
-> "We're building something valuable together."
+A more complete introduction is reserved for users who choose to contribute for the first time.
 
 ---
 
-# Success Criteria
+# Community
 
-The experience succeeds when users:
+The community exists to build the Atlas together.
 
-- continue exploring after finding what they searched for
-- willingly contribute observations
-- understand why community evidence matters
-- trust the information presented
-- feel welcome regardless of experience
-- enjoy returning to discover what has changed
+Visitors should never feel pressured to create an account.
 
-The ultimate goal is for DiaperScout to feel less like a product database and more like joining a community of explorers documenting an ever-changing world.
+Browsing should remain anonymous.
+
+Authentication should only occur when someone chooses to help by contributing.
+
+Helping should feel like a natural continuation of exploration rather than a separate activity.
+
+---
+
+# Contextual Experiences
+
+The application may provide contextual suggestions throughout the experience.
+
+Examples include:
+
+- Continue an unfinished contribution.
+- Nearby discoveries.
+- Interesting products recently observed nearby.
+- Opportunities to improve existing information.
+
+Context should remain supportive rather than interruptive.
+
+Suggestions should appear naturally within the interface rather than interrupting the user's flow.
+
+---
+
+# Accessibility
+
+Accessibility should be considered part of the experience rather than an additional feature.
+
+The application should be:
+
+- Readable
+- Predictable
+- Keyboard accessible
+- Screen-reader friendly
+- High contrast where appropriate
+- Respectful of reduced motion preferences
+
+Good accessibility creates a better experience for everyone.
+
+---
+
+# Summary
+
+DiaperScout exists to help people discover and share knowledge about absorbent products and the places they are found.
+
+Every part of the experience should encourage curiosity, reward helpfulness and strengthen trust.
+
+The platform should never feel like a database.
+
+It should feel like exploring a living world built one discovery at a time.

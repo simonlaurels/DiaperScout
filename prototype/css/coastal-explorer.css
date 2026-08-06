@@ -167,7 +167,7 @@ h2 { margin-bottom: 7px; font-size: 1.1rem; letter-spacing: -.03em; }
 .icon-button:hover { transform: translateY(-2px); background: rgb(255 255 255 / 74%); box-shadow: 0 5px 13px rgb(23 56 65 / 8%); }
 .icon-button svg { width: 20px; height: 20px; }
 
-.product-intro { padding: clamp(15px, 3.6vw, 26px) 4px 0; }
+.product-intro { padding: clamp(15px, 3.6vw, 26px) 4px 8px; }
 .product-brand { margin-bottom: 9px; color: var(--ocean); font-size: .72rem; font-weight: 800; letter-spacing: .15em; }
 .product-intro h1 { margin: 0; font-size: clamp(1.65rem, 7.2vw, 2.25rem); font-weight: 600; line-height: 1.1; letter-spacing: -.038em; }
 .product-rating { display: flex; align-items: center; gap: 8px; margin: 8px 0 0; color: #4f5553; font-size: .8rem; font-weight: 500; }

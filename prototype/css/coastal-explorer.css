@@ -172,8 +172,6 @@ h2 { margin-bottom: 7px; font-size: 1.1rem; letter-spacing: -.03em; }
 .product-intro h1 { margin: 0; font-size: clamp(1.65rem, 7.2vw, 2.25rem); font-weight: 600; line-height: 1.1; letter-spacing: -.038em; }
 .product-rating { display: flex; align-items: center; gap: 8px; margin: 8px 0 0; color: #4f5553; font-size: .8rem; font-weight: 500; }
 .rating-stars { color: #c88127; font-size: 1.08rem; letter-spacing: .02em; line-height: 1; }
-.product-confidence { display: inline-flex; align-items: center; gap: 6px; margin: 7px 0 0; color: #505855; font-size: .78rem; }
-.product-confidence svg { width: 14px; height: 14px; fill: #686f6c; color: #686f6c; stroke: #fbf8f2; stroke-width: 2.5; }
 
 .product-gallery { padding-top: 2px; }
 .gallery-viewport { position: relative; overflow: hidden; border-radius: var(--radius); background: transparent; outline-offset: 5px; }

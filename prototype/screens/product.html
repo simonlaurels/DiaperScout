@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="TENA Slip Maxi product details in DiaperScout.">
+    <title>TENA Slip Maxi — DiaperScout</title>
+    <link rel="stylesheet" href="../css/coastal-explorer.css">
+    <script src="https://unpkg.com/lucide@latest" defer></script>
+  </head>
+  <body class="product-page">
+    <main class="product-shell">
+      <!-- Product navigation -->
+      <header class="product-nav">
+        <a class="icon-button" href="../index.html" aria-label="Back to prototype launcher" title="Back">
+          <i data-lucide="arrow-left" aria-hidden="true"></i>
+        </a>
+        <div class="product-nav-actions">
+          <button class="icon-button" type="button" aria-label="Share TENA Slip Maxi" title="Share">
+            <i data-lucide="share-2" aria-hidden="true"></i>
+          </button>
+          <button class="icon-button" type="button" aria-label="Add TENA Slip Maxi to favourites" title="Add to favourites" aria-pressed="false">
+            <i data-lucide="heart" aria-hidden="true"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Product identity -->
+      <section class="product-intro" aria-labelledby="product-title">
+        <h1 id="product-title">TENA Slip Maxi</h1>
+        <p class="product-rating" aria-label="5 out of 5 stars, 128 ratings">
+          <span class="rating-stars" aria-hidden="true">★★★★★</span>
+          <span>(128)</span>
+        </p>
+        <p class="product-confidence">Community Confidence <i data-lucide="info" aria-hidden="true"></i></p>
+      </section>
+
+      <!-- Gallery: deliberately the last content on this first-pass screen -->
+      <section class="product-gallery" aria-label="TENA Slip Maxi product gallery">
+        <div class="gallery-viewport" tabindex="0" aria-roledescription="carousel" aria-label="Product images. Use left and right arrow keys to change image.">
+          <div class="gallery-counter" aria-live="polite"><span id="current-image">1</span> / 7</div>
+          <div class="gallery-track">
+            <figure class="gallery-slide"><img src="../assets/products/tena1.avif" alt="TENA Slip Maxi product pack, front view" width="800" height="800"></figure>
+            <figure class="gallery-slide"><img src="../assets/products/tena2.avif" alt="TENA Slip Maxi product pack at an angle" width="800" height="800" loading="lazy"></figure>
+            <figure class="gallery-slide"><img src="../assets/products/tena3.avif" alt="TENA Slip Maxi packaging detail" width="800" height="800" loading="lazy"></figure>
+            <figure class="gallery-slide"><img src="../assets/products/tena4.avif" alt="TENA Slip Maxi product pack, alternate view" width="800" height="800" loading="lazy"></figure>
+            <figure class="gallery-slide"><img src="../assets/products/tena5.avif" alt="TENA Slip Maxi absorbency information" width="800" height="800" loading="lazy"></figure>
+            <figure class="gallery-slide"><img src="../assets/products/tena6.avif" alt="TENA Slip Maxi product packaging" width="800" height="800" loading="lazy"></figure>
+            <figure class="gallery-slide"><img src="../assets/products/tena7.avif" alt="TENA Slip Maxi product range detail" width="800" height="800" loading="lazy"></figure>
+          </div>
+          <button class="gallery-control gallery-control-previous" type="button" aria-label="Previous image">
+            <i data-lucide="chevron-left" aria-hidden="true"></i>
+          </button>
+          <button class="gallery-control gallery-control-next" type="button" aria-label="Next image">
+            <i data-lucide="chevron-right" aria-hidden="true"></i>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      // Lightweight gallery controller; touch/swipe support can attach to .gallery-viewport later.
+      document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });
+
+        const viewport = document.querySelector('.gallery-viewport');
+        const track = document.querySelector('.gallery-track');
+        const slides = Array.from(document.querySelectorAll('.gallery-slide'));
+        const currentImage = document.querySelector('#current-image');
+        const previous = document.querySelector('.gallery-control-previous');
+        const next = document.querySelector('.gallery-control-next');
+        let activeIndex = 0;
+
+        function showSlide(index) {
+          activeIndex = (index + slides.length) % slides.length;
+          track.style.transform = `translateX(-${activeIndex * 100}%)`;
+          currentImage.textContent = activeIndex + 1;
+          previous.setAttribute('aria-label', `Previous image, showing image ${activeIndex + 1} of ${slides.length}`);
+          next.setAttribute('aria-label', `Next image, showing image ${activeIndex + 1} of ${slides.length}`);
+        }
+
+        previous.addEventListener('click', () => showSlide(activeIndex - 1));
+        next.addEventListener('click', () => showSlide(activeIndex + 1));
+        viewport.addEventListener('keydown', (event) => {
+          if (event.key === 'ArrowLeft') { event.preventDefault(); showSlide(activeIndex - 1); }
+          if (event.key === 'ArrowRight') { event.preventDefault(); showSlide(activeIndex + 1); }
+        });
+      });
+    </script>
+  </body>
+</html>

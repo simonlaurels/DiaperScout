@@ -47,18 +47,13 @@
             <figure class="gallery-slide"><img src="../assets/products/tena6.avif" alt="TENA Slip Maxi product packaging" width="800" height="800" loading="lazy"></figure>
             <figure class="gallery-slide"><img src="../assets/products/tena7.avif" alt="TENA Slip Maxi product range detail" width="800" height="800" loading="lazy"></figure>
           </div>
-          <button class="gallery-control gallery-control-previous" type="button" aria-label="Previous image">
-            <i data-lucide="chevron-left" aria-hidden="true"></i>
-          </button>
-          <button class="gallery-control gallery-control-next" type="button" aria-label="Next image">
-            <i data-lucide="chevron-right" aria-hidden="true"></i>
           </button>
         </div>
       </section>
     </main>
 
     <script>
-      // Lightweight gallery controller; touch/swipe support can attach to .gallery-viewport later.
+      // Lightweight gallery controller with swipe/drag and keyboard support.
       document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });
 
@@ -66,24 +61,32 @@
         const track = document.querySelector('.gallery-track');
         const slides = Array.from(document.querySelectorAll('.gallery-slide'));
         const currentImage = document.querySelector('#current-image');
-        const previous = document.querySelector('.gallery-control-previous');
-        const next = document.querySelector('.gallery-control-next');
         let activeIndex = 0;
+        let gestureStartX = null;
 
         function showSlide(index) {
           activeIndex = (index + slides.length) % slides.length;
           track.style.transform = `translateX(-${activeIndex * 100}%)`;
           currentImage.textContent = activeIndex + 1;
-          previous.setAttribute('aria-label', `Previous image, showing image ${activeIndex + 1} of ${slides.length}`);
-          next.setAttribute('aria-label', `Next image, showing image ${activeIndex + 1} of ${slides.length}`);
         }
 
-        previous.addEventListener('click', () => showSlide(activeIndex - 1));
-        next.addEventListener('click', () => showSlide(activeIndex + 1));
         viewport.addEventListener('keydown', (event) => {
           if (event.key === 'ArrowLeft') { event.preventDefault(); showSlide(activeIndex - 1); }
           if (event.key === 'ArrowRight') { event.preventDefault(); showSlide(activeIndex + 1); }
         });
+        viewport.addEventListener('pointerdown', (event) => {
+          if (event.isPrimary) {
+            gestureStartX = event.clientX;
+            viewport.setPointerCapture(event.pointerId);
+          }
+        });
+        viewport.addEventListener('pointerup', (event) => {
+          if (gestureStartX === null || !event.isPrimary) return;
+          const swipeDistance = event.clientX - gestureStartX;
+          if (Math.abs(swipeDistance) > 40) showSlide(activeIndex + (swipeDistance < 0 ? 1 : -1));
+          gestureStartX = null;
+        });
+        viewport.addEventListener('pointercancel', () => { gestureStartX = null; });
       });
     </script>
   </body>

@@ -208,3 +208,34 @@ h2 { margin-bottom: 7px; font-size: 1.1rem; letter-spacing: -.03em; }
 @media (prefers-reduced-motion: reduce) {
   .gallery-track, .icon-button { transition: none; }
 }
+
+.retailer-logos {
+    display: flex;
+    align-items: center;
+    gap: 48px;
+}
+
+.retailer-logos img {
+    height: 28px;
+    width: auto;
+
+    object-fit: contain;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;   /* or center */
+    margin-bottom: 20px;
+}
+
+.card-header h2 {
+    margin: 0;
+}
+
+.view-all {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #666;
+    text-decoration: none;
+}

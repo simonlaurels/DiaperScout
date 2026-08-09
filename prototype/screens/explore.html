@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="Explore new DiaperScout discoveries nearby.">
+    <title>Explore — DiaperScout</title>
+    <link rel="stylesheet" href="../css/coastal-explorer.css">
+    <script src="https://unpkg.com/lucide@latest" defer></script>
+  </head>
+  <body class="explore-page editorial-explore">
+    <main class="explore-editorial-shell">
+      <section class="editorial-hero" aria-labelledby="explore-title">
+        <img class="editorial-hero-image" src="../assets/guide/guide-supermarket.png" alt="The Guide comparing a product in a supermarket aisle, with her stuffed fox in the trolley.">
+        <div class="editorial-hero-wash" aria-hidden="true"></div>
+        <header class="editorial-topbar">
+          <a class="editorial-location" href="location.html"><i data-lucide="map-pin" aria-hidden="true"></i><span>Cheltenham</span></a>
+          <button type="button" class="editorial-alert" aria-label="Notifications"><i data-lucide="bell" aria-hidden="true"></i><span aria-hidden="true"></span></button>
+        </header>
+        <div class="editorial-hero-copy">
+          <p class="editorial-leaf" aria-hidden="true">✦</p>
+          <h1 id="explore-title">Explore</h1>
+          <p class="editorial-greeting">Good evening, Explorer.</p>
+          <p class="editorial-intro">I’ve spotted a few things worth checking out today.</p>
+        </div>
+      </section>
+
+      <div class="editorial-content">
+        <section class="discovery-grid" aria-label="Nearby discoveries">
+          <article class="discovery-card nearby-discovery">
+            <div class="discovery-card-heading"><span><i data-lucide="binoculars" aria-hidden="true"></i> New nearby</span><a href="atlas.html">See all <i data-lucide="chevron-right" aria-hidden="true"></i></a></div>
+            <a class="product-discovery" href="product.html">
+              <img src="../assets/products/tena1.avif" alt="TENA Slip Maxi product pack">
+              <span class="product-discovery-copy"><strong>TENA Slip Maxi</strong><span><i data-lucide="map-pin" aria-hidden="true"></i> Tesco Extra<br>Cheltenham</span><span><i data-lucide="clock-3" aria-hidden="true"></i> Observed yesterday</span><b>View details <i data-lucide="arrow-right" aria-hidden="true"></i></b></span>
+            </a>
+          </article>
+
+          <article class="discovery-card atlas-discovery">
+            <div class="discovery-card-heading"><span><i data-lucide="map-pin" aria-hidden="true"></i> Around you</span><a href="atlas.html">See all <i data-lucide="chevron-right" aria-hidden="true"></i></a></div>
+            <p>5 retailers have recent observations near you.</p>
+            <a class="editorial-map" href="atlas.html" aria-label="Explore nearby on Atlas">
+              <span class="editorial-map-road road-one" aria-hidden="true"></span><span class="editorial-map-road road-two" aria-hidden="true"></span>
+              <i class="editorial-map-marker marker-green" data-lucide="store" aria-hidden="true"></i><i class="editorial-map-marker marker-coral" data-lucide="shopping-cart" aria-hidden="true"></i><i class="editorial-map-marker marker-ocean" data-lucide="package-check" aria-hidden="true"></i>
+            </a>
+            <a class="atlas-button" href="atlas.html">Explore Atlas <i data-lucide="arrow-right" aria-hidden="true"></i></a>
+          </article>
+        </section>
+
+        <section class="editorial-worth" aria-labelledby="worth-heading">
+          <div class="editorial-section-heading"><h2 id="worth-heading"><i data-lucide="sparkles" aria-hidden="true"></i> Worth exploring</h2><a href="search.html">See all <i data-lucide="chevron-right" aria-hidden="true"></i></a></div>
+          <div class="editorial-product-strip">
+            <a class="editorial-product-card violet-pack" href="search.html"><span class="mini-pack">always<br><em>discreet</em><b>UNDERWEAR</b></span><strong>Always Discreet<br>Underwear</strong><small>Trending nearby</small><span>3 retailers <i data-lucide="chevron-right" aria-hidden="true"></i></span></a>
+            <a class="editorial-product-card teal-pack" href="search.html"><span class="mini-pack">Pampers<br><em>baby-dry</em><b>5</b></span><strong>Pampers<br>Baby-Dry</strong><small>Popular choice</small><span>4 retailers <i data-lucide="chevron-right" aria-hidden="true"></i></span></a>
+            <a class="editorial-product-card navy-pack" href="search.html"><span class="mini-pack">Pull-Ups<br><em>Night-Time</em><b>4–7</b></span><strong>Pull-Ups<br>Night-Time</strong><small>Rising nearby</small><span>2 retailers <i data-lucide="chevron-right" aria-hidden="true"></i></span></a>
+          </div>
+        </section>
+
+        <section class="editorial-observation" aria-labelledby="observation-heading">
+          <span class="observation-note-icon"><i data-lucide="notebook-pen" aria-hidden="true"></i></span>
+          <div><h2 id="observation-heading">Every observation helps!</h2><p>Share what you find so others can discover it too.</p></div>
+          <button type="button" aria-label="Add observation"><i data-lucide="camera" aria-hidden="true"></i><span>Add observation</span></button>
+        </section>
+      </div>
+    </main>
+
+    <nav class="bottom-navigation explore-navigation" aria-label="Primary navigation">
+      <a href="explore.html" class="bottom-nav-item active" aria-current="page"><i data-lucide="compass" aria-hidden="true"></i><span>Explore</span></a>
+      <a href="search.html" class="bottom-nav-item"><i data-lucide="search" aria-hidden="true"></i><span>Search</span></a>
+      <a href="atlas.html" class="bottom-nav-item"><i data-lucide="map" aria-hidden="true"></i><span>Atlas</span></a>
+      <a href="backpack.html" class="bottom-nav-item"><i data-lucide="backpack" aria-hidden="true"></i><span>Backpack</span></a>
+      <a href="settings.html" class="bottom-nav-item"><i data-lucide="circle-user-round" aria-hidden="true"></i><span>Profile</span></a>
+    </nav>
+    <script>document.addEventListener('DOMContentLoaded', () => lucide.createIcons({ attrs: { 'stroke-width': 1.7 } }));</script>
+  </body>
+</html>

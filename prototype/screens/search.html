@@ -1,2 +1,204 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Search — DiaperScout</title><link rel="stylesheet" href="../css/coastal-explorer.css"></head><body><div class="site-shell"><header class="topbar"><a class="brand" href="../index.html"><span class="brand-mark">◒</span>DiaperScout</a><a class="button button-secondary button-small" href="../index.html">All screens</a></header><main class="page-main"><a class="breadcrumb" href="../index.html">← Prototype launcher</a><article class="page-card"><p class="eyebrow">Screen 02</p><h1>Search</h1><p>Search will make it easy to find suitable products, brands and packs with just the right amount of guidance.</p><div class="coming-soon">Screen placeholder · ready for refinement.</div></article></main></div></body></html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="Search products and brands in DiaperScout."
+    >
+    <title>Search — DiaperScout</title>
+
+    <link rel="stylesheet" href="../css/coastal-explorer.css">
+    <script src="https://unpkg.com/lucide@latest" defer></script>
+  </head>
+
+  <body class="search-page">
+
+    <main class="search-shell">
+
+      <!-- Header -->
+      <header class="search-header">
+        <h1>Search</h1>
+        <p>Find products, brands and more.</p>
+      </header>
+
+
+      <!-- Search field -->
+      <section class="search-input-wrap" aria-label="Product search">
+
+        <div class="search-input">
+          <i data-lucide="search" aria-hidden="true"></i>
+
+          <input
+            type="search"
+            placeholder="Search products, brands..."
+            aria-label="Search products and brands"
+          >
+
+          <button
+            type="button"
+            class="search-filter-button"
+            aria-label="Filter search"
+            title="Filter"
+          >
+            <i data-lucide="sliders-horizontal" aria-hidden="true"></i>
+          </button>
+        </div>
+
+      </section>
+
+
+      <!-- Browse by category -->
+      <section class="search-section" aria-labelledby="category-heading">
+
+        <div class="search-section-heading">
+          <h2 id="category-heading">Browse by Category</h2>
+          <a href="#" class="search-view-all">View all</a>
+        </div>
+
+        <div class="category-scroller">
+
+          <a href="#" class="category-item">
+  <span class="category-icon category-blue">
+    <img src="../assets/icons/all-in-one.png" alt="" />
+  </span>
+  <span>All-in-One</span>
+</a>
+
+<a href="#" class="category-item">
+  <span class="category-icon category-cream">
+    <img src="../assets/icons/pullup.png" alt="" />
+  </span>
+  <span>Pull-ups</span>
+</a>
+
+<a href="#" class="category-item">
+  <span class="category-icon category-teal">
+    <img src="../assets/icons/diaper.png" alt="" />
+  </span>
+  <span>Diapers</span>
+</a>
+<a href="#" class="category-item">
+  <span class="category-icon category-yellow">
+    <img src="../assets/icons/boosters.png" alt="" />
+  </span>
+  <span>Boosters</span>
+</a>
+<a href="#" class="category-item">
+  <span class="category-icon category-pink">
+    <img src="../assets/icons/pads.png" alt="" />
+  </span>
+  <span>Pads</span>
+</a>
+
+        </div>
+
+      </section>
+
+
+      <!-- Popular brands -->
+      <section class="search-section" aria-labelledby="brands-heading">
+
+        <div class="search-section-heading">
+          <h2 id="brands-heading">Popular Brands</h2>
+          <a href="#" class="search-view-all">View all</a>
+        </div>
+
+        <div class="brand-scroller">
+
+          <a href="#" class="brand-chip">TENA</a>
+          <a href="#" class="brand-chip">Attends</a>
+          <a href="#" class="brand-chip">Rearz</a>
+          <a href="#" class="brand-chip">BetterDry</a>
+          <a href="#" class="brand-chip">Abena</a>
+
+        </div>
+
+      </section>
+
+
+      <!-- Recent searches -->
+      <section class="search-section recent-searches" aria-labelledby="recent-heading">
+
+        <div class="search-section-heading">
+          <h2 id="recent-heading">Recent Searches</h2>
+
+          <button
+            type="button"
+            class="clear-searches"
+          >
+            Clear
+          </button>
+        </div>
+
+        <div class="recent-search-list">
+
+          <button class="recent-search-item" type="button">
+            <span>Rearz Inspire+</span>
+            <i data-lucide="x" aria-hidden="true"></i>
+          </button>
+
+          <button class="recent-search-item" type="button">
+            <span>BetterDry</span>
+            <i data-lucide="x" aria-hidden="true"></i>
+          </button>
+
+          <button class="recent-search-item" type="button">
+            <span>TENA Slip Maxi</span>
+            <i data-lucide="x" aria-hidden="true"></i>
+          </button>
+
+        </div>
+
+      </section>
+
+    </main>
+
+
+    <!-- Bottom navigation -->
+    <nav class="bottom-navigation" aria-label="Primary navigation">
+
+      <a href="#" class="bottom-nav-item">
+        <i data-lucide="compass" aria-hidden="true"></i>
+        <span>Explore</span>
+      </a>
+
+      <a href="search.html" class="bottom-nav-item active" aria-current="page">
+        <i data-lucide="search" aria-hidden="true"></i>
+        <span>Search</span>
+      </a>
+
+      <button
+        type="button"
+        class="camera-action"
+        aria-label="Add observation"
+      >
+        <i data-lucide="camera" aria-hidden="true"></i>
+      </button>
+
+      <a href="#" class="bottom-nav-item">
+        <i data-lucide="map-pin" aria-hidden="true"></i>
+        <span>Atlas</span>
+      </a>
+
+      <a href="#" class="bottom-nav-item">
+        <i data-lucide="backpack" aria-hidden="true"></i>
+        <span>Backpack</span>
+      </a>
+
+    </nav>
+
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons({
+          attrs: {
+            'stroke-width': 1.75
+          }
+        });
+      });
+    </script>
+
+  </body>
+</html>

@@ -1300,6 +1300,18 @@ h2 {
   .discovery-card-heading a { display: none; }
 }
 
+/* Keep the paired discovery cards inside the mobile viewport. */
+@media (max-width: 680px) {
+  .discovery-grid { width: 100%; max-width: 100%; grid-template-columns: minmax(0, 1.18fr) minmax(0, .82fr); }
+  .discovery-card { min-width: 0; overflow: hidden; }
+  .discovery-card-heading { min-width: 0; }
+  .atlas-discovery .discovery-card-heading > span { font-size: .82rem; }
+  .atlas-discovery .discovery-card-heading a { display: none; }
+}
+@media (max-width: 355px) {
+  .discovery-grid { grid-template-columns: minmax(0, 1.18fr) minmax(0, .82fr); }
+}
+
 @media (max-width: 410px) {
   .product-discovery { grid-template-columns: 88px minmax(0, 1fr); gap: 10px; }
   .product-discovery > img { width: 88px; height: 154px; }

@@ -1,2 +1,33 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Backpack — DiaperScout</title><link rel="stylesheet" href="../css/coastal-explorer.css"></head><body><div class="site-shell"><header class="topbar"><a class="brand" href="../index.html"><span class="brand-mark">◒</span>DiaperScout</a><a class="button button-secondary button-small" href="../index.html">All screens</a></header><main class="page-main"><a class="breadcrumb" href="../index.html">← Prototype launcher</a><article class="page-card"><p class="eyebrow">Screen 06</p><h1>Backpack</h1><p>Backpack will keep saved products and useful information within easy reach.</p><div class="coming-soon">Screen placeholder · ready for refinement.</div></article></main></div></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DiaperScout — Backpack</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap');
+    :root{--ink:#302116;--cream:#fff5df;--paper:#fcf8ed;--olive:#315e35;--line:#d6bd8c}*{box-sizing:border-box}body{margin:0;background:#edf0e8;font-family:'DM Sans',sans-serif;color:var(--ink)}
+    .screen{width:min(100%,600px);min-height:1058px;margin:20px auto;border-radius:29px;position:relative;overflow:hidden;background:#6d713c url('backpack-scene.png') center top/cover no-repeat;box-shadow:0 12px 30px #60706250}.screen:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#fff3c535 0%,transparent 18%,transparent 78%,#47391838 100%);pointer-events:none}
+    header,main,nav{position:relative;z-index:1}header{height:172px;padding:18px 36px 0}.status{display:flex;justify-content:space-between;font-weight:700;font-size:16px}.status span:last-child{font-size:17px;letter-spacing:2px}.top{display:flex;justify-content:space-between;align-items:center;margin-top:21px}h1,h2,h3,p{margin:0}h1{font-size:32px;letter-spacing:-1px}.gear{width:47px;height:47px;border:0;border-radius:50%;font-size:24px;background:#fff9edcf;color:#2b2017}
+    .id-card{width:calc(100% - 106px);height:224px;margin:0 auto;padding:16px 17px;border:7px solid #8e7043;border-radius:20px;background:linear-gradient(120deg,#fff8e9,#ead8b3);box-shadow:0 4px 1px #3d321a77,inset 0 0 0 1px #d7bd86}.eyebrow{color:#927b55;font-size:12px;font-weight:700;letter-spacing:.05em}.identity{display:flex;gap:13px;align-items:center;margin:10px 0 12px}.portrait{height:73px;width:65px;display:grid;place-items:center;border-radius:8px;background:#d6d9ba;font-size:43px}.identity h2{font-family:Fraunces,serif;font-size:28px;letter-spacing:-1px}.identity p{color:#366a38;font-size:13px;font-weight:600;margin-top:3px}.member{font-size:11px}.stats{display:flex;border-top:1px dashed #c9ab79;margin-top:12px;padding-top:11px}.stat{flex:1;display:flex;align-items:center;gap:7px;font-size:11px}.stat+ .stat{border-left:1px solid #d4b98d;padding-left:14px}.stat b{font-size:19px}.stat .icon{font-size:25px;color:#3c7640}.stat:last-child .icon{color:#3472b6}
+    .pockets{padding:48px 42px 99px}.pocket{display:flex;align-items:center;gap:14px;min-height:82px;padding:11px 17px;margin-top:2px;border-radius:21px;background:linear-gradient(110deg,#fff2d5eF,#e6c88dE8);border:1px solid #c69f62;box-shadow:0 3px 5px #3a301458,inset 0 1px 2px #fffdf2}.pocket:first-child{margin-top:0}.pocket-icon{display:grid;place-items:center;width:50px;height:50px;border-radius:13px;background:#faecd5bd;font-size:28px}.pocket-text{flex:1}.pocket h3{font-size:19px;letter-spacing:-.4px}.pocket p{font-size:13px;margin-top:3px}.count{height:30px;min-width:30px;padding:0 7px;display:grid;place-items:center;border-radius:50%;background:#f6d492;font-size:13px;font-weight:700}.chevron{font-size:29px;color:#5f4525;font-weight:300}
+    nav{position:absolute;left:21px;right:21px;bottom:18px;height:98px;display:flex;align-items:center;justify-content:space-around;border-radius:24px;background:#fff0d6ee;box-shadow:0 4px 12px #47361559}.nav-item{width:25%;text-align:center;color:#463522;text-decoration:none;font-size:12px;font-weight:600}.nav-icon{height:38px;display:grid;place-items:center;font-size:28px}.nav-item.active{color:#315e35}.nav-item.active .nav-icon{width:64px;height:64px;margin:-30px auto 4px;border-radius:50%;background:#3f7738;color:white;box-shadow:0 5px 9px #31531c80;border:1px solid #6fa158;font-size:27px}.nav-item.active{font-size:12px}
+    @media(max-width:600px){.screen{margin:0;border-radius:0;min-height:100vh}.id-card{width:calc(100% - 86px)}.pockets{padding-left:33px;padding-right:33px}}@media(max-width:380px){header{padding-left:24px;padding-right:24px}.id-card{width:calc(100% - 56px)}.pockets{padding-left:20px;padding-right:20px}.pocket{padding-left:12px;gap:9px}.pocket h3{font-size:17px}}
+  </style>
+</head>
+<body>
+  <div class="screen">
+    <header><div class="status"><span>9:41</span><span>▮▮▮ ◒ ▬</span></div><div class="top"><h1>Backpack</h1><button class="gear" aria-label="Settings">⚙</button></div></header>
+    <main>
+      <article class="id-card"><div class="eyebrow">EXPLORER ID</div><div class="identity"><div class="portrait">🧑🏻</div><div><h2>Simon</h2><p>🌿 Explorer &amp; Helper</p><span class="member">▣ &nbsp;Member since Aug 2026</span></div></div><div class="stats"><div class="stat"><span class="icon">◉</span><span><b>24</b><br>Discoveries</span></div><div class="stat"><span class="icon">♢</span><span><b>18</b><br>Observations</span></div></div></article>
+      <div class="pockets">
+        <article class="pocket"><div class="pocket-icon">📒</div><div class="pocket-text"><h3>Continue Journey</h3><p>1 draft waiting for you</p></div><span class="count">1</span><span class="chevron">›</span></article>
+        <article class="pocket"><div class="pocket-icon">☆</div><div class="pocket-text"><h3>Saved</h3><p>Products 16&nbsp; • &nbsp;Locations 7</p></div><span class="count">23</span><span class="chevron">›</span></article>
+        <article class="pocket"><div class="pocket-icon">♧</div><div class="pocket-text"><h3>My Discoveries</h3><p>See what you’ve added</p></div><span class="chevron">›</span></article>
+        <article class="pocket"><div class="pocket-icon">🦊</div><div class="pocket-text"><h3>A note from The Guide</h3><p>You’ve found some interesting ones.</p></div><span class="chevron">›</span></article>
+      </div>
+    </main>
+    <nav aria-label="Primary navigation"><a class="nav-item" href="#"><span class="nav-icon">♧</span>Explore</a><a class="nav-item" href="#"><span class="nav-icon">⌕</span>Search</a><a class="nav-item" href="#"><span class="nav-icon">⌑</span>Atlas</a><a class="nav-item active" href="#"><span class="nav-icon">♜</span>Backpack</a></nav>
+  </div>
+</body>
+</html>

@@ -1,0 +1,175 @@
+/* Buttons */
+
+.ds-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1);
+    min-height: 40px;
+    padding: 8px 16px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-button);
+    font-weight: 600;
+    line-height: 20px;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        transform 150ms ease,
+        box-shadow 150ms ease,
+        background-color 150ms ease;
+}
+
+.ds-button:hover {
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.ds-button:active {
+    transform: translateY(0);
+}
+
+.ds-button-primary {
+    background: var(--color-primary);
+    color: var(--color-background);
+    box-shadow: var(--shadow-card);
+}
+
+.ds-button-primary:hover {
+    background: var(--color-primary-light);
+    color: var(--color-background);
+}
+
+.ds-button-secondary {
+    background: var(--color-background);
+    color: var(--color-primary);
+    border-color: var(--color-primary-light);
+}
+
+.ds-button-secondary:hover {
+    background: var(--color-surface);
+}
+
+.ds-button-tertiary {
+    padding-inline: 0;
+    background: transparent;
+    color: var(--color-primary-light);
+}
+
+
+/* Cards */
+
+.ds-card {
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+}
+
+.ds-card-raised {
+    box-shadow: var(--shadow-raised);
+}
+
+
+/* Chips and tags */
+
+.ds-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 28px;
+    padding: 4px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-chip);
+    background: var(--color-background);
+    color: var(--color-ink);
+    font-size: 12px;
+    line-height: 16px;
+    white-space: nowrap;
+}
+
+.ds-chip-primary {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-background);
+}
+
+.ds-chip-success {
+    background: rgb(46 125 50 / 10%);
+    border-color: rgb(46 125 50 / 25%);
+    color: var(--color-success);
+}
+
+.ds-chip-warning {
+    background: rgb(234 171 0 / 12%);
+    border-color: rgb(234 171 0 / 25%);
+    color: var(--color-ink);
+}
+
+.ds-chip-error {
+    background: rgb(198 40 40 / 10%);
+    border-color: rgb(198 40 40 / 25%);
+    color: var(--color-error);
+}
+
+
+/* Form controls */
+
+.ds-input,
+.ds-select {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-button);
+    background: var(--color-background);
+    color: var(--color-ink);
+}
+
+.ds-input::placeholder {
+    color: var(--color-muted);
+}
+
+.ds-input:focus,
+.ds-select:focus {
+    border-color: var(--color-primary-light);
+    outline: 3px solid rgb(46 106 98 / 15%);
+}
+
+
+/* Rating */
+
+.ds-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    color: var(--color-gold);
+}
+
+.ds-rating-value {
+    margin-left: 6px;
+    color: var(--color-ink);
+    font-weight: 600;
+}
+
+
+/* Utility */
+
+.ds-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.ds-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.ds-muted {
+    color: var(--color-muted);
+}
+
+.ds-surface {
+    background: var(--color-surface);
+}

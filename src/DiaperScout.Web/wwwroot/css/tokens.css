@@ -1,0 +1,54 @@
+:root {
+    /* Primary */
+    --color-primary: #174B45;
+    --color-primary-light: #2E6A62;
+    --color-gold: #DAA72C;
+    --color-coral: #E07A5F;
+    --color-blue: #4A7DBB;
+
+    /* Accents */
+    --color-sage: #6F8F7A;
+    --color-purple: #8C6BD6;
+    --color-pink: #F5A2B9;
+    --color-brown: #7D5A3A;
+    --color-sand: #E9D8B1;
+
+    /* Neutrals */
+    --color-background: #FFFDF9;
+    --color-surface: #F7F1E7;
+    --color-surface-alt: #EEE7D6;
+    --color-border: #E0DBCF;
+    --color-muted: #8C8B86;
+    --color-ink: #2B2F2E;
+
+    /* Semantic */
+    --color-success: #2E7D32;
+    --color-info: #2E6CB0;
+    --color-warning: #EAAB00;
+    --color-error: #C62828;
+
+    /* Typography */
+    --font-display: "Playfair Display", serif;
+    --font-body: Inter, sans-serif;
+
+    /* Spacing — 8pt grid */
+    --space-1: 8px;
+    --space-2: 16px;
+    --space-3: 24px;
+    --space-4: 32px;
+    --space-5: 40px;
+    --space-6: 48px;
+    --space-7: 64px;
+    --space-8: 80px;
+    --space-9: 96px;
+    --space-10: 128px;
+
+    /* Shape */
+    --radius-card: 12px;
+    --radius-button: 12px;
+    --radius-chip: 8px;
+
+    /* Elevation */
+    --shadow-card: 0 2px 8px rgb(43 47 46 / 8%);
+    --shadow-raised: 0 6px 20px rgb(43 47 46 / 12%);
+}

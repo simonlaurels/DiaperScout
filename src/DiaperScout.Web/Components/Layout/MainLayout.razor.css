@@ -1,98 +1,130 @@
-.page {
-    position: relative;
+.ds-app-shell {
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
-main {
-    flex: 1;
-}
-
-.sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
-}
-
-.top-row {
-    background-color: #f7f7f7;
-    border-bottom: 1px solid #d6d5d5;
-    justify-content: flex-end;
-    height: 3.5rem;
+.ds-app-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    min-height: 64px;
+    padding: 0 var(--space-3);
+    background: var(--color-background);
+    border-bottom: 1px solid var(--color-border);
 }
 
-    .top-row ::deep a, .top-row ::deep .btn-link {
-        white-space: nowrap;
-        margin-left: 1.5rem;
-        text-decoration: none;
+.ds-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--color-primary);
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.ds-navigation {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.ds-navigation-link {
+    padding: 8px 12px;
+    border-radius: var(--radius-chip);
+    color: var(--color-ink);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.ds-navigation-link:hover {
+    background: var(--color-surface);
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.ds-navigation-link.active {
+    background: var(--color-primary);
+    color: var(--color-background);
+}
+
+@media (max-width: 640px) {
+    .ds-navigation {
+        gap: 4px;
     }
 
-    .top-row ::deep a:hover, .top-row ::deep .btn-link:hover {
-        text-decoration: underline;
-    }
-
-    .top-row ::deep a:first-child {
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-@media (max-width: 640.98px) {
-    .top-row {
-        justify-content: space-between;
-    }
-
-    .top-row ::deep a, .top-row ::deep .btn-link {
-        margin-left: 0;
+    .ds-navigation-link {
+        padding: 6px 8px;
+        font-size: 12px;
     }
 }
 
-@media (min-width: 641px) {
-    .page {
-        flex-direction: row;
-    }
+.ds-brand:hover {
+    color: var(--color-primary-light);
+    text-decoration: none;
+}
 
-    .sidebar {
-        width: 250px;
-        height: 100vh;
-        position: sticky;
-        top: 0;
-    }
+.ds-brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    font-family: var(--font-body);
+    font-size: 20px;
+}
 
-    .top-row {
-        position: sticky;
-        top: 0;
-        z-index: 1;
-    }
-
-    .top-row.auth ::deep a:first-child {
-        flex: 1;
-        text-align: right;
-        width: 0;
-    }
-
-    .top-row, article {
-        padding-left: 2rem !important;
-        padding-right: 1.5rem !important;
-    }
+.ds-main {
+    flex: 1;
+    width: 100%;
 }
 
 #blazor-error-ui {
-    color-scheme: light only;
-    background: lightyellow;
-    bottom: 0;
-    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
-    box-sizing: border-box;
-    display: none;
-    left: 0;
-    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
     position: fixed;
-    width: 100%;
+    right: var(--space-2);
+    bottom: var(--space-2);
+    left: var(--space-2);
     z-index: 1000;
+    display: none;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-2);
+    background: var(--color-background);
+    border: 1px solid var(--color-error);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-raised);
+    color: var(--color-error);
 }
 
-    #blazor-error-ui .dismiss {
-        cursor: pointer;
-        position: absolute;
-        right: 0.75rem;
-        top: 0.5rem;
+#blazor-error-ui .reload {
+    margin-left: auto;
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+#blazor-error-ui .dismiss {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-muted);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+@media (max-width: 640px) {
+    .ds-app-header {
+        min-height: 56px;
+        padding-inline: var(--space-2);
     }
+
+    .ds-brand-name {
+        font-size: 18px;
+    }
+}

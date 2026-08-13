@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DiaperScout.Api/DiaperScout.Api.csproj" />
+    <Project Path="src/DiaperScout.Application/DiaperScout.Application.csproj" />
+    <Project Path="src/DiaperScout.Domain/DiaperScout.Domain.csproj" />
+    <Project Path="src/DiaperScout.Infrastructure/DiaperScout.Infrastructure.csproj" />
+    <Project Path="src/DiaperScout.Web/DiaperScout.Web.csproj" />
+  </Folder>
+</Solution>

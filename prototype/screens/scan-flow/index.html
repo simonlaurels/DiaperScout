@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DiaperScout — Scan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="guide-avatar.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="DiaperScout home"><span class="brand-mark">D</span><span>DiaperScout</span></a>
+        <button class="icon-button" aria-label="Help">?</button>
+      </header>
+
+      <section class="screen" aria-live="polite">
+        <div class="view active" id="scan-view">
+          <div class="eyebrow"><span class="compass">✦</span> FIELD SCANNER</div>
+          <h1>A little discovery<br />goes a long way.</h1>
+          <div class="guide-note"><span class="guide-avatar" role="img" aria-label="The Guide"></span><p><strong>The Guide</strong><br />Let’s see what you’ve discovered…</p></div>
+          <div class="scanner" id="scanner">
+            <div class="scanner-corners" aria-hidden="true"></div>
+            <div class="scan-line" aria-hidden="true"></div>
+            <div class="camera-symbol" aria-hidden="true">⌁</div>
+            <div class="scan-status"><span class="status-dot"></span><span id="scan-label">Ready to identify</span></div>
+          </div>
+          <button class="primary-button" id="start-scan"><span class="button-icon">⌁</span> Scan a product</button>
+          <p class="fine-print">Point your camera at a pack, barcode, or product label.</p>
+        </div>
+
+        <div class="view" id="found-view">
+          <button class="back-button" data-go="scan-view">← Back to scanner</button>
+          <div class="found-hero"><div class="burst">✦</div><span class="guide-avatar large" role="img" aria-label="The Guide"></span></div>
+          <div class="eyebrow centred">PRODUCT FOUND</div>
+          <h1 class="centred">I know this one!</h1>
+          <p class="subhead centred">Nice spotting — here’s what we found.</p>
+          <article class="product-card">
+            <div class="product-pack"><div class="pack-logo">TENA</div><div class="pack-line"></div><div class="pack-name">Slip<br /><b>MAXI</b></div><div class="pack-drop">●</div></div>
+            <div class="product-info"><span class="pill">ALL-IN-ONE</span><h2>TENA Slip Maxi</h2><p>High-absorbency briefs</p><div class="meta"><span>▣ 24 pack</span><span>◉ Unisex</span></div></div>
+          </article>
+          <button class="primary-button" id="add-observation">Add an observation <span>→</span></button>
+          <button class="text-button" data-go="scan-view">That’s not quite right</button>
+        </div>
+
+        <div class="view" id="observation-view">
+          <button class="back-button" data-go="found-view">← Back to product</button>
+          <div class="eyebrow">NEW OBSERVATION</div>
+          <h1>Where did you<br />spot it?</h1>
+          <p class="subhead">Your field note helps other Explorers find what they need.</p>
+          <div class="product-strip"><div class="tiny-pack">TENA<br /><b>MAXI</b></div><p><strong>TENA Slip Maxi</strong><br /><span>One observation away from helping.</span></p></div>
+          <form id="observation-form">
+            <label>Retailer <span>required</span><div class="select-wrap"><select required><option value="">Choose a shop</option><option>Boots</option><option>Asda</option><option>Tesco</option><option>Independent pharmacy</option></select></div></label>
+            <label>When did you see it? <span>required</span><input type="date" required value="2026-08-12" /></label>
+            <label>Location <em>optional</em><input type="text" placeholder="e.g. Bristol city centre" /></label>
+            <button class="primary-button submit" type="submit">Log discovery <span>→</span></button>
+          </form>
+        </div>
+
+        <div class="view" id="success-view">
+          <div class="success-orbit"><div class="orbit-star s1">✦</div><div class="orbit-star s2">✦</div><div class="guide-avatar success-guide" role="img" aria-label="The Guide"></div><div class="check">✓</div></div>
+          <div class="eyebrow centred">FIELD NOTE SAVED</div>
+          <h1 class="centred">Discovery logged!</h1>
+          <p class="subhead centred success-copy">Thanks for helping the next Explorer. This find is now part of the shared map.</p>
+          <div class="backpack-card"><div class="backpack-icon">♧</div><div><strong>Added to your Backpack</strong><span>Your first field note is tucked away.</span></div><span class="arrow">→</span></div>
+          <button class="primary-button" id="scan-another">Scan another product</button>
+          <button class="text-button">View my Backpack <span>→</span></button>
+        </div>
+      </section>
+
+      <nav class="bottom-nav" aria-label="Main navigation">
+        <a href="#"><span>⌕</span>Explore</a><a href="#"><span>□</span>Products</a><a href="#" class="active"><span class="scan-nav-icon">⌁</span>Scan</a><a href="#"><span>⌖</span>Atlas</a><a href="#"><span>♧</span>Backpack</a>
+      </nav>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>

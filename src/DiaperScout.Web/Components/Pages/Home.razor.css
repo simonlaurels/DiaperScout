@@ -1,0 +1,771 @@
+.explore-page {
+    min-height: 100vh;
+    padding-bottom: 96px;
+    background: var(--color-background);
+}
+
+/* =========================================================
+   Hero
+   ========================================================= */
+
+.explore-hero {
+    position: relative;
+    min-height: 1000px;
+    overflow: visible;
+    background: #fffaf1;
+}
+
+.explore-hero-image {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: -160px;
+    z-index: 0;
+
+    background-image: url("/images/guide/guide-supermarket.png");
+    background-position: center top;
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+
+    mask-image: linear-gradient(
+        to bottom,
+        black 0%,
+        black 65%,
+        transparent 100%
+    );
+
+    -webkit-mask-image: linear-gradient(
+        to bottom,
+        black 0%,
+        black 65%,
+        transparent 100%
+    );
+}
+
+.explore-hero-wash {
+    display: none;
+}
+
+.explore-topbar {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-2) var(--space-3);
+}
+
+.explore-location {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-ink);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.explore-location:hover {
+    color: var(--color-primary-light);
+    text-decoration: underline;
+}
+
+.explore-alert {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid rgb(255 255 255 / 30%);
+    border-radius: 50%;
+    background: rgb(255 255 255 / 10%);
+    color: var(--color-ink);
+    cursor: pointer;
+}
+
+.explore-hero-copy {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1120px;
+    margin: 210px auto 0;
+    padding: 0 var(--space-3);
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   Hero CTA
+   ========================================================= */
+
+.explore-hero-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: var(--space-3);
+    padding: 12px 22px;
+    border-radius: var(--radius-button);
+    background: var(--color-primary);
+    color: var(--color-background);
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: var(--shadow-card);
+    transition:
+        transform 150ms ease,
+        background-color 150ms ease,
+        box-shadow 150ms ease;
+}
+
+.explore-hero-button:hover {
+    background: var(--color-primary-light);
+    color: var(--color-background);
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-raised);
+}
+
+.explore-hero-button span {
+    color: var(--color-gold);
+}
+
+/* =========================================================
+   Hero discoveries
+   ========================================================= */
+
+.explore-hero-discoveries {
+    position: relative;
+    z-index: 5;
+    width: min(1120px, calc(100% - 32px));
+    margin: 40px auto 0;
+}
+
+.explore-leaf {
+    margin-bottom: var(--space-1);
+    color: var(--color-gold);
+    font-size: 26px;
+    line-height: 1;
+}
+
+.explore-hero h1 {
+    margin-bottom: var(--space-1);
+    color: var(--color-ink);
+    font-size: clamp(44px, 8vw, 72px);
+    line-height: 1;
+}
+
+.explore-greeting {
+    margin-bottom: 6px;
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-size: 20px;
+    line-height: 28px;
+}
+
+.explore-intro {
+    max-width: 440px;
+    margin-bottom: 0;
+    color: var(--color-ink);
+    font-size: 15px;
+    line-height: 23px;
+}
+
+/* =========================================================
+   Main content
+   ========================================================= */
+
+.explore-content {
+    position: relative;
+    z-index: 3;
+    width: min(1120px, calc(100% - 32px));
+    margin: 0 auto;
+    padding-top: 0;
+}
+
+/* =========================================================
+   Discovery cards
+   ========================================================= */
+
+.discovery-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-2);
+}
+
+.discovery-card {
+    min-width: 0;
+    padding: var(--space-2);
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-raised);
+}
+
+.discovery-card-heading,
+.explore-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+}
+
+.discovery-card-heading {
+    margin-bottom: var(--space-2);
+}
+
+.discovery-card-heading > span,
+.explore-section-heading h2 {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    color: var(--color-primary);
+    font-family: var(--font-display);
+    font-weight: 700;
+}
+
+.discovery-card-heading > span {
+    font-size: 18px;
+    line-height: 24px;
+}
+
+.discovery-card-heading a,
+.explore-section-heading > a {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    color: var(--color-primary-light);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.discovery-card-heading a:hover,
+.explore-section-heading > a:hover {
+    text-decoration: underline;
+}
+
+/* =========================================================
+   Nearby product
+   ========================================================= */
+
+.product-discovery {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr);
+    gap: var(--space-2);
+    align-items: center;
+    padding: var(--space-1);
+    border-radius: var(--radius-chip);
+    background: var(--color-surface);
+    color: var(--color-ink);
+    text-decoration: none;
+}
+
+.product-discovery:hover {
+    color: var(--color-ink);
+    text-decoration: none;
+    background: var(--color-surface-alt);
+}
+
+.product-image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+    border-radius: var(--radius-chip);
+    background: var(--color-sand);
+    color: var(--color-primary);
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.product-discovery-copy {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.product-discovery-copy strong {
+    color: var(--color-primary);
+    font-family: var(--font-display);
+    font-size: 19px;
+    line-height: 24px;
+}
+
+.product-discovery-copy > span {
+    color: var(--color-muted);
+    font-size: 12px;
+    line-height: 17px;
+}
+
+.product-discovery-copy b {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 3px;
+    color: var(--color-primary-light);
+    font-size: 12px;
+}
+
+/* =========================================================
+   Atlas
+   ========================================================= */
+
+.atlas-discovery > p {
+    margin-bottom: var(--space-2);
+    color: var(--color-muted);
+    font-size: 13px;
+    line-height: 20px;
+}
+
+.editorial-map {
+    position: relative;
+    display: block;
+    height: 150px;
+    overflow: hidden;
+    border-radius: var(--radius-chip);
+    background:
+        linear-gradient(
+            125deg,
+            var(--color-surface-alt) 0%,
+            var(--color-surface) 100%
+        );
+}
+
+.editorial-map-road {
+    position: absolute;
+    display: block;
+    height: 14px;
+    border-radius: 999px;
+    background: rgb(255 253 249 / 90%);
+    transform: rotate(-18deg);
+}
+
+.road-one {
+    top: 55px;
+    right: -20px;
+    left: -20px;
+}
+
+.road-two {
+    top: 105px;
+    right: -10px;
+    left: 40px;
+    transform: rotate(24deg);
+}
+
+.editorial-map-marker {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 3px solid var(--color-background);
+    border-radius: 50%;
+    box-shadow: var(--shadow-card);
+    font-size: 10px;
+}
+
+.marker-green {
+    top: 28px;
+    left: 25%;
+    background: var(--color-sage);
+    color: var(--color-background);
+}
+
+.marker-coral {
+    top: 72px;
+    left: 58%;
+    background: var(--color-coral);
+    color: var(--color-background);
+}
+
+.marker-ocean {
+    right: 15%;
+    bottom: 22px;
+    background: var(--color-blue);
+    color: var(--color-background);
+}
+
+.atlas-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 44px;
+    margin-top: var(--space-2);
+    border-radius: var(--radius-button);
+    background: var(--color-primary);
+    color: var(--color-background);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.atlas-button:hover {
+    background: var(--color-primary-light);
+    color: var(--color-background);
+    text-decoration: none;
+}
+
+/* =========================================================
+   Worth exploring
+   ========================================================= */
+
+.explore-worth {
+    position: relative;
+    z-index: 2;
+    margin-top: var(--space-5);
+}
+
+.explore-section-heading {
+    margin-bottom: var(--space-2);
+}
+
+.explore-section-heading h2 {
+    font-size: 24px;
+    line-height: 32px;
+}
+
+.explore-product-strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-2);
+}
+
+.explore-product-card {
+    display: flex;
+    min-height: 260px;
+    flex-direction: column;
+    padding: var(--space-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-background);
+    box-shadow: var(--shadow-card);
+    color: var(--color-ink);
+    text-decoration: none;
+}
+
+.explore-product-card:hover {
+    color: var(--color-ink);
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-raised);
+}
+
+.product-pack {
+    display: flex;
+    min-height: 120px;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--space-2);
+    border-radius: var(--radius-chip);
+    color: var(--color-background);
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 20px;
+}
+
+.product-pack em {
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.product-pack b {
+    margin-top: 6px;
+    font-family: var(--font-body);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+}
+
+.product-pack-violet {
+    background: var(--color-purple);
+}
+
+.product-pack-teal {
+    background: var(--color-primary-light);
+}
+
+.product-pack-navy {
+    background: var(--color-blue);
+}
+
+.explore-product-card strong {
+    margin-top: var(--space-2);
+    color: var(--color-primary);
+    font-family: var(--font-display);
+    font-size: 17px;
+    line-height: 22px;
+}
+
+.explore-product-card small {
+    margin-top: 5px;
+    color: var(--color-muted);
+    font-size: 12px;
+}
+
+.explore-product-card > span:last-child {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: auto;
+    padding-top: var(--space-2);
+    color: var(--color-primary-light);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* =========================================================
+   Observation
+   ========================================================= */
+
+.explore-observation {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--space-2);
+    align-items: center;
+    margin-top: var(--space-5);
+    padding: var(--space-3);
+    border: 1px solid rgb(218 167 44 / 30%);
+    border-radius: var(--radius-card);
+    background: rgb(218 167 44 / 8%);
+}
+
+.observation-note-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--color-gold);
+    font-size: 20px;
+}
+
+.explore-observation h2 {
+    margin-bottom: 3px;
+    color: var(--color-primary);
+    font-family: var(--font-display);
+    font-size: 20px;
+    line-height: 26px;
+}
+
+.explore-observation p {
+    margin-bottom: 0;
+    color: var(--color-muted);
+    font-size: 13px;
+    line-height: 19px;
+}
+
+/* =========================================================
+   Desktop Explorer Header
+   ========================================================= */
+
+.ds-app-header {
+    position: relative;
+    z-index: 20;
+    width: 100%;
+    background: var(--color-background);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.ds-header-inner {
+    display: flex;
+    align-items: center;
+    width: min(1400px, calc(100% - 40px));
+    min-height: 76px;
+    margin: 0 auto;
+    gap: 34px;
+}
+
+.ds-brand {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    color: var(--color-ink);
+    text-decoration: none;
+}
+
+.ds-brand:hover {
+    color: var(--color-ink);
+    text-decoration: none;
+}
+
+.ds-brand-logo {
+    display: block;
+    width: 145px;
+    height: auto;
+}
+
+/* =========================================================
+   Navigation
+   ========================================================= */
+
+.ds-navigation {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+}
+
+.ds-navigation-desktop {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+}
+
+.ds-navigation-mobile {
+    display: none;
+}
+
+.ds-navigation-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    color: var(--color-ink);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 20px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.ds-navigation-link:hover {
+    color: var(--color-primary-light);
+    text-decoration: none;
+}
+
+.ds-navigation-link.active {
+    color: var(--color-primary);
+}
+
+.ds-navigation-link.active::after {
+    position: absolute;
+    right: 0;
+    bottom: 3px;
+    left: 0;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--color-gold);
+    content: "";
+}
+
+.ds-navigation-link-secondary {
+    margin-left: 4px;
+    color: var(--color-muted);
+    font-weight: 500;
+}
+
+/* =========================================================
+   Header actions
+   ========================================================= */
+
+.ds-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-shrink: 0;
+}
+
+.ds-header-signin {
+    color: var(--color-primary);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.ds-header-signin:hover {
+    color: var(--color-primary-light);
+    text-decoration: none;
+}
+
+.ds-header-join {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 38px;
+    padding: 7px 14px;
+    border-radius: var(--radius-button);
+    background: var(--color-primary);
+    color: var(--color-background);
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: var(--shadow-card);
+    transition:
+        transform 150ms ease,
+        background-color 150ms ease,
+        box-shadow 150ms ease;
+}
+
+.ds-header-join:hover {
+    background: var(--color-primary-light);
+    color: var(--color-background);
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-raised);
+}
+
+.ds-header-join span {
+    color: var(--color-gold);
+}
+
+/* =========================================================
+   Explore header integration
+   ========================================================= */
+
+@media (min-width: 720px) {
+    body:has(.explore-page) .ds-app-header {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background:
+            linear-gradient(
+                180deg,
+                rgb(255 253 249 / 96%) 0%,
+                rgb(255 253 249 / 88%) 58%,
+                rgb(255 253 249 / 0%) 100%
+            );
+        border-bottom: 0;
+    }
+
+    body:has(.explore-page) .ds-header-inner {
+        min-height: 88px;
+    }
+
+    body:has(.explore-page) .ds-navigation-link {
+        color: var(--color-ink);
+    }
+
+    body:has(.explore-page) .ds-navigation-link:hover {
+        color: var(--color-primary-light);
+    }
+
+    body:has(.explore-page) .ds-navigation-link.active {
+        color: var(--color-primary);
+    }
+
+    body:has(.explore-page) .ds-navigation-link-secondary {
+        color: var(--color-muted);
+    }
+}
+
+/* =========================================================
+   Desktop layout
+   ========================================================= */
+
+@media (min-width: 720px) {
+
+    .explore-hero-copy {
+        margin-top: 210px;
+    }
+
+}

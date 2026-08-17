@@ -2,12 +2,26 @@
 
 <div class="ds-app-shell">
     <header class="ds-app-header">
-        <a class="ds-brand" href="/" aria-label="DiaperScout home">
-            <span class="ds-brand-mark" aria-hidden="true">🧭</span>
-            <span class="ds-brand-name">DiaperScout</span>
-        </a>
+        <div class="ds-header-inner">
+            <a class="ds-brand" href="/" aria-label="DiaperScout home">
+                <img src="/images/brand/DiaperScout.svg"
+                     alt="DiaperScout"
+                     class="ds-brand-logo" />
+            </a>
 
-        <NavMenu />
+            <NavMenu />
+
+            <div class="ds-header-actions">
+                <a class="ds-header-signin" href="/signin">
+                    Sign in
+                </a>
+
+                <a class="ds-header-join" href="/join">
+                    Join DiaperScout
+                    <span aria-hidden="true">★</span>
+                </a>
+            </div>
+        </div>
     </header>
 
     <main class="ds-main">

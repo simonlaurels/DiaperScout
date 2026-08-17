@@ -1,0 +1,12 @@
+.guide-avatar {
+  border-radius: 50% !important;
+  background-color: var(--sun) !important;
+  background-image: url("assets/the-guide.png") !important;
+  background-repeat: no-repeat !important;
+  background-size: 340% !important;
+  background-position: 34% 27% !important;
+  box-shadow: 0 2px 0 rgba(23, 59, 51, .16) !important;
+}
+
+.large,
+.success-guide { font-size: 0 !important; }

@@ -1,293 +1,1068 @@
 # Implementation Overview
 
-**Document Status:** Draft  
-**Version:** 1.0  
-**Owner:** DiaperScout Project  
-**Last Updated:** 2026-08-02
+## Purpose
+
+This document defines the implementation strategy for the DiaperScout production application.
+
+It translates the architectural decisions into a practical development approach.
+
+The objective is to move from documented architecture to a maintainable production system without introducing unnecessary complexity.
+
+The implementation should proceed as a series of complete, testable vertical slices rather than attempting to build every layer independently before anything works.
 
 ---
 
-# 1. Purpose
+# Production Principle
 
-The purpose of the Implementation documentation is to define **how** the DiaperScout platform is built.
+DiaperScout is now being built as the production application.
 
-Where the Architecture documentation describes the structure, behaviour and guiding principles of the platform, the Implementation documentation describes the technologies, patterns and development practices used to realise that architecture.
+The implementation must therefore favour:
 
-Implementation should not redefine the architecture.
+* real domain behaviour;
+* real persistence;
+* real authentication;
+* real API contracts;
+* real editorial workflows;
+* real testing;
+* production-appropriate security.
 
-Instead, it provides a technology-specific blueprint that translates the architectural vision into a maintainable, production-ready software platform.
+Prototype shortcuts should not become permanent architecture.
 
----
-
-# 2. Relationship to the Architecture
-
-The Architecture documentation remains the authoritative description of the DiaperScout platform.
-
-Architecture answers questions such as:
-
-- Why does DiaperScout exist?
-- What are the core concepts of the platform?
-- How does information flow through the system?
-- What are the long-term design principles?
-
-Implementation answers different questions:
-
-- Which technologies are used?
-- How are projects organised?
-- How is data persisted?
-- How are APIs implemented?
-- How is the application deployed?
-
-Implementation decisions should support the architecture rather than redefine it.
-
-If implementation identifies a significant architectural issue, the proposed change should be reviewed within the Architecture documentation before being adopted.
+Where a temporary implementation is unavoidable, it should be clearly isolated and recorded.
 
 ---
 
-# 3. Objectives
+# Technology Baseline
 
-The implementation phase aims to produce a platform that is:
+The production application uses:
 
-- Maintainable
-- Testable
-- Secure
-- Performant
-- Observable
-- Scalable
-- Easy to understand
-- Pleasant to develop
+* .NET;
+* ASP.NET Core;
+* Blazor Web App;
+* Progressive Web App capabilities;
+* Entity Framework Core;
+* PostgreSQL;
+* .NET Aspire;
+* Cloudflare R2 or compatible object storage for user/media assets;
+* ASP.NET Core authentication and authorisation.
 
-The objective is not simply to create working software, but to create a codebase that can continue to evolve over many years.
+The exact package and framework versions are governed by the repository dependency baseline.
 
----
-
-# 4. Guiding Principles
-
-## 4.1 Architecture First
-
-Technology exists to realise the architecture.
-
-Implementation should never compromise architectural principles simply because a particular technology makes an alternative approach easier.
+Dependencies should be kept current within supported release lifecycles.
 
 ---
 
-## 4.2 C# First
+# Architectural Shape
 
-DiaperScout adopts a C#-first development philosophy.
+The production application is a modular monolith with explicit internal boundaries.
 
-Where practical, the platform should remain within the .NET ecosystem to minimise context switching, simplify development, and encourage a cohesive codebase.
+```text id="q5wq7a"
+                    DiaperScout
+                         │
+          ┌──────────────┴──────────────┐
+          │                             │
+        Web                            API
+          │                             │
+          └──────────────┬──────────────┘
+                         │
+                   Application
+                         │
+                 ┌───────┴───────┐
+                 │               │
+              Domain       Infrastructure
+                                 │
+                       ┌─────────┴─────────┐
+                       │                   │
+                   PostgreSQL          Object Storage
+```
 
-This philosophy influenced the selection of Blazor Web App for the initial client implementation.
+The logical backend services remain visible within these boundaries.
+
+They do not initially require independent deployment.
 
 ---
 
-## 4.3 Pragmatism Over Purity
+# Core Architectural Layers
 
-Technology should be selected because it solves a problem—not because it aligns with a particular ideology.
+## Web
 
-Where mature browser technologies or specialist libraries provide clear advantages, they should be integrated rather than unnecessarily reimplemented.
+The Web project provides the Explorer experience.
+
+Responsibilities include:
+
+* navigation;
+* pages;
+* components;
+* forms;
+* accessibility;
+* responsive behaviour;
+* PWA capabilities;
+* authentication UX;
+* Backpack experience;
+* contribution UX.
+
+The Web project does not access persistence directly.
+
+---
+
+## API
+
+The API provides the HTTP application boundary.
+
+Responsibilities include:
+
+* endpoints;
+* request validation;
+* API contracts;
+* authentication integration;
+* authorisation;
+* OpenAPI;
+* HTTP concerns.
+
+API endpoints remain thin.
+
+---
+
+## Application
+
+The Application layer implements use cases.
+
+It coordinates:
+
+* commands;
+* queries;
+* validation;
+* workflows;
+* domain operations;
+* persistence abstractions;
+* external capability abstractions.
+
+The Application layer contains application orchestration but should not become a dumping ground for domain rules.
+
+---
+
+## Domain
+
+The Domain layer contains the core business model.
+
+It owns:
+
+* entities;
+* value objects;
+* invariants;
+* domain rules;
+* domain events.
+
+The Domain has no dependency on:
+
+* ASP.NET Core;
+* Blazor;
+* Entity Framework Core;
+* PostgreSQL;
+* Cloudflare R2;
+* HTTP.
+
+---
+
+## Infrastructure
+
+Infrastructure implements technical capabilities.
 
 Examples include:
 
-- Barcode scanning
-- Image processing
-- Browser APIs
+* EF Core;
+* PostgreSQL;
+* authentication persistence;
+* object storage;
+* email;
+* search;
+* background processing;
+* external services.
 
-The objective is to build DiaperScout—not replacements for existing technologies.
-
----
-
-## 4.4 API First
-
-All clients communicate through the same platform APIs.
-
-The initial Blazor PWA is treated as one client of the platform rather than being tightly coupled to the server implementation.
-
-This allows future clients, including native iOS and Android applications, to be developed without changing the underlying platform.
+Infrastructure-specific details remain outside the Domain.
 
 ---
 
-## 4.5 Platform Optimisation
+# Logical Service Boundaries
 
-DiaperScout is a hosted platform rather than software installed by customers.
+The implementation preserves the following logical responsibilities:
 
-Technology choices should therefore optimise for the selected platform rather than preserve unnecessary portability.
+```text id="q3y9t4"
+Atlas
+Observation
+Editorial
+Community
+Discovery
+Retail
+Search
+Media
+Notification
+Authentication
+```
+
+These should normally be represented through modules and services inside the modular monolith.
+
+The application should not create a network boundary simply because two concepts have different names.
+
+---
+
+# Domain Modules
+
+The initial Domain/Application organisation should broadly reflect:
+
+```text id="l9qv6r"
+Products
+Retail
+Observations
+Editorial
+Discovery
+Community
+Backpack
+```
+
+Additional modules may be introduced as the domain evolves.
+
+Modules should be introduced when they represent meaningful boundaries rather than arbitrary code grouping.
+
+---
+
+# Authentication
+
+Authentication establishes the technical User identity.
+
+The initial authentication strategy is passwordless:
+
+* Email Magic Links;
+* Passkeys/WebAuthn.
+
+Anonymous users can explore the published Atlas.
+
+Authentication is required for protected actions such as:
+
+* submitting Observations;
+* submitting Evidence;
+* saving personal information;
+* participating in Discovery Tasks;
+* privileged operations.
+
+Authentication does not determine whether a User is a Contributor.
+
+---
+
+# Authorisation
+
+Authorisation is policy-based and server-side.
+
+The initial privileged responsibilities are:
+
+* Moderator;
+* Administrator;
+* Verified Manufacturer.
+
+Explorer is not an authorisation role.
+
+Contributor is not an authorisation role.
+
+Community Trust is not an authorisation mechanism.
+
+The implementation must never derive privileged permissions automatically from contribution volume or Community Trust.
+
+---
+
+# Community Model
+
+A User participates in the application as an Explorer.
+
+An Explorer may become a Contributor through contribution.
+
+```text id="g9t8pk"
+User
+  ↓
+Explorer
+  ↓
+Contribution
+  ↓
+Contributor history
+```
+
+Community Trust is maintained as internal community information.
+
+It may support:
+
+* moderation recommendations;
+* workflow prioritisation;
+* contribution evaluation.
+
+It does not grant privileges automatically.
+
+---
+
+# Product Model
+
+The Product hierarchy is:
+
+```text id="b2uv3z"
+Product
+└── Product Variant
+    └── Size Variant
+        └── Pack Type
+            └── GTIN
+```
+
+The implementation must preserve these distinctions.
+
+A GTIN is not automatically the identity of a Product.
+
+Regional variations and product-specific specifications remain distinct domain concepts.
+
+---
+
+# Retail Model
+
+Retail information is represented as:
+
+```text id="d7v6f1"
+Retailer
+   │
+   └── Location
+          │
+          └── Observation
+                 │
+                 └── Product
+```
+
+Retail availability is derived from observations.
+
+The system does not maintain an authoritative live stock state.
+
+An observation that a Product was seen at a Location does not guarantee that the Product remains in stock.
+
+---
+
+# Observation Model
+
+Observations are the primary mechanism by which the community records real-world information.
 
 Examples include:
 
-- Leveraging PostgreSQL features where beneficial.
-- Using Cloudflare services where they improve delivery.
-- Taking advantage of modern ASP.NET Core capabilities.
+* Product Discovery;
+* Retail Observation;
+* Correction Request;
+* Manufacturer Submission.
 
-Artificial limitations introduced solely for hypothetical future portability should be avoided.
+An Observation contains or references the relevant information and supporting Evidence.
+
+The original Observation remains historically attributable to its contributor.
 
 ---
 
-## 4.6 Reduce Friction
+# Evidence Model
 
-Implementation decisions should reduce friction for both developers and users.
+Evidence supports Observations.
+
+Evidence may include:
+
+* photographs;
+* packaging;
+* barcodes;
+* measurements;
+* written notes;
+* manufacturer documentation.
+
+Original Evidence should be preserved.
+
+Derived processing may create:
+
+* thumbnails;
+* extracted barcode values;
+* searchable metadata;
+* optimised media.
+
+Derived data must not replace the original Evidence.
+
+---
+
+# Editorial Model
+
+Community information does not directly become canonical Atlas knowledge.
+
+The central production workflow is:
+
+```text id="s3h2u8"
+Explorer
+   ↓
+Observation
+   ↓
+Evidence
+   ↓
+Editorial Review
+   ↓
+Editorial Decision
+   ↓
+Atlas
+```
+
+The Editorial Service is the authoritative gateway into the published Atlas.
+
+Verified Manufacturer submissions follow the same editorial principle.
+
+---
+
+# Discovery Model
+
+Knowledge Gaps identify areas where the Atlas lacks sufficiently reliable or complete information.
+
+Discovery Tasks provide actionable ways for Explorers to investigate those gaps.
+
+```text id="9r4h4m"
+Knowledge Gap
+      ↓
+Discovery Task
+      ↓
+Explorer
+      ↓
+Observation / Evidence
+      ↓
+Editorial Review
+      ↓
+Atlas
+```
+
+Discovery Tasks are voluntary.
+
+They do not create:
+
+* ranks;
+* roles;
+* permissions;
+* public scores.
+
+---
+
+# Backpack
+
+The Backpack represents the Explorer's personal journey.
+
+It may contain:
+
+* saved Products;
+* saved Locations;
+* Collections;
+* discoveries;
+* Scrapbook content;
+* other personal journey information.
+
+Backpack data belongs to the authenticated User.
+
+It must be protected through resource ownership policies.
+
+---
+
+# Database
+
+PostgreSQL is the authoritative relational store for structured application data.
+
+Entity Framework Core provides persistence mapping and migrations.
+
+The database preserves:
+
+* canonical Atlas knowledge;
+* Observations;
+* Evidence metadata;
+* Editorial Decisions;
+* provenance;
+* community contribution history;
+* Discovery Tasks;
+* Backpack data;
+* authentication data;
+* required audit information.
+
+The database is not exposed directly to clients.
+
+---
+
+# Persistence Boundaries
+
+EF Core belongs in Infrastructure.
+
+Domain entities must not depend on EF Core-specific implementation details.
+
+Entity configurations should remain separate from domain entities where practical.
+
+Migrations must represent intentional changes to the persistent model.
+
+---
+
+# Media Storage
+
+User-submitted and other large media assets should not be stored directly in PostgreSQL.
+
+Object storage should be used.
+
+The logical model is:
+
+```text id="f3r9x7"
+Observation
+    ↓
+Evidence
+    ↓
+Media Metadata
+    ↓
+Object Storage
+```
+
+The database retains metadata and provenance.
+
+Cloudflare R2 is the initial preferred object-storage target where appropriate.
+
+The Domain remains unaware of the provider.
+
+---
+
+# Search
+
+Search operates against published or appropriately indexed information.
+
+Search should not expose unreviewed community evidence as canonical knowledge.
+
+Search indexing is a derived system.
+
+The Atlas remains the source of truth.
+
+A typical publication flow is:
+
+```text id="b2s0oz"
+Atlas Updated
+      ↓
+Search Index Update
+```
+
+Search failures should not corrupt the Atlas.
+
+---
+
+# Background Processing
+
+Background processing handles work that does not need to block the Explorer.
 
 Examples include:
 
-For developers:
+* media processing;
+* thumbnail generation;
+* search indexing;
+* notification delivery;
+* Discovery Task generation;
+* Community Trust evaluation;
+* availability freshness calculations.
 
-- Cohesive tooling
-- Consistent language
-- Simple deployment
-- Clear solution structure
+Background processing should use durable state and idempotent operations where practical.
 
-For users:
-
-- Fast search
-- Passwordless authentication
-- Responsive interfaces
-- Progressive Web App support
+The initial implementation does not require a separate Worker project.
 
 ---
 
-## 4.7 Build for Evolution
+# Events
 
-The implementation should support future growth without unnecessary complexity.
+Meaningful domain transitions may produce events.
 
-The platform should be capable of supporting:
+Examples include:
 
-- Native mobile clients
-- Additional authentication providers
-- Expanded Atlas capabilities
-- Community growth
+* Observation Submitted;
+* Evidence Added;
+* Editorial Decision Recorded;
+* Atlas Updated;
+* Product Published;
+* Discovery Task Generated;
+* Discovery Task Completed;
+* Contribution Accepted;
+* Community Trust Updated.
 
-However, future possibilities should not justify unnecessary complexity today.
+Events describe what happened.
 
----
-
-# 5. Technology Philosophy
-
-DiaperScout intentionally adopts a cohesive technology stack selected through architectural evaluation rather than vendor preference.
-
-Current implementation decisions include:
-
-| Area | Technology |
-|-------|------------|
-| Language | C# |
-| Framework | .NET |
-| Backend | ASP.NET Core |
-| Frontend | Blazor Web App |
-| Data Access | Entity Framework Core |
-| Database | PostgreSQL |
-| Local Orchestration | .NET Aspire |
-| CDN / Edge | Cloudflare |
-| Object Storage | Cloudflare R2 |
-| Version Control | GitHub |
-
-Each technology has been selected because it aligns with the project's implementation goals.
-
-The project intentionally favours a small number of well-integrated technologies over a fragmented technology stack.
+They do not prescribe implementation details to consuming components.
 
 ---
 
-# 6. Scope
+# API Contracts
 
-This implementation documentation covers:
+API endpoints use explicit request and response contracts.
 
-- Solution structure
-- Project organisation
-- Technology stack
-- Coding standards
-- API implementation
-- Data access
-- Database strategy
-- Authentication
-- Storage
-- Search
-- Testing
-- Deployment
-- Observability
-- Operational practices
+Persistence entities must never be exposed directly as API models.
 
-The following topics remain outside the scope of these documents:
+The API should represent domain capabilities rather than database tables.
 
-- Product vision
-- Community design
-- Business strategy
-- Architectural principles
+Initial API versioning uses:
 
-These are defined by the Architecture documentation.
+```text id="x0wq88"
+/api/v1/
+```
 
 ---
 
-# 7. Success Criteria
+# Web Application
 
-The implementation will be considered successful when:
+The Web application consumes the API boundary and provides the Explorer experience.
 
-- The architecture has been faithfully realised.
-- The solution is understandable by new contributors.
-- Individual components have clear responsibilities.
-- The codebase is maintainable.
-- Automated testing is straightforward.
-- Deployment is repeatable.
-- The platform is production ready.
-- Future clients can be added without architectural redesign.
+The initial client is a Blazor Web App with PWA capabilities.
 
----
+The Web application should support:
 
-# 8. Implementation Roadmap
+* desktop;
+* tablet;
+* mobile;
+* offline-aware contribution drafting where appropriate.
 
-Implementation is expected to progress through several stages.
-
-## Foundation
-
-Establish the technical platform.
-
-Includes:
-
-- Solution structure
-- Authentication
-- Products
-- Reviews
-- Images
-- Search
-- Deployment
-- Observability
+Offline work must be clearly distinguished from server-confirmed submission.
 
 ---
 
-## Community
+# First Production Vertical Slice
 
-Implement collaborative functionality.
+The implementation should begin with a small but complete vertical slice.
 
-Includes:
+The first slice should establish:
 
-- Atlas
-- Moderation
-- Scout reputation
-- Community workflows
+```text id="0u1u6b"
+Product
+  ↓
+Application Query
+  ↓
+API
+  ↓
+Web
+  ↓
+PostgreSQL
+```
+
+This proves:
+
+* project references;
+* Domain;
+* Application;
+* Infrastructure;
+* EF Core;
+* PostgreSQL;
+* API;
+* Web;
+* testing.
+
+The first slice should use real persistence rather than an in-memory replacement that becomes permanent.
 
 ---
 
-## Growth
+# First Contribution Slice
 
-Expand platform capabilities.
+After the first read-only slice, the next complete vertical slice should establish:
 
-Potential areas include:
+```text id="z6o9m3"
+Authenticated Explorer
+       ↓
+Observation
+       ↓
+Evidence
+       ↓
+Editorial Review
+       ↓
+Editorial Decision
+       ↓
+Atlas Update
+```
 
-- Native mobile applications
-- Advanced search capabilities
-- Additional authentication providers
-- Platform optimisation
-- Operational improvements
+This proves the central DiaperScout proposition.
 
-The roadmap is expected to evolve as DiaperScout matures.
+It should include:
+
+* authentication;
+* authorisation;
+* Observation persistence;
+* Evidence handling;
+* editorial workflow;
+* Atlas update;
+* audit/provenance;
+* integration testing.
 
 ---
 
-# 9. Design Philosophy
+# Development Order
 
-Every implementation decision should answer a simple question:
+Implementation should proceed in vertical slices.
 
-> **Does this make DiaperScout easier to understand, easier to maintain, or better for its users?**
+A practical sequence is:
 
-Technology should remain a means to achieve the platform's goals rather than becoming a goal in itself.
+## Phase 1 — Foundation
 
-The implementation should favour clarity over cleverness, consistency over novelty, and long-term maintainability over short-term convenience.
+* Create solution;
+* establish project references;
+* configure Aspire;
+* configure PostgreSQL;
+* configure shared tooling;
+* establish architecture tests.
 
-By following these principles, DiaperScout aims to become not only a successful platform for its users, but also a software project whose implementation remains coherent, approachable and enjoyable to develop for many years.
+## Phase 2 — Domain
+
+* Product;
+* Product Variant;
+* Size Variant;
+* Pack Type;
+* GTIN;
+* Product Specification.
+
+## Phase 3 — Atlas Read Path
+
+* persistence;
+* Application queries;
+* API;
+* Web Product pages;
+* search/filter foundations.
+
+## Phase 4 — Authentication
+
+* User;
+* passwordless authentication;
+* Passkeys;
+* session management;
+* authorisation policies.
+
+## Phase 5 — Contributions
+
+* Observation;
+* Evidence;
+* media;
+* contributor attribution;
+* validation.
+
+## Phase 6 — Editorial
+
+* editorial queue;
+* review;
+* decisions;
+* Atlas publication;
+* provenance.
+
+## Phase 7 — Discovery
+
+* Knowledge Gaps;
+* Discovery Tasks;
+* participation;
+* contribution integration.
+
+## Phase 8 — Community
+
+* Backpack;
+* Collections;
+* Scrapbook;
+* Community Trust.
+
+## Phase 9 — Supporting Systems
+
+* search indexing;
+* notifications;
+* background processing;
+* caching;
+* operational tooling.
+
+Each phase should leave the application in a working state.
+
+---
+
+# Testing Strategy
+
+Testing is part of implementation rather than a final phase.
+
+The production solution uses:
+
+* Unit Tests;
+* Integration Tests;
+* Architecture Tests;
+* end-to-end tests where justified.
+
+Critical workflows should be tested end-to-end.
+
+The most important production path is:
+
+```text id="w8x1j7"
+Observation
+  ↓
+Evidence
+  ↓
+Editorial Review
+  ↓
+Atlas
+```
+
+---
+
+# Security
+
+Security must be implemented from the beginning.
+
+The production application must include:
+
+* HTTPS;
+* secure authentication;
+* policy-based authorisation;
+* input validation;
+* rate limiting;
+* secure media handling;
+* secret management;
+* audit logging;
+* least privilege;
+* dependency updates;
+* appropriate database protection.
+
+Security cannot be deferred until deployment.
+
+---
+
+# Observability
+
+The production application should provide:
+
+* structured logging;
+* metrics;
+* distributed tracing where appropriate;
+* health checks;
+* background job visibility;
+* authentication/security event visibility.
+
+Observability should help answer:
+
+> **What is happening, where, and why?**
+
+Sensitive personal information must not be logged unnecessarily.
+
+---
+
+# Deployment
+
+The deployment architecture should use the same application structure as development wherever practical.
+
+The application should be deployable without changing domain behaviour between environments.
+
+Environment-specific concerns include:
+
+* connection strings;
+* object storage credentials;
+* authentication configuration;
+* email configuration;
+* telemetry;
+* domain names;
+* secrets.
+
+These should be supplied through environment configuration rather than source code.
+
+---
+
+# Production Readiness
+
+A feature should not be considered production-ready merely because its UI works.
+
+A production feature requires:
+
+* Domain behaviour;
+* Application workflow;
+* persistence;
+* API contract where applicable;
+* authorisation;
+* validation;
+* error handling;
+* tests;
+* observability;
+* migration strategy;
+* appropriate documentation.
+
+---
+
+# Temporary Implementations
+
+Temporary implementations are permitted during development where they accelerate progress.
+
+They must:
+
+* be clearly identified;
+* be isolated;
+* not leak into the Domain;
+* not become an undocumented dependency;
+* have a defined replacement path.
+
+Examples include:
+
+* temporary mock external services;
+* development-only authentication configuration;
+* local object-storage substitutes.
+
+Production behaviour must never silently depend on a development-only substitute.
+
+---
+
+# Architectural Discipline
+
+The implementation must resist feature-driven architectural drift.
+
+Do not introduce:
+
+* arbitrary services;
+* unnecessary abstractions;
+* duplicate domain concepts;
+* database-driven API models;
+* client-side business rules;
+* premature microservices;
+* obsolete terminology.
+
+When a new feature appears, first determine which existing domain concept it belongs to.
+
+Only introduce a new concept when the domain genuinely requires it.
+
+---
+
+# Terminology
+
+The production codebase uses the approved project terminology.
+
+Canonical terms include:
+
+* User;
+* Explorer;
+* Contributor;
+* Product;
+* Product Variant;
+* Size Variant;
+* Pack Type;
+* Manufacturer;
+* Brand;
+* Retailer;
+* Location;
+* Observation;
+* Evidence;
+* Editorial Decision;
+* Knowledge Gap;
+* Discovery Task;
+* Community Trust;
+* Backpack;
+* Scrapbook.
+
+The following are prohibited in production architecture and code unless referring explicitly to historical documentation:
+
+* Scout;
+* Scout Service;
+* Scout Task;
+* Scout Points;
+* Trusted Scout;
+* Trusted Explorer as a role.
+
+---
+
+# Definition of Done
+
+A production feature is complete when:
+
+* its domain model is defined;
+* its application behaviour is implemented;
+* persistence is implemented;
+* API contracts are implemented where required;
+* UI is implemented where required;
+* authentication/authorisation is correct;
+* validation is implemented;
+* errors are handled;
+* tests pass;
+* architecture tests pass;
+* observability exists;
+* migrations are reviewed;
+* documentation is updated.
+
+"Works on my machine" is not a production definition of done.
+
+---
+
+# Implementation Milestone
+
+The documentation phase reaches implementation readiness when:
+
+* the Domain Model is agreed;
+* the Entity Reference is agreed;
+* the Database Model is agreed;
+* API Architecture is agreed;
+* Backend Services are agreed;
+* Workflow Architecture is agreed;
+* Authentication is agreed;
+* Authorisation is agreed;
+* Solution Structure is agreed;
+* Project Layout is agreed.
+
+At that point the repository can become the authoritative implementation of the architecture.
+
+---
+
+# Relationship to Other Documents
+
+This document translates the architecture into an implementation strategy.
+
+Related documents include:
+
+* **Solution Structure** — defines projects and dependency boundaries.
+* **Project Layout** — defines the physical repository structure.
+* **Domain Model** — defines business concepts.
+* **Entity Reference** — defines production entities.
+* **Database Model** — defines persistence.
+* **API Architecture** — defines the HTTP boundary.
+* **Backend Services** — defines logical service responsibilities.
+* **Workflow Architecture** — defines process lifecycles.
+* **Authentication Strategy** — defines identity implementation.
+* **Authorization** — defines permission implementation.
+* **Coding Standards** — defines implementation conventions.
+* **Data Access Strategy** — defines persistence implementation.
+* **Testing Strategy** — defines verification.
+
+---
+
+# Summary
+
+DiaperScout should now move from architecture into production implementation.
+
+The guiding sequence is:
+
+```text id="q4q9mx"
+Architecture
+    ↓
+Solution
+    ↓
+Domain
+    ↓
+Persistence
+    ↓
+Application
+    ↓
+API
+    ↓
+Web
+    ↓
+Authentication
+    ↓
+Contribution
+    ↓
+Editorial
+    ↓
+Atlas
+```
+
+The production build should proceed through complete vertical slices.
+
+The first objective is not to build every feature.
+
+It is to prove the architecture with a real, persisted, tested path through the application.
+
+The central production workflow remains:
+
+```text id="d3s6xw"
+Explorer
+   ↓
+Observation
+   ↓
+Evidence
+   ↓
+Editorial Review
+   ↓
+Atlas
+```
+
+Everything else exists to make that workflow useful, trustworthy, secure and enjoyable to use.

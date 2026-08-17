@@ -1,26 +1,228 @@
 ﻿@page "/"
 
-<PageTitle>DiaperScout</PageTitle>
+<div class="explore-page">
 
-<div class="diaperscout-home">
-    <section class="hero">
-        <p class="eyebrow">THE ABSORBENT PRODUCT EXPLORER</p>
+    <section class="explore-hero">
 
-        <h1>Welcome to DiaperScout</h1>
+        <div class="explore-hero-image" aria-hidden="true"></div>
 
-        <p class="hero-introduction">
-            Explore absorbent products, discover what works for you,
-            and share what you find with the Scout community.
-        </p>
-
-        <div class="hero-actions">
-            <a class="ds-button ds-button-primary" href="search">
-                Explore products
+        <div class="explore-topbar">
+            <a class="explore-location" href="/atlas">
+                <span aria-hidden="true">📍</span>
+                <span>Cheltenham</span>
             </a>
 
-            <a class="ds-button ds-button-secondary" href="scan">
-                Scan a product
+            <button class="explore-alert"
+                    type="button"
+                    aria-label="Notifications">
+                <span aria-hidden="true">🔔</span>
+            </button>
+        </div>
+
+        <div class="explore-hero-copy">
+            <div class="explore-leaf" aria-hidden="true">✦</div>
+
+            <h1>
+                Discover better<br />
+                options. Together.
+            </h1>
+
+            <p class="explore-intro">
+                DiaperScout is a community-powered explorer's guide for absorbent products.
+                Find, compare and discover products worldwide — and help others do the same.
+            </p>
+
+            <a class="explore-hero-button" href="/atlas">
+                Let's Explore! <span aria-hidden="true">★</span>
             </a>
         </div>
+
+        <div class="explore-hero-discoveries">
+
+            <div class="discovery-grid">
+
+                <section class="discovery-card nearby-discovery">
+                    <div class="discovery-card-heading">
+                        <span>
+                            <span aria-hidden="true">🔭</span>
+                            New nearby
+                        </span>
+
+                        <a href="/products">
+                            See all →
+                        </a>
+                    </div>
+
+                    <a class="product-discovery" href="/products">
+                        <div class="product-image-placeholder">
+                            TENA
+                        </div>
+
+                        <div class="product-discovery-copy">
+                            <strong>TENA Slip Maxi</strong>
+
+                            <span>
+                                📍 Tesco Extra<br />
+                                Cheltenham
+                            </span>
+
+                            <span>
+                                ◉ Observed yesterday
+                            </span>
+
+                            <b>
+                                View details →
+                            </b>
+                        </div>
+                    </a>
+                </section>
+
+                <section class="discovery-card atlas-discovery">
+                    <div class="discovery-card-heading">
+                        <span>
+                            <span aria-hidden="true">📍</span>
+                            Around you
+                        </span>
+
+                        <a href="/atlas">
+                            See all →
+                        </a>
+                    </div>
+
+                    <p>
+                        5 retailers have recent observations near you.
+                    </p>
+
+                    <a class="editorial-map" href="/atlas" aria-label="Explore Atlas">
+                        <span class="editorial-map-road road-one"></span>
+                        <span class="editorial-map-road road-two"></span>
+
+                        <span class="editorial-map-marker marker-green">
+                            •
+                        </span>
+
+                        <span class="editorial-map-marker marker-coral">
+                            •
+                        </span>
+
+                        <span class="editorial-map-marker marker-ocean">
+                            •
+                        </span>
+                    </a>
+
+                    <a class="atlas-button" href="/atlas">
+                        Explore Atlas →
+                    </a>
+                </section>
+
+            </div>
+
+        </div>
+
     </section>
+
+    <main class="explore-content">
+
+        <section class="explore-worth">
+
+            <div class="explore-section-heading">
+                <h2>
+                    Worth exploring
+                </h2>
+
+                <a href="/products">
+                    See all →
+                </a>
+            </div>
+
+            <div class="explore-product-strip">
+
+                <a class="explore-product-card" href="/products">
+                    <span class="product-pack product-pack-violet">
+                        Comfort
+                        <em>Pants</em>
+                        <b>ADULT CARE</b>
+                    </span>
+
+                    <strong>
+                        Everyday comfort
+                    </strong>
+
+                    <small>
+                        Soft, discreet protection.
+                    </small>
+
+                    <span>
+                        View details →
+                    </span>
+                </a>
+
+                <a class="explore-product-card" href="/products">
+                    <span class="product-pack product-pack-teal">
+                        Premium
+                        <em>Briefs</em>
+                        <b>ADULT CARE</b>
+                    </span>
+
+                    <strong>
+                        Overnight protection
+                    </strong>
+
+                    <small>
+                        Designed for confident nights.
+                    </small>
+
+                    <span>
+                        View details →
+                    </span>
+                </a>
+
+                <a class="explore-product-card" href="/products">
+                    <span class="product-pack product-pack-navy">
+                        Active
+                        <em>Pants</em>
+                        <b>ADULT CARE</b>
+                    </span>
+
+                    <strong>
+                        Made to move
+                    </strong>
+
+                    <small>
+                        Discreet protection for everyday life.
+                    </small>
+
+                    <span>
+                        View details →
+                    </span>
+                </a>
+
+            </div>
+
+        </section>
+
+        <section class="explore-observation">
+
+            <div class="observation-note-icon" aria-hidden="true">
+                📝
+            </div>
+
+            <div>
+                <h2>
+                    Seen something worth sharing?
+                </h2>
+
+                <p>
+                    Help fellow Explorers by adding a product observation.
+                </p>
+            </div>
+
+            <a class="ds-button ds-button-primary" href="/reports">
+                Add an observation
+            </a>
+
+        </section>
+
+    </main>
+
 </div>

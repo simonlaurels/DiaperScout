@@ -12,6 +12,70 @@ An **Explorer** is any person using DiaperScout.
 
 The term is intentionally inclusive and makes no assumptions about why someone is using absorbent products.
 
+**Explorer** is the canonical user-facing term for a person participating in the DiaperScout world.
+
+---
+
+# User
+
+**User** is the neutral technical term for an authenticated person within the application's implementation.
+
+Use `User`, `UserId`, `UserProfile`, and similar terminology in technical structures where appropriate.
+
+User-facing copy should normally use **Explorer** instead.
+
+The distinction is intentional:
+
+* **Explorer** belongs to the experience and world.
+* **User** belongs to the technical implementation.
+
+---
+
+# Scout
+
+**Scout is not a canonical term for a DiaperScout user or community role.**
+
+Do not introduce `Scout` as a domain entity, role, permission, account type, or technical abstraction.
+
+Avoid introducing terms such as:
+
+* Scout
+* ScoutId
+* ScoutProfile
+* ScoutService
+* ScoutRole
+* ScoutTask
+* ScoutRank
+
+unless a specific, separately approved meaning is established by canonical documentation.
+
+The name **DiaperScout** remains unchanged. The word "Scout" within the product name is branding and does not establish a user role.
+
+Existing historical designs, illustrations, screenshots, or documents may contain the word "Scout". These should be treated as legacy material unless the terminology is explicitly retained by the relevant canonical document.
+
+Where an existing concept describes a person contributing information to DiaperScout, prefer **Explorer**, **Contributor**, or **User**, depending on context.
+
+---
+
+# Contributor
+
+A **Contributor** is an Explorer who contributes information to DiaperScout.
+
+This term should be used when the distinction between someone using the Guide and someone actively contributing information is useful.
+
+A Contributor may submit:
+
+* Community Observations
+* photographs
+* product information
+* corrections
+* location information
+* other approved contributions
+
+Being a Contributor does not create a separate account type or permanent user role.
+
+An Explorer may contribute without needing to identify themselves as a "Contributor" in ordinary UI.
+
 ---
 
 # Discovery
@@ -34,7 +98,7 @@ Rather than presenting itself as a shop or catalogue, DiaperScout acts as an exp
 
 A **Product** is a specific absorbent product produced by a manufacturer.
 
-Each product has its own record within the guide.
+Each product has its own record within the Guide.
 
 ---
 
@@ -44,17 +108,17 @@ A **Product Entry** is the complete collection of information about a product wi
 
 A Product Entry may include:
 
-- Manufacturer information
-- Brand
-- Product name
-- Barcodes
-- Specifications
-- Measurements
-- Packaging
-- Photographs
-- Availability
-- Community observations
-- Historical information
+* Manufacturer information
+* Brand
+* Product name
+* Barcodes
+* Specifications
+* Measurements
+* Packaging
+* Photographs
+* Availability
+* Community Observations
+* Historical information
 
 ---
 
@@ -66,6 +130,12 @@ Observations complement factual data but do not replace it.
 
 Observations are intended to help others understand a product rather than simply judge it.
 
+An Observation records what was observed, where appropriate, rather than asserting that the observed condition remains true indefinitely.
+
+In particular:
+
+> **An Observation is not a guarantee of current stock or availability.**
+
 ---
 
 # Verified Data
@@ -74,12 +144,12 @@ Observations are intended to help others understand a product rather than simply
 
 Examples include:
 
-- Manufacturer specifications
-- Measured dimensions
-- Barcode verification
-- Packaging details
-- Official documentation
-- Verified photographs
+* Manufacturer specifications
+* Measured dimensions
+* Barcode verification
+* Packaging details
+* Official documentation
+* Verified photographs
 
 ---
 
@@ -97,10 +167,10 @@ When documentation conflicts, the latest approved canonical documentation takes 
 
 Avoid describing the project primarily as:
 
-- A review site
-- A shopping app
-- A catalogue
-- A database
+* A review site
+* A shopping app
+* A catalogue
+* A database
 
 While DiaperScout contains elements of all of these, none of them fully describe its purpose.
 
@@ -112,16 +182,16 @@ While DiaperScout contains elements of all of these, none of them fully describe
 
 Examples include:
 
-- Explore products
-- Explore brands
-- Explore discoveries
-- Explore collections
+* Explore products
+* Explore brands
+* Explore discoveries
+* Explore collections
 
 Where appropriate, prefer "Explore" over:
 
-- Browse
-- Shop
-- Purchase
+* Browse
+* Shop
+* Purchase
 
 ---
 
@@ -131,10 +201,10 @@ A **Collection** is a curated group of products brought together for a shared pu
 
 Examples include:
 
-- New discoveries
-- Vintage products
-- Products from a single manufacturer
-- Community favourites
+* New discoveries
+* Vintage products
+* Products from a single manufacturer
+* Community favourites
 
 ---
 
@@ -158,11 +228,11 @@ A brand may contain multiple individual products.
 
 The project should avoid language that assumes:
 
-- Why someone uses a product
-- Their age
-- Their medical circumstances
-- Their lifestyle
-- Their identity
+* Why someone uses a product
+* Their age
+* Their medical circumstances
+* Their lifestyle
+* Their identity
 
 Language should remain welcoming, factual, inclusive, and respectful.
 
@@ -172,13 +242,13 @@ Language should remain welcoming, factual, inclusive, and respectful.
 
 DiaperScout favours language that is:
 
-- Curious
-- Welcoming
-- Precise
-- Inclusive
-- Factual
-- Friendly
-- Respectful
+* Curious
+* Welcoming
+* Precise
+* Inclusive
+* Factual
+* Friendly
+* Respectful
 
 Language should encourage exploration and understanding rather than judgement or persuasion.
 
@@ -186,18 +256,20 @@ Language should encourage exploration and understanding rather than judgement or
 
 # Words We Prefer
 
-| Preferred | Instead of |
-|-----------|------------|
-| Explore | Browse, Shop |
-| Discover | Find |
-| Guide | Catalogue |
-| Product Entry | Listing |
-| Community Observation | Review |
-| Explorer | User (where appropriate) |
-| Verified Data | Official Facts |
-| Manufacturer | Company (when referring to the producer) |
-| Collection | Inventory |
-| Compare | Versus |
+| Preferred             | Instead of                                    |
+| --------------------- | --------------------------------------------- |
+| Explore               | Browse, Shop                                  |
+| Discover              | Find                                          |
+| Guide                 | Catalogue                                     |
+| Product Entry         | Listing                                       |
+| Community Observation | Review                                        |
+| Explorer              | User in user-facing copy                      |
+| User                  | Scout in technical structures                 |
+| Contributor           | Scout when describing someone who contributes |
+| Verified Data         | Official Facts                                |
+| Manufacturer          | Company when referring to the producer        |
+| Collection            | Inventory                                     |
+| Compare               | Versus                                        |
 
 These are editorial preferences rather than absolute rules.
 
@@ -213,14 +285,14 @@ The following language should generally be avoided because it conflicts with the
 
 Avoid:
 
-- Buy now
-- Lowest price
-- Best deal
-- Limited offer
-- Bargain
-- Must buy
-- Hurry
-- Don't miss out
+* Buy now
+* Lowest price
+* Best deal
+* Limited offer
+* Bargain
+* Must buy
+* Hurry
+* Don't miss out
 
 These phrases encourage purchasing rather than discovery.
 
@@ -230,12 +302,12 @@ These phrases encourage purchasing rather than discovery.
 
 Avoid:
 
-- Normal
-- Weird
-- Strange
-- Embarrassing
-- Proper diaper
-- Real user
+* Normal
+* Weird
+* Strange
+* Embarrassing
+* Proper diaper
+* Real user
 
 These words make unnecessary value judgements about people or products.
 
@@ -245,12 +317,12 @@ These words make unnecessary value judgements about people or products.
 
 Avoid statements such as:
 
-- Best diaper
-- Perfect product
-- Everyone agrees
-- Guaranteed leakproof
-- Ultimate protection
-- The only choice
+* Best diaper
+* Perfect product
+* Everyone agrees
+* Guaranteed leakproof
+* Ultimate protection
+* The only choice
 
 Unless objectively verifiable, these claims should not be presented as fact.
 
@@ -262,11 +334,11 @@ Avoid language that assumes why somebody uses a product.
 
 Examples include:
 
-- Patient
-- Sufferer
-- Medical user
-- Healthy people
-- Disabled people
+* Patient
+* Sufferer
+* Medical user
+* Healthy people
+* Disabled people
 
 Instead, describe situations rather than identities wherever possible.
 
@@ -276,12 +348,12 @@ Instead, describe situations rather than identities wherever possible.
 
 Before publishing copy, ask:
 
-- Is it welcoming?
-- Is it respectful?
-- Is it accurate?
-- Is it inclusive?
-- Is it encouraging curiosity?
-- Could someone feel judged by this wording?
+* Is it welcoming?
+* Is it respectful?
+* Is it accurate?
+* Is it inclusive?
+* Is it encouraging curiosity?
+* Could someone feel judged by this wording?
 
 If the answer to the final question is yes, reconsider the wording.
 

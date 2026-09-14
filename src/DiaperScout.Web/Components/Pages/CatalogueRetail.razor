@@ -1,0 +1,214 @@
+@page "/catalogue/submissions/{SubmissionId:guid}/retail"
+@rendermode InteractiveServer
+@inject ProductCatalogueClient Catalogue
+
+<PageTitle>Retail · DiaperScout</PageTitle>
+
+<section class="submission-page retail-page">
+    <div class="submission-container">
+        <header class="submission-header">
+            <div>
+                <p class="catalogue-kicker">CATALOGUE WORKSPACE · STEP 4</p>
+                <h1>Where to buy</h1>
+                <p class="submission-intro">Add the legitimate product destinations that belong to this submission. A product can have as many retail destinations as needed.</p>
+            </div>
+            <div class="submission-status">
+                <span>Destinations</span>
+                <strong>@destinations.Count</strong>
+            </div>
+        </header>
+
+        @if (accessDenied)
+        {
+            <div class="submission-message submission-message-error" role="alert">
+                <strong>Catalogue workspace unavailable</strong>
+                <p>You need Moderator editorial authority to manage retail destinations.</p>
+            </div>
+        }
+        else if (errorMessage is not null)
+        {
+            <div class="submission-message submission-message-error" role="alert">@errorMessage</div>
+        }
+
+        <section class="submission-panel">
+            <div class="submission-panel-heading">
+                <div>
+                    <p class="catalogue-kicker">RETAIL DESTINATIONS</p>
+                    <h2>Where can this product be bought?</h2>
+                </div>
+                <span class="submission-required">Add as many as needed</span>
+            </div>
+            <p class="submission-help">Use the exact product listing URL. Don't add a retailer just because it carries the brand — the destination should point to this product or variant.</p>
+
+            @if (loading)
+            {
+                <p class="submission-help">Loading retailers…</p>
+            }
+            else if (retailers.Count == 0)
+            {
+                <div class="submission-message submission-message-error" role="alert">No retailers are currently available to select.</div>
+            }
+            else
+            {
+                <EditForm Model="model" OnValidSubmit="AddAsync" class="retail-form">
+                    <div class="submission-grid">
+                        <div class="submission-field">
+                            <label for="retailer">Retailer <span>*</span></label>
+                            <InputSelect id="retailer" class="ds-select" @bind-Value="model.RetailerId">
+                                <option value="@Guid.Empty">Select a retailer…</option>
+                                @foreach (var retailer in retailers)
+                                {
+                                    <option value="@retailer.Id">@retailer.Name</option>
+                                }
+                            </InputSelect>
+                        </div>
+                        <div class="submission-field submission-field-wide">
+                            <label for="listing-url">Product listing URL <span>*</span></label>
+                            <InputText id="listing-url" class="ds-input" @bind-Value="model.ListingUrl" placeholder="https://…" />
+                            <small>Use the retailer's direct product page, not its home page or a search result.</small>
+                        </div>
+                        <div class="submission-field submission-field-wide">
+                            <label for="retail-notes">Notes</label>
+                            <InputTextArea id="retail-notes" class="ds-input ds-textarea" @bind-Value="model.Notes" placeholder="Anything useful about this destination…" />
+                        </div>
+                    </div>
+                    <div class="submission-actions">
+                        <button class="ds-button ds-button-primary" type="submit" disabled="@saving">Add retail destination <span aria-hidden="true">+</span></button>
+                    </div>
+                </EditForm>
+            }
+        </section>
+
+        <section class="submission-panel">
+            <div class="submission-panel-heading">
+                <div>
+                    <p class="catalogue-kicker">ADDED DESTINATIONS</p>
+                    <h2>Retail destinations</h2>
+                </div>
+                <span class="submission-complete">@destinations.Count added</span>
+            </div>
+
+            @if (destinations.Count == 0)
+            {
+                <div class="retail-empty">
+                    <strong>No destinations added yet.</strong>
+                    <span>Add the first legitimate product listing above.</span>
+                </div>
+            }
+            else
+            {
+                <div class="retail-destinations" role="list">
+                    @foreach (var destination in destinations)
+                    {
+                        <article class="retail-destination" role="listitem">
+                            <div class="retail-destination-main">
+                                <strong>@RetailerName(destination.RetailerId)</strong>
+                                <a href="@destination.ListingUrl" target="_blank" rel="noopener noreferrer">@destination.ListingUrl</a>
+                                @if (!string.IsNullOrWhiteSpace(destination.Notes))
+                                {
+                                    <span>@destination.Notes</span>
+                                }
+                            </div>
+                            <div class="retail-destination-meta">
+                                <span>Added @destination.AddedAtUtc.ToLocalTime().ToString("dd MMM yyyy")</span>
+                            </div>
+                        </article>
+                    }
+                </div>
+            }
+        </section>
+
+        <section class="submission-next">
+            <div>
+                <p class="catalogue-kicker">NEXT</p>
+                <h2>Affiliate</h2>
+                <p>Affiliate setup is handled separately for each retail destination.</p>
+            </div>
+            <button class="ds-button ds-button-secondary" type="button" disabled>Continue to affiliate <span aria-hidden="true">→</span></button>
+        </section>
+    </div>
+</section>
+
+@code {
+    [Parameter] public Guid SubmissionId { get; set; }
+
+    private readonly RetailModel model = new();
+    private List<CatalogueRetailerOption> retailers = [];
+    private List<CatalogueSubmissionRetailDestinationReceipt> destinations = [];
+    private bool loading = true;
+    private bool saving;
+    private bool accessDenied;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var retailerResult = await Catalogue.GetRetailersAsync();
+        accessDenied = retailerResult.Status == CatalogueRetailersStatus.AccessDenied;
+        if (retailerResult.Retailers is not null)
+            retailers = retailerResult.Retailers.ToList();
+        else if (retailerResult.Status == CatalogueRetailersStatus.Failed)
+            errorMessage = retailerResult.Message;
+
+        var destinationResult = await Catalogue.GetRetailDestinationsAsync(SubmissionId);
+        accessDenied |= destinationResult.Status == CatalogueRetailDestinationsStatus.AccessDenied;
+        if (destinationResult.Destinations is not null)
+            destinations = destinationResult.Destinations.ToList();
+        else if (destinationResult.Status == CatalogueRetailDestinationsStatus.Failed)
+            errorMessage ??= destinationResult.Message;
+
+        loading = false;
+    }
+
+    private async Task AddAsync()
+    {
+        errorMessage = null;
+        accessDenied = false;
+        saving = true;
+
+        if (model.RetailerId == Guid.Empty)
+        {
+            errorMessage = "Select a retailer first.";
+            saving = false;
+            return;
+        }
+
+        if (!Uri.TryCreate(model.ListingUrl?.Trim(), UriKind.Absolute, out var uri) || uri.Scheme is not ("http" or "https"))
+        {
+            errorMessage = "Enter a valid HTTP or HTTPS product listing URL.";
+            saving = false;
+            return;
+        }
+
+        var result = await Catalogue.AddRetailDestinationAsync(
+            SubmissionId,
+            new AddCatalogueSubmissionRetailDestinationRequest(model.RetailerId, uri.ToString(), model.Notes));
+
+        accessDenied = result.Status == CatalogueRetailDestinationResultStatus.AccessDenied;
+        if (result.Receipt is not null)
+        {
+            destinations.Add(result.Receipt);
+            model.ListingUrl = string.Empty;
+            model.Notes = null;
+        }
+        else if (result.Status == CatalogueRetailDestinationResultStatus.Invalid)
+        {
+            errorMessage = string.Join(" ", result.Errors!.SelectMany(pair => pair.Value));
+        }
+        else if (result.Status == CatalogueRetailDestinationResultStatus.Failed)
+        {
+            errorMessage = result.Message;
+        }
+
+        saving = false;
+    }
+
+    private string RetailerName(Guid retailerId) =>
+        retailers.FirstOrDefault(retailer => retailer.Id == retailerId)?.Name ?? "Unknown retailer";
+
+    private sealed class RetailModel
+    {
+        public Guid RetailerId { get; set; }
+        public string? ListingUrl { get; set; }
+        public string? Notes { get; set; }
+    }
+}

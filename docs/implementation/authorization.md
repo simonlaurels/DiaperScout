@@ -254,6 +254,8 @@ Allows an authorised User to review community Observations.
 
 Allows an authorised User to approve publication of canonical knowledge.
 
+For v1 internal editorial tooling, `PublishAtlas` also permits an explicitly assigned Moderator to create or change canonical catalogue records under ADR-0011. It must require an active User and active persisted Moderator assignment; an Administrator assignment alone must not satisfy the policy.
+
 ### ManageUsers
 
 Allows an authorised User to manage User access.

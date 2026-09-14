@@ -1,0 +1,499 @@
+@page "/catalogue/add"
+@rendermode InteractiveServer
+@inject ProductCatalogueClient Catalogue
+@inject NavigationManager Navigation
+
+<PageTitle>Add Product · DiaperScout</PageTitle>
+
+<section class="submission-page">
+    <div class="submission-container">
+        <header class="submission-header">
+            <div>
+                <p class="catalogue-kicker">CATALOGUE WORKSPACE</p>
+                <h1>Add a product</h1>
+                <p class="submission-intro">Build the catalogue entry step by step. Nothing becomes part of the public catalogue until verification and publication are complete.</p>
+            </div>
+            @if (submission is not null)
+            {
+                <div class="submission-status">
+                    <span>Submission</span>
+                    <strong>@FormatEnum(submission.Status)</strong>
+                </div>
+            }
+        </header>
+
+        @if (accessDenied)
+        {
+            <div class="submission-message submission-message-error" role="alert">
+                <strong>Catalogue workspace unavailable</strong>
+                <p>You need Moderator editorial authority to add catalogue products.</p>
+            </div>
+        }
+        else if (saveError is not null)
+        {
+            <div class="submission-message submission-message-error" role="alert">@saveError</div>
+        }
+
+        <ol class="submission-steps" aria-label="Product creation progress">
+            <li class="@(StepClass(1))"><span>1</span><div><strong>Identity</strong><small>What is it?</small></div></li>
+            <li class="@(StepClass(2))"><span>2</span><div><strong>Variants</strong><small>What versions?</small></div></li>
+            <li class="@(StepClass(3))"><span>3</span><div><strong>Sizes</strong><small>What sizes?</small></div></li>
+            <li class="@(StepClass(4))"><span>4</span><div><strong>Details</strong><small>Product facts</small></div></li>
+            <li class="@(StepClass(5))"><span>5</span><div><strong>Images</strong><small>Images &amp; rights</small></div></li>
+            <li class="@(StepClass(6))"><span>6</span><div><strong>Verify</strong><small>Ready to catalogue</small></div></li>
+        </ol>
+
+        @if (submission is null)
+        {
+            <EditForm Model="createModel" OnValidSubmit="CreateAsync" class="submission-form">
+                <div class="submission-panel">
+                    <div class="submission-panel-heading">
+                        <div><p class="catalogue-kicker">STEP 1 OF 6</p><h2>Product Identity</h2></div>
+                        <span class="submission-required">Required</span>
+                    </div>
+                    <p class="submission-help">Tell us what product we're adding. Variants, sizes and the remaining product details are added in the following steps.</p>
+
+                    <div class="submission-field submission-field-wide">
+                        <label for="manufacturer-search">Business Name <span>*</span></label>
+                        <small>The business associated with the product or brand.</small>
+                        <div class="submission-choice-row" role="radiogroup" aria-label="Business name entry method">
+                            <label class="submission-choice">
+                                <input type="radio" name="manufacturer-mode" value="existing" checked="@(manufacturerMode == "existing")" @onchange="SetManufacturerExisting" />
+                                <span>Select existing</span>
+                            </label>
+                            <label class="submission-choice">
+                                <input type="radio" name="manufacturer-mode" value="new" checked="@(manufacturerMode == "new")" @onchange="SetManufacturerNew" />
+                                <span>Add new</span>
+                            </label>
+                        </div>
+                        @if (manufacturerMode == "existing")
+                        {
+                            <InputText id="manufacturer-search" class="ds-input" @bind-Value="createModel.ProposedManufacturerName" placeholder="Search businesses..." />
+                        }
+                        else
+                        {
+                            <InputText id="manufacturer-new" class="ds-input" @bind-Value="createModel.ProposedManufacturerName" placeholder="Business name..." />
+                        }
+                    </div>
+
+                    <div class="submission-field submission-field-wide">
+                        <label for="brand-search">Brand <span class="required-marker">*</span></label>
+                        <small>The consumer-facing brand under which the product is sold.</small>
+                        <div class="submission-choice-row" role="radiogroup" aria-label="Brand entry method">
+                            <label class="submission-choice">
+                                <input type="radio" name="brand-mode" value="existing" checked="@(brandMode == "existing")" @onchange="SetBrandExisting" />
+                                <span>Select existing</span>
+                            </label>
+                            <label class="submission-choice">
+                                <input type="radio" name="brand-mode" value="new" checked="@(brandMode == "new")" @onchange="SetBrandNew" />
+                                <span>Add new</span>
+                            </label>
+                        </div>
+                        @if (brandMode == "existing")
+                        {
+                            <InputText id="brand-search" class="ds-input" @bind-Value="createModel.ProposedBrandName" placeholder="Search brands..." />
+                        }
+                        else
+                        {
+                            <InputText id="brand-new" class="ds-input" @bind-Value="createModel.ProposedBrandName" placeholder="Brand name..." />
+                        }
+                    </div>
+
+                    <div class="submission-field submission-field-wide">
+                        <label for="product">Product name <span>*</span></label>
+                        <small>The specific product being catalogued.</small>
+                        <InputText id="product" class="ds-input" @bind-Value="createModel.ProposedProductName" />
+                        <small>💡 Enter the core product name. Don't include variant, size, absorbency level, backing type or pack information.</small>
+                        <div class="submission-example">
+                            <span><strong>Example:</strong> Premium Night</span>
+                            <span><strong>Not:</strong> Premium Night PE Backed Medium 10 Pack</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="submission-actions">
+                    <button class="ds-button ds-button-primary" type="submit" disabled="@saving">@(saving ? "Creating…" : "Continue →")</button>
+                </div>
+            </EditForm>
+        }
+        else
+        {
+            @if (currentStep == 1)
+            {
+                <section class="submission-panel">
+                    <div class="submission-panel-heading">
+                        <div><p class="catalogue-kicker">STEP 1 OF 6</p><h2>Product Identity</h2></div>
+                        <span class="submission-complete">Saved</span>
+                    </div>
+                    <div class="submission-summary">
+                        <div><span>Business Name</span><strong>@submission.ProposedManufacturerName</strong></div>
+                        @if (!string.IsNullOrWhiteSpace(submission.ProposedBrandName)) { <div><span>Brand</span><strong>@submission.ProposedBrandName</strong></div> }
+                        <div><span>Product</span><strong>@submission.ProposedProductName</strong></div>
+                    </div>
+                    <div class="submission-actions"><button class="ds-button ds-button-primary" type="button" @onclick="() => currentStep = 2">Continue →</button></div>
+                </section>
+            }
+            else if (currentStep == 2)
+            {
+                <section class="submission-panel">
+                    <div class="submission-panel-heading">
+                        <div><p class="catalogue-kicker">STEP 2 OF 6</p><h2>Product Variants</h2></div>
+                    </div>
+                    <div class="submission-context">
+                        <span>PRODUCT</span>
+                        <strong>@submission.ProposedProductName</strong>
+                    </div>
+                    <p class="submission-help">Add the meaningful manufacturer-defined versions of this product. A variant may differ in performance, construction, materials or another significant characteristic.</p>
+
+                    <div class="submission-section-label">VARIANTS</div>
+
+                    @if (variantsLoading)
+                    {
+                        <div class="submission-card"><small>Loading variants…</small></div>
+                    }
+                    else
+                    {
+                        @foreach (var variant in variants)
+                        {
+                            <div class="submission-card">
+                                <div>
+                                    <strong>@variant.Name</strong>
+                                    <small>@(variant.IsStructuralFallback ? "No manufacturer-defined variant · Automatically created" : "Product variant")</small>
+                                </div>
+                                <div class="submission-card-actions">
+                                    @if (!variant.IsStructuralFallback)
+                                    {
+                                        <button class="ds-button ds-button-secondary" type="button" @onclick="() => BeginEditVariant(variant)">Edit</button>
+                                    }
+                                    <button class="ds-button ds-button-secondary" type="button" @onclick="() => RemoveVariantAsync(variant)" disabled="@(variant.IsStructuralFallback || variants.Count <= 1)">Remove</button>
+                                </div>
+                            </div>
+                        }
+
+                        @if (editingVariant is not null)
+                        {
+                            <div class="submission-card submission-card-editor">
+                                <div class="submission-field submission-field-wide">
+                                    <label for="variant-name">Variant name <span>*</span></label>
+                                    <InputText id="variant-name" class="ds-input" @bind-Value="variantEditorName" />
+                                    <small>Use the manufacturer's meaningful version name. Don't include size, pack quantity or barcode information.</small>
+                                </div>
+                                <div class="submission-card-actions">
+                                    <button class="ds-button ds-button-secondary" type="button" @onclick="CancelEditVariant">Cancel</button>
+                                    <button class="ds-button ds-button-primary" type="button" @onclick="SaveVariantAsync">Save</button>
+                                </div>
+                            </div>
+                        }
+
+                        @if (editingVariant is null)
+                        {
+                            <div class="submission-card submission-card-muted submission-card-add">
+                                <button class="ds-button ds-button-secondary" type="button" @onclick="BeginAddVariant">＋ Add Product Variant</button>
+                            </div>
+                        }
+                    }
+
+                    <div class="submission-tip">
+                        <strong>💡 Keep the hierarchy clean.</strong>
+                        <span>Don't add size, pack quantity or barcode information here. Those are captured in the following steps.</span>
+                    </div>
+
+                    <div class="submission-next">
+                        <div><p class="catalogue-kicker">NEXT</p><h2>Size Variants</h2><p>Each product variant can have its own physical sizes.</p></div>
+                        <div class="submission-card-actions">
+                            <button class="ds-button ds-button-secondary" type="button" @onclick="() => currentStep = 1">← Back</button>
+                            <button class="ds-button ds-button-primary" type="button" @onclick="() => currentStep = 3" disabled="@(editingVariant is not null || variants.Count == 0)">Continue →</button>
+                        </div>
+                    </div>
+                </section>
+            }
+            else if (currentStep == 3)
+            {
+                <section class="submission-panel">
+                    <div class="submission-panel-heading"><div><p class="catalogue-kicker">STEP 3 OF 6</p><h2>Size Variants</h2></div></div>
+                    <p class="submission-help">Add the physical sizes available for this product variant. Each size can have its own measurements and GTIN/barcode.</p>
+                    <div class="submission-card submission-card-muted">
+                        <strong>＋ Add Size Variant</strong>
+                        <small>Size entities and their specification fields will be wired to the submission model next.</small>
+                    </div>
+                    <div class="submission-next"><div><p class="catalogue-kicker">NEXT</p><h2>Product Details</h2><p>Capture the remaining factual information about the product as a whole.</p></div><button class="ds-button ds-button-primary" type="button" @onclick="() => currentStep = 4">Continue →</button></div>
+                </section>
+            }
+            else if (currentStep == 4)
+            {
+                <EditForm Model="detailsModel" OnValidSubmit="SaveSpecificationsAsync" class="submission-panel">
+                    <div class="submission-panel-heading"><div><p class="catalogue-kicker">STEP 4 OF 6</p><h2>Product Details</h2></div></div>
+                    <p class="submission-help">Add the factual details that describe this product as a whole. Variant-specific and size-specific information is captured separately.</p>
+                    <div class="submission-grid">
+                        <div class="submission-field"><label for="type">Product type</label><InputSelect id="type" class="ds-select" @bind-Value="detailsModel.ProposedProductType"><option value="">Unknown</option>@foreach (var value in Enum.GetValues<ProductType>()) { <option value="@value">@FormatEnum(value)</option> }</InputSelect></div>
+                        <div class="submission-field"><label for="family">Product family</label><InputText id="family" class="ds-input" @bind-Value="detailsModel.ProductFamily" /></div>
+                        <div class="submission-field submission-field-wide"><label for="description">Description</label><InputTextArea id="description" class="ds-input ds-textarea" @bind-Value="detailsModel.Description" rows="5" /></div>
+                        <div class="submission-field"><label for="status">Product status</label><InputSelect id="status" class="ds-select" @bind-Value="detailsModel.ProductStatus"><option value="">Unknown</option>@foreach (var value in Enum.GetValues<ProductStatus>()) { <option value="@value">@FormatEnum(value)</option> }</InputSelect></div>
+                        <div class="submission-field submission-field-wide"><label for="website">Official website</label><InputText id="website" class="ds-input" @bind-Value="detailsModel.OfficialWebsiteUrl" placeholder="https://…" /></div>
+                    </div>
+                    <div class="submission-actions"><button class="ds-button ds-button-primary" type="submit" disabled="@saving">Continue →</button></div>
+                </EditForm>
+            }
+            else if (currentStep == 5)
+            {
+                <section class="submission-panel">
+                    <div class="submission-panel-heading"><div><p class="catalogue-kicker">STEP 5 OF 6</p><h2>Images</h2></div></div>
+                    <p class="submission-help">Add consistent catalogue images. Every image needs a known source and permission to use it before it can appear publicly.</p>
+                    @foreach (var imageType in imageTypes)
+                    {
+                        <div class="submission-card"><strong>@imageType</strong><small>No image added yet</small><button class="ds-button ds-button-secondary" type="button">Add image</button></div>
+                    }
+                    <div class="submission-next"><div><p class="catalogue-kicker">NEXT</p><h2>Verification</h2><p>Review the catalogue entry and the evidence supporting it.</p></div><button class="ds-button ds-button-primary" type="button" @onclick="BeginVerificationAsync">Continue →</button></div>
+                </section>
+            }
+            else
+            {
+                <section class="submission-panel">
+                    <div class="submission-panel-heading"><div><p class="catalogue-kicker">STEP 6 OF 6</p><h2>Verification</h2></div></div>
+                    <p class="submission-help">Review the product before it becomes catalogue-ready. Verification confirms that the product and its information are supported by sufficient trustworthy evidence.</p>
+                    <div class="submission-card"><strong>✓ Product identity</strong><small>Manufacturer, brand and product name reviewed</small></div>
+                    <div class="submission-card"><strong>✓ Product variants</strong><small>Variant structure reviewed</small></div>
+                    <div class="submission-card"><strong>✓ Size variants</strong><small>Physical sizes reviewed</small></div>
+                    <div class="submission-card"><strong>✓ Product details</strong><small>Factual product information reviewed</small></div>
+                    <div class="submission-card"><strong>✓ Images &amp; rights</strong><small>Image provenance and permission reviewed separately</small></div>
+                    <div class="submission-next"><div><p class="catalogue-kicker">CATALOGUE READY</p><h2>What would you like to do?</h2><p>The product has completed the creation workflow. Retail and Affiliate can be handled separately.</p></div><div class="submission-actions"><button class="ds-button ds-button-secondary" type="button">Save unpublished</button><button class="ds-button ds-button-primary" type="button">Publish now →</button></div></div>
+                </section>
+            }
+        }
+    </div>
+</section>
+
+@code {
+    private CreateModel createModel = new();
+    private DetailsModel detailsModel = new();
+    private CatalogueSubmissionReceipt? submission;
+    private IReadOnlyList<CatalogueSubmissionVariantReceipt> variants = [];
+    private CatalogueSubmissionVariantReceipt? editingVariant;
+    private string variantEditorName = "";
+    private bool addingVariant;
+    private bool variantsLoading;
+
+    private bool saving;
+    private bool accessDenied;
+    private string? saveError;
+    private int currentStep = 1;
+    private string manufacturerMode = "existing";
+    private string brandMode = "existing";
+
+    private static readonly string[] imageTypes =
+    [
+        "Front of pack",
+        "Back of pack",
+        "Product front",
+        "Product rear",
+        "Product interior",
+        "Product detail",
+        "Size / measurement",
+        "Other"
+    ];
+
+    private async Task CreateAsync()
+    {
+        saving = true; saveError = null; accessDenied = false;
+        var result = await Catalogue.CreateSubmissionAsync(new CreateCatalogueSubmissionRequest(
+            CatalogueSubmissionSource.Moderator,
+            createModel.ProposedManufacturerName,
+            createModel.ProposedBrandName,
+            createModel.ProposedProductName,
+            "Single version",
+            null));
+        Apply(result);
+        saving = false;
+        if (submission is not null)
+        {
+            currentStep = 2;
+            await LoadVariantsAsync();
+        }
+    }
+
+    private async Task LoadVariantsAsync()
+    {
+        if (submission is null)
+            return;
+
+        variantsLoading = true;
+        var result = await Catalogue.GetSubmissionVariantsAsync(submission.Id);
+        variantsLoading = false;
+
+        if (result.Status == CatalogueSubmissionVariantsStatus.Found)
+        {
+            variants = result.Variants ?? [];
+            return;
+        }
+
+        if (result.Status == CatalogueSubmissionVariantsStatus.AccessDenied)
+            accessDenied = true;
+        else
+            saveError = result.Message;
+    }
+
+    private void BeginAddVariant()
+    {
+        editingVariant = null;
+        variantEditorName = "";
+        addingVariant = true;
+    }
+
+    private void BeginEditVariant(CatalogueSubmissionVariantReceipt variant)
+    {
+        editingVariant = variant;
+        variantEditorName = variant.Name;
+        addingVariant = false;
+    }
+
+    private void CancelEditVariant()
+    {
+        editingVariant = null;
+        variantEditorName = "";
+        addingVariant = false;
+    }
+
+    private async Task SaveVariantAsync()
+    {
+        if (submission is null || string.IsNullOrWhiteSpace(variantEditorName))
+            return;
+
+        saving = true;
+        saveError = null;
+
+        CatalogueSubmissionVariantResult result;
+
+        if (addingVariant)
+        {
+            result = await Catalogue.AddSubmissionVariantAsync(
+                submission.Id,
+                new AddCatalogueSubmissionVariantRequest(variantEditorName.Trim()));
+        }
+        else if (editingVariant is not null)
+        {
+            result = await Catalogue.UpdateSubmissionVariantAsync(
+                submission.Id,
+                editingVariant.Id,
+                new UpdateCatalogueSubmissionVariantRequest(variantEditorName.Trim()));
+        }
+        else
+        {
+            saving = false;
+            return;
+        }
+
+        saving = false;
+
+        if (result.Status == CatalogueSubmissionVariantResultStatus.Saved)
+        {
+            await LoadVariantsAsync();
+            CancelEditVariant();
+        }
+        else if (result.Status == CatalogueSubmissionVariantResultStatus.Invalid)
+        {
+            saveError = string.Join(" ", result.Errors!.SelectMany(pair => pair.Value));
+        }
+        else if (result.Status == CatalogueSubmissionVariantResultStatus.AccessDenied)
+        {
+            accessDenied = true;
+        }
+        else
+        {
+            saveError = result.Message;
+        }
+    }
+
+    private async Task RemoveVariantAsync(CatalogueSubmissionVariantReceipt variant)
+    {
+        if (submission is null)
+            return;
+
+        saving = true;
+        saveError = null;
+
+        var result = await Catalogue.RemoveSubmissionVariantAsync(
+            submission.Id,
+            variant.Id);
+
+        saving = false;
+
+        if (result.Status == CatalogueSubmissionVariantResultStatus.Removed)
+        {
+            await LoadVariantsAsync();
+        }
+        else if (result.Status == CatalogueSubmissionVariantResultStatus.Invalid)
+        {
+            saveError = string.Join(" ", result.Errors!.SelectMany(pair => pair.Value));
+        }
+        else
+        {
+            saveError = result.Message;
+        }
+    }
+
+    private async Task SaveSpecificationsAsync()
+    {
+        if (submission is null) return;
+        saving = true; saveError = null; accessDenied = false;
+        var result = await Catalogue.UpdateSubmissionSpecificationsAsync(submission.Id, new UpdateCatalogueSubmissionSpecificationsRequest(
+            detailsModel.ProposedProductType,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null));
+        Apply(result);
+        saving = false;
+        if (submission is not null && result.Status != CatalogueSubmissionResultStatus.Invalid && result.Status != CatalogueSubmissionResultStatus.Failed)
+            currentStep = 5;
+    }
+
+    private async Task BeginVerificationAsync()
+    {
+        if (submission is null) return;
+        saving = true; saveError = null;
+        var result = await Catalogue.BeginVerificationAsync(submission.Id);
+        Apply(result);
+        saving = false;
+        if (submission is not null && result.Status != CatalogueSubmissionResultStatus.Invalid && result.Status != CatalogueSubmissionResultStatus.Failed)
+            currentStep = 6;
+    }
+
+    private void Apply(CatalogueSubmissionResult result)
+    {
+        accessDenied = result.Status == CatalogueSubmissionResultStatus.AccessDenied;
+        submission = result.Receipt ?? submission;
+        if (result.Status == CatalogueSubmissionResultStatus.Invalid)
+            saveError = string.Join(" ", result.Errors!.SelectMany(pair => pair.Value));
+        else if (result.Status == CatalogueSubmissionResultStatus.Failed)
+            saveError = result.Message;
+    }
+
+    private string StepClass(int step) => step == currentStep ? "submission-step-active" : step < currentStep ? "submission-step-complete" : "";
+    private static string FormatEnum<T>(T value) => System.Text.RegularExpressions.Regex.Replace(value?.ToString() ?? string.Empty, "(?<!^)([A-Z])", " $1");
+
+    private void SetManufacturerExisting(ChangeEventArgs _) => manufacturerMode = "existing";
+    private void SetManufacturerNew(ChangeEventArgs _) => manufacturerMode = "new";
+    private void SetBrandExisting(ChangeEventArgs _) => brandMode = "existing";
+    private void SetBrandNew(ChangeEventArgs _) => brandMode = "new";
+
+    private sealed class CreateModel
+    {
+        public string ProposedManufacturerName { get; set; } = "";
+        public string? ProposedBrandName { get; set; }
+        public string ProposedProductName { get; set; } = "";
+    }
+
+    private sealed class DetailsModel
+    {
+        public ProductType? ProposedProductType { get; set; }
+        public string? ProductFamily { get; set; }
+        public string? Description { get; set; }
+        public ProductStatus? ProductStatus { get; set; }
+        public string? OfficialWebsiteUrl { get; set; }
+    }
+}

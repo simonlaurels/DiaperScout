@@ -1,0 +1,511 @@
+@page "/catalogue/submissions/{SubmissionId:guid}/verification"
+@rendermode InteractiveServer
+@inject ProductCatalogueClient Catalogue
+
+<PageTitle>Verify Product · DiaperScout</PageTitle>
+
+<section class="verification-page">
+    <div class="verification-container">
+        @if (loading)
+        {
+            <div class="verification-loading">Loading verification workspace…</div>
+        }
+        else if (accessDenied)
+        {
+            <div class="submission-message submission-message-error" role="alert">
+                <strong>Catalogue workspace unavailable</strong>
+                <p>You need Moderator editorial authority to manage catalogue verification.</p>
+            </div>
+        }
+        else if (workspace is null)
+        {
+            <div class="submission-message submission-message-error" role="alert">
+                @errorMessage
+            </div>
+        }
+        else
+        {
+            <header class="verification-header">
+                <div>
+                    <p class="catalogue-kicker">CATALOGUE WORKSPACE · VERIFICATION</p>
+                    <h1>Verify product</h1>
+                    <p class="verification-intro">
+                        Capture the evidence behind this submission.
+                        Verification records are evidence, not edits to the public catalogue.
+                    </p>
+                </div>
+
+                <div class="submission-status">
+                    <span>Status</span>
+                    <strong>@FormatStatus(workspace.Status)</strong>
+                </div>
+            </header>
+
+            <section class="verification-product submission-panel">
+                <div>
+                    <span>Product</span>
+                    <strong>@workspace.ProductName</strong>
+                </div>
+
+                <div>
+                    <span>Variant</span>
+                    <strong>@workspace.VariantName</strong>
+                </div>
+            </section>
+
+            @if (saveError is not null)
+            {
+                <div class="submission-message submission-message-error" role="alert">
+                    @saveError
+                </div>
+            }
+
+            @if (saveMessage is not null)
+            {
+                <div class="submission-message submission-message-success" role="status">
+                    @saveMessage
+                </div>
+            }
+
+            @if (workspace.Status == CatalogueSubmissionStatus.Draft)
+            {
+                <section class="submission-panel verification-start">
+                    <div>
+                        <p class="catalogue-kicker">READY TO RESEARCH?</p>
+                        <h2>Start verification</h2>
+                        <p>
+                            Once started, the identity and specification fields are no longer
+                            editable. You'll then record the evidence supporting each verification area.
+                        </p>
+                    </div>
+
+                    <button
+                        class="ds-button ds-button-primary"
+                        type="button"
+                        @onclick="BeginVerificationAsync"
+                        disabled="@saving">
+                        @(saving ? "Starting…" : "Begin verification")
+                        <span aria-hidden="true">→</span>
+                    </button>
+                </section>
+            }
+            else if (workspace.Status == CatalogueSubmissionStatus.InVerification)
+            {
+                <div class="verification-grid">
+                    @foreach (var area in Areas)
+                    {
+                        var records = RecordsFor(area);
+                        var latest = records.FirstOrDefault();
+
+                        <section class="submission-panel verification-card">
+                            <div class="verification-card-heading">
+                                <div>
+                                    <p class="catalogue-kicker">VERIFICATION AREA</p>
+                                    <h2>@FormatArea(area)</h2>
+                                </div>
+
+                                <span class="verification-count">
+                                    @records.Count record@(records.Count == 1 ? "" : "s")
+                                </span>
+                            </div>
+
+                            @if (latest is not null)
+                            {
+                                <div class="verification-current">
+                                    <span class="verification-badge @StatusClass(latest.Status)">
+                                        @FormatStatus(latest.Status)
+                                    </span>
+
+                                    <strong>@latest.Scope</strong>
+
+                                    <small>@latest.Source</small>
+
+                                    @if (!string.IsNullOrWhiteSpace(latest.SourceUrl))
+                                    {
+                                        <a
+                                            href="@latest.SourceUrl"
+                                            target="_blank"
+                                            rel="noopener noreferrer">
+                                            Open source ↗
+                                        </a>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="verification-empty">
+                                    No evidence recorded yet.
+                                </p>
+                            }
+
+                            <EditForm
+                                Model="forms[area]"
+                                OnValidSubmit="() => AddVerificationAsync(area)"
+                                class="verification-form">
+
+                                <div class="submission-field">
+                                    <label>Result</label>
+
+                                    <InputSelect
+                                        class="ds-select"
+                                        @bind-Value="forms[area].Status">
+                                        @foreach (var value in Enum.GetValues<CatalogueVerificationStatus>())
+                                        {
+                                            <option value="@value">
+                                                @FormatStatus(value)
+                                            </option>
+                                        }
+                                    </InputSelect>
+                                </div>
+
+                                <div class="submission-field">
+                                    <label>Scope</label>
+
+                                    <InputText
+                                        class="ds-input"
+                                        @bind-Value="forms[area].Scope"
+                                        placeholder="What exactly did this evidence establish?" />
+                                </div>
+
+                                <div class="submission-field">
+                                    <label>Source</label>
+
+                                    <InputText
+                                        class="ds-input"
+                                        @bind-Value="forms[area].Source"
+                                        placeholder="Manufacturer product page, packaging, retailer listing…" />
+                                </div>
+
+                                <div class="submission-field">
+                                    <label>Source URL / reference</label>
+
+                                    <InputText
+                                        class="ds-input"
+                                        @bind-Value="forms[area].SourceUrl"
+                                        placeholder="https://…" />
+                                </div>
+
+                                <div class="submission-field">
+                                    <label>Notes</label>
+
+                                    <InputTextArea
+                                        class="ds-input ds-textarea"
+                                        @bind-Value="forms[area].Notes"
+                                        rows="3" />
+                                </div>
+
+                                @if (area == CatalogueVerificationArea.ContentAndRights)
+                                {
+                                    <div class="submission-field">
+                                        <label>Permission / licence terms</label>
+
+                                        <InputTextArea
+                                            class="ds-input ds-textarea"
+                                            @bind-Value="forms[area].PermissionTerms"
+                                            rows="3"
+                                            placeholder="Record relevant permission, licence or attribution terms." />
+                                    </div>
+                                }
+
+                                <div class="submission-actions">
+                                    <button
+                                        class="ds-button ds-button-secondary"
+                                        type="submit"
+                                        disabled="@saving">
+                                        @(saving ? "Saving…" : "Add evidence")
+                                    </button>
+                                </div>
+                            </EditForm>
+                        </section>
+                    }
+                </div>
+
+                <section class="submission-next verification-next">
+                    <div>
+                        <p class="catalogue-kicker">NEXT</p>
+                        <h2>Ready for review</h2>
+                        <p>
+                            Complete the required verification evidence before moving
+                            this submission to editorial review.
+                        </p>
+                    </div>
+
+                    <button
+                        class="ds-button ds-button-primary"
+                        type="button"
+                        disabled>
+                        Continue to review
+                        <span aria-hidden="true">→</span>
+                    </button>
+                </section>
+            }
+            else
+            {
+                <section class="submission-panel">
+                    <p class="catalogue-kicker">VERIFICATION</p>
+
+                    <h2>This stage is complete</h2>
+
+                    <p>
+                        The submission is currently
+                        <strong>@FormatStatus(workspace.Status)</strong>.
+                        The next pipeline stage will be available here once implemented.
+                    </p>
+                </section>
+            }
+        }
+    </div>
+</section>
+
+@code {
+    [Parameter]
+    public Guid SubmissionId { get; set; }
+
+    private CatalogueSubmissionVerificationWorkspace? workspace;
+
+    private readonly Dictionary<CatalogueVerificationArea, VerificationForm> forms = new();
+
+    private bool loading = true;
+    private bool saving;
+    private bool accessDenied;
+
+    private string? errorMessage;
+    private string? saveError;
+    private string? saveMessage;
+
+    private static readonly CatalogueVerificationArea[] Areas =
+        Enum.GetValues<CatalogueVerificationArea>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        loading = true;
+        accessDenied = false;
+        errorMessage = null;
+        saveError = null;
+        saveMessage = null;
+
+        foreach (var area in Areas)
+        {
+            forms.TryAdd(area, new VerificationForm());
+        }
+
+        var result =
+            await Catalogue.GetVerificationWorkspaceAsync(SubmissionId);
+
+        if (result.Status == CatalogueSubmissionVerificationWorkspaceStatus.AccessDenied)
+        {
+            accessDenied = true;
+        }
+        else if (result.Status != CatalogueSubmissionVerificationWorkspaceStatus.Found)
+        {
+            errorMessage =
+                result.Message ??
+                "The verification workspace could not be loaded.";
+        }
+        else
+        {
+            workspace = result.Workspace;
+        }
+
+        loading = false;
+    }
+
+    private async Task BeginVerificationAsync()
+    {
+        saving = true;
+        saveError = null;
+        saveMessage = null;
+
+        var result =
+            await Catalogue.BeginVerificationAsync(SubmissionId);
+
+        if (result.Status == CatalogueSubmissionResultStatus.Saved)
+        {
+            await LoadWorkspaceAsync();
+
+            saveMessage =
+                "Verification started. You can now record evidence.";
+        }
+        else
+        {
+            saveError =
+                result.Message ??
+                "Verification could not be started.";
+        }
+
+        saving = false;
+    }
+
+    private async Task AddVerificationAsync(
+        CatalogueVerificationArea area)
+    {
+        saving = true;
+        saveError = null;
+        saveMessage = null;
+
+        var form = forms[area];
+
+        var result =
+            await Catalogue.AddVerificationAsync(
+                SubmissionId,
+                new AddCatalogueSubmissionVerificationRequest(
+                    area,
+                    form.Status,
+                    form.Scope,
+                    form.Source,
+                    form.SourceUrl,
+                    form.Notes,
+                    form.PermissionTerms));
+
+        if (result.Status == CatalogueSubmissionVerificationResultStatus.Added)
+        {
+            form.Clear();
+
+            await LoadWorkspaceAsync();
+
+            saveMessage =
+                $"Evidence added for {FormatArea(area)}.";
+        }
+        else if (result.Errors is not null)
+        {
+            saveError =
+                string.Join(
+                    " ",
+                    result.Errors.SelectMany(pair => pair.Value));
+        }
+        else
+        {
+            saveError =
+                result.Message ??
+                "The verification could not be saved.";
+        }
+
+        saving = false;
+    }
+
+    private async Task LoadWorkspaceAsync()
+    {
+        var result =
+            await Catalogue.GetVerificationWorkspaceAsync(SubmissionId);
+
+        if (result.Status ==
+            CatalogueSubmissionVerificationWorkspaceStatus.Found)
+        {
+            workspace = result.Workspace;
+        }
+    }
+
+    private IReadOnlyList<CatalogueSubmissionVerificationReceipt> RecordsFor(
+        CatalogueVerificationArea area) =>
+        workspace?
+            .Verifications
+            .Where(value => value.Area == area)
+            .ToArray()
+        ?? [];
+
+    private static string FormatArea(
+        CatalogueVerificationArea value) =>
+        value switch
+        {
+            CatalogueVerificationArea.ProductIdentity =>
+                "Product identity",
+
+            CatalogueVerificationArea.Specifications =>
+                "Specifications",
+
+            CatalogueVerificationArea.ContentAndRights =>
+                "Content & rights",
+
+            CatalogueVerificationArea.Retail =>
+                "Retail",
+
+            CatalogueVerificationArea.Affiliate =>
+                "Affiliate",
+
+            _ => value.ToString()
+        };
+
+    private static string FormatStatus(
+        CatalogueSubmissionStatus value) =>
+        value switch
+        {
+            CatalogueSubmissionStatus.Draft =>
+                "Draft",
+
+            CatalogueSubmissionStatus.InVerification =>
+                "In verification",
+
+            CatalogueSubmissionStatus.ReadyForReview =>
+                "Ready for review",
+
+            CatalogueSubmissionStatus.NeedsChanges =>
+                "Needs changes",
+
+            CatalogueSubmissionStatus.Published =>
+                "Published",
+
+            CatalogueSubmissionStatus.Rejected =>
+                "Rejected",
+
+            CatalogueSubmissionStatus.Approved =>
+                "Approved",
+
+            _ => value.ToString()
+        };
+
+    private static string FormatStatus(
+        CatalogueVerificationStatus value) =>
+        value switch
+        {
+            CatalogueVerificationStatus.Verified =>
+                "Verified",
+
+            CatalogueVerificationStatus.Inherited =>
+                "Inherited",
+
+            CatalogueVerificationStatus.Exception =>
+                "Exception",
+
+            _ => value.ToString()
+        };
+
+    private static string StatusClass(
+        CatalogueVerificationStatus value) =>
+        value switch
+        {
+            CatalogueVerificationStatus.Verified =>
+                "verification-status-verified",
+
+            CatalogueVerificationStatus.Inherited =>
+                "verification-status-inherited",
+
+            _ =>
+                "verification-status-exception"
+        };
+
+    private sealed class VerificationForm
+    {
+        public CatalogueVerificationStatus Status { get; set; } =
+            CatalogueVerificationStatus.Verified;
+
+        public string Scope { get; set; } = string.Empty;
+
+        public string Source { get; set; } = string.Empty;
+
+        public string? SourceUrl { get; set; }
+
+        public string? Notes { get; set; }
+
+        public string? PermissionTerms { get; set; }
+
+        public void Clear()
+        {
+            Scope = string.Empty;
+            Source = string.Empty;
+            SourceUrl = null;
+            Notes = null;
+            PermissionTerms = null;
+            Status = CatalogueVerificationStatus.Verified;
+        }
+    }
+}

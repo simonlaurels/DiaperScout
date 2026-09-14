@@ -1,0 +1,31 @@
+.retail-page .submission-panel { margin-bottom: 1.25rem; }
+.retail-form { margin-top: .5rem; }
+.retail-empty {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    padding: 1.25rem;
+    border: 1px dashed var(--color-border);
+    border-radius: 12px;
+    color: var(--color-muted);
+}
+.retail-empty strong { color: var(--color-text); }
+.retail-destinations { display: grid; gap: .75rem; }
+.retail-destination {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--color-surface) 92%, var(--color-background));
+}
+.retail-destination-main { min-width: 0; display: flex; flex-direction: column; gap: .25rem; }
+.retail-destination-main strong { font-size: 1rem; }
+.retail-destination-main a { color: var(--color-primary-light); overflow-wrap: anywhere; }
+.retail-destination-main span { color: var(--color-muted); font-size: .88rem; }
+.retail-destination-meta { flex: 0 0 auto; color: var(--color-muted); font-size: .76rem; white-space: nowrap; }
+@media (max-width: 640px) {
+    .retail-destination { flex-direction: column; gap: .65rem; }
+    .retail-destination-meta { white-space: normal; }
+}

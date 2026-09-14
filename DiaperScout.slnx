@@ -6,4 +6,8 @@
     <Project Path="src/DiaperScout.Infrastructure/DiaperScout.Infrastructure.csproj" />
     <Project Path="src/DiaperScout.Web/DiaperScout.Web.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DiaperScout.Domain.Tests/DiaperScout.Domain.Tests.csproj" />
+    <Project Path="tests/DiaperScout.Api.IntegrationTests/DiaperScout.Api.IntegrationTests.csproj" />
+  </Folder>
 </Solution>

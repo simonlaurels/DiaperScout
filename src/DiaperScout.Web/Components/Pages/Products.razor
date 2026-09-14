@@ -1,0 +1,364 @@
+@page "/products"
+@rendermode InteractiveServer
+@inject ProductCatalogueClient Catalogue
+
+<PageTitle>Products · DiaperScout</PageTitle>
+
+<section class="catalogue-page">
+    <div class="catalogue-container">
+        <header class="catalogue-header">
+            <div class="catalogue-header-copy">
+                <p class="catalogue-kicker">THE DIAPERSCOUT CATALOGUE</p>
+                <h1>Find your next option.</h1>
+                <p class="catalogue-intro">
+                    Explore verified absorbent products and discover where they can be found.
+                </p>
+            </div>
+
+            <form class="catalogue-search" @onsubmit="SearchAsync">
+                <label class="visually-hidden" for="catalogue-query">Search the catalogue</label>
+                <input id="catalogue-query"
+                       class="ds-input"
+                       @bind="query"
+                       @bind:event="oninput"
+                       placeholder="Search products, brands or manufacturers…"
+                       autocomplete="off" />
+                <button class="ds-button ds-button-primary" type="submit">
+                    Search <span aria-hidden="true">→</span>
+                </button>
+            </form>
+        </header>
+
+        @if (loading && catalogue is null)
+        {
+            <div class="catalogue-state" aria-live="polite">Loading the catalogue…</div>
+        }
+        else if (failed || catalogue is null)
+        {
+            <div class="catalogue-state catalogue-state-error" role="alert">
+                We couldn't load the catalogue just now. Please try again.
+            </div>
+        }
+        else
+        {
+            <div class="catalogue-layout">
+                <aside class="catalogue-filters" aria-label="Catalogue filters">
+                    <div class="catalogue-filters-heading">
+                        <div>
+                            <p class="catalogue-kicker">REFINE</p>
+                            <h2>Filters</h2>
+                        </div>
+                        @if (HasFilters)
+                        {
+                            <button class="catalogue-clear-button" type="button" @onclick="ClearFilters">Clear all</button>
+                        }
+                    </div>
+
+                    @foreach (var facet in catalogue.Facets)
+                    {
+                        <section class="catalogue-facet">
+                            <div class="catalogue-facet-heading">
+                                <h3>@facet.Label</h3>
+                                <span>@facet.Options.Count</span>
+                            </div>
+
+                            <div class="catalogue-facet-options">
+                                @foreach (var option in VisibleOptions(facet))
+                                {
+                                    var selected = IsSelected(facet.Key, option.Value);
+                                    <label class="catalogue-filter-option">
+                                        <input type="checkbox"
+                                               checked="@selected"
+                                               @onchange="_ => ToggleFilter(facet.Key, option.Value)" />
+                                        <span class="catalogue-filter-label">@option.Label</span>
+                                        <span class="catalogue-filter-count">@option.Count</span>
+                                    </label>
+                                }
+                            </div>
+
+                            @if (facet.Options.Count > FilterPreviewCount)
+                            {
+                                <button class="catalogue-show-more" type="button" @onclick="() => ToggleFacet(facet.Key)">
+                                    @(expandedFacets.Contains(facet.Key) ? "Show fewer" : $"Show all {facet.Options.Count}")
+                                </button>
+                            }
+                        </section>
+                    }
+                </aside>
+
+                <main class="catalogue-results" aria-live="polite">
+                    @if (HasFilters)
+                    {
+                        <div class="catalogue-active-filters">
+                            <span class="catalogue-active-label">Filtering by</span>
+                            @foreach (var chip in ActiveFilters())
+                            {
+                                <button class="ds-chip catalogue-filter-chip" type="button" @onclick="() => RemoveFilter(chip.Key, chip.Value)">
+                                    @chip.Label <span aria-hidden="true">×</span>
+                                </button>
+                            }
+                        </div>
+                    }
+
+                    <div class="catalogue-results-toolbar">
+                        <div>
+                            <strong>@catalogue.TotalCount</strong>
+                            <span>product@(catalogue.TotalCount == 1 ? "" : "s")</span>
+                        </div>
+                        <label class="catalogue-sort">
+                            <span>Sort by</span>
+                            <select class="ds-select" value="@sort" @onchange="SortChanged">
+                                <option value="relevance">Relevance</option>
+                                <option value="name">Name</option>
+                                <option value="manufacturer">Manufacturer</option>
+                                <option value="newest">Newest</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    @if (loading)
+                    {
+                        <div class="catalogue-state catalogue-inline-state" aria-live="polite">Updating results…</div>
+                    }
+                    else if (catalogue.Products.Count == 0)
+                    {
+                        <div class="catalogue-state catalogue-empty-state">
+                            <h2>No products found</h2>
+                            <p>Try removing a filter or searching for something else.</p>
+                            @if (HasFilters)
+                            {
+                                <button class="ds-button ds-button-secondary" type="button" @onclick="ClearFilters">Clear filters</button>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="catalogue-product-list">
+                            @foreach (var product in catalogue.Products)
+                            {
+                                <article class="catalogue-product-row">
+                                    <a class="catalogue-product-image" href="@($"/products/{product.Slug}")" aria-label="View @product.Name">
+                                        <span>DiaperScout</span>
+                                    </a>
+
+                                    <div class="catalogue-product-main">
+                                        <div class="catalogue-product-identity">
+                                            <p class="catalogue-product-manufacturer">@product.ManufacturerName</p>
+                                            <h2><a href="@($"/products/{product.Slug}")">@product.Name</a></h2>
+                                            @if (!string.IsNullOrWhiteSpace(product.BrandName))
+                                            {
+                                                <p class="catalogue-product-brand">@product.BrandName</p>
+                                            }
+                                        </div>
+
+                                        <div class="catalogue-product-facts">
+                                            <span class="ds-chip ds-chip-success">Verified</span>
+                                            <span class="ds-chip">@FormatProductType(product.ProductType)</span>
+                                            @foreach (var size in product.Sizes.Take(4))
+                                            {
+                                                <span class="ds-chip">@size</span>
+                                            }
+                                            @foreach (var backing in product.Backings.Take(2))
+                                            {
+                                                <span class="ds-chip">@FormatBacking(backing)</span>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="catalogue-product-buy">
+                                        <div class="catalogue-buy-heading">
+                                            <span class="catalogue-buy-label">WHERE TO BUY</span>
+                                            @if (product.RetailDestinations.Count > 0)
+                                            {
+                                                <span class="catalogue-buy-count">@product.RetailDestinations.Count</span>
+                                            }
+                                        </div>
+
+                                        @if (product.RetailDestinations.Count == 0)
+                                        {
+                                            <span class="catalogue-buy-unavailable">No current destination</span>
+                                        }
+                                        else
+                                        {
+                                            @foreach (var destination in product.RetailDestinations.Take(2))
+                                            {
+                                                <a class="catalogue-retailer-link"
+                                                   href="@destination.ListingUrl"
+                                                   target="_blank"
+                                                   rel="noopener noreferrer">
+                                                    <span>@destination.RetailerName</span>
+                                                    <span aria-hidden="true">↗</span>
+                                                </a>
+                                            }
+                                            @if (product.RetailDestinations.Count > 2)
+                                            {
+                                                <a class="catalogue-more-retailers" href="@($"/products/{product.Slug}")#where-to-buy">
+                                                    + @(product.RetailDestinations.Count - 2) more
+                                                </a>
+                                            }
+                                        }
+                                    </div>
+
+                                    <a class="catalogue-product-details" href="@($"/products/{product.Slug}")">
+                                        View product <span aria-hidden="true">→</span>
+                                    </a>
+                                </article>
+                            }
+                        </div>
+                    }
+                </main>
+            </div>
+        }
+    </div>
+</section>
+
+@code {
+    private const int FilterPreviewCount = 8;
+
+    private string query = string.Empty;
+    private string sort = "relevance";
+    private CatalogueProductSearch? catalogue;
+    private bool loading = true;
+    private bool failed;
+
+    private readonly HashSet<Guid> selectedManufacturers = [];
+    private readonly HashSet<Guid> selectedBrands = [];
+    private readonly HashSet<ProductType> selectedProductTypes = [];
+    private readonly HashSet<string> selectedSizes = new(StringComparer.OrdinalIgnoreCase);
+    private readonly HashSet<BackingType> selectedBackings = [];
+    private readonly HashSet<PackagingType> selectedPackaging = [];
+    private readonly HashSet<string> expandedFacets = new(StringComparer.OrdinalIgnoreCase);
+
+    private bool HasFilters =>
+        selectedManufacturers.Count > 0 ||
+        selectedBrands.Count > 0 ||
+        selectedProductTypes.Count > 0 ||
+        selectedSizes.Count > 0 ||
+        selectedBackings.Count > 0 ||
+        selectedPackaging.Count > 0;
+
+    protected override async Task OnInitializedAsync() => await LoadAsync();
+
+    private async Task SearchAsync() => await LoadAsync();
+
+    private async Task SortChanged(ChangeEventArgs args)
+    {
+        sort = args.Value?.ToString() ?? "relevance";
+        await LoadAsync();
+    }
+
+    private async Task ToggleFilter(string facetKey, string value)
+    {
+        switch (facetKey)
+        {
+            case "manufacturer" when Guid.TryParse(value, out var manufacturerId): Toggle(selectedManufacturers, manufacturerId); break;
+            case "brand" when Guid.TryParse(value, out var brandId): Toggle(selectedBrands, brandId); break;
+            case "productType" when Enum.TryParse<ProductType>(value, true, out var productType): Toggle(selectedProductTypes, productType); break;
+            case "size": Toggle(selectedSizes, value); break;
+            case "backing" when Enum.TryParse<BackingType>(value, true, out var backing): Toggle(selectedBackings, backing); break;
+            case "packaging" when Enum.TryParse<PackagingType>(value, true, out var packaging): Toggle(selectedPackaging, packaging); break;
+        }
+
+        await LoadAsync();
+    }
+
+    private async Task RemoveFilter(string facetKey, string value) => await ToggleFilter(facetKey, value);
+
+    private async Task ClearFilters()
+    {
+        selectedManufacturers.Clear();
+        selectedBrands.Clear();
+        selectedProductTypes.Clear();
+        selectedSizes.Clear();
+        selectedBackings.Clear();
+        selectedPackaging.Clear();
+        await LoadAsync();
+    }
+
+    private void ToggleFacet(string key)
+    {
+        if (!expandedFacets.Add(key))
+            expandedFacets.Remove(key);
+    }
+
+    private IEnumerable<CatalogueFacetOption> VisibleOptions(CatalogueFacet facet) =>
+        expandedFacets.Contains(facet.Key)
+            ? facet.Options
+            : facet.Options.Take(FilterPreviewCount);
+
+    private bool IsSelected(string facetKey, string value) => facetKey switch
+    {
+        "manufacturer" => Guid.TryParse(value, out var id) && selectedManufacturers.Contains(id),
+        "brand" => Guid.TryParse(value, out var id) && selectedBrands.Contains(id),
+        "productType" => Enum.TryParse<ProductType>(value, true, out var productType) && selectedProductTypes.Contains(productType),
+        "size" => selectedSizes.Contains(value),
+        "backing" => Enum.TryParse<BackingType>(value, true, out var backing) && selectedBackings.Contains(backing),
+        "packaging" => Enum.TryParse<PackagingType>(value, true, out var packaging) && selectedPackaging.Contains(packaging),
+        _ => false
+    };
+
+    private IEnumerable<(string Key, string Value, string Label)> ActiveFilters()
+    {
+        foreach (var id in selectedManufacturers)
+        {
+            var label = catalogue?.Facets.FirstOrDefault(f => f.Key == "manufacturer")?.Options.FirstOrDefault(o => o.Value == id.ToString())?.Label ?? id.ToString();
+            yield return ("manufacturer", id.ToString(), label);
+        }
+        foreach (var id in selectedBrands)
+        {
+            var label = catalogue?.Facets.FirstOrDefault(f => f.Key == "brand")?.Options.FirstOrDefault(o => o.Value == id.ToString())?.Label ?? id.ToString();
+            yield return ("brand", id.ToString(), label);
+        }
+        foreach (var value in selectedProductTypes) yield return ("productType", value.ToString(), value.ToString());
+        foreach (var value in selectedSizes) yield return ("size", value, value);
+        foreach (var value in selectedBackings) yield return ("backing", value.ToString(), FormatBacking(value));
+        foreach (var value in selectedPackaging) yield return ("packaging", value.ToString(), value.ToString());
+    }
+
+    private async Task LoadAsync()
+    {
+        loading = true;
+        failed = false;
+        StateHasChanged();
+
+        var filters = new CatalogueProductFilters(
+            selectedManufacturers.ToArray(),
+            selectedBrands.ToArray(),
+            selectedProductTypes.ToArray(),
+            selectedSizes.ToArray(),
+            selectedBackings.ToArray(),
+            selectedPackaging.ToArray());
+
+        var result = await Catalogue.SearchAsync(query, filters, sort);
+        if (result.Status == ProductCatalogueSearchStatus.Found)
+            catalogue = result.Catalogue;
+        else
+            failed = true;
+
+        loading = false;
+    }
+
+    private static void Toggle<T>(HashSet<T> values, T value)
+    {
+        if (!values.Add(value))
+            values.Remove(value);
+    }
+
+    private static string FormatProductType(ProductType type) => type switch
+    {
+        ProductType.Tape => "Tape brief",
+        ProductType.PullUp => "Pull-up",
+        ProductType.Pad => "Pad",
+        ProductType.Booster => "Booster",
+        ProductType.AllInOne => "All-in-one",
+        _ => "Other"
+    };
+
+    private static string FormatBacking(BackingType backing) => backing switch
+    {
+        BackingType.Plastic => "Plastic-backed",
+        BackingType.Cloth => "Cloth-backed",
+        BackingType.Hybrid => "Hybrid backing",
+        _ => "Backing unknown"
+    };
+}

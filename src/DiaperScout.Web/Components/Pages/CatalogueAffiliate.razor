@@ -1,0 +1,243 @@
+@page "/catalogue/submissions/{SubmissionId:guid}/affiliate"
+@rendermode InteractiveServer
+@inject CatalogueAffiliateClient Affiliate
+
+<PageTitle>Affiliate · DiaperScout</PageTitle>
+
+<section class="affiliate-page">
+    <div class="affiliate-container">
+        @if (workspace is null && !loading)
+        {
+            <header class="affiliate-header">
+                <div>
+                    <p class="catalogue-kicker">CATALOGUE WORKSPACE</p>
+                    <h1>Affiliate</h1>
+                    <p class="affiliate-intro">Configure affiliate information for each retail destination. Affiliate availability is useful, but it is not required for publication when a legitimate direct destination exists.</p>
+                </div>
+            </header>
+        }
+        else if (workspace is not null)
+        {
+            <header class="affiliate-header">
+                <div>
+                    <p class="catalogue-kicker">CATALOGUE WORKSPACE</p>
+                    <h1>Affiliate</h1>
+                    <p class="affiliate-intro">Configure affiliate information for each place to buy. Each retail destination has its own relationship and tracking details.</p>
+                </div>
+                <div class="affiliate-status">
+                    <span>Submission</span>
+                    <strong>@FormatStatus(workspace.Status)</strong>
+                </div>
+            </header>
+        }
+
+        @if (accessDenied)
+        {
+            <div class="affiliate-message affiliate-message-error" role="alert">
+                <strong>Catalogue workspace unavailable</strong>
+                <p>You need Moderator editorial authority to manage affiliate information.</p>
+            </div>
+        }
+        else if (error is not null)
+        {
+            <div class="affiliate-message affiliate-message-error" role="alert">@error</div>
+        }
+        else if (loading)
+        {
+            <div class="affiliate-panel"><p>Loading retail destinations…</p></div>
+        }
+        else if (workspace is not null)
+        {
+            <div class="affiliate-product">
+                <span>Product</span>
+                <strong>@workspace.ProductName</strong>
+                <small>@workspace.VariantName</small>
+            </div>
+
+            <div class="affiliate-panel">
+                <div class="affiliate-panel-heading">
+                    <div>
+                        <p class="catalogue-kicker">RETAIL DESTINATIONS</p>
+                        <h2>Affiliate relationships</h2>
+                    </div>
+                    <span class="affiliate-count">@workspace.Destinations.Count destination@(workspace.Destinations.Count == 1 ? "" : "s")</span>
+                </div>
+                <p class="affiliate-help">Affiliate configuration belongs to the retailer relationship, not to the product itself. A retailer can be listed even when it has no affiliate programme.</p>
+
+                @if (workspace.Destinations.Count == 0)
+                {
+                    <div class="affiliate-empty">
+                        <strong>No retail destinations yet.</strong>
+                        <p>Add at least one legitimate place to buy on the Retail step before configuring affiliate information.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="affiliate-destinations">
+                        @foreach (var destination in workspace.Destinations)
+                        {
+                            <article class="affiliate-destination">
+                                <div class="affiliate-destination-header">
+                                    <div>
+                                        <p class="catalogue-kicker">RETAILER</p>
+                                        <h3>@destination.RetailerName</h3>
+                                        <a href="@destination.ListingUrl" target="_blank" rel="noopener noreferrer">View product listing ↗</a>
+                                    </div>
+                                    @if (destination.Affiliate is not null)
+                                    {
+                                        <span class="affiliate-badge affiliate-badge-complete">Configured</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="affiliate-badge">Not configured</span>
+                                    }
+                                </div>
+
+                                @if (!string.IsNullOrWhiteSpace(destination.Notes))
+                                {
+                                    <p class="affiliate-destination-notes">@destination.Notes</p>
+                                }
+
+                                @if (destination.Affiliate is not null)
+                                {
+                                    <dl class="affiliate-details">
+                                        <div><dt>Status</dt><dd>@FormatEnum(destination.Affiliate.Status)</dd></div>
+                                        @if (!string.IsNullOrWhiteSpace(destination.Affiliate.Network)) { <div><dt>Network</dt><dd>@destination.Affiliate.Network</dd></div> }
+                                        @if (!string.IsNullOrWhiteSpace(destination.Affiliate.TrackingConfiguration)) { <div><dt>Tracking</dt><dd>@destination.Affiliate.TrackingConfiguration</dd></div> }
+                                        @if (!string.IsNullOrWhiteSpace(destination.Affiliate.DeepLinkMechanism)) { <div><dt>Deep link</dt><dd>@destination.Affiliate.DeepLinkMechanism</dd></div> }
+                                        @if (!string.IsNullOrWhiteSpace(destination.Affiliate.TermsUrl)) { <div><dt>Terms</dt><dd><a href="@destination.Affiliate.TermsUrl" target="_blank" rel="noopener noreferrer">View terms ↗</a></dd></div> }
+                                        @if (!string.IsNullOrWhiteSpace(destination.Affiliate.ApplicationReference)) { <div><dt>Application</dt><dd>@destination.Affiliate.ApplicationReference</dd></div> }
+                                        @if (!string.IsNullOrWhiteSpace(destination.Affiliate.Notes)) { <div><dt>Notes</dt><dd>@destination.Affiliate.Notes</dd></div> }
+                                        <div><dt>Last verified</dt><dd>@destination.Affiliate.LastVerifiedAtUtc.ToLocalTime().ToString("d MMM yyyy")</dd></div>
+                                    </dl>
+                                }
+                                else
+                                {
+                                    <EditForm Model="forms[destination.Id]" OnValidSubmit="() => SaveAsync(destination.Id)" class="affiliate-form">
+                                        <div class="affiliate-form-grid">
+                                            <div class="affiliate-field affiliate-field-wide">
+                                                <label>Status</label>
+                                                <InputSelect class="ds-select" @bind-Value="forms[destination.Id].Status">
+                                                    @foreach (var value in Enum.GetValues<AffiliateProgrammeStatus>())
+                                                    {
+                                                        <option value="@value">@FormatEnum(value)</option>
+                                                    }
+                                                </InputSelect>
+                                            </div>
+                                            <div class="affiliate-field"><label>Network</label><InputText class="ds-input" @bind-Value="forms[destination.Id].Network" placeholder="e.g. Awin" /></div>
+                                            <div class="affiliate-field"><label>Application reference</label><InputText class="ds-input" @bind-Value="forms[destination.Id].ApplicationReference" /></div>
+                                            <div class="affiliate-field"><label>Tracking configuration</label><InputText class="ds-input" @bind-Value="forms[destination.Id].TrackingConfiguration" /></div>
+                                            <div class="affiliate-field"><label>Deep-link mechanism</label><InputText class="ds-input" @bind-Value="forms[destination.Id].DeepLinkMechanism" /></div>
+                                            <div class="affiliate-field affiliate-field-wide"><label>Terms URL</label><InputText class="ds-input" @bind-Value="forms[destination.Id].TermsUrl" placeholder="https://…" /></div>
+                                            <div class="affiliate-field affiliate-field-wide"><label>Notes</label><InputTextArea class="ds-input ds-textarea" @bind-Value="forms[destination.Id].Notes" rows="3" /></div>
+                                        </div>
+                                        <div class="affiliate-actions"><button class="ds-button ds-button-secondary" type="submit" disabled="@savingDestination">@(savingDestination ? "Saving…" : "Save affiliate details")</button></div>
+                                    </EditForm>
+                                }
+                            </article>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+@code {
+    [Parameter] public Guid SubmissionId { get; set; }
+
+    private CatalogueSubmissionRetailWorkspace? workspace;
+    private readonly Dictionary<Guid, AffiliateFormModel> forms = [];
+    private bool loading = true;
+    private bool savingDestination;
+    private bool accessDenied;
+    private string? error;
+
+    protected override async Task OnParametersSetAsync() => await LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        loading = true;
+        error = null;
+        accessDenied = false;
+        var result = await Affiliate.GetWorkspaceAsync(SubmissionId);
+        loading = false;
+
+        if (result.Status == AffiliateWorkspaceStatus.AccessDenied)
+        {
+            accessDenied = true;
+            return;
+        }
+
+        if (result.Status != AffiliateWorkspaceStatus.Found || result.Workspace is null)
+        {
+            error = result.Message;
+            return;
+        }
+
+        workspace = result.Workspace;
+        forms.Clear();
+        foreach (var destination in workspace.Destinations.Where(value => value.Affiliate is null))
+            forms[destination.Id] = new();
+    }
+
+    private async Task SaveAsync(Guid destinationId)
+    {
+        if (!forms.TryGetValue(destinationId, out var form)) return;
+        savingDestination = true;
+        error = null;
+
+        var result = await Affiliate.AddAsync(
+            SubmissionId,
+            destinationId,
+            new AffiliateRequest(
+                form.Status,
+                form.Network,
+                form.TrackingConfiguration,
+                form.DeepLinkMechanism,
+                form.TermsUrl,
+                form.ApplicationReference,
+                form.Notes));
+
+        if (result.Status == AffiliateSaveStatus.AccessDenied)
+        {
+            accessDenied = true;
+        }
+        else if (result.Status == AffiliateSaveStatus.Invalid)
+        {
+            error = string.Join(" ", result.Errors!.SelectMany(pair => pair.Value));
+        }
+        else if (result.Status == AffiliateSaveStatus.Failed)
+        {
+            error = result.Message;
+        }
+        else
+        {
+            await LoadAsync();
+        }
+
+        savingDestination = false;
+    }
+
+    private static string FormatStatus(CatalogueSubmissionStatus value) => value switch
+    {
+        CatalogueSubmissionStatus.InVerification => "In verification",
+        CatalogueSubmissionStatus.ReadyForReview => "Ready for review",
+        CatalogueSubmissionStatus.NeedsChanges => "Needs changes",
+        _ => FormatEnum(value)
+    };
+
+    private static string FormatEnum<T>(T value) =>
+        System.Text.RegularExpressions.Regex.Replace(value?.ToString() ?? string.Empty, "(?<!^)([A-Z])", " $1");
+
+    private sealed class AffiliateFormModel
+    {
+        public AffiliateProgrammeStatus Status { get; set; } = AffiliateProgrammeStatus.NotInvestigated;
+        public string? Network { get; set; }
+        public string? TrackingConfiguration { get; set; }
+        public string? DeepLinkMechanism { get; set; }
+        public string? TermsUrl { get; set; }
+        public string? ApplicationReference { get; set; }
+        public string? Notes { get; set; }
+    }
+}

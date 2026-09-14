@@ -37,9 +37,9 @@ The following attributes have been accepted for inclusion within the Product Spe
 | Capacity | Size Variant | Published performance specification. |
 | Product Dimensions | Size Variant | Objective physical measurements. |
 | Product Weight | Size Variant | Objective reference information. |
-| Quantity per Pack | Pack Type | Defines retail packaging. |
-| GTIN / Barcode | Pack Type | Unique retail identifier. |
-| Packaging Type | Pack Type | Distinguishes retail presentation. |
+| GTIN / Barcode | Size Variant | Identifies the relevant retail product for a specific size; different sizes commonly have different identifiers. |
+| Quantity per Pack | Pack Type | Defines the packaging configuration. |
+| Packaging Type | Pack Type | Describes the retail presentation. |
 
 ---
 
@@ -105,6 +105,107 @@ The Guide should never invent information simply to complete a Product Specifica
 Each attribute belongs to one level of the Product Model.
 
 Information should not be duplicated.
+
+The Product hierarchy is:
+
+```text
+Product
+└── Product Variant
+    └── Size Variant
+        └── Pack Type
+```
+
+---
+
+## Product Variant is not Size Variant.
+
+A Product Variant represents a meaningful version of a Product.
+
+Examples may include manufacturer-defined versions such as:
+
+- Plus
+- Super
+- Ultima
+- Plastic-backed
+- Cloth-backed
+- Plain
+- Printed
+- Day
+- Night
+
+A Size Variant represents the physical size within that Product Variant.
+
+For example:
+
+```text
+TENA Slip
+├── Plus
+│   ├── Small
+│   ├── Medium
+│   ├── Large
+│   └── XL
+├── Super
+│   ├── Small
+│   ├── Medium
+│   ├── Large
+│   └── XL
+└── Ultima
+    ├── Medium
+    ├── Large
+    └── XL
+```
+
+A difference in size does not create a new Product Variant.
+
+---
+
+## GTIN / Barcode belongs with Size Variant.
+
+GTIN / Barcode is recorded at Size Variant level.
+
+The reason is that the barcode commonly identifies the retail product for a particular physical size.
+
+For example:
+
+```text
+TENA Slip Plus
+├── Small  → GTIN A
+├── Medium → GTIN B
+├── Large  → GTIN C
+└── XL     → GTIN D
+```
+
+A packaging configuration does not automatically create a new GTIN.
+
+A case may consist of multiple retail packs, for example:
+
+```text
+Case
+├── Bag of 10
+├── Bag of 10
+├── Bag of 10
+└── Bag of 10
+```
+
+A case may not have its own GTIN.
+
+Where a separate identifier genuinely exists for a packaging configuration, it should only be recorded when its meaning and scope can be reliably established.
+
+---
+
+## Pack Type describes packaging.
+
+Pack Type describes how a Size Variant is packaged or presented for sale.
+
+Examples include:
+
+- Sample
+- Pack
+- Case
+
+Pack Type should not be used to represent Product Variants or physical sizes.
+
+Packaging changes should not create new Products or Product Variants merely because the outer packaging has changed.
 
 ---
 

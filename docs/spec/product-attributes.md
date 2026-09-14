@@ -6,7 +6,7 @@ This document defines the canonical Product Specification used throughout Diaper
 
 Every approved attribute belongs to one level of the Product Model.
 
-```
+```text
 Product
 └── Product Variant
     └── Size Variant
@@ -84,27 +84,34 @@ These attributes change with physical size.
 | Product Length | Integer | mm |
 | Product Width | Integer | mm |
 | Product Weight | Integer | g |
+| GTIN / Barcode | Text | Global Trade Item Number |
 
 Manufacturers occasionally publish only some measurements.
 
 Unknown values should remain unknown.
 
+A GTIN / Barcode normally identifies the retail product represented by a particular Size Variant. Different sizes may therefore have different GTINs.
+
+A GTIN should not be assumed to exist where no reliable identifier is published.
+
 ---
 
 # Pack Type Attributes
 
-Pack Types describe how a Size Variant is sold.
+Pack Types describe how a Size Variant is sold or packaged.
 
 | Attribute | Type | Notes |
 |-----------|------|------|
-| Quantity per Pack | Integer |
+| Pack Type | Enum | Sample, Pack, Case |
+| Quantity per Pack | Integer | Number of products contained |
 | Packaging Type | Enum | Bag, Box, Case |
-| GTIN / Barcode | Text |
-| Case Quantity | Integer | Optional |
+| Case Quantity | Integer | Optional; number of retail packs in a case |
 | Retail Packaging Image | Image |
 | Packaging Notes | Markdown | Objective only |
 
 Packaging changes should not create new Products or Product Variants.
+
+A case may contain multiple retail packs and does not necessarily have its own GTIN / Barcode.
 
 ---
 

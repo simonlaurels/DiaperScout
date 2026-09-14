@@ -436,6 +436,8 @@ Community Trust does not bypass editorial review or automatically grant privileg
 
 Editorial review is the authoritative gateway into the Atlas.
 
+ADR-0011 adds a narrow v1 internal editorial catalogue-entry path for assigned Moderators. It is protected by `PublishAtlas` and records immutable audit/provenance. Community and manufacturer workflow remains Observation → Evidence → Editorial Review → Atlas.
+
 The general flow is:
 
 ```text

@@ -130,6 +130,10 @@ Atlas
 
 Authentication therefore enables the **submission of a Product discovery**, not direct creation of canonical Atlas data.
 
+## V1 internal editorial exception
+
+ADR-0011 permits an explicitly assigned Moderator to create or change canonical catalogue data through internal editorial tooling protected by the `PublishAtlas` capability. This does not apply to ordinary Users, Explorers, Contributors, Community Trust, Verified Manufacturers, or Administrators solely because they administer the platform. The direct path must retain audit and provenance and is not a replacement for the community product-discovery workflow.
+
 ---
 
 # 7. Initial Authentication Methods

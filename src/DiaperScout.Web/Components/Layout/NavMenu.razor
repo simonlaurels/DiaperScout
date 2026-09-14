@@ -1,21 +1,21 @@
-﻿<nav class="ds-navigation" aria-label="Main navigation">
-	<NavLink class="ds-navigation-link" href="/" Match="NavLinkMatch.All">
-		Explore
-	</NavLink>
+<nav class="ds-navigation" aria-label="Main navigation">
+	<div class="ds-navigation-desktop">
+		<NavLink class="ds-navigation-link" href="/" Match="NavLinkMatch.All">
+			Explore
+		</NavLink>
 
-	<NavLink class="ds-navigation-link" href="/search">
-		Products
-	</NavLink>
+		<NavLink class="ds-navigation-link" href="/products">
+			Products
+		</NavLink>
 
-	<NavLink class="ds-navigation-link" href="/atlas">
-		Atlas
-	</NavLink>
+		<AuthorizeView Policy="PublishAtlas">
+			<NavLink class="ds-navigation-link" href="/catalogue/add">
+				Add Product
+			</NavLink>
+		</AuthorizeView>
 
-	<NavLink class="ds-navigation-link" href="/backpack">
-		Backpack
-	</NavLink>
-
-	<NavLink class="ds-navigation-link ds-navigation-link-about" href="about">
-		About
-	</NavLink>
+		<NavLink class="ds-navigation-link ds-navigation-link-about" href="about">
+			About
+		</NavLink>
+	</div>
 </nav>

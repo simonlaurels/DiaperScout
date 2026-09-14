@@ -67,3 +67,7 @@ obj/
 
 # Temporary files
 *.cs.bak
+.tools/
+
+# Visual Studio
+.vs/

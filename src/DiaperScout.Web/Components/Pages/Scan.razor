@@ -1,0 +1,161 @@
+@page "/scan"
+@rendermode InteractiveServer
+@inject ProductLookupClient ProductLookup
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<PageTitle>Scan | DiaperScout</PageTitle>
+
+<main class="scan-page">
+    <section class="scan-panel" aria-labelledby="scan-heading">
+        <p class="scan-eyebrow">Product identification</p>
+        <h1 id="scan-heading">What have you found?</h1>
+        <p class="scan-intro">Enter the barcode number from a pack to check the Atlas.</p>
+
+        <div class="scan-camera">
+            <button class="ds-button ds-button-secondary" type="button" @onclick="StartScannerAsync" disabled="@(_isScanning || _isLookingUp)">
+                Scan barcode
+            </button>
+
+            <div class="scan-camera-preview @(_isScanning ? string.Empty : "scan-camera-hidden")" aria-hidden="@(!_isScanning)">
+                <video @ref="_cameraPreview" autoplay playsinline muted aria-label="Camera preview for barcode scanning"></video>
+                <div class="scan-camera-frame" aria-hidden="true"></div>
+                <button class="ds-button ds-button-secondary" type="button" @onclick="StopScannerAsync">Stop scanning</button>
+            </div>
+
+            @if (_scanMessage is not null)
+            {
+                <p class="scan-message" role="alert">@_scanMessage</p>
+            }
+        </div>
+
+        <EditForm Model="this" OnValidSubmit="LookupAsync">
+            <div class="scan-form">
+                <label for="gtin">Barcode number</label>
+                <div class="scan-input-row">
+                    <InputText id="gtin" class="scan-input" @bind-Value="_gtin" autocomplete="off" inputmode="numeric" placeholder="8–14 digit GTIN" />
+                    <button class="ds-button ds-button-primary" type="submit" disabled="@(_isLookingUp || _isScanning)">
+                        @(_isLookingUp ? "Searching…" : "Look up")
+                    </button>
+                </div>
+            </div>
+        </EditForm>
+
+        @if (_result is { Status: ProductLookupStatus.Found, Product: { } match })
+        {
+            <section class="scan-result scan-result-found" aria-live="polite">
+                <p class="scan-result-status">Found in the Atlas</p>
+                <h2>@match.Product.Name</h2>
+                <dl>
+                    <div><dt>Variant</dt><dd>@match.VariantName</dd></div>
+                    <div><dt>Size</dt><dd>@match.ManufacturerSize</dd></div>
+                    <div><dt>Pack</dt><dd>@match.QuantityPerPack @match.PackagingType</dd></div>
+                    <div><dt>GTIN</dt><dd>@match.Gtin</dd></div>
+                </dl>
+            </section>
+        }
+        else if (_result is { Status: ProductLookupStatus.NotFound, Gtin: { } gtin })
+        {
+            <section class="scan-result" aria-live="polite">
+                <p class="scan-result-status">Not yet in the Atlas</p>
+                <h2>We don’t recognise @gtin yet.</h2>
+                <p>This does not create a product. A documented observation flow will let an Explorer share what they found.</p>
+            </section>
+        }
+        else if (_result is { Message: { } message })
+        {
+            <p class="scan-message" role="alert">@message</p>
+        }
+    </section>
+</main>
+
+@code {
+    private string _gtin = string.Empty;
+    private bool _isLookingUp;
+    private bool _isScanning;
+    private ProductLookupResult? _result;
+    private string? _scanMessage;
+    private ElementReference _cameraPreview;
+    private IJSObjectReference? _scannerModule;
+    private DotNetObjectReference<Scan>? _scannerReference;
+
+    private async Task LookupAsync()
+    {
+        _isLookingUp = true;
+        try
+        {
+            _result = await ProductLookup.LookupAsync(_gtin);
+        }
+        finally
+        {
+            _isLookingUp = false;
+        }
+    }
+
+    private async Task StartScannerAsync()
+    {
+        _scanMessage = null;
+        _isScanning = true;
+        await InvokeAsync(StateHasChanged);
+
+        _scannerModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Scan.razor.js");
+        _scannerReference ??= DotNetObjectReference.Create(this);
+        var result = await _scannerModule.InvokeAsync<string>("start", _cameraPreview, _scannerReference);
+        if (result == "started") return;
+
+        _isScanning = false;
+        _scanMessage = result switch
+        {
+            "denied" => "Camera access was not allowed. You can enter the barcode number manually.",
+            "unavailable" => "No camera is available on this device. You can enter the barcode number manually.",
+            "unsupported" => "Barcode scanning is not supported by this browser. You can enter the barcode number manually.",
+            _ => "We couldn’t start the camera. Please try again or enter the barcode number manually."
+        };
+    }
+
+    private async Task StopScannerAsync()
+    {
+        _isScanning = false;
+        if (_scannerModule is not null)
+        {
+            await _scannerModule.InvokeVoidAsync("stop", _cameraPreview);
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnBarcodeDetected(string gtin)
+    {
+        _isScanning = false;
+        _scanMessage = null;
+        _gtin = gtin;
+        await StopScannerAsync();
+        await LookupAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    [JSInvokable]
+    public async Task OnScannerError()
+    {
+        _isScanning = false;
+        _scanMessage = "We couldn’t read that barcode. Try again, or enter the barcode number manually.";
+        await StopScannerAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await StopScannerAsync();
+            if (_scannerModule is not null) await _scannerModule.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+            // The circuit has already ended; the browser has released the page.
+        }
+        finally
+        {
+            _scannerReference?.Dispose();
+        }
+    }
+}

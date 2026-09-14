@@ -1,0 +1,174 @@
+@page "/products/{Slug}"
+@rendermode InteractiveServer
+@inject ProductCatalogueClient Catalogue
+@inject NavigationManager Navigation
+
+<PageTitle>@(product?.Name is null ? "Product · DiaperScout" : $"{product.Name} · DiaperScout")</PageTitle>
+
+@if (loading)
+{
+    <section class="catalogue-detail-page">
+        <div class="catalogue-container catalogue-state">Loading product…</div>
+    </section>
+}
+else if (notFound)
+{
+    <section class="catalogue-detail-page">
+        <div class="catalogue-container catalogue-state">
+            <h1>Product not found</h1>
+            <p>We couldn't find that catalogue entry.</p>
+            <a class="ds-button ds-button-primary" href="/products">Back to catalogue</a>
+        </div>
+    </section>
+}
+else if (failed || product is null)
+{
+    <section class="catalogue-detail-page">
+        <div class="catalogue-container catalogue-state catalogue-state-error">
+            <h1>Something went wrong</h1>
+            <p>We couldn't load this product just now.</p>
+            <a class="ds-button ds-button-primary" href="/products">Back to catalogue</a>
+        </div>
+    </section>
+}
+else
+{
+    <section class="catalogue-detail-page">
+        <div class="catalogue-container">
+            <a class="catalogue-back" href="/products">← Back to catalogue</a>
+
+            <div class="product-detail-hero">
+                <div class="product-detail-image" aria-label="Product image coming soon">
+                    <span>Product image</span>
+                </div>
+
+                <div class="product-detail-copy">
+                    <p class="catalogue-kicker">@product.ManufacturerName</p>
+                    @if (!string.IsNullOrWhiteSpace(product.BrandName))
+                    {
+                        <p class="product-detail-brand">@product.BrandName</p>
+                    }
+                    <h1>@product.Name</h1>
+                    <p class="product-detail-type">@FormatProductType(product.ProductType)</p>
+
+                    @if (!string.IsNullOrWhiteSpace(product.Description))
+                    {
+                        <p class="product-detail-description">@product.Description</p>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(product.OfficialWebsiteUrl))
+                    {
+                        <a class="product-official-link"
+                           href="@product.OfficialWebsiteUrl"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            Visit manufacturer website ↗
+                        </a>
+                    }
+                </div>
+            </div>
+
+            @if (product.Variants.Count > 0)
+            {
+                <section class="product-spec-section">
+                    <div class="product-section-heading">
+                        <p class="catalogue-kicker">THE DETAILS</p>
+                        <h2>Sizes & packs</h2>
+                    </div>
+
+                    @foreach (var variant in product.Variants)
+                    {
+                        <article class="product-variant">
+                            <div>
+                                <h3>@variant.Name</h3>
+                                <span class="product-variant-backing">@FormatBacking(variant.BackingType)</span>
+                            </div>
+
+                            <div class="product-size-list">
+                                @foreach (var size in variant.Sizes)
+                                {
+                                    <div class="product-size">
+                                        <div class="product-size-heading">
+                                            <strong>@size.ManufacturerSize</strong>
+                                            @if (size.WaistMinimumCm.HasValue || size.WaistMaximumCm.HasValue)
+                                            {
+                                                <span>@FormatWaist(size.WaistMinimumCm, size.WaistMaximumCm)</span>
+                                            }
+                                        </div>
+
+                                        @foreach (var pack in size.Packs)
+                                        {
+                                            <div class="product-pack-row">
+                                                <span>@pack.QuantityPerPack-pack · @FormatPackaging(pack.PackagingType)</span>
+                                                @if (pack.Gtins.Count > 0)
+                                                {
+                                                    <span>GTIN @string.Join(", ", pack.Gtins)</span>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </article>
+                    }
+                </section>
+            }
+
+            <section class="product-buy-section">
+                <div>
+                    <p class="catalogue-kicker">WHERE TO BUY</p>
+                    <h2>Find this product</h2>
+                    <p>Retail destinations will appear here as they are verified.</p>
+                </div>
+                <span class="product-buy-note">Coming next</span>
+            </section>
+        </div>
+    </section>
+}
+
+@code {
+    [Parameter]
+    public string Slug { get; set; } = string.Empty;
+
+    private CatalogueProductDetails? product;
+    private bool loading = true;
+    private bool notFound;
+    private bool failed;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        loading = true;
+        notFound = false;
+        failed = false;
+
+        var result = await Catalogue.GetAsync(Slug);
+        switch (result.Status)
+        {
+            case ProductCatalogueDetailStatus.Found:
+                product = result.Product;
+                break;
+            case ProductCatalogueDetailStatus.NotFound:
+                notFound = true;
+                break;
+            default:
+                failed = true;
+                break;
+        }
+
+        loading = false;
+    }
+
+    private static string FormatProductType(ProductType type) =>
+        type.ToString().Replace("Adult", "Adult ");
+
+    private static string FormatBacking(BackingType backing) => backing.ToString();
+
+    private static string FormatPackaging(PackagingType packaging) => packaging.ToString();
+
+    private static string FormatWaist(int? minimum, int? maximum) =>
+        minimum.HasValue && maximum.HasValue
+            ? $"{minimum}–{maximum} cm waist"
+            : minimum.HasValue
+                ? $"{minimum}+ cm waist"
+                : $"Up to {maximum} cm waist";
+}

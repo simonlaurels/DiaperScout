@@ -1,0 +1,53 @@
+.scan-page {
+    width: min(720px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 64px 0 96px;
+}
+
+.scan-panel {
+    padding: clamp(24px, 5vw, 48px);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-background);
+    box-shadow: var(--shadow-card);
+}
+
+.scan-eyebrow, .scan-result-status {
+    margin: 0 0 8px;
+    color: var(--color-primary-light);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.scan-panel h1, .scan-panel h2 {
+    color: var(--color-primary);
+}
+
+.scan-intro, .scan-result p {
+    color: var(--color-muted);
+}
+
+.scan-camera { margin-top: 24px; }
+.scan-camera-preview { position: relative; display: grid; gap: 12px; margin-top: 16px; }
+.scan-camera-preview video { width: 100%; max-height: 420px; border-radius: var(--radius-chip); background: #101713; object-fit: cover; }
+.scan-camera-frame { position: absolute; inset: 20% 10% 28%; border: 2px solid var(--color-primary-light); border-radius: var(--radius-chip); pointer-events: none; }
+.scan-camera-preview .ds-button { justify-self: start; }
+.scan-camera-hidden { display: none; }
+.scan-form { margin-top: 28px; }
+.scan-form label { display: block; margin-bottom: 8px; font-weight: 700; }
+.scan-input-row { display: flex; gap: 12px; }
+.scan-input { min-width: 0; flex: 1; padding: 12px 14px; border: 1px solid var(--color-border); border-radius: var(--radius-button); font: inherit; }
+.scan-result { margin-top: 32px; padding: 24px; border-radius: var(--radius-chip); background: var(--color-surface); }
+.scan-result-found { border: 1px solid rgb(51 115 82 / 25%); }
+.scan-result dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 20px 0 0; }
+.scan-result dt { color: var(--color-muted); font-size: 12px; }
+.scan-result dd { margin: 3px 0 0; font-weight: 700; }
+.scan-message { margin-top: 20px; color: var(--color-coral); font-weight: 600; }
+
+@media (max-width: 540px) {
+    .scan-input-row { flex-direction: column; }
+    .scan-input-row .ds-button { width: 100%; }
+    .scan-result dl { grid-template-columns: 1fr; }
+}

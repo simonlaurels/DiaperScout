@@ -8,10 +8,14 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DiaperScout.Application\DiaperScout.Application.csproj" />
+    <ProjectReference Include="..\DiaperScout.Domain\DiaperScout.Domain.csproj" />
     <ProjectReference Include="..\DiaperScout.Infrastructure\DiaperScout.Infrastructure.csproj" />
   </ItemGroup>
 

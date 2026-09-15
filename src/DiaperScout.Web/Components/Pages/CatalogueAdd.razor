@@ -45,7 +45,7 @@
 
         @if (submission is null)
         {
-            <EditForm Model="createModel" OnValidSubmit="CreateAsync" class="submission-form">
+            <EditForm Model="createModel" OnValidSubmit="CreateAsync" class="submission-form" FormName="catalogue-create">
                 <div class="submission-panel">
                     <div class="submission-panel-heading">
                         <div><p class="catalogue-kicker">STEP 1 OF 6</p><h2>Product Identity</h2></div>
@@ -170,7 +170,7 @@
                             </div>
                         }
 
-                        @if (editingVariant is not null)
+                        @if (editingVariant is not null || addingVariant)
                         {
                             <div class="submission-card submission-card-editor">
                                 <div class="submission-field submission-field-wide">
@@ -216,20 +216,88 @@
                         <strong>＋ Add Size Variant</strong>
                         <small>Size entities and their specification fields will be wired to the submission model next.</small>
                     </div>
-                    <div class="submission-next"><div><p class="catalogue-kicker">NEXT</p><h2>Product Details</h2><p>Capture the remaining factual information about the product as a whole.</p></div><button class="ds-button ds-button-primary" type="button" @onclick="() => currentStep = 4">Continue →</button></div>
+                    <div class="submission-next"><div><p class="catalogue-kicker">NEXT</p><h2>Product Details</h2><p>Capture the remaining factual information about the product as a whole.</p></div><button class="ds-button ds-button-primary" type="button" @onclick="OpenDetailsAsync">Continue →</button></div>
                 </section>
             }
             else if (currentStep == 4)
             {
-                <EditForm Model="detailsModel" OnValidSubmit="SaveSpecificationsAsync" class="submission-panel">
+                <EditForm Model="detailsModel" OnValidSubmit="SaveSpecificationsAsync" class="submission-panel" FormName="catalogue-details">
                     <div class="submission-panel-heading"><div><p class="catalogue-kicker">STEP 4 OF 6</p><h2>Product Details</h2></div></div>
-                    <p class="submission-help">Add the factual details that describe this product as a whole. Variant-specific and size-specific information is captured separately.</p>
+                    <p class="submission-help">Enter shared facts once. Variants inherit these values automatically; only genuine differences need to be recorded against a variant.</p>
+
+                    <div class="submission-section-label">PRODUCT</div>
                     <div class="submission-grid">
                         <div class="submission-field"><label for="type">Product type</label><InputSelect id="type" class="ds-select" @bind-Value="detailsModel.ProposedProductType"><option value="">Unknown</option>@foreach (var value in Enum.GetValues<ProductType>()) { <option value="@value">@FormatEnum(value)</option> }</InputSelect></div>
                         <div class="submission-field"><label for="family">Product family</label><InputText id="family" class="ds-input" @bind-Value="detailsModel.ProductFamily" /></div>
                         <div class="submission-field submission-field-wide"><label for="description">Description</label><InputTextArea id="description" class="ds-input ds-textarea" @bind-Value="detailsModel.Description" rows="5" /></div>
                         <div class="submission-field"><label for="status">Product status</label><InputSelect id="status" class="ds-select" @bind-Value="detailsModel.ProductStatus"><option value="">Unknown</option>@foreach (var value in Enum.GetValues<ProductStatus>()) { <option value="@value">@FormatEnum(value)</option> }</InputSelect></div>
                         <div class="submission-field submission-field-wide"><label for="website">Official website</label><InputText id="website" class="ds-input" @bind-Value="detailsModel.OfficialWebsiteUrl" placeholder="https://…" /></div>
+                    </div>
+
+                    <div class="submission-section-label">SHARED VARIANT DETAILS</div>
+                    <p class="submission-help">These values apply to every variant unless a variant has an explicit difference below. Leave a value blank when it is not known.</p>
+                    <div class="submission-grid">
+                        <div class="submission-field"><label for="shared-backing">Backing type</label><InputSelect id="shared-backing" class="ds-select" @bind-Value="detailsModel.SharedBackingType"><option value="">Unknown</option>@foreach (var value in Enum.GetValues<BackingType>().Where(v => v != BackingType.Unknown)) { <option value="@value">@FormatEnum(value)</option> }</InputSelect></div>
+                        <div class="submission-field"><label for="shared-fastener">Fastener type</label><InputSelect id="shared-fastener" class="ds-select" @bind-Value="detailsModel.SharedFastenerType"><option value="">Unknown</option>@foreach (var value in Enum.GetValues<FastenerType>().Where(v => v != FastenerType.Unknown)) { <option value="@value">@FormatEnum(value)</option> }</InputSelect></div>
+                        <div class="submission-field"><label for="shared-waistband">Waistband style</label><InputSelect id="shared-waistband" class="ds-select" @bind-Value="detailsModel.SharedWaistbandStyle"><option value="">Unknown</option>@foreach (var value in Enum.GetValues<WaistbandStyle>().Where(v => v != WaistbandStyle.Unknown)) { <option value="@value">@FormatEnum(value)</option> }</InputSelect></div>
+                        <div class="submission-field"><label for="shared-fragrance">Fragrance</label><InputSelect id="shared-fragrance" class="ds-select" @bind-Value="detailsModel.SharedFragrance"><option value="">Unknown</option>@foreach (var value in Enum.GetValues<FragranceType>().Where(v => v != FragranceType.Unknown)) { <option value="@value">@FormatEnum(value)</option> }</InputSelect></div>
+                        <div class="submission-field"><label for="shared-print">Print design</label><InputText id="shared-print" class="ds-input" @bind-Value="detailsModel.SharedPrintDesign" /></div>
+                        <div class="submission-field"><label for="shared-primary">Primary colour</label><InputText id="shared-primary" class="ds-input" @bind-Value="detailsModel.SharedPrimaryColour" /></div>
+                        <div class="submission-field submission-field-wide"><label for="shared-secondary">Secondary colours</label><InputText id="shared-secondary" class="ds-input" @bind-Value="detailsModel.SharedSecondaryColours" /></div>
+                        <div class="submission-field"><label for="shared-wetness">Wetness indicator</label><InputSelect id="shared-wetness" class="ds-select" @bind-Value="detailsModel.SharedWetnessIndicator"><option value="">Unknown</option><option value="true">Yes</option><option value="false">No</option></InputSelect></div>
+                        <div class="submission-field"><label for="shared-standing">Standing leak guards</label><InputSelect id="shared-standing" class="ds-select" @bind-Value="detailsModel.SharedStandingLeakGuards"><option value="">Unknown</option><option value="true">Yes</option><option value="false">No</option></InputSelect></div>
+                        <div class="submission-field"><label for="shared-inner">Inner leak guards</label><InputSelect id="shared-inner" class="ds-select" @bind-Value="detailsModel.SharedInnerLeakGuards"><option value="">Unknown</option><option value="true">Yes</option><option value="false">No</option></InputSelect></div>
+                        <div class="submission-field"><label for="shared-elastic-front">Elastic waistband front</label><InputSelect id="shared-elastic-front" class="ds-select" @bind-Value="detailsModel.SharedElasticWaistbandFront"><option value="">Unknown</option><option value="true">Yes</option><option value="false">No</option></InputSelect></div>
+                        <div class="submission-field"><label for="shared-elastic-rear">Elastic waistband rear</label><InputSelect id="shared-elastic-rear" class="ds-select" @bind-Value="detailsModel.SharedElasticWaistbandRear"><option value="">Unknown</option><option value="true">Yes</option><option value="false">No</option></InputSelect></div>
+                        <div class="submission-field"><label for="shared-latex">Latex free</label><InputSelect id="shared-latex" class="ds-select" @bind-Value="detailsModel.SharedLatexFree"><option value="">Unknown</option><option value="true">Yes</option><option value="false">No</option></InputSelect></div>
+                        <div class="submission-field"><label for="shared-chlorine">Chlorine free</label><InputSelect id="shared-chlorine" class="ds-select" @bind-Value="detailsModel.SharedChlorineFree"><option value="">Unknown</option><option value="true">Yes</option><option value="false">No</option></InputSelect></div>
+                        <div class="submission-field"><label for="shared-fastener-count">Number of fasteners</label><InputNumber id="shared-fastener-count" class="ds-input" @bind-Value="detailsModel.SharedFastenerCount" /></div>
+                        <div class="submission-field submission-field-wide"><label for="shared-construction">Construction notes</label><InputTextArea id="shared-construction" class="ds-input ds-textarea" @bind-Value="detailsModel.SharedConstructionNotes" rows="4" /></div>
+                    </div>
+
+                    <div class="submission-section-label">VARIANT DIFFERENCES</div>
+                    <p class="submission-help">A difference is stored only for the variant where it applies. Everything else remains inherited from the shared details.</p>
+                    @foreach (var variant in variants.Where(v => !v.IsStructuralFallback))
+                    {
+                        var variantOverride = variantOverrides.TryGetValue(variant.Id, out var value) ? value : null;
+                        <div class="submission-card">
+                            <div>
+                                <strong>@variant.Name</strong>
+                                <small>@(variantOverride is null ? "Using shared product details" : GetOverrideSummary(variantOverride))</small>
+                            </div>
+                            <div class="submission-card-actions">
+                                <button class="ds-button ds-button-secondary" type="button" @onclick="() => BeginVariantDifference(variant, variantOverride)">@(variantOverride is null ? "Add difference" : "Edit difference")</button>
+                            </div>
+                        </div>
+                    }
+
+                    @if (variantDifferenceVariant is not null)
+                    {
+                        <div class="submission-card submission-card-editor">
+                            <div class="submission-field">
+                                <label for="difference-attribute">Characteristic</label>
+                                <InputSelect id="difference-attribute" class="ds-select" @bind-Value="variantDifferenceAttribute">
+                                    @foreach (var value in Enum.GetValues<CatalogueVariantOverrideAttribute>())
+                                    {
+                                        <option value="@value">@FormatOverrideAttribute(value)</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                            <div class="submission-field submission-field-wide">
+                                <label for="difference-value">Variant-specific value</label>
+                                <InputText id="difference-value" class="ds-input" @bind-Value="variantDifferenceValue" placeholder="Enter the value for this variant…" />
+                                <small>Use the exact factual value. Saving an empty value removes this override and restores inheritance.</small>
+                            </div>
+                            <div class="submission-card-actions">
+                                <button class="ds-button ds-button-secondary" type="button" @onclick="CancelVariantDifference">Cancel</button>
+                                <button class="ds-button ds-button-primary" type="button" @onclick="SaveVariantDifferenceAsync" disabled="@saving">Save difference</button>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="submission-tip">
+                        <strong>💡 Inheritance keeps this manageable.</strong>
+                        <span>Enter a fact once when it applies to the whole product. Only record an override when a specific variant genuinely differs.</span>
                     </div>
                     <div class="submission-actions"><button class="ds-button ds-button-primary" type="submit" disabled="@saving">Continue →</button></div>
                 </EditForm>
@@ -272,6 +340,10 @@
     private string variantEditorName = "";
     private bool addingVariant;
     private bool variantsLoading;
+    private readonly Dictionary<Guid, CatalogueSubmissionVariantOverrideReceipt?> variantOverrides = [];
+    private CatalogueSubmissionVariantReceipt? variantDifferenceVariant;
+    private CatalogueVariantOverrideAttribute variantDifferenceAttribute = CatalogueVariantOverrideAttribute.BackingType;
+    private string? variantDifferenceValue;
 
     private bool saving;
     private bool accessDenied;
@@ -431,26 +503,159 @@
         }
     }
 
+    private async Task OpenDetailsAsync()
+    {
+        if (submission is null) return;
+        detailsModel.Load(submission);
+        variantOverrides.Clear();
+        foreach (var variant in variants.Where(v => !v.IsStructuralFallback))
+        {
+            var result = await Catalogue.GetSubmissionVariantOverrideAsync(submission.Id, variant.Id);
+            if (result.Status == CatalogueSubmissionVariantOverrideResultStatus.Found)
+                variantOverrides[variant.Id] = result.Override;
+        }
+        currentStep = 4;
+    }
+
+    private void BeginVariantDifference(CatalogueSubmissionVariantReceipt variant, CatalogueSubmissionVariantOverrideReceipt? existing)
+    {
+        variantDifferenceVariant = variant;
+        variantDifferenceAttribute = FirstOverrideAttribute(existing);
+        variantDifferenceValue = GetOverrideValue(existing, variantDifferenceAttribute);
+    }
+
+    private void CancelVariantDifference()
+    {
+        variantDifferenceVariant = null;
+        variantDifferenceValue = null;
+    }
+
+    private async Task SaveVariantDifferenceAsync()
+    {
+        if (submission is null || variantDifferenceVariant is null) return;
+        saving = true; saveError = null; accessDenied = false;
+        var result = await Catalogue.UpdateSubmissionVariantOverrideAsync(
+            submission.Id,
+            variantDifferenceVariant.Id,
+            new UpdateCatalogueSubmissionVariantOverrideRequest(variantDifferenceAttribute, variantDifferenceValue));
+        saving = false;
+        if (result.Status == CatalogueSubmissionVariantOverrideResultStatus.Saved)
+        {
+            variantOverrides[variantDifferenceVariant.Id] = result.Override;
+            CancelVariantDifference();
+        }
+        else if (result.Status == CatalogueSubmissionVariantOverrideResultStatus.Invalid)
+            saveError = string.Join(" ", result.Errors!.SelectMany(pair => pair.Value));
+        else if (result.Status == CatalogueSubmissionVariantOverrideResultStatus.AccessDenied)
+            accessDenied = true;
+        else
+            saveError = result.Message;
+    }
+
     private async Task SaveSpecificationsAsync()
     {
         if (submission is null) return;
         saving = true; saveError = null; accessDenied = false;
         var result = await Catalogue.UpdateSubmissionSpecificationsAsync(submission.Id, new UpdateCatalogueSubmissionSpecificationsRequest(
             detailsModel.ProposedProductType,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null));
+            null, null, null,
+            detailsModel.SharedBackingType,
+            detailsModel.SharedFastenerType,
+            detailsModel.SharedWaistbandStyle,
+            detailsModel.SharedFragrance,
+            null, null,
+            detailsModel.ProductFamily,
+            detailsModel.Description,
+            detailsModel.ProductStatus,
+            detailsModel.OfficialWebsiteUrl,
+            detailsModel.SharedPrintDesign,
+            detailsModel.SharedPrimaryColour,
+            detailsModel.SharedSecondaryColours,
+            detailsModel.SharedWetnessIndicator,
+            detailsModel.SharedStandingLeakGuards,
+            detailsModel.SharedInnerLeakGuards,
+            detailsModel.SharedElasticWaistbandFront,
+            detailsModel.SharedElasticWaistbandRear,
+            detailsModel.SharedLatexFree,
+            detailsModel.SharedChlorineFree,
+            detailsModel.SharedFastenerCount,
+            detailsModel.SharedConstructionNotes));
         Apply(result);
         saving = false;
         if (submission is not null && result.Status != CatalogueSubmissionResultStatus.Invalid && result.Status != CatalogueSubmissionResultStatus.Failed)
             currentStep = 5;
     }
+
+    private static CatalogueVariantOverrideAttribute FirstOverrideAttribute(CatalogueSubmissionVariantOverrideReceipt? value)
+    {
+        if (value is null) return CatalogueVariantOverrideAttribute.BackingType;
+        if (value.BackingType.HasValue) return CatalogueVariantOverrideAttribute.BackingType;
+        if (value.FastenerType.HasValue) return CatalogueVariantOverrideAttribute.FastenerType;
+        if (value.PrintDesign is not null) return CatalogueVariantOverrideAttribute.PrintDesign;
+        if (value.PrimaryColour is not null) return CatalogueVariantOverrideAttribute.PrimaryColour;
+        if (value.SecondaryColours is not null) return CatalogueVariantOverrideAttribute.SecondaryColours;
+        if (value.HasWetnessIndicator.HasValue) return CatalogueVariantOverrideAttribute.WetnessIndicator;
+        if (value.HasStandingLeakGuards.HasValue) return CatalogueVariantOverrideAttribute.StandingLeakGuards;
+        if (value.HasInnerLeakGuards.HasValue) return CatalogueVariantOverrideAttribute.InnerLeakGuards;
+        if (value.HasElasticWaistbandFront.HasValue) return CatalogueVariantOverrideAttribute.ElasticWaistbandFront;
+        if (value.HasElasticWaistbandRear.HasValue) return CatalogueVariantOverrideAttribute.ElasticWaistbandRear;
+        if (value.WaistbandStyle.HasValue) return CatalogueVariantOverrideAttribute.WaistbandStyle;
+        if (value.Fragrance.HasValue) return CatalogueVariantOverrideAttribute.Fragrance;
+        if (value.IsLatexFree.HasValue) return CatalogueVariantOverrideAttribute.LatexFree;
+        if (value.IsChlorineFree.HasValue) return CatalogueVariantOverrideAttribute.ChlorineFree;
+        if (value.FastenerCount.HasValue) return CatalogueVariantOverrideAttribute.NumberOfFasteners;
+        return CatalogueVariantOverrideAttribute.ConstructionNotes;
+    }
+
+    private static string? GetOverrideValue(CatalogueSubmissionVariantOverrideReceipt? value, CatalogueVariantOverrideAttribute attribute) => attribute switch
+    {
+        CatalogueVariantOverrideAttribute.BackingType => value?.BackingType?.ToString(),
+        CatalogueVariantOverrideAttribute.FastenerType => value?.FastenerType?.ToString(),
+        CatalogueVariantOverrideAttribute.PrintDesign => value?.PrintDesign,
+        CatalogueVariantOverrideAttribute.PrimaryColour => value?.PrimaryColour,
+        CatalogueVariantOverrideAttribute.SecondaryColours => value?.SecondaryColours,
+        CatalogueVariantOverrideAttribute.WetnessIndicator => value?.HasWetnessIndicator?.ToString().ToLowerInvariant(),
+        CatalogueVariantOverrideAttribute.StandingLeakGuards => value?.HasStandingLeakGuards?.ToString().ToLowerInvariant(),
+        CatalogueVariantOverrideAttribute.InnerLeakGuards => value?.HasInnerLeakGuards?.ToString().ToLowerInvariant(),
+        CatalogueVariantOverrideAttribute.ElasticWaistbandFront => value?.HasElasticWaistbandFront?.ToString().ToLowerInvariant(),
+        CatalogueVariantOverrideAttribute.ElasticWaistbandRear => value?.HasElasticWaistbandRear?.ToString().ToLowerInvariant(),
+        CatalogueVariantOverrideAttribute.WaistbandStyle => value?.WaistbandStyle?.ToString(),
+        CatalogueVariantOverrideAttribute.Fragrance => value?.Fragrance?.ToString(),
+        CatalogueVariantOverrideAttribute.LatexFree => value?.IsLatexFree?.ToString().ToLowerInvariant(),
+        CatalogueVariantOverrideAttribute.ChlorineFree => value?.IsChlorineFree?.ToString().ToLowerInvariant(),
+        CatalogueVariantOverrideAttribute.NumberOfFasteners => value?.FastenerCount?.ToString(),
+        CatalogueVariantOverrideAttribute.ConstructionNotes => value?.ConstructionNotes,
+        _ => null
+    };
+
+    private static string GetOverrideSummary(CatalogueSubmissionVariantOverrideReceipt value)
+    {
+        var count = 0;
+        foreach (var item in new object?[] { value.BackingType, value.FastenerType, value.PrintDesign, value.PrimaryColour, value.SecondaryColours, value.HasWetnessIndicator, value.HasStandingLeakGuards, value.HasInnerLeakGuards, value.HasElasticWaistbandFront, value.HasElasticWaistbandRear, value.WaistbandStyle, value.Fragrance, value.IsLatexFree, value.IsChlorineFree, value.FastenerCount, value.ConstructionNotes })
+            if (item is not null) count++;
+        return $"{count} variant-specific {(count == 1 ? "difference" : "differences")}";
+    }
+
+    private static string FormatOverrideAttribute(CatalogueVariantOverrideAttribute value) => value switch
+    {
+        CatalogueVariantOverrideAttribute.WetnessIndicator => "Wetness indicator",
+        CatalogueVariantOverrideAttribute.StandingLeakGuards => "Standing leak guards",
+        CatalogueVariantOverrideAttribute.InnerLeakGuards => "Inner leak guards",
+        CatalogueVariantOverrideAttribute.ElasticWaistbandFront => "Elastic waistband front",
+        CatalogueVariantOverrideAttribute.ElasticWaistbandRear => "Elastic waistband rear",
+        CatalogueVariantOverrideAttribute.LatexFree => "Latex free",
+        CatalogueVariantOverrideAttribute.ChlorineFree => "Chlorine free",
+        CatalogueVariantOverrideAttribute.NumberOfFasteners => "Number of fasteners",
+        CatalogueVariantOverrideAttribute.PrintDesign => "Print design",
+        CatalogueVariantOverrideAttribute.PrimaryColour => "Primary colour",
+        CatalogueVariantOverrideAttribute.SecondaryColours => "Secondary colours",
+        CatalogueVariantOverrideAttribute.BackingType => "Backing type",
+        CatalogueVariantOverrideAttribute.FastenerType => "Fastener type",
+        CatalogueVariantOverrideAttribute.WaistbandStyle => "Waistband style",
+        CatalogueVariantOverrideAttribute.Fragrance => "Fragrance",
+        CatalogueVariantOverrideAttribute.ConstructionNotes => "Construction notes",
+        _ => value.ToString()
+    };
 
     private async Task BeginVerificationAsync()
     {
@@ -495,5 +700,46 @@
         public string? Description { get; set; }
         public ProductStatus? ProductStatus { get; set; }
         public string? OfficialWebsiteUrl { get; set; }
+        public BackingType? SharedBackingType { get; set; }
+        public FastenerType? SharedFastenerType { get; set; }
+        public WaistbandStyle? SharedWaistbandStyle { get; set; }
+        public FragranceType? SharedFragrance { get; set; }
+        public string? SharedPrintDesign { get; set; }
+        public string? SharedPrimaryColour { get; set; }
+        public string? SharedSecondaryColours { get; set; }
+        public bool? SharedWetnessIndicator { get; set; }
+        public bool? SharedStandingLeakGuards { get; set; }
+        public bool? SharedInnerLeakGuards { get; set; }
+        public bool? SharedElasticWaistbandFront { get; set; }
+        public bool? SharedElasticWaistbandRear { get; set; }
+        public bool? SharedLatexFree { get; set; }
+        public bool? SharedChlorineFree { get; set; }
+        public int? SharedFastenerCount { get; set; }
+        public string? SharedConstructionNotes { get; set; }
+
+        public void Load(CatalogueSubmissionReceipt value)
+        {
+            ProposedProductType = value.ProposedProductType;
+            ProductFamily = value.ProposedProductFamily;
+            Description = value.ProposedDescription;
+            ProductStatus = value.ProposedProductStatus;
+            OfficialWebsiteUrl = value.ProposedOfficialWebsiteUrl;
+            SharedBackingType = value.ProposedBackingType;
+            SharedFastenerType = value.ProposedFastenerType;
+            SharedWaistbandStyle = value.ProposedWaistbandStyle;
+            SharedFragrance = value.ProposedFragranceType;
+            SharedPrintDesign = value.SharedPrintDesign;
+            SharedPrimaryColour = value.SharedPrimaryColour;
+            SharedSecondaryColours = value.SharedSecondaryColours;
+            SharedWetnessIndicator = value.SharedWetnessIndicator;
+            SharedStandingLeakGuards = value.SharedStandingLeakGuards;
+            SharedInnerLeakGuards = value.SharedInnerLeakGuards;
+            SharedElasticWaistbandFront = value.SharedElasticWaistbandFront;
+            SharedElasticWaistbandRear = value.SharedElasticWaistbandRear;
+            SharedLatexFree = value.SharedLatexFree;
+            SharedChlorineFree = value.SharedChlorineFree;
+            SharedFastenerCount = value.SharedFastenerCount;
+            SharedConstructionNotes = value.SharedConstructionNotes;
+        }
     }
 }

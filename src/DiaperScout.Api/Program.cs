@@ -430,6 +430,79 @@ if (builder.Configuration.GetValue<bool>(
         .WithTags("Catalogue Submissions")
         .Produces<IReadOnlyList<CatalogueSubmissionVariantReceipt>>();
 
+    app.MapGet(
+        "/api/v1/catalogue-submissions/{id:guid}/variants/{variantId:guid}/override",
+        async (
+            Guid id,
+            Guid variantId,
+            ICurrentUser currentUser,
+            ICatalogueSubmissions submissions,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null) return Results.Forbid();
+
+            try
+            {
+                var result = await submissions.GetVariantOverrideAsync(actor, id, variantId, cancellationToken);
+                return Results.Ok(result);
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(new Dictionary<string, string[]> { [exception.Field] = [exception.Message] });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("GetCatalogueSubmissionVariantOverride")
+        .WithTags("Catalogue Submissions")
+        .Produces<CatalogueSubmissionVariantOverrideReceipt>();
+
+    app.MapPut(
+        "/api/v1/catalogue-submissions/{id:guid}/variants/{variantId:guid}/override",
+        async (
+            Guid id,
+            Guid variantId,
+            UpdateCatalogueSubmissionVariantOverrideRequest request,
+            ICurrentUser currentUser,
+            ICatalogueSubmissions submissions,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null) return Results.Forbid();
+
+            try
+            {
+                if (!Enum.IsDefined(request.Attribute))
+                    return Results.ValidationProblem(new Dictionary<string, string[]> { ["attribute"] = ["The variant override attribute is invalid."] });
+
+                var result = await submissions.UpdateVariantOverrideAsync(
+                    actor,
+                    id,
+                    variantId,
+                    new UpdateCatalogueSubmissionVariantOverride(request.Attribute, request.Value),
+                    cancellationToken);
+
+                return Results.Ok(result);
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(new Dictionary<string, string[]> { [exception.Field] = [exception.Message] });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("UpdateCatalogueSubmissionVariantOverride")
+        .WithTags("Catalogue Submissions")
+        .Produces<CatalogueSubmissionVariantOverrideReceipt>()
+        .ProducesValidationProblem();
+
     app.MapPost(
         "/api/v1/catalogue-submissions/{id:guid}/variants",
         async (
@@ -642,7 +715,23 @@ if (builder.Configuration.GetValue<bool>(
                             request.ProposedWaistbandStyle,
                             request.ProposedFragranceType,
                             request.ProposedQuantityPerPack,
-                            request.ProposedPackagingType),
+                            request.ProposedPackagingType,
+                            request.ProposedProductFamily,
+                            request.ProposedDescription,
+                            request.ProposedProductStatus,
+                            request.ProposedOfficialWebsiteUrl,
+                            request.SharedPrintDesign,
+                            request.SharedPrimaryColour,
+                            request.SharedSecondaryColours,
+                            request.SharedWetnessIndicator,
+                            request.SharedStandingLeakGuards,
+                            request.SharedInnerLeakGuards,
+                            request.SharedElasticWaistbandFront,
+                            request.SharedElasticWaistbandRear,
+                            request.SharedLatexFree,
+                            request.SharedChlorineFree,
+                            request.SharedFastenerCount,
+                            request.SharedConstructionNotes),
                         cancellationToken);
 
                 return Results.Ok(receipt);
@@ -1300,7 +1389,27 @@ public sealed record UpdateCatalogueSubmissionSpecificationsRequest(
     WaistbandStyle? ProposedWaistbandStyle,
     FragranceType? ProposedFragranceType,
     int? ProposedQuantityPerPack,
-    PackagingType? ProposedPackagingType);
+    PackagingType? ProposedPackagingType,
+    string? ProposedProductFamily,
+    string? ProposedDescription,
+    ProductStatus? ProposedProductStatus,
+    string? ProposedOfficialWebsiteUrl,
+    string? SharedPrintDesign,
+    string? SharedPrimaryColour,
+    string? SharedSecondaryColours,
+    bool? SharedWetnessIndicator,
+    bool? SharedStandingLeakGuards,
+    bool? SharedInnerLeakGuards,
+    bool? SharedElasticWaistbandFront,
+    bool? SharedElasticWaistbandRear,
+    bool? SharedLatexFree,
+    bool? SharedChlorineFree,
+    int? SharedFastenerCount,
+    string? SharedConstructionNotes);
+
+public sealed record UpdateCatalogueSubmissionVariantOverrideRequest(
+    CatalogueVariantOverrideAttribute Attribute,
+    string? Value);
 
 public sealed record UpdateCatalogueSubmissionIdentityRequest(
     string? ProposedGtin,

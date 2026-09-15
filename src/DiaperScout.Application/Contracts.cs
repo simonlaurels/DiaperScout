@@ -185,6 +185,29 @@ public sealed record CatalogueSubmissionVariantReceipt(
     DateTimeOffset CreatedAtUtc,
     DateTimeOffset UpdatedAtUtc);
 
+public sealed record CatalogueSubmissionVariantOverrideReceipt(
+    Guid VariantId,
+    BackingType? BackingType,
+    FastenerType? FastenerType,
+    string? PrintDesign,
+    string? PrimaryColour,
+    string? SecondaryColours,
+    bool? HasWetnessIndicator,
+    bool? HasStandingLeakGuards,
+    bool? HasInnerLeakGuards,
+    bool? HasElasticWaistbandFront,
+    bool? HasElasticWaistbandRear,
+    WaistbandStyle? WaistbandStyle,
+    FragranceType? Fragrance,
+    bool? IsLatexFree,
+    bool? IsChlorineFree,
+    int? FastenerCount,
+    string? ConstructionNotes);
+
+public sealed record UpdateCatalogueSubmissionVariantOverride(
+    CatalogueVariantOverrideAttribute Attribute,
+    string? Value);
+
 public sealed record AddCatalogueSubmissionVariant(
     string Name);
 
@@ -236,6 +259,10 @@ public sealed record CatalogueSubmissionReceipt(
     string? ProposedSku,
     string? IdentitySourceUrl,
     ProductType? ProposedProductType,
+    string? ProposedProductFamily,
+    string? ProposedDescription,
+    ProductStatus? ProposedProductStatus,
+    string? ProposedOfficialWebsiteUrl,
     string? ProposedManufacturerSize,
     int? ProposedWaistMinimumCm,
     int? ProposedWaistMaximumCm,
@@ -245,6 +272,18 @@ public sealed record CatalogueSubmissionReceipt(
     FragranceType? ProposedFragranceType,
     int? ProposedQuantityPerPack,
     PackagingType? ProposedPackagingType,
+    string? SharedPrintDesign,
+    string? SharedPrimaryColour,
+    string? SharedSecondaryColours,
+    bool? SharedWetnessIndicator,
+    bool? SharedStandingLeakGuards,
+    bool? SharedInnerLeakGuards,
+    bool? SharedElasticWaistbandFront,
+    bool? SharedElasticWaistbandRear,
+    bool? SharedLatexFree,
+    bool? SharedChlorineFree,
+    int? SharedFastenerCount,
+    string? SharedConstructionNotes,
     string? Notes,
     DateTimeOffset CreatedAtUtc,
     DateTimeOffset UpdatedAtUtc);
@@ -371,7 +410,23 @@ public sealed record UpdateCatalogueSubmissionSpecifications(
     WaistbandStyle? ProposedWaistbandStyle,
     FragranceType? ProposedFragranceType,
     int? ProposedQuantityPerPack,
-    PackagingType? ProposedPackagingType);
+    PackagingType? ProposedPackagingType,
+    string? ProposedProductFamily,
+    string? ProposedDescription,
+    ProductStatus? ProposedProductStatus,
+    string? ProposedOfficialWebsiteUrl,
+    string? SharedPrintDesign,
+    string? SharedPrimaryColour,
+    string? SharedSecondaryColours,
+    bool? SharedWetnessIndicator,
+    bool? SharedStandingLeakGuards,
+    bool? SharedInnerLeakGuards,
+    bool? SharedElasticWaistbandFront,
+    bool? SharedElasticWaistbandRear,
+    bool? SharedLatexFree,
+    bool? SharedChlorineFree,
+    int? SharedFastenerCount,
+    string? SharedConstructionNotes);
 
 public interface ICatalogueSubmissions
 {
@@ -383,6 +438,19 @@ public interface ICatalogueSubmissions
     Task<CatalogueSubmissionVariantsResult> GetVariantsAsync(
         AuthenticatedUser actor,
         Guid submissionId,
+        CancellationToken cancellationToken = default);
+
+    Task<CatalogueSubmissionVariantOverrideReceipt?> GetVariantOverrideAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        Guid variantId,
+        CancellationToken cancellationToken = default);
+
+    Task<CatalogueSubmissionVariantOverrideReceipt> UpdateVariantOverrideAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        Guid variantId,
+        UpdateCatalogueSubmissionVariantOverride command,
         CancellationToken cancellationToken = default);
 
     Task<CatalogueSubmissionVariantReceipt> AddVariantAsync(

@@ -24,6 +24,7 @@ public enum EvidenceType { Photograph, BarcodeImage, Document, Measurement, Note
 public enum EditorialOutcome { Accepted, Rejected, RequestAdditionalEvidence, Deferred }
 public enum KnowledgeGapType { Availability, NewProduct, ConflictingEvidence, Correction, RegionalVariation, Specification }
 public enum DiscoveryTaskState { Open, Accepted, Resolved, PartiallyResolved, Unresolved, Invalid, Closed }
+public enum CatalogueVariantOverrideAttribute { BackingType, FastenerType, PrintDesign, PrimaryColour, SecondaryColours, WetnessIndicator, StandingLeakGuards, InnerLeakGuards, ElasticWaistbandFront, ElasticWaistbandRear, WaistbandStyle, Fragrance, LatexFree, ChlorineFree, NumberOfFasteners, ConstructionNotes }
 
 public enum CatalogueSubmissionStatus
 {
@@ -474,6 +475,111 @@ public sealed class CatalogueSubmissionEditorialDecision : Entity
     public DateTimeOffset DecidedAtUtc { get; private set; }
 }
 
+public sealed class CatalogueSubmissionVariantOverride : Entity
+{
+    private CatalogueSubmissionVariantOverride() { }
+
+    public CatalogueSubmissionVariantOverride(Guid variantId)
+    {
+        if (variantId == Guid.Empty)
+            throw new ArgumentException("A product variant is required.", nameof(variantId));
+
+        VariantId = variantId;
+    }
+
+    public Guid VariantId { get; private set; }
+    public BackingType? BackingType { get; private set; }
+    public FastenerType? FastenerType { get; private set; }
+    public string? PrintDesign { get; private set; }
+    public string? PrimaryColour { get; private set; }
+    public string? SecondaryColours { get; private set; }
+    public bool? HasWetnessIndicator { get; private set; }
+    public bool? HasStandingLeakGuards { get; private set; }
+    public bool? HasInnerLeakGuards { get; private set; }
+    public bool? HasElasticWaistbandFront { get; private set; }
+    public bool? HasElasticWaistbandRear { get; private set; }
+    public WaistbandStyle? WaistbandStyle { get; private set; }
+    public FragranceType? Fragrance { get; private set; }
+    public bool? IsLatexFree { get; private set; }
+    public bool? IsChlorineFree { get; private set; }
+    public int? FastenerCount { get; private set; }
+    public string? ConstructionNotes { get; private set; }
+
+    public bool HasAnyOverride =>
+        BackingType.HasValue || FastenerType.HasValue || PrintDesign is not null || PrimaryColour is not null ||
+        SecondaryColours is not null || HasWetnessIndicator.HasValue || HasStandingLeakGuards.HasValue ||
+        HasInnerLeakGuards.HasValue || HasElasticWaistbandFront.HasValue || HasElasticWaistbandRear.HasValue ||
+        WaistbandStyle.HasValue || Fragrance.HasValue || IsLatexFree.HasValue || IsChlorineFree.HasValue ||
+        FastenerCount.HasValue || ConstructionNotes is not null;
+
+    public void Set(CatalogueVariantOverrideAttribute attribute, string? value)
+    {
+        switch (attribute)
+        {
+            case CatalogueVariantOverrideAttribute.BackingType:
+                BackingType = ParseEnum<BackingType>(value, attribute); break;
+            case CatalogueVariantOverrideAttribute.FastenerType:
+                FastenerType = ParseEnum<FastenerType>(value, attribute); break;
+            case CatalogueVariantOverrideAttribute.PrintDesign:
+                PrintDesign = NormaliseText(value); break;
+            case CatalogueVariantOverrideAttribute.PrimaryColour:
+                PrimaryColour = NormaliseText(value); break;
+            case CatalogueVariantOverrideAttribute.SecondaryColours:
+                SecondaryColours = NormaliseText(value); break;
+            case CatalogueVariantOverrideAttribute.WetnessIndicator:
+                HasWetnessIndicator = ParseBool(value, attribute); break;
+            case CatalogueVariantOverrideAttribute.StandingLeakGuards:
+                HasStandingLeakGuards = ParseBool(value, attribute); break;
+            case CatalogueVariantOverrideAttribute.InnerLeakGuards:
+                HasInnerLeakGuards = ParseBool(value, attribute); break;
+            case CatalogueVariantOverrideAttribute.ElasticWaistbandFront:
+                HasElasticWaistbandFront = ParseBool(value, attribute); break;
+            case CatalogueVariantOverrideAttribute.ElasticWaistbandRear:
+                HasElasticWaistbandRear = ParseBool(value, attribute); break;
+            case CatalogueVariantOverrideAttribute.WaistbandStyle:
+                WaistbandStyle = ParseEnum<WaistbandStyle>(value, attribute); break;
+            case CatalogueVariantOverrideAttribute.Fragrance:
+                Fragrance = ParseEnum<FragranceType>(value, attribute); break;
+            case CatalogueVariantOverrideAttribute.LatexFree:
+                IsLatexFree = ParseBool(value, attribute); break;
+            case CatalogueVariantOverrideAttribute.ChlorineFree:
+                IsChlorineFree = ParseBool(value, attribute); break;
+            case CatalogueVariantOverrideAttribute.NumberOfFasteners:
+                FastenerCount = ParseInt(value, attribute); break;
+            case CatalogueVariantOverrideAttribute.ConstructionNotes:
+                ConstructionNotes = NormaliseText(value); break;
+            default:
+                throw new ArgumentException("The variant override attribute is invalid.", nameof(attribute));
+        }
+    }
+
+    private static string? NormaliseText(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+    private static T? ParseEnum<T>(string? value, CatalogueVariantOverrideAttribute attribute) where T : struct, Enum
+    {
+        if (string.IsNullOrWhiteSpace(value)) return null;
+        return Enum.TryParse<T>(value, true, out var parsed) && Enum.IsDefined(parsed)
+            ? parsed
+            : throw new ArgumentException($"The value for {attribute} is invalid.", nameof(value));
+    }
+
+    private static bool? ParseBool(string? value, CatalogueVariantOverrideAttribute attribute)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return null;
+        return bool.TryParse(value, out var parsed)
+            ? parsed
+            : throw new ArgumentException($"The value for {attribute} must be true or false.", nameof(value));
+    }
+
+    private static int? ParseInt(string? value, CatalogueVariantOverrideAttribute attribute)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return null;
+        return int.TryParse(value, out var parsed) && parsed >= 0
+            ? parsed
+            : throw new ArgumentException($"The value for {attribute} must be a non-negative whole number.", nameof(value));
+    }
+}
+
 public sealed class CatalogueSubmissionVariant : Entity
 {
     private CatalogueSubmissionVariant()
@@ -581,6 +687,10 @@ public sealed class CatalogueSubmission : Entity
     public string? IdentitySourceUrl { get; private set; }
 
     public ProductType? ProposedProductType { get; private set; }
+    public string? ProposedProductFamily { get; private set; }
+    public string? ProposedDescription { get; private set; }
+    public ProductStatus? ProposedProductStatus { get; private set; }
+    public string? ProposedOfficialWebsiteUrl { get; private set; }
 
     public string? ProposedManufacturerSize { get; private set; }
 
@@ -599,6 +709,19 @@ public sealed class CatalogueSubmission : Entity
     public int? ProposedQuantityPerPack { get; private set; }
 
     public PackagingType? ProposedPackagingType { get; private set; }
+
+    public string? SharedPrintDesign { get; private set; }
+    public string? SharedPrimaryColour { get; private set; }
+    public string? SharedSecondaryColours { get; private set; }
+    public bool? SharedWetnessIndicator { get; private set; }
+    public bool? SharedStandingLeakGuards { get; private set; }
+    public bool? SharedInnerLeakGuards { get; private set; }
+    public bool? SharedElasticWaistbandFront { get; private set; }
+    public bool? SharedElasticWaistbandRear { get; private set; }
+    public bool? SharedLatexFree { get; private set; }
+    public bool? SharedChlorineFree { get; private set; }
+    public int? SharedFastenerCount { get; private set; }
+    public string? SharedConstructionNotes { get; private set; }
 
     public string? Notes { get; private set; }
 
@@ -686,7 +809,23 @@ public sealed class CatalogueSubmission : Entity
         WaistbandStyle? proposedWaistbandStyle,
         FragranceType? proposedFragranceType,
         int? proposedQuantityPerPack,
-        PackagingType? proposedPackagingType)
+        PackagingType? proposedPackagingType,
+        string? proposedProductFamily = null,
+        string? proposedDescription = null,
+        ProductStatus? proposedProductStatus = null,
+        string? proposedOfficialWebsiteUrl = null,
+        string? sharedPrintDesign = null,
+        string? sharedPrimaryColour = null,
+        string? sharedSecondaryColours = null,
+        bool? sharedWetnessIndicator = null,
+        bool? sharedStandingLeakGuards = null,
+        bool? sharedInnerLeakGuards = null,
+        bool? sharedElasticWaistbandFront = null,
+        bool? sharedElasticWaistbandRear = null,
+        bool? sharedLatexFree = null,
+        bool? sharedChlorineFree = null,
+        int? sharedFastenerCount = null,
+        string? sharedConstructionNotes = null)
     {
         if (Status is not CatalogueSubmissionStatus.Draft and not CatalogueSubmissionStatus.NeedsChanges)
             throw new InvalidOperationException("Only draft submissions or submissions needing changes can be edited.");
@@ -705,6 +844,18 @@ public sealed class CatalogueSubmission : Entity
         if (proposedQuantityPerPack is <= 0)
             throw new ArgumentException("Quantity per pack must be greater than zero.", nameof(proposedQuantityPerPack));
 
+        if (proposedProductStatus.HasValue && !Enum.IsDefined(proposedProductStatus.Value))
+            throw new ArgumentException("The product status is invalid.", nameof(proposedProductStatus));
+
+        if (!string.IsNullOrWhiteSpace(proposedOfficialWebsiteUrl))
+        {
+            if (!Uri.TryCreate(proposedOfficialWebsiteUrl.Trim(), UriKind.Absolute, out var uri) ||
+                (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+                throw new ArgumentException("Official website must be an absolute HTTP or HTTPS URL.", nameof(proposedOfficialWebsiteUrl));
+
+            proposedOfficialWebsiteUrl = uri.AbsoluteUri;
+        }
+
         ProposedProductType = proposedProductType;
         ProposedManufacturerSize = string.IsNullOrWhiteSpace(proposedManufacturerSize)
             ? null
@@ -717,6 +868,22 @@ public sealed class CatalogueSubmission : Entity
         ProposedFragranceType = proposedFragranceType;
         ProposedQuantityPerPack = proposedQuantityPerPack;
         ProposedPackagingType = proposedPackagingType;
+        ProposedProductFamily = string.IsNullOrWhiteSpace(proposedProductFamily) ? null : proposedProductFamily.Trim();
+        ProposedDescription = string.IsNullOrWhiteSpace(proposedDescription) ? null : proposedDescription.Trim();
+        ProposedProductStatus = proposedProductStatus;
+        ProposedOfficialWebsiteUrl = string.IsNullOrWhiteSpace(proposedOfficialWebsiteUrl) ? null : proposedOfficialWebsiteUrl.Trim();
+        SharedPrintDesign = string.IsNullOrWhiteSpace(sharedPrintDesign) ? null : sharedPrintDesign.Trim();
+        SharedPrimaryColour = string.IsNullOrWhiteSpace(sharedPrimaryColour) ? null : sharedPrimaryColour.Trim();
+        SharedSecondaryColours = string.IsNullOrWhiteSpace(sharedSecondaryColours) ? null : sharedSecondaryColours.Trim();
+        SharedWetnessIndicator = sharedWetnessIndicator;
+        SharedStandingLeakGuards = sharedStandingLeakGuards;
+        SharedInnerLeakGuards = sharedInnerLeakGuards;
+        SharedElasticWaistbandFront = sharedElasticWaistbandFront;
+        SharedElasticWaistbandRear = sharedElasticWaistbandRear;
+        SharedLatexFree = sharedLatexFree;
+        SharedChlorineFree = sharedChlorineFree;
+        SharedFastenerCount = sharedFastenerCount;
+        SharedConstructionNotes = string.IsNullOrWhiteSpace(sharedConstructionNotes) ? null : sharedConstructionNotes.Trim();
         Touch();
     }
 

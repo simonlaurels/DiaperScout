@@ -21,6 +21,7 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
     public DbSet<CatalogueAuditRecord> CatalogueAuditRecords => Set<CatalogueAuditRecord>();
     public DbSet<CatalogueSubmission> CatalogueSubmissions => Set<CatalogueSubmission>();
     public DbSet<CatalogueSubmissionVariant> CatalogueSubmissionVariants => Set<CatalogueSubmissionVariant>();
+    public DbSet<CatalogueSubmissionVariantOverride> CatalogueSubmissionVariantOverrides => Set<CatalogueSubmissionVariantOverride>();
     public DbSet<CatalogueSubmissionVerification> CatalogueSubmissionVerifications => Set<CatalogueSubmissionVerification>();
     public DbSet<CatalogueSubmissionRetailDestination> CatalogueSubmissionRetailDestinations => Set<CatalogueSubmissionRetailDestination>();
     public DbSet<CatalogueSubmissionRetailAffiliate> CatalogueSubmissionRetailAffiliates => Set<CatalogueSubmissionRetailAffiliate>();
@@ -417,6 +418,26 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
             entity.HasOne<CatalogueSubmission>()
                 .WithMany()
                 .HasForeignKey(x => x.SubmissionId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<CatalogueSubmissionVariantOverride>(entity =>
+        {
+            entity.ToTable("catalogue_submission_variant_overrides");
+
+            entity.Property(x => x.BackingType).HasConversion<string>().HasMaxLength(32);
+            entity.Property(x => x.FastenerType).HasConversion<string>().HasMaxLength(32);
+            entity.Property(x => x.WaistbandStyle).HasConversion<string>().HasMaxLength(32);
+            entity.Property(x => x.Fragrance).HasConversion<string>().HasMaxLength(32);
+            entity.Property(x => x.PrintDesign).HasMaxLength(500);
+            entity.Property(x => x.PrimaryColour).HasMaxLength(100);
+            entity.Property(x => x.SecondaryColours).HasMaxLength(500);
+            entity.Property(x => x.ConstructionNotes).HasColumnType("text");
+
+            entity.HasIndex(x => x.VariantId).IsUnique();
+            entity.HasOne<CatalogueSubmissionVariant>()
+                .WithMany()
+                .HasForeignKey(x => x.VariantId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 

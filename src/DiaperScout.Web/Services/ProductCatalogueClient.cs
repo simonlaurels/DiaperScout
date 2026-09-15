@@ -147,6 +147,54 @@ public sealed class ProductCatalogueClient(HttpClient client)
             : CatalogueSubmissionVariantsResult.Found(variants);
     }
 
+    public async Task<CatalogueSubmissionVariantOverrideResult> GetSubmissionVariantOverrideAsync(
+        Guid submissionId,
+        Guid variantId,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.GetAsync(
+            $"api/v1/catalogue-submissions/{submissionId}/variants/{variantId}/override",
+            cancellationToken);
+
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            return CatalogueSubmissionVariantOverrideResult.AccessDenied();
+        if (!response.IsSuccessStatusCode)
+            return CatalogueSubmissionVariantOverrideResult.Failed();
+
+        var value = await response.Content.ReadFromJsonAsync<CatalogueSubmissionVariantOverrideReceipt>(cancellationToken);
+        return CatalogueSubmissionVariantOverrideResult.Found(value);
+    }
+
+    public async Task<CatalogueSubmissionVariantOverrideResult> UpdateSubmissionVariantOverrideAsync(
+        Guid submissionId,
+        Guid variantId,
+        UpdateCatalogueSubmissionVariantOverrideRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.PutAsJsonAsync(
+            $"api/v1/catalogue-submissions/{submissionId}/variants/{variantId}/override",
+            request,
+            cancellationToken);
+
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            return CatalogueSubmissionVariantOverrideResult.AccessDenied();
+
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>(cancellationToken);
+            return CatalogueSubmissionVariantOverrideResult.Invalid(
+                problem?.Errors is not null
+                    ? new Dictionary<string, string[]>(problem.Errors)
+                    : new Dictionary<string, string[]> { ["override"] = ["The variant difference could not be saved."] });
+        }
+
+        if (!response.IsSuccessStatusCode)
+            return CatalogueSubmissionVariantOverrideResult.Failed();
+
+        var value = await response.Content.ReadFromJsonAsync<CatalogueSubmissionVariantOverrideReceipt>(cancellationToken);
+        return value is null ? CatalogueSubmissionVariantOverrideResult.Failed() : CatalogueSubmissionVariantOverrideResult.Saved(value);
+    }
+
     public async Task<CatalogueSubmissionVariantResult> AddSubmissionVariantAsync(
         Guid submissionId,
         AddCatalogueSubmissionVariantRequest request,
@@ -627,7 +675,27 @@ public sealed record UpdateCatalogueSubmissionSpecificationsRequest(
     WaistbandStyle? ProposedWaistbandStyle,
     FragranceType? ProposedFragranceType,
     int? ProposedQuantityPerPack,
-    PackagingType? ProposedPackagingType);
+    PackagingType? ProposedPackagingType,
+    string? ProposedProductFamily,
+    string? ProposedDescription,
+    ProductStatus? ProposedProductStatus,
+    string? ProposedOfficialWebsiteUrl,
+    string? SharedPrintDesign,
+    string? SharedPrimaryColour,
+    string? SharedSecondaryColours,
+    bool? SharedWetnessIndicator,
+    bool? SharedStandingLeakGuards,
+    bool? SharedInnerLeakGuards,
+    bool? SharedElasticWaistbandFront,
+    bool? SharedElasticWaistbandRear,
+    bool? SharedLatexFree,
+    bool? SharedChlorineFree,
+    int? SharedFastenerCount,
+    string? SharedConstructionNotes);
+
+public sealed record UpdateCatalogueSubmissionVariantOverrideRequest(
+    CatalogueVariantOverrideAttribute Attribute,
+    string? Value);
 
 public sealed record AddCatalogueSubmissionVerificationRequest(
     CatalogueVerificationArea Area,
@@ -1027,3 +1095,30 @@ public enum CatalogueSubmissionVariantResultStatus
     AccessDenied,
     Failed
 }
+public sealed record CatalogueSubmissionVariantOverrideResult(
+    CatalogueSubmissionVariantOverrideResultStatus Status,
+    CatalogueSubmissionVariantOverrideReceipt? Override = null,
+    IReadOnlyDictionary<string, string[]>? Errors = null,
+    string? Message = null)
+{
+    public static CatalogueSubmissionVariantOverrideResult Found(CatalogueSubmissionVariantOverrideReceipt? value) =>
+        new(CatalogueSubmissionVariantOverrideResultStatus.Found, value);
+    public static CatalogueSubmissionVariantOverrideResult Saved(CatalogueSubmissionVariantOverrideReceipt value) =>
+        new(CatalogueSubmissionVariantOverrideResultStatus.Saved, value);
+    public static CatalogueSubmissionVariantOverrideResult Invalid(IReadOnlyDictionary<string, string[]> errors) =>
+        new(CatalogueSubmissionVariantOverrideResultStatus.Invalid, Errors: errors);
+    public static CatalogueSubmissionVariantOverrideResult AccessDenied() =>
+        new(CatalogueSubmissionVariantOverrideResultStatus.AccessDenied, Message: "You need Moderator editorial authority to manage the catalogue.");
+    public static CatalogueSubmissionVariantOverrideResult Failed() =>
+        new(CatalogueSubmissionVariantOverrideResultStatus.Failed, Message: "The variant difference could not be loaded or saved just now.");
+}
+
+public enum CatalogueSubmissionVariantOverrideResultStatus
+{
+    Found,
+    Saved,
+    Invalid,
+    AccessDenied,
+    Failed
+}
+

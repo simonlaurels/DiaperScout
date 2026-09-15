@@ -84,6 +84,74 @@ internal sealed class CatalogueSubmissions(
         return CatalogueSubmissionVariantsResult.Found(variants);
     }
 
+    public async Task<CatalogueSubmissionVariantOverrideReceipt?> GetVariantOverrideAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        Guid variantId,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireModeratorAsync(actor, cancellationToken);
+
+        var variantExists = await db.CatalogueSubmissionVariants.AnyAsync(
+            value => value.Id == variantId && value.SubmissionId == submissionId,
+            cancellationToken);
+
+        if (!variantExists)
+            throw new CatalogueValidationException("variantId", "The product variant was not found.");
+
+        var overrideValue = await db.CatalogueSubmissionVariantOverrides
+            .AsNoTracking()
+            .SingleOrDefaultAsync(value => value.VariantId == variantId, cancellationToken);
+
+        return overrideValue is null ? null : ToVariantOverrideReceipt(overrideValue);
+    }
+
+    public async Task<CatalogueSubmissionVariantOverrideReceipt> UpdateVariantOverrideAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        Guid variantId,
+        UpdateCatalogueSubmissionVariantOverride command,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireModeratorAsync(actor, cancellationToken);
+
+        var submission = await GetSubmissionAsync(submissionId, cancellationToken);
+        EnsureDraftEditable(submission);
+
+        var variant = await db.CatalogueSubmissionVariants
+            .SingleOrDefaultAsync(
+                value => value.Id == variantId && value.SubmissionId == submissionId,
+                cancellationToken)
+            ?? throw new CatalogueValidationException("variantId", "The product variant was not found.");
+
+        if (variant.IsStructuralFallback)
+            throw new CatalogueValidationException("variantId", "The structural Single version cannot have variant-specific differences.");
+
+        try
+        {
+            var overrideValue = await db.CatalogueSubmissionVariantOverrides
+                .SingleOrDefaultAsync(value => value.VariantId == variantId, cancellationToken);
+
+            if (overrideValue is null)
+            {
+                overrideValue = new CatalogueSubmissionVariantOverride(variantId);
+                db.CatalogueSubmissionVariantOverrides.Add(overrideValue);
+            }
+
+            overrideValue.Set(command.Attribute, command.Value);
+
+            if (!overrideValue.HasAnyOverride)
+                db.CatalogueSubmissionVariantOverrides.Remove(overrideValue);
+
+            await db.SaveChangesAsync(cancellationToken);
+            return ToVariantOverrideReceipt(overrideValue);
+        }
+        catch (ArgumentException exception)
+        {
+            throw new CatalogueValidationException("value", exception.Message);
+        }
+    }
+
     public async Task<CatalogueSubmissionVariantReceipt> AddVariantAsync(
         AuthenticatedUser actor,
         Guid submissionId,
@@ -932,6 +1000,27 @@ internal sealed class CatalogueSubmissions(
             variant.CreatedAtUtc,
             variant.UpdatedAtUtc);
 
+    private static CatalogueSubmissionVariantOverrideReceipt ToVariantOverrideReceipt(
+        CatalogueSubmissionVariantOverride value) =>
+        new(
+            value.VariantId,
+            value.BackingType,
+            value.FastenerType,
+            value.PrintDesign,
+            value.PrimaryColour,
+            value.SecondaryColours,
+            value.HasWetnessIndicator,
+            value.HasStandingLeakGuards,
+            value.HasInnerLeakGuards,
+            value.HasElasticWaistbandFront,
+            value.HasElasticWaistbandRear,
+            value.WaistbandStyle,
+            value.Fragrance,
+            value.IsLatexFree,
+            value.IsChlorineFree,
+            value.FastenerCount,
+            value.ConstructionNotes);
+
     private static CatalogueSubmissionReceipt ToReceipt(
         CatalogueSubmission submission) =>
         new(
@@ -946,6 +1035,10 @@ internal sealed class CatalogueSubmissions(
             submission.ProposedSku,
             submission.IdentitySourceUrl,
             submission.ProposedProductType,
+            submission.ProposedProductFamily,
+            submission.ProposedDescription,
+            submission.ProposedProductStatus,
+            submission.ProposedOfficialWebsiteUrl,
             submission.ProposedManufacturerSize,
             submission.ProposedWaistMinimumCm,
             submission.ProposedWaistMaximumCm,
@@ -955,6 +1048,18 @@ internal sealed class CatalogueSubmissions(
             submission.ProposedFragranceType,
             submission.ProposedQuantityPerPack,
             submission.ProposedPackagingType,
+            submission.SharedPrintDesign,
+            submission.SharedPrimaryColour,
+            submission.SharedSecondaryColours,
+            submission.SharedWetnessIndicator,
+            submission.SharedStandingLeakGuards,
+            submission.SharedInnerLeakGuards,
+            submission.SharedElasticWaistbandFront,
+            submission.SharedElasticWaistbandRear,
+            submission.SharedLatexFree,
+            submission.SharedChlorineFree,
+            submission.SharedFastenerCount,
+            submission.SharedConstructionNotes,
             submission.Notes,
             submission.CreatedAtUtc,
             submission.UpdatedAtUtc);

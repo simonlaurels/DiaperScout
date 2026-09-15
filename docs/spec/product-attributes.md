@@ -15,6 +15,8 @@ Product
 
 Each attribute has one authoritative home and should only be recorded once.
 
+For catalogue entry, shared details are entered once at the highest applicable level. Variants inherit shared values by default and store an explicit override only when a characteristic genuinely differs for that variant. Sizes and retail packaging follow the same principle: a value belongs at the highest level where it is true.
+
 Where subjective information is required, it belongs in Community Observations rather than the Product Specification.
 
 ---
@@ -65,7 +67,7 @@ Variants exist only where the manufacturer intentionally produces different vers
 | Number of Fasteners | Integer |
 | Construction Notes | Markdown | Objective only |
 
-Only attributes that genuinely differ between variants should appear here.
+Only attributes that genuinely differ between variants should be stored as variant overrides. A variant does not duplicate shared values simply because the field is also relevant to variants.
 
 ---
 

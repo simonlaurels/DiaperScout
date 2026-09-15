@@ -169,6 +169,15 @@ public interface IObservationSubmissions
         CancellationToken cancellationToken = default);
 }
 
+public sealed record CatalogueSubmissionQueueItem(
+    Guid Id,
+    CatalogueSubmissionStatus Status,
+    string ProposedManufacturerName,
+    string? ProposedBrandName,
+    string ProposedProductName,
+    DateTimeOffset CreatedAtUtc,
+    DateTimeOffset UpdatedAtUtc);
+
 public sealed record CreateCatalogueSubmission(
     CatalogueSubmissionSource Source,
     string ProposedManufacturerName,
@@ -430,6 +439,10 @@ public sealed record UpdateCatalogueSubmissionSpecifications(
 
 public interface ICatalogueSubmissions
 {
+    Task<IReadOnlyList<CatalogueSubmissionQueueItem>> GetSubmissionsAsync(
+        AuthenticatedUser actor,
+        CancellationToken cancellationToken = default);
+
     Task<CatalogueSubmissionReceipt> CreateAsync(
         AuthenticatedUser actor,
         CreateCatalogueSubmission command,

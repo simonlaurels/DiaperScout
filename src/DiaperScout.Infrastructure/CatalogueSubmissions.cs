@@ -10,6 +10,26 @@ internal sealed class CatalogueSubmissions(
     IEditorialAuthorisation editorialAuthorisation,
     ICanonicalCatalogue canonicalCatalogue) : ICatalogueSubmissions
 {
+    public async Task<IReadOnlyList<CatalogueSubmissionQueueItem>> GetSubmissionsAsync(
+        AuthenticatedUser actor,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireModeratorAsync(actor, cancellationToken);
+
+        return await db.CatalogueSubmissions
+            .AsNoTracking()
+            .OrderByDescending(value => value.UpdatedAtUtc)
+            .Select(value => new CatalogueSubmissionQueueItem(
+                value.Id,
+                value.Status,
+                value.ProposedManufacturerName,
+                value.ProposedBrandName,
+                value.ProposedProductName,
+                value.CreatedAtUtc,
+                value.UpdatedAtUtc))
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<CatalogueSubmissionReceipt> CreateAsync(
         AuthenticatedUser actor,
         CreateCatalogueSubmission command,

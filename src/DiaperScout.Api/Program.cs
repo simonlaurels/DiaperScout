@@ -344,6 +344,38 @@ app.MapGet(
 if (builder.Configuration.GetValue<bool>(
         "Editorial:CatalogueWritesEnabled"))
 {
+    app.MapGet(
+        "/api/v1/catalogue-submissions",
+        async (
+            ICurrentUser currentUser,
+            ICatalogueSubmissions submissions,
+            CancellationToken cancellationToken) =>
+        {
+            var actor =
+                await currentUser.GetAsync(cancellationToken);
+
+            if (actor is null)
+                return Results.Forbid();
+
+            try
+            {
+                var queue =
+                    await submissions.GetSubmissionsAsync(
+                        actor,
+                        cancellationToken);
+
+                return Results.Ok(queue);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("GetCatalogueSubmissionQueue")
+        .WithTags("Catalogue Submissions")
+        .Produces<IReadOnlyList<CatalogueSubmissionQueueItem>>();
+
     app.MapPost(
         "/api/v1/catalogue-submissions",
         async (

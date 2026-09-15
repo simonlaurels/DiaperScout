@@ -1,0 +1,247 @@
+@page "/catalogue/products"
+@rendermode InteractiveServer
+@using DiaperScout.Application
+@using DiaperScout.Domain
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<PageTitle>Product Management · DiaperScout</PageTitle>
+
+<section class="product-management-page">
+    <div class="product-management-container">
+        <header class="product-management-header">
+            <div>
+                <p class="catalogue-kicker">CATALOGUE WORKSPACE</p>
+                <h1>Product Management</h1>
+                <p class="product-management-intro">
+                    Manage catalogue submissions and continue products that are still being prepared.
+                    Published products will have their own management view later.
+                </p>
+            </div>
+
+            <a class="ds-button ds-button-primary" href="/catalogue/add">
+                ＋ Add Product
+            </a>
+        </header>
+
+        @if (loading)
+        {
+            <section class="product-management-panel">
+                <div class="product-management-empty">
+                    <strong>Loading submissions…</strong>
+                    <span>Fetching the current catalogue queue.</span>
+                </div>
+            </section>
+        }
+        else if (accessDenied)
+        {
+            <div class="product-management-message product-management-message-error" role="alert">
+                <strong>Product management unavailable</strong>
+                <p>You need Moderator editorial authority to manage catalogue submissions.</p>
+            </div>
+        }
+        else if (loadError is not null)
+        {
+            <div class="product-management-message product-management-message-error" role="alert">
+                <strong>Couldn't load the submission queue</strong>
+                <p>@loadError</p>
+            </div>
+        }
+        else
+        {
+            <section class="product-management-panel">
+                <div class="product-management-panel-heading">
+                    <div>
+                        <p class="catalogue-kicker">PRODUCTS</p>
+                        <h2>Submission Queue</h2>
+                    </div>
+                    <span class="product-management-count">
+                        @submissions.Count @(submissions.Count == 1 ? "submission" : "submissions")
+                    </span>
+                </div>
+
+                <p class="product-management-help">
+                    Draft and in-progress catalogue work lives here. Status tells you where the
+                    submission is in the editorial lifecycle; workflow progress shows the creation
+                    step to resume.
+                </p>
+
+                @if (submissions.Count == 0)
+                {
+                    <div class="product-management-empty">
+                        <strong>No catalogue submissions yet</strong>
+                        <span>Start a product entry and it will appear here as soon as it is created.</span>
+                        <a class="ds-button ds-button-secondary" href="/catalogue/add">＋ Add Product</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="submission-queue" role="list">
+                        @foreach (var submission in submissions)
+                        {
+                            <article class="submission-queue-item" role="listitem">
+                                <div class="submission-queue-main">
+                                    <div class="submission-queue-product">
+                                        <strong>@submission.ProposedProductName</strong>
+                                        <span>
+                                            @submission.ProposedManufacturerName
+                                            @if (!string.IsNullOrWhiteSpace(submission.ProposedBrandName))
+                                            {
+                                                <text> · @submission.ProposedBrandName</text>
+                                            }
+                                        </span>
+                                    </div>
+
+                                    <div class="submission-queue-meta">
+                                        <div>
+                                            <span class="submission-queue-label">STATUS</span>
+                                            <strong class="submission-status-badge status-@submission.Status.ToString().ToLowerInvariant()">
+                                                @FormatEnum(submission.Status)
+                                            </strong>
+                                        </div>
+
+                                        <div>
+                                            <span class="submission-queue-label">WORKFLOW</span>
+                                            <strong>@GetWorkflowProgress(submission.Status)</strong>
+                                        </div>
+
+                                        <div>
+                                            <span class="submission-queue-label">LAST UPDATED</span>
+                                            <strong>@FormatUpdated(submission.UpdatedAtUtc)</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="submission-queue-action">
+                                    <a class="ds-button ds-button-secondary"
+                                       href="@GetActionUrl(submission)">
+                                        @GetActionLabel(submission.Status) →
+                                    </a>
+                                </div>
+                            </article>
+                        }
+                    </div>
+                }
+            </section>
+        }
+    </div>
+</section>
+
+@code {
+    private IReadOnlyList<CatalogueSubmissionQueueItem> submissions = [];
+    private bool loading = true;
+    private bool accessDenied;
+    private string? loadError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        loading = true;
+        accessDenied = false;
+        loadError = null;
+
+        try
+        {
+            using var response = await Http.GetAsync(
+                "api/v1/catalogue-submissions");
+
+            if (response.StatusCode is
+                System.Net.HttpStatusCode.Unauthorized or
+                System.Net.HttpStatusCode.Forbidden)
+            {
+                accessDenied = true;
+                return;
+            }
+
+            if (!response.IsSuccessStatusCode)
+            {
+                loadError = "The catalogue submission queue could not be loaded just now.";
+                return;
+            }
+
+            var queue =
+                await response.Content.ReadFromJsonAsync<
+                    IReadOnlyList<CatalogueSubmissionQueueItem>>();
+
+            submissions = queue ?? [];
+        }
+        catch (HttpRequestException)
+        {
+            loadError = "The catalogue submission queue could not be reached just now.";
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private static string GetWorkflowProgress(CatalogueSubmissionStatus status) =>
+        status switch
+        {
+            CatalogueSubmissionStatus.Draft =>
+                "Step 2 of 6 · Product Variants",
+            CatalogueSubmissionStatus.NeedsChanges =>
+                "Resume · Changes requested",
+            CatalogueSubmissionStatus.InVerification =>
+                "Step 6 of 6 · Verification",
+            CatalogueSubmissionStatus.ReadyForReview =>
+                "Step 6 of 6 · Ready for review",
+            CatalogueSubmissionStatus.Approved =>
+                "Catalogue-ready · Approved",
+            CatalogueSubmissionStatus.Rejected =>
+                "Workflow closed · Rejected",
+            CatalogueSubmissionStatus.Published =>
+                "Published · Catalogue",
+            _ =>
+                "Workflow status available"
+        };
+
+    private static string GetActionLabel(CatalogueSubmissionStatus status) =>
+        status switch
+        {
+            CatalogueSubmissionStatus.Draft =>
+                "Continue",
+            CatalogueSubmissionStatus.NeedsChanges =>
+                "Review",
+            CatalogueSubmissionStatus.InVerification =>
+                "Review",
+            CatalogueSubmissionStatus.ReadyForReview =>
+                "Review",
+            CatalogueSubmissionStatus.Approved =>
+                "Review",
+            CatalogueSubmissionStatus.Rejected =>
+                "Review",
+            CatalogueSubmissionStatus.Published =>
+                "View",
+            _ =>
+                "Open"
+        };
+
+    private static string GetActionUrl(CatalogueSubmissionQueueItem submission) =>
+        submission.Status switch
+        {
+            CatalogueSubmissionStatus.Draft =>
+                $"/catalogue/add/{submission.Id}/2",
+            CatalogueSubmissionStatus.NeedsChanges =>
+                $"/catalogue/add/{submission.Id}/1",
+            CatalogueSubmissionStatus.InVerification =>
+                $"/catalogue/add/{submission.Id}/6",
+            CatalogueSubmissionStatus.ReadyForReview =>
+                $"/catalogue/add/{submission.Id}/6",
+            _ =>
+                $"/catalogue/add/{submission.Id}/6"
+        };
+
+    private static string FormatUpdated(DateTimeOffset value) =>
+        value.ToLocalTime().ToString("d MMM yyyy, HH:mm");
+
+    private static string FormatEnum<T>(T value) =>
+        System.Text.RegularExpressions.Regex.Replace(
+            value?.ToString() ?? string.Empty,
+            "(?<!^)([A-Z])",
+            " $1");
+}

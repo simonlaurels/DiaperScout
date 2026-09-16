@@ -213,6 +213,88 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
     }
 
     [Fact]
+    public async Task CatalogueSubmission_ManagesOptionalBaseAndNamedVariants()
+    {
+        using var client = AuthenticatedClient(PostgreSqlFixture.ModeratorSubject);
+
+        var createResponse = await client.PostAsJsonAsync(
+            "/api/v1/catalogue-submissions",
+            new
+            {
+                source = CatalogueSubmissionSource.Moderator,
+                proposedManufacturerName = "Variant Test Manufacturer",
+                proposedBrandName = "Variant Test Brand",
+                proposedProductName = "Variant Test Product"
+            });
+
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+
+        var created = await createResponse.Content.ReadFromJsonAsync<CatalogueSubmissionReceipt>();
+        Assert.NotNull(created);
+
+        var initialVariants = await client.GetFromJsonAsync<
+            IReadOnlyList<CatalogueSubmissionVariantReceipt>>(
+            $"/api/v1/catalogue-submissions/{created.Id}/variants");
+
+        Assert.NotNull(initialVariants);
+        Assert.Empty(initialVariants);
+
+        var baseResponse = await client.PostAsJsonAsync(
+            $"/api/v1/catalogue-submissions/{created.Id}/variants",
+            new { name = (string?)null });
+
+        Assert.Equal(HttpStatusCode.Created, baseResponse.StatusCode);
+
+        var baseVariant = await baseResponse.Content
+            .ReadFromJsonAsync<CatalogueSubmissionVariantReceipt>();
+
+        Assert.NotNull(baseVariant);
+        Assert.Null(baseVariant.Name);
+
+        var namedResponse = await client.PostAsJsonAsync(
+            $"/api/v1/catalogue-submissions/{created.Id}/variants",
+            new { name = "Plastic Edition" });
+
+        Assert.Equal(HttpStatusCode.Created, namedResponse.StatusCode);
+
+        var namedVariant = await namedResponse.Content
+            .ReadFromJsonAsync<CatalogueSubmissionVariantReceipt>();
+
+        Assert.NotNull(namedVariant);
+        Assert.Equal("Plastic Edition", namedVariant.Name);
+
+        var duplicateBaseResponse = await client.PostAsJsonAsync(
+            $"/api/v1/catalogue-submissions/{created.Id}/variants",
+            new { name = (string?)null });
+
+        Assert.Equal(HttpStatusCode.BadRequest, duplicateBaseResponse.StatusCode);
+
+        var renameBaseResponse = await client.PutAsJsonAsync(
+            $"/api/v1/catalogue-submissions/{created.Id}/variants/{baseVariant.Id}",
+            new { name = "Original" });
+
+        Assert.Equal(HttpStatusCode.BadRequest, renameBaseResponse.StatusCode);
+
+        var removeBaseResponse = await client.DeleteAsync(
+            $"/api/v1/catalogue-submissions/{created.Id}/variants/{baseVariant.Id}");
+
+        Assert.Equal(HttpStatusCode.BadRequest, removeBaseResponse.StatusCode);
+
+        var removeNamedResponse = await client.DeleteAsync(
+            $"/api/v1/catalogue-submissions/{created.Id}/variants/{namedVariant.Id}");
+
+        Assert.Equal(HttpStatusCode.NoContent, removeNamedResponse.StatusCode);
+
+        var remainingVariants = await client.GetFromJsonAsync<
+            IReadOnlyList<CatalogueSubmissionVariantReceipt>>(
+            $"/api/v1/catalogue-submissions/{created.Id}/variants");
+
+        Assert.NotNull(remainingVariants);
+        var remaining = Assert.Single(remainingVariants);
+        Assert.Null(remaining.Name);
+    }
+
+    [Fact]
     public async Task CatalogueSubmission_CanUpdateProductIdentityWhileDraft()
     {
         using var client = AuthenticatedClient(PostgreSqlFixture.ModeratorSubject);
@@ -1207,6 +1289,11 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
         var created = await createResponse.Content.ReadFromJsonAsync<CatalogueSubmissionReceipt>();
         Assert.NotNull(created);
 
+        var secondVariantResponse = await client.PostAsJsonAsync(
+            $"/api/v1/catalogue-submissions/{created.Id}/variants",
+            new { name = "Second Variant" });
+        Assert.Equal(HttpStatusCode.Created, secondVariantResponse.StatusCode);
+
         Assert.Equal(
             HttpStatusCode.OK,
             (await client.PutAsJsonAsync(
@@ -1302,6 +1389,15 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
 
         var product = await db.Products.SingleAsync(value => value.Id == receipt.ProductId);
         Assert.Equal("Published Integration Test Product", product.Name);
+
+        var publishedVariants = await db.ProductVariants
+            .Where(value => value.ProductId == product.Id)
+            .OrderBy(value => value.Name)
+            .ToListAsync();
+
+        Assert.Equal(2, publishedVariants.Count);
+        Assert.Contains(publishedVariants, value => value.Name == "Integration Published Variant");
+        Assert.Contains(publishedVariants, value => value.Name == "Second Variant");
         Assert.Equal(_fixture.ManufacturerId, product.ManufacturerId);
         Assert.Equal(_fixture.BrandId, product.BrandId);
         Assert.Equal(ProductType.Tape, product.ProductType);

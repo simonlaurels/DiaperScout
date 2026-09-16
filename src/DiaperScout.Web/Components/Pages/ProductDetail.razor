@@ -70,6 +70,21 @@ else
 
             @if (product.Variants.Count > 0)
             {
+                @if (product.Variants.Count > 1)
+                {
+                    <nav class="product-variant-selector" aria-label="Product variants">
+                        <span class="product-variant-selector-label">Choose a version</span>
+                        <div class="product-variant-selector-options">
+                            @foreach (var variant in product.Variants)
+                            {
+                                <a href="#variant-@variant.Id" class="product-variant-choice">
+                                    @(variant.Name == product.Name ? "Original" : variant.Name)
+                                </a>
+                            }
+                        </div>
+                    </nav>
+                }
+
                 <section class="product-spec-section">
                     <div class="product-section-heading">
                         <p class="catalogue-kicker">THE DETAILS</p>
@@ -78,7 +93,7 @@ else
 
                     @foreach (var variant in product.Variants)
                     {
-                        <article class="product-variant">
+                        <article id="variant-@variant.Id" class="product-variant">
                             <div>
                                 <h3>@variant.Name</h3>
                                 <span class="product-variant-backing">@FormatBacking(variant.BackingType)</span>

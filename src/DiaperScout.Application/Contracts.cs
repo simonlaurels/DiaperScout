@@ -183,14 +183,13 @@ public sealed record CreateCatalogueSubmission(
     string ProposedManufacturerName,
     string? ProposedBrandName,
     string ProposedProductName,
-    string ProposedVariantName,
+    string? ProposedVariantName,
     string? Notes);
 
 public sealed record CatalogueSubmissionVariantReceipt(
     Guid Id,
     Guid SubmissionId,
-    string Name,
-    bool IsStructuralFallback,
+    string? Name,
     DateTimeOffset CreatedAtUtc,
     DateTimeOffset UpdatedAtUtc);
 
@@ -218,7 +217,7 @@ public sealed record UpdateCatalogueSubmissionVariantOverride(
     string? Value);
 
 public sealed record AddCatalogueSubmissionVariant(
-    string Name);
+    string? Name);
 
 public sealed record UpdateCatalogueSubmissionVariant(
     string Name);
@@ -263,7 +262,7 @@ public sealed record CatalogueSubmissionReceipt(
     string ProposedManufacturerName,
     string? ProposedBrandName,
     string ProposedProductName,
-    string ProposedVariantName,
+    string? ProposedVariantName,
     string? ProposedGtin,
     string? ProposedSku,
     string? IdentitySourceUrl,
@@ -566,6 +565,10 @@ public sealed record CataloguePublicationReceipt(
     Guid AuditRecordId,
     string? Gtin);
 
+public sealed record CreateCanonicalProductVariant(
+    string Name,
+    BackingType BackingType);
+
 public sealed record CreateCanonicalProduct(
     Guid ManufacturerId,
     Guid? BrandId,
@@ -573,8 +576,7 @@ public sealed record CreateCanonicalProduct(
     string ProductSlug,
     ProductType ProductType,
     ProductStatus Status,
-    string VariantName,
-    BackingType BackingType,
+    IReadOnlyList<CreateCanonicalProductVariant> Variants,
     string ManufacturerSize,
     int? WaistMinimumCm,
     int? WaistMaximumCm,

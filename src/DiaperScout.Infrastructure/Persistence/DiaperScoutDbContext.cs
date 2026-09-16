@@ -329,8 +329,7 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
                 .IsRequired();
 
             entity.Property(x => x.ProposedVariantName)
-                .HasMaxLength(200)
-                .IsRequired();
+                .HasMaxLength(200);
 
             entity.Property(x => x.ProposedGtin)
                 .HasMaxLength(14);
@@ -405,15 +404,14 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
             entity.ToTable("catalogue_submission_variants");
 
             entity.Property(x => x.Name)
-                .HasMaxLength(200)
-                .IsRequired();
+                .HasMaxLength(200);
 
             entity.HasIndex(x => new { x.SubmissionId, x.Name })
                 .IsUnique();
 
-            entity.HasIndex(x => new { x.SubmissionId, x.IsStructuralFallback })
+            entity.HasIndex(x => x.SubmissionId)
                 .IsUnique()
-                .HasFilter("\"IsStructuralFallback\" = true");
+                .HasFilter("\"Name\" IS NULL");
 
             entity.HasOne<CatalogueSubmission>()
                 .WithMany()

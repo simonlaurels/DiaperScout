@@ -1389,8 +1389,12 @@ if (builder.Configuration.GetValue<bool>(
                             request.ProductSlug,
                             request.ProductType,
                             request.Status,
-                            request.VariantName,
-                            request.BackingType,
+                            new[]
+                            {
+                                new CreateCanonicalProductVariant(
+                                    request.VariantName,
+                                    request.BackingType)
+                            },
                             request.ManufacturerSize,
                             request.WaistMinimumCm,
                             request.WaistMaximumCm,
@@ -1460,11 +1464,11 @@ public sealed record CreateCatalogueSubmissionRequest(
     string ProposedManufacturerName,
     string? ProposedBrandName,
     string ProposedProductName,
-    string ProposedVariantName,
+    string? ProposedVariantName,
     string? Notes);
 
 public sealed record AddCatalogueSubmissionVariantRequest(
-    string Name);
+    string? Name);
 
 public sealed record UpdateCatalogueSubmissionVariantRequest(
     string Name);

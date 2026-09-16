@@ -246,6 +246,23 @@ public sealed class ProductCatalogueClient(HttpClient client)
         return value is null ? CatalogueSubmissionVariantOverrideResult.Failed() : CatalogueSubmissionVariantOverrideResult.Saved(value);
     }
 
+    public async Task<CatalogueSubmissionVariantResult> AddSubmissionBaseVariantAsync(
+        Guid submissionId,
+        CancellationToken cancellationToken = default)
+        => await AddSubmissionVariantAsync(
+            submissionId,
+            new AddCatalogueSubmissionVariantRequest(null),
+            cancellationToken);
+
+    public async Task<CatalogueSubmissionVariantResult> AddSubmissionNamedVariantAsync(
+        Guid submissionId,
+        string name,
+        CancellationToken cancellationToken = default)
+        => await AddSubmissionVariantAsync(
+            submissionId,
+            new AddCatalogueSubmissionVariantRequest(name),
+            cancellationToken);
+
     public async Task<CatalogueSubmissionVariantResult> AddSubmissionVariantAsync(
         Guid submissionId,
         AddCatalogueSubmissionVariantRequest request,
@@ -1110,7 +1127,7 @@ public enum CatalogueSubmissionVerificationResultStatus
 }
 
 public sealed record AddCatalogueSubmissionVariantRequest(
-    string Name);
+    string? Name);
 
 public sealed record UpdateCatalogueSubmissionVariantRequest(
     string Name);

@@ -53,6 +53,7 @@
 .submission-card-add { justify-content:flex-start; }
 .submission-card-editor { display:flex; flex-wrap:wrap; align-items:flex-end; }
 .submission-card-editor .submission-field-wide { flex:1 1 360px; }
+.submission-card-editor .submission-card-actions { align-self:flex-end; margin-top:0; }
 .submission-tip { display:flex; gap:.6rem; align-items:flex-start; margin-top:1.25rem; margin-bottom:.9rem; padding:1rem 1.1rem; border:1px solid var(--color-border); border-radius:12px; background:color-mix(in srgb, var(--color-primary-light) 5%, transparent); }
 .submission-tip strong { flex:0 0 auto; }
 .submission-tip span { color:var(--color-muted); line-height:1.5; }
@@ -62,4 +63,5 @@
 @media (max-width:640px) {
     .submission-card { flex-direction:column; align-items:flex-start; }
     .submission-card-actions { width:100%; }
+    .submission-card-editor .submission-card-actions { align-self:stretch; justify-content:flex-end; }
 }

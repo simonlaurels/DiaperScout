@@ -104,10 +104,10 @@
                         <label for="product">Product name <span>*</span></label>
                         <small>The specific product being catalogued.</small>
                         <InputText id="product" class="ds-input" @bind-Value="createModel.ProposedProductName" />
-                        <small>💡 Enter the core product name. Don't include variant, size, absorbency level, backing type or pack information.</small>
+                        <small>💡 Enter the product name as identified by the manufacturer. Don't strip meaningful product naming to create an artificial core name.</small>
                         <div class="submission-example">
-                            <span><strong>Example:</strong> Premium Night</span>
-                            <span><strong>Not:</strong> Premium Night PE Backed Medium 10 Pack</span>
+                            <span><strong>Example:</strong> TENA Slip Active Fit Maxi</span>
+                            <span><strong>Not:</strong> TENA Slip Active Fit</span>
                         </div>
                     </div>
                 </div>
@@ -144,7 +144,7 @@
                         <span>PRODUCT</span>
                         <strong>@submission.ProposedProductName</strong>
                     </div>
-                    <p class="submission-help">Add the meaningful manufacturer-defined versions of this product. A variant may differ in performance, construction, materials or another significant characteristic.</p>
+                    <p class="submission-help">Add the versions that users should be able to switch between on this product page. Use a base variant only when this product has a base version without a separate manufacturer-defined variant name. Related products should not be collapsed into variants just because their names are similar.</p>
 
                     <div class="submission-section-label">VARIANTS</div>
 
@@ -154,30 +154,46 @@
                     }
                     else
                     {
+                        @if (variants.Count == 0)
+                        {
+                            <div class="submission-card submission-card-muted">
+                                <strong>No variants added yet</strong>
+                                <small>Add the base product or one or more named variants below.</small>
+                            </div>
+                        }
+
                         @foreach (var variant in variants)
                         {
                             <div class="submission-card">
                                 <div>
-                                    <strong>@variant.Name</strong>
-                                    <small>@(variant.IsStructuralFallback ? "No manufacturer-defined variant · Automatically created" : "Product variant")</small>
+                                    <strong>@(variant.Name ?? "Original version")</strong>
+                                    <small>@(variant.Name is null ? "Base product · No separate variant name" : "Named product variant")</small>
                                 </div>
-                                <div class="submission-card-actions">
-                                    @if (!variant.IsStructuralFallback)
-                                    {
+                                @if (variant.Name is not null)
+                                {
+                                    <div class="submission-card-actions">
                                         <button class="ds-button ds-button-secondary" type="button" @onclick="() => BeginEditVariant(variant)">Edit</button>
-                                    }
-                                    <button class="ds-button ds-button-secondary" type="button" @onclick="() => RemoveVariantAsync(variant)" disabled="@(variant.IsStructuralFallback || variants.Count <= 1)">Remove</button>
-                                </div>
+                                        <button class="ds-button ds-button-secondary" type="button" @onclick="() => RemoveVariantAsync(variant)" disabled="@saving">Remove</button>
+                                    </div>
+                                }
                             </div>
                         }
 
-                        @if (editingVariant is not null || addingVariant)
+                        @if (editingVariant is not null || addingVariant || addingBaseVariant)
                         {
                             <div class="submission-card submission-card-editor">
                                 <div class="submission-field submission-field-wide">
-                                    <label for="variant-name">Variant name <span>*</span></label>
-                                    <InputText id="variant-name" class="ds-input" @bind-Value="variantEditorName" />
-                                    <small>Use the manufacturer's meaningful version name. Don't include size, pack quantity or barcode information.</small>
+                                    @if (addingBaseVariant)
+                                    {
+                                        <label>Base product</label>
+                                        <div class="submission-context"><strong>Original version</strong><span>No separate manufacturer-defined variant name.</span></div>
+                                    }
+                                    else
+                                    {
+                                        <label for="variant-name">Variant name</label>
+                                        <InputText id="variant-name" class="ds-input" @bind-Value="variantEditorName" />
+                                        <small>Enter the manufacturer's meaningful variant name. Don't include size, pack quantity or barcode information.</small>
+                                    }
                                 </div>
                                 <div class="submission-card-actions">
                                     <button class="ds-button ds-button-secondary" type="button" @onclick="CancelEditVariant">Cancel</button>
@@ -186,24 +202,30 @@
                             </div>
                         }
 
-                        @if (editingVariant is null)
+                        @if (editingVariant is null && !addingVariant && !addingBaseVariant)
                         {
                             <div class="submission-card submission-card-muted submission-card-add">
-                                <button class="ds-button ds-button-secondary" type="button" @onclick="BeginAddVariant" disabled="@saving">＋ Add Product Variant</button>
+                                <div class="submission-card-actions">
+                                    @if (!variants.Any(value => value.Name is null))
+                                    {
+                                        <button class="ds-button ds-button-secondary" type="button" @onclick="BeginAddBaseVariant" disabled="@saving">＋ Add original product</button>
+                                    }
+                                    <button class="ds-button ds-button-secondary" type="button" @onclick="BeginAddVariant" disabled="@saving">＋ Add named variant</button>
+                                </div>
                             </div>
                         }
                     }
 
                     <div class="submission-tip">
                         <strong>💡 Keep the hierarchy clean.</strong>
-                        <span>Don't add size, pack quantity or barcode information here. Those are captured in the following steps.</span>
+                        <span>Use variants for meaningful alternatives on the same product page. Don't use them to combine separate products, and don't add size, pack quantity or barcode information here.</span>
                     </div>
 
                     <div class="submission-next">
                         <div><p class="catalogue-kicker">NEXT</p><h2>Size Variants</h2><p>Each product variant can have its own physical sizes.</p></div>
                         <div class="submission-card-actions">
                             <button class="ds-button ds-button-secondary" type="button" @onclick="() => GoToStep(1)">← Back</button>
-                            <button class="ds-button ds-button-primary" type="button" @onclick="() => GoToStep(3)" disabled="@(editingVariant is not null || addingVariant || variants.Count == 0)">Continue →</button>
+                            <button class="ds-button ds-button-primary" type="button" @onclick="() => GoToStep(3)" disabled="@(editingVariant is not null || addingVariant || addingBaseVariant || variants.Count == 0)">Continue →</button>
                         </div>
                     </div>
                 </section>
@@ -272,6 +294,7 @@
     private CatalogueSubmissionVariantReceipt? editingVariant;
     private string variantEditorName = "";
     private bool addingVariant;
+    private bool addingBaseVariant;
     private bool variantsLoading;
 
     private bool saving;
@@ -348,7 +371,7 @@
             createModel.ProposedManufacturerName,
             createModel.ProposedBrandName,
             createModel.ProposedProductName,
-            "Single version",
+            null,
             null));
         Apply(result);
         saving = false;
@@ -385,13 +408,26 @@
         editingVariant = null;
         variantEditorName = "";
         addingVariant = true;
+        addingBaseVariant = false;
+    }
+
+    private void BeginAddBaseVariant()
+    {
+        editingVariant = null;
+        variantEditorName = "";
+        addingVariant = false;
+        addingBaseVariant = true;
     }
 
     private void BeginEditVariant(CatalogueSubmissionVariantReceipt variant)
     {
+        if (variant.Name is null)
+            return;
+
         editingVariant = variant;
         variantEditorName = variant.Name;
         addingVariant = false;
+        addingBaseVariant = false;
     }
 
     private void CancelEditVariant()
@@ -399,11 +435,12 @@
         editingVariant = null;
         variantEditorName = "";
         addingVariant = false;
+        addingBaseVariant = false;
     }
 
     private async Task SaveVariantAsync()
     {
-        if (submission is null || string.IsNullOrWhiteSpace(variantEditorName))
+        if (submission is null)
             return;
 
         saving = true;
@@ -411,14 +448,33 @@
 
         CatalogueSubmissionVariantResult result;
 
-        if (addingVariant)
+        if (addingBaseVariant)
         {
-            result = await Catalogue.AddSubmissionVariantAsync(
+            result = await Catalogue.AddSubmissionBaseVariantAsync(
+                submission.Id);
+        }
+        else if (addingVariant)
+        {
+            if (string.IsNullOrWhiteSpace(variantEditorName))
+            {
+                saving = false;
+                saveError = "A named variant requires a manufacturer-defined name.";
+                return;
+            }
+
+            result = await Catalogue.AddSubmissionNamedVariantAsync(
                 submission.Id,
-                new AddCatalogueSubmissionVariantRequest(variantEditorName.Trim()));
+                variantEditorName.Trim());
         }
         else if (editingVariant is not null)
         {
+            if (string.IsNullOrWhiteSpace(variantEditorName))
+            {
+                saving = false;
+                saveError = "A named variant requires a manufacturer-defined name.";
+                return;
+            }
+
             result = await Catalogue.UpdateSubmissionVariantAsync(
                 submission.Id,
                 editingVariant.Id,

@@ -52,11 +52,21 @@ internal sealed class CatalogueSubmissions(
                 command.Notes?.Trim());
 
             db.CatalogueSubmissions.Add(submission);
-            db.CatalogueSubmissionVariants.Add(
-                new CatalogueSubmissionVariant(
-                    submission.Id,
-                    "Single version",
-                    isStructuralFallback: true));
+
+            // The optional proposed variant is retained for API compatibility
+            // with older callers. New catalogue creation leaves variants empty
+            // and the moderator chooses the base/named variants explicitly in
+            // Step 2.
+            if (!string.IsNullOrWhiteSpace(command.ProposedVariantName))
+            {
+                var initialName = command.ProposedVariantName.Trim();
+                db.CatalogueSubmissionVariants.Add(
+                    new CatalogueSubmissionVariant(
+                        submission.Id,
+                        string.Equals(initialName, "Single version", StringComparison.OrdinalIgnoreCase)
+                            ? null
+                            : initialName));
+            }
 
             await db.SaveChangesAsync(cancellationToken);
 
@@ -180,7 +190,6 @@ internal sealed class CatalogueSubmissions(
                 value.Id,
                 value.SubmissionId,
                 value.Name,
-                value.IsStructuralFallback,
                 value.CreatedAtUtc,
                 value.UpdatedAtUtc))
             .ToListAsync(cancellationToken);
@@ -228,9 +237,6 @@ internal sealed class CatalogueSubmissions(
                 cancellationToken)
             ?? throw new CatalogueValidationException("variantId", "The product variant was not found.");
 
-        if (variant.IsStructuralFallback)
-            throw new CatalogueValidationException("variantId", "The structural Single version cannot have variant-specific differences.");
-
         try
         {
             var overrideValue = await db.CatalogueSubmissionVariantOverrides
@@ -265,31 +271,38 @@ internal sealed class CatalogueSubmissions(
         await RequireModeratorAsync(actor, cancellationToken);
 
         var submission = await GetSubmissionAsync(submissionId, cancellationToken);
-
         EnsureDraftEditable(submission);
 
         try
         {
-            var name = command.Name.Trim();
+            var name = string.IsNullOrWhiteSpace(command.Name)
+                ? null
+                : command.Name.Trim();
 
-            var duplicate = await db.CatalogueSubmissionVariants.AnyAsync(
-                value => value.SubmissionId == submissionId &&
-                         value.Name.ToLower() == name.ToLower(),
-                cancellationToken);
+            if (name is null)
+            {
+                var baseExists = await db.CatalogueSubmissionVariants.AnyAsync(
+                    value => value.SubmissionId == submissionId && value.Name == null,
+                    cancellationToken);
 
-            if (duplicate)
-                throw new ArgumentException(
-                    "A product variant with this name already exists.",
-                    nameof(command.Name));
+                if (baseExists)
+                    throw new ArgumentException(
+                        "This product already has a base variant.",
+                        nameof(command.Name));
+            }
+            else
+            {
+                var duplicate = await db.CatalogueSubmissionVariants.AnyAsync(
+                    value => value.SubmissionId == submissionId &&
+                             value.Name != null &&
+                             value.Name.ToLower() == name.ToLower(),
+                    cancellationToken);
 
-            var fallback = await db.CatalogueSubmissionVariants
-                .Where(value =>
-                    value.SubmissionId == submissionId &&
-                    value.IsStructuralFallback)
-                .ToListAsync(cancellationToken);
-
-            foreach (var item in fallback)
-                db.CatalogueSubmissionVariants.Remove(item);
+                if (duplicate)
+                    throw new ArgumentException(
+                        "A product variant with this name already exists.",
+                        nameof(command.Name));
+            }
 
             var variant = new CatalogueSubmissionVariant(
                 submissionId,
@@ -333,6 +346,7 @@ internal sealed class CatalogueSubmissions(
             var duplicate = await db.CatalogueSubmissionVariants.AnyAsync(
                 value => value.SubmissionId == submissionId &&
                          value.Id != variantId &&
+                         value.Name != null &&
                          value.Name.ToLower() == name.ToLower(),
                 cancellationToken);
 
@@ -376,10 +390,10 @@ internal sealed class CatalogueSubmissions(
                 "variantId",
                 "The product variant was not found.");
 
-        if (variant.IsStructuralFallback || variants.Count <= 1)
+        if (variant.IsBaseVariant)
             throw new CatalogueValidationException(
                 "variantId",
-                "The final product variant cannot be removed.");
+                "The base product variant cannot be removed.");
 
         db.CatalogueSubmissionVariants.Remove(variant);
         await db.SaveChangesAsync(cancellationToken);
@@ -552,7 +566,7 @@ internal sealed class CatalogueSubmissions(
             submission.Id,
             submission.Status,
             submission.ProposedProductName,
-            submission.ProposedVariantName,
+            submission.ProposedVariantName ?? "Multiple variants",
             destinations);
     }
 
@@ -595,7 +609,7 @@ internal sealed class CatalogueSubmissions(
             submission.Id,
             submission.Status,
             submission.ProposedProductName,
-            submission.ProposedVariantName,
+            submission.ProposedVariantName ?? "Multiple variants",
             verifications);
     }
 
@@ -837,6 +851,42 @@ internal sealed class CatalogueSubmissions(
                 "At least one retail destination is required before publication.");
         }
 
+        var submissionVariants = await db.CatalogueSubmissionVariants
+            .AsNoTracking()
+            .Where(value => value.SubmissionId == submission.Id)
+            .OrderBy(value => value.CreatedAtUtc)
+            .ToListAsync(cancellationToken);
+
+        if (submissionVariants.Count == 0)
+            throw new CatalogueValidationException(
+                "variants",
+                "At least one product variant is required before publication.");
+
+        var variantIds = submissionVariants.Select(value => value.Id).ToArray();
+
+        var overrides = await db.CatalogueSubmissionVariantOverrides
+            .AsNoTracking()
+            .Where(value => variantIds.Contains(value.VariantId))
+            .ToDictionaryAsync(value => value.VariantId, cancellationToken);
+
+        var canonicalVariants = submissionVariants
+            .Select(variant =>
+            {
+                var name = variant.Name ?? submission.ProposedProductName;
+                var backingType = overrides.TryGetValue(variant.Id, out var overrideValue) &&
+                                  overrideValue.BackingType.HasValue
+                    ? overrideValue.BackingType.Value
+                    : submission.ProposedBackingType ?? BackingType.Unknown;
+
+                return new CreateCanonicalProductVariant(name, backingType);
+            })
+            .ToList();
+
+        if (canonicalVariants.Count > 1 && !string.IsNullOrWhiteSpace(submission.ProposedGtin))
+            throw new CatalogueValidationException(
+                "proposedGtin",
+                "GTIN must be captured against the specific size and pack before a multi-variant product is published.");
+
         var productSlug = Slugify(
             submission.ProposedProductName);
 
@@ -849,14 +899,13 @@ internal sealed class CatalogueSubmissions(
                 productSlug,
                 submission.ProposedProductType.Value,
                 ProductStatus.Current,
-                submission.ProposedVariantName,
-                submission.ProposedBackingType ?? BackingType.Unknown,
+                canonicalVariants,
                 submission.ProposedManufacturerSize,
                 submission.ProposedWaistMinimumCm,
                 submission.ProposedWaistMaximumCm,
                 submission.ProposedQuantityPerPack.Value,
                 submission.ProposedPackagingType.Value,
-                submission.ProposedGtin,
+                submission.ProposedGtin ?? string.Empty,
                 "Published from an approved catalogue submission.",
                 new[]
                 {
@@ -1100,7 +1149,6 @@ internal sealed class CatalogueSubmissions(
             variant.Id,
             variant.SubmissionId,
             variant.Name,
-            variant.IsStructuralFallback,
             variant.CreatedAtUtc,
             variant.UpdatedAtUtc);
 

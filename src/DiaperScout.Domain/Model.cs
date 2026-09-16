@@ -584,40 +584,42 @@ public sealed class CatalogueSubmissionVariant : Entity
 {
     private CatalogueSubmissionVariant()
     {
-        Name = null!;
     }
 
     public CatalogueSubmissionVariant(
         Guid submissionId,
-        string name,
-        bool isStructuralFallback = false)
+        string? name)
     {
         if (submissionId == Guid.Empty)
             throw new ArgumentException("A catalogue submission is required.", nameof(submissionId));
 
-        if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("A variant name is required.", nameof(name));
+        if (name is not null && string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException(
+                "A manufacturer-defined variant name must contain text when supplied.",
+                nameof(name));
 
         SubmissionId = submissionId;
-        Name = name.Trim();
-        IsStructuralFallback = isStructuralFallback;
+        Name = string.IsNullOrWhiteSpace(name) ? null : name.Trim();
         CreatedAtUtc = DateTimeOffset.UtcNow;
         UpdatedAtUtc = CreatedAtUtc;
     }
 
     public Guid SubmissionId { get; private set; }
-    public string Name { get; private set; }
-    public bool IsStructuralFallback { get; private set; }
+    public string? Name { get; private set; }
     public DateTimeOffset CreatedAtUtc { get; private set; }
     public DateTimeOffset UpdatedAtUtc { get; private set; }
 
+    public bool IsBaseVariant => Name is null;
+
     public void Rename(string name)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("A variant name is required.", nameof(name));
+        if (IsBaseVariant)
+            throw new InvalidOperationException("The base product variant cannot be renamed.");
 
-        if (IsStructuralFallback)
-            throw new InvalidOperationException("The structural Single version cannot be renamed.");
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException(
+                "A manufacturer-defined variant name is required.",
+                nameof(name));
 
         Name = name.Trim();
         Touch();
@@ -633,7 +635,7 @@ public sealed class CatalogueSubmission : Entity
         ProposedManufacturerName = null!;
         ProposedBrandName = null!;
         ProposedProductName = null!;
-        ProposedVariantName = null!;
+        ProposedVariantName = null;
     }
 
     public CatalogueSubmission(
@@ -641,7 +643,7 @@ public sealed class CatalogueSubmission : Entity
         Guid? submittedByUserId,
         string proposedManufacturerName,
         string proposedProductName,
-        string proposedVariantName,
+        string? proposedVariantName = null,
         string? proposedBrandName = null,
         string? notes = null)
     {
@@ -650,9 +652,6 @@ public sealed class CatalogueSubmission : Entity
 
         if (string.IsNullOrWhiteSpace(proposedProductName))
             throw new ArgumentException("A proposed product name is required.", nameof(proposedProductName));
-
-        if (string.IsNullOrWhiteSpace(proposedVariantName))
-            throw new ArgumentException("A proposed variant name is required.", nameof(proposedVariantName));
 
         Source = source;
         SubmittedByUserId = submittedByUserId;
@@ -678,7 +677,7 @@ public sealed class CatalogueSubmission : Entity
 
     public string ProposedProductName { get; private set; }
 
-    public string ProposedVariantName { get; private set; }
+    public string? ProposedVariantName { get; private set; }
 
     public string? ProposedGtin { get; private set; }
 
@@ -734,7 +733,7 @@ public sealed class CatalogueSubmission : Entity
     public void UpdateProposal(
         string proposedManufacturerName,
         string proposedProductName,
-        string proposedVariantName,
+        string? proposedVariantName,
         string? proposedBrandName,
         string? notes)
     {
@@ -746,9 +745,6 @@ public sealed class CatalogueSubmission : Entity
 
         if (string.IsNullOrWhiteSpace(proposedProductName))
             throw new ArgumentException("A proposed product name is required.", nameof(proposedProductName));
-
-        if (string.IsNullOrWhiteSpace(proposedVariantName))
-            throw new ArgumentException("A proposed variant name is required.", nameof(proposedVariantName));
 
         ProposedManufacturerName = proposedManufacturerName;
         ProposedBrandName = proposedBrandName;

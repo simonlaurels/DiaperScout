@@ -872,13 +872,26 @@ internal sealed class CatalogueSubmissions(
         var canonicalVariants = submissionVariants
             .Select(variant =>
             {
-                var name = variant.Name ?? submission.ProposedProductName;
-                var backingType = overrides.TryGetValue(variant.Id, out var overrideValue) &&
-                                  overrideValue.BackingType.HasValue
-                    ? overrideValue.BackingType.Value
-                    : submission.ProposedBackingType ?? BackingType.Unknown;
+                overrides.TryGetValue(variant.Id, out var overrideValue);
 
-                return new CreateCanonicalProductVariant(name, backingType);
+                return new CreateCanonicalProductVariant(
+                    variant.Name ?? submission.ProposedProductName,
+                    overrideValue?.BackingType ?? submission.ProposedBackingType ?? BackingType.Unknown,
+                    overrideValue?.FastenerType ?? submission.ProposedFastenerType ?? FastenerType.Unknown,
+                    overrideValue?.PrintDesign ?? submission.SharedPrintDesign,
+                    overrideValue?.PrimaryColour ?? submission.SharedPrimaryColour,
+                    overrideValue?.SecondaryColours ?? submission.SharedSecondaryColours,
+                    overrideValue?.HasWetnessIndicator ?? submission.SharedWetnessIndicator,
+                    overrideValue?.HasStandingLeakGuards ?? submission.SharedStandingLeakGuards,
+                    overrideValue?.HasInnerLeakGuards ?? submission.SharedInnerLeakGuards,
+                    overrideValue?.HasElasticWaistbandFront ?? submission.SharedElasticWaistbandFront,
+                    overrideValue?.HasElasticWaistbandRear ?? submission.SharedElasticWaistbandRear,
+                    overrideValue?.WaistbandStyle ?? submission.ProposedWaistbandStyle ?? WaistbandStyle.Unknown,
+                    overrideValue?.Fragrance ?? submission.ProposedFragranceType ?? FragranceType.Unknown,
+                    overrideValue?.IsLatexFree ?? submission.SharedLatexFree,
+                    overrideValue?.IsChlorineFree ?? submission.SharedChlorineFree,
+                    overrideValue?.FastenerCount ?? submission.SharedFastenerCount,
+                    overrideValue?.ConstructionNotes ?? submission.SharedConstructionNotes);
             })
             .ToList();
 
@@ -898,7 +911,7 @@ internal sealed class CatalogueSubmissions(
                 submission.ProposedProductName,
                 productSlug,
                 submission.ProposedProductType.Value,
-                ProductStatus.Current,
+                submission.ProposedProductStatus ?? ProductStatus.Current,
                 canonicalVariants,
                 submission.ProposedManufacturerSize,
                 submission.ProposedWaistMinimumCm,
@@ -912,7 +925,10 @@ internal sealed class CatalogueSubmissions(
                     $"/api/v1/catalogue-submissions/{submission.Id}"
                 },
                 "Editorially approved catalogue submission.",
-                submission.Id.ToString()),
+                submission.Id.ToString(),
+                submission.ProposedProductFamily,
+                submission.ProposedDescription,
+                submission.ProposedOfficialWebsiteUrl),
             cancellationToken);
 
         submission.Publish(

@@ -95,8 +95,27 @@ public sealed class Brand : Entity
 public sealed class Product : Entity
 {
     private Product() { Name = null!; Slug = null!; }
-    public Product(Guid manufacturerId, Guid? brandId, string name, string slug, ProductType type, ProductStatus status = ProductStatus.Current)
-    { ManufacturerId = manufacturerId; BrandId = brandId; Name = name; Slug = slug; ProductType = type; Status = status; }
+    public Product(
+        Guid manufacturerId,
+        Guid? brandId,
+        string name,
+        string slug,
+        ProductType type,
+        ProductStatus status = ProductStatus.Current,
+        string? family = null,
+        string? description = null,
+        string? officialWebsiteUrl = null)
+    {
+        ManufacturerId = manufacturerId;
+        BrandId = brandId;
+        Name = name;
+        Slug = slug;
+        ProductType = type;
+        Status = status;
+        Family = string.IsNullOrWhiteSpace(family) ? null : family.Trim();
+        Description = string.IsNullOrWhiteSpace(description) ? null : description.Trim();
+        OfficialWebsiteUrl = string.IsNullOrWhiteSpace(officialWebsiteUrl) ? null : officialWebsiteUrl.Trim();
+    }
     public Guid ManufacturerId { get; private set; }
     public Guid? BrandId { get; private set; }
     public string Name { get; private set; }
@@ -112,13 +131,52 @@ public sealed class Product : Entity
 public sealed class ProductVariant : Entity
 {
     private ProductVariant() { Name = null!; }
-    public ProductVariant(Guid productId, string name, BackingType backingType = BackingType.Unknown) { ProductId = productId; Name = name; BackingType = backingType; }
+    public ProductVariant(
+        Guid productId,
+        string name,
+        BackingType backingType = BackingType.Unknown,
+        FastenerType fastenerType = FastenerType.Unknown,
+        string? printDesign = null,
+        string? primaryColour = null,
+        string? secondaryColours = null,
+        bool? hasWetnessIndicator = null,
+        bool? hasStandingLeakGuards = null,
+        bool? hasInnerLeakGuards = null,
+        bool? hasElasticWaistbandFront = null,
+        bool? hasElasticWaistbandRear = null,
+        WaistbandStyle waistbandStyle = WaistbandStyle.Unknown,
+        FragranceType fragrance = FragranceType.Unknown,
+        bool? isLatexFree = null,
+        bool? isChlorineFree = null,
+        int? fastenerCount = null,
+        string? constructionNotes = null)
+    {
+        ProductId = productId;
+        Name = name;
+        BackingType = backingType;
+        FastenerType = fastenerType;
+        PrintDesign = string.IsNullOrWhiteSpace(printDesign) ? null : printDesign.Trim();
+        PrimaryColour = string.IsNullOrWhiteSpace(primaryColour) ? null : primaryColour.Trim();
+        SecondaryColours = string.IsNullOrWhiteSpace(secondaryColours) ? null : secondaryColours.Trim();
+        HasWetnessIndicator = hasWetnessIndicator;
+        HasStandingLeakGuards = hasStandingLeakGuards;
+        HasInnerLeakGuards = hasInnerLeakGuards;
+        HasElasticWaistbandFront = hasElasticWaistbandFront;
+        HasElasticWaistbandRear = hasElasticWaistbandRear;
+        WaistbandStyle = waistbandStyle;
+        Fragrance = fragrance;
+        IsLatexFree = isLatexFree;
+        IsChlorineFree = isChlorineFree;
+        FastenerCount = fastenerCount;
+        ConstructionNotes = string.IsNullOrWhiteSpace(constructionNotes) ? null : constructionNotes.Trim();
+    }
     public Guid ProductId { get; private set; }
     public string Name { get; private set; }
     public BackingType BackingType { get; private set; }
     public FastenerType FastenerType { get; private set; }
     public string? PrintDesign { get; private set; }
     public string? PrimaryColour { get; private set; }
+    public string? SecondaryColours { get; private set; }
     public bool? HasWetnessIndicator { get; private set; }
     public bool? HasStandingLeakGuards { get; private set; }
     public bool? HasInnerLeakGuards { get; private set; }

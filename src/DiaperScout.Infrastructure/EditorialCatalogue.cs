@@ -127,7 +127,10 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db) : ICanonicalCa
             command.ProductName.Trim(),
             command.ProductSlug,
             command.ProductType,
-            command.Status);
+            command.Status,
+            command.ProductFamily,
+            command.Description,
+            command.OfficialWebsiteUrl);
 
         db.Products.Add(product);
 
@@ -139,7 +142,22 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db) : ICanonicalCa
             var variant = new ProductVariant(
                 product.Id,
                 variantCommand.Name.Trim(),
-                variantCommand.BackingType);
+                variantCommand.BackingType,
+                variantCommand.FastenerType,
+                variantCommand.PrintDesign,
+                variantCommand.PrimaryColour,
+                variantCommand.SecondaryColours,
+                variantCommand.HasWetnessIndicator,
+                variantCommand.HasStandingLeakGuards,
+                variantCommand.HasInnerLeakGuards,
+                variantCommand.HasElasticWaistbandFront,
+                variantCommand.HasElasticWaistbandRear,
+                variantCommand.WaistbandStyle,
+                variantCommand.Fragrance,
+                variantCommand.IsLatexFree,
+                variantCommand.IsChlorineFree,
+                variantCommand.FastenerCount,
+                variantCommand.ConstructionNotes);
 
             var size = new SizeVariant(
                 variant.Id,

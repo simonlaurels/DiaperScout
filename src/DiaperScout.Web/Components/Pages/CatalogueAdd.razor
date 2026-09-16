@@ -1,4 +1,5 @@
 @page "/catalogue/add"
+@page "/catalogue/add/{submissionId:guid}/{step:int}"
 @rendermode InteractiveServer
 @inject ProductCatalogueClient Catalogue
 @inject NavigationManager Navigation
@@ -130,7 +131,7 @@
                         @if (!string.IsNullOrWhiteSpace(submission.ProposedBrandName)) { <div><span>Brand</span><strong>@submission.ProposedBrandName</strong></div> }
                         <div><span>Product</span><strong>@submission.ProposedProductName</strong></div>
                     </div>
-                    <div class="submission-actions"><button class="ds-button ds-button-primary" type="button" @onclick="() => currentStep = 2">Continue →</button></div>
+                    <div class="submission-actions"><button class="ds-button ds-button-primary" type="button" @onclick="() => GoToStep(2)">Continue →</button></div>
                 </section>
             }
             else if (currentStep == 2)
@@ -201,8 +202,8 @@
                     <div class="submission-next">
                         <div><p class="catalogue-kicker">NEXT</p><h2>Size Variants</h2><p>Each product variant can have its own physical sizes.</p></div>
                         <div class="submission-card-actions">
-                            <button class="ds-button ds-button-secondary" type="button" @onclick="() => currentStep = 1">← Back</button>
-                            <button class="ds-button ds-button-primary" type="button" @onclick="() => currentStep = 3" disabled="@(editingVariant is not null || addingVariant || variants.Count == 0)">Continue →</button>
+                            <button class="ds-button ds-button-secondary" type="button" @onclick="() => GoToStep(1)">← Back</button>
+                            <button class="ds-button ds-button-primary" type="button" @onclick="() => GoToStep(3)" disabled="@(editingVariant is not null || addingVariant || variants.Count == 0)">Continue →</button>
                         </div>
                     </div>
                 </section>
@@ -216,7 +217,7 @@
                         <strong>＋ Add Size Variant</strong>
                         <small>Size entities and their specification fields will be wired to the submission model next.</small>
                     </div>
-                    <div class="submission-next"><div><p class="catalogue-kicker">NEXT</p><h2>Product Details</h2><p>Capture the remaining factual information about the product as a whole.</p></div><button class="ds-button ds-button-primary" type="button" @onclick="() => currentStep = 4">Continue →</button></div>
+                    <div class="submission-next"><div><p class="catalogue-kicker">NEXT</p><h2>Product Details</h2><p>Capture the remaining factual information about the product as a whole.</p></div><button class="ds-button ds-button-primary" type="button" @onclick="() => GoToStep(4)">Continue →</button></div>
                 </section>
             }
             else if (currentStep == 4)
@@ -276,6 +277,9 @@
     private bool saving;
     private bool accessDenied;
     private string? saveError;
+    [Parameter] public Guid? submissionId { get; set; }
+    [Parameter] public int? step { get; set; }
+
     private int currentStep = 1;
     private string manufacturerMode = "existing";
     private string brandMode = "existing";
@@ -291,6 +295,50 @@
         "Size / measurement",
         "Other"
     ];
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (submissionId is null)
+        {
+            currentStep = 1;
+            return;
+        }
+
+        currentStep = Math.Clamp(step ?? 1, 1, 6);
+
+        var result = await Catalogue.GetSubmissionAsync(submissionId.Value);
+
+        if (result.Receipt is not null)
+        {
+            Apply(result);
+
+            createModel.ProposedManufacturerName =
+                result.Receipt.ProposedManufacturerName;
+            createModel.ProposedBrandName =
+                result.Receipt.ProposedBrandName;
+            createModel.ProposedProductName =
+                result.Receipt.ProposedProductName;
+
+            detailsModel.ProposedProductType =
+                result.Receipt.ProposedProductType;
+            detailsModel.ProductFamily =
+                result.Receipt.ProposedProductFamily;
+            detailsModel.Description =
+                result.Receipt.ProposedDescription;
+            detailsModel.ProductStatus =
+                result.Receipt.ProposedProductStatus;
+            detailsModel.OfficialWebsiteUrl =
+                result.Receipt.ProposedOfficialWebsiteUrl;
+
+            if (currentStep >= 2)
+                await LoadVariantsAsync();
+
+            return;
+        }
+
+        accessDenied = result.Status == CatalogueSubmissionResultStatus.AccessDenied;
+        saveError = result.Message ?? "The catalogue submission could not be loaded.";
+    }
 
     private async Task CreateAsync()
     {
@@ -467,7 +515,7 @@
         Apply(result);
         saving = false;
         if (submission is not null && result.Status != CatalogueSubmissionResultStatus.Invalid && result.Status != CatalogueSubmissionResultStatus.Failed)
-            currentStep = 5;
+            GoToStep(5);
     }
 
     private async Task BeginVerificationAsync()
@@ -478,7 +526,7 @@
         Apply(result);
         saving = false;
         if (submission is not null && result.Status != CatalogueSubmissionResultStatus.Invalid && result.Status != CatalogueSubmissionResultStatus.Failed)
-            currentStep = 6;
+            GoToStep(6);
     }
 
     private void Apply(CatalogueSubmissionResult result)
@@ -489,6 +537,20 @@
             saveError = string.Join(" ", result.Errors!.SelectMany(pair => pair.Value));
         else if (result.Status == CatalogueSubmissionResultStatus.Failed)
             saveError = result.Message;
+    }
+
+    private void GoToStep(int targetStep)
+    {
+        targetStep = Math.Clamp(targetStep, 1, 6);
+
+        if (submission is null)
+        {
+            currentStep = targetStep;
+            return;
+        }
+
+        currentStep = targetStep;
+        Navigation.NavigateTo($"/catalogue/add/{submission.Id}/{currentStep}");
     }
 
     private string StepClass(int step) => step == currentStep ? "submission-step-active" : step < currentStep ? "submission-step-complete" : "";

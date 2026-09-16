@@ -429,6 +429,91 @@ if (builder.Configuration.GetValue<bool>(
         .ProducesValidationProblem();
 
     app.MapGet(
+        "/api/v1/catalogue-submissions/{id:guid}",
+        async (
+            Guid id,
+            ICurrentUser currentUser,
+            ICatalogueSubmissions submissions,
+            CancellationToken cancellationToken) =>
+        {
+            var actor =
+                await currentUser.GetAsync(cancellationToken);
+
+            if (actor is null)
+                return Results.Forbid();
+
+            try
+            {
+                var receipt =
+                    await submissions.GetAsync(
+                        actor,
+                        id,
+                        cancellationToken);
+
+                return Results.Ok(receipt);
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(
+                    new Dictionary<string, string[]>
+                    {
+                        [exception.Field] = [exception.Message]
+                    });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("GetCatalogueSubmission")
+        .WithTags("Catalogue Submissions")
+        .Produces<CatalogueSubmissionReceipt>()
+        .ProducesValidationProblem();
+
+    app.MapDelete(
+        "/api/v1/catalogue-submissions/{id:guid}",
+        async (
+            Guid id,
+            ICurrentUser currentUser,
+            ICatalogueSubmissions submissions,
+            CancellationToken cancellationToken) =>
+        {
+            var actor =
+                await currentUser.GetAsync(cancellationToken);
+
+            if (actor is null)
+                return Results.Forbid();
+
+            try
+            {
+                await submissions.DeleteAsync(
+                    actor,
+                    id,
+                    cancellationToken);
+
+                return Results.NoContent();
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(
+                    new Dictionary<string, string[]>
+                    {
+                        [exception.Field] = [exception.Message]
+                    });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("DeleteCatalogueSubmission")
+        .WithTags("Catalogue Submissions")
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesValidationProblem();
+
+    app.MapGet(
         "/api/v1/catalogue-submissions/{id:guid}/variants",
         async (
             Guid id,

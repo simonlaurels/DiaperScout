@@ -125,6 +125,57 @@ public sealed class ProductCatalogueClient(HttpClient client)
             cancellationToken);
     }
 
+    public async Task<CatalogueSubmissionQueueResult> GetSubmissionsAsync(
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.GetAsync(
+            "api/v1/catalogue-submissions",
+            cancellationToken);
+
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            return CatalogueSubmissionQueueResult.AccessDenied();
+
+        if (!response.IsSuccessStatusCode)
+            return CatalogueSubmissionQueueResult.Failed();
+
+        var submissions = await response.Content.ReadFromJsonAsync<
+            IReadOnlyList<CatalogueSubmissionQueueItem>>(cancellationToken);
+
+        return submissions is null
+            ? CatalogueSubmissionQueueResult.Failed()
+            : CatalogueSubmissionQueueResult.Found(submissions);
+    }
+
+    public async Task<CatalogueSubmissionResult> GetSubmissionAsync(
+        Guid submissionId,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.GetAsync(
+            $"api/v1/catalogue-submissions/{submissionId}",
+            cancellationToken);
+
+        return await ReadSubmissionResponseAsync(response, cancellationToken);
+    }
+
+    public async Task<CatalogueSubmissionResult> DeleteSubmissionAsync(
+        Guid submissionId,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.DeleteAsync(
+            $"api/v1/catalogue-submissions/{submissionId}",
+            cancellationToken);
+
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            return CatalogueSubmissionResult.AccessDenied();
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+            return CatalogueSubmissionResult.Failed();
+
+        return response.IsSuccessStatusCode
+            ? CatalogueSubmissionResult.Deleted()
+            : CatalogueSubmissionResult.Failed();
+    }
+
     public async Task<CatalogueSubmissionVariantsResult> GetSubmissionVariantsAsync(
         Guid submissionId,
         CancellationToken cancellationToken = default)
@@ -718,6 +769,10 @@ public sealed record CatalogueSubmissionResult(
             CatalogueSubmissionResultStatus.Saved,
             Receipt: receipt);
 
+    public static CatalogueSubmissionResult Deleted() =>
+        new(
+            CatalogueSubmissionResultStatus.Deleted);
+
     public static CatalogueSubmissionResult Invalid(
         IReadOnlyDictionary<string, string[]> errors) =>
         new(
@@ -740,6 +795,7 @@ public sealed record CatalogueSubmissionResult(
 public enum CatalogueSubmissionResultStatus
 {
     Saved,
+    Deleted,
     Invalid,
     AccessDenied,
     Failed
@@ -1117,8 +1173,33 @@ public enum CatalogueSubmissionVariantOverrideResultStatus
 {
     Found,
     Saved,
+    Deleted,
     Invalid,
     AccessDenied,
     Failed
 }
 
+
+public enum CatalogueSubmissionQueueResultStatus
+{
+    Found,
+    AccessDenied,
+    Failed
+}
+
+public sealed record CatalogueSubmissionQueueResult(
+    CatalogueSubmissionQueueResultStatus Status,
+    IReadOnlyList<CatalogueSubmissionQueueItem>? Submissions = null,
+    string? Message = null)
+{
+    public static CatalogueSubmissionQueueResult Found(
+        IReadOnlyList<CatalogueSubmissionQueueItem> submissions) =>
+        new(CatalogueSubmissionQueueResultStatus.Found, submissions);
+
+    public static CatalogueSubmissionQueueResult AccessDenied() =>
+        new(CatalogueSubmissionQueueResultStatus.AccessDenied);
+
+    public static CatalogueSubmissionQueueResult Failed(
+        string? message = null) =>
+        new(CatalogueSubmissionQueueResultStatus.Failed, Message: message);
+}

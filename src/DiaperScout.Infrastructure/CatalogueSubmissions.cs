@@ -70,6 +70,90 @@ internal sealed class CatalogueSubmissions(
         }
     }
 
+    public async Task<CatalogueSubmissionReceipt> GetAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireModeratorAsync(actor, cancellationToken);
+
+        var submission = await GetSubmissionAsync(
+            submissionId,
+            cancellationToken);
+
+        return ToReceipt(submission);
+    }
+
+    public async Task DeleteAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireModeratorAsync(actor, cancellationToken);
+
+        var submission = await GetSubmissionAsync(
+            submissionId,
+            cancellationToken);
+
+        if (submission.Status is not CatalogueSubmissionStatus.Draft and
+            not CatalogueSubmissionStatus.NeedsChanges)
+        {
+            throw new CatalogueValidationException(
+                "status",
+                "Only draft submissions or submissions needing changes can be deleted.");
+        }
+
+        var variants = await db.CatalogueSubmissionVariants
+            .Where(value => value.SubmissionId == submissionId)
+            .ToListAsync(cancellationToken);
+
+        var variantIds = variants
+            .Select(value => value.Id)
+            .ToArray();
+
+        if (variantIds.Length > 0)
+        {
+            var overrides = await db.CatalogueSubmissionVariantOverrides
+                .Where(value => variantIds.Contains(value.VariantId))
+                .ToListAsync(cancellationToken);
+
+            db.CatalogueSubmissionVariantOverrides.RemoveRange(overrides);
+        }
+
+        var retailDestinations = await db.CatalogueSubmissionRetailDestinations
+            .Where(value => value.SubmissionId == submissionId)
+            .ToListAsync(cancellationToken);
+
+        var destinationIds = retailDestinations
+            .Select(value => value.Id)
+            .ToArray();
+
+        if (destinationIds.Length > 0)
+        {
+            var affiliates = await db.CatalogueSubmissionRetailAffiliates
+                .Where(value => destinationIds.Contains(value.RetailDestinationId))
+                .ToListAsync(cancellationToken);
+
+            db.CatalogueSubmissionRetailAffiliates.RemoveRange(affiliates);
+        }
+
+        var editorialDecisions = await db.CatalogueSubmissionEditorialDecisions
+            .Where(value => value.SubmissionId == submissionId)
+            .ToListAsync(cancellationToken);
+
+        var verifications = await db.CatalogueSubmissionVerifications
+            .Where(value => value.SubmissionId == submissionId)
+            .ToListAsync(cancellationToken);
+
+        db.CatalogueSubmissionRetailDestinations.RemoveRange(retailDestinations);
+        db.CatalogueSubmissionEditorialDecisions.RemoveRange(editorialDecisions);
+        db.CatalogueSubmissionVerifications.RemoveRange(verifications);
+        db.CatalogueSubmissionVariants.RemoveRange(variants);
+        db.CatalogueSubmissions.Remove(submission);
+
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
     public async Task<CatalogueSubmissionVariantsResult> GetVariantsAsync(
         AuthenticatedUser actor,
         Guid submissionId,

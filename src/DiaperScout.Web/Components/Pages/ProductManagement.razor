@@ -2,7 +2,8 @@
 @rendermode InteractiveServer
 @using DiaperScout.Application
 @using DiaperScout.Domain
-@inject HttpClient Http
+@using DiaperScout.Web.Services
+@inject ProductCatalogueClient Catalogue
 @inject NavigationManager Navigation
 
 <PageTitle>Product Management · DiaperScout</PageTitle>
@@ -117,6 +118,36 @@
                                        href="@GetActionUrl(submission)">
                                         @GetActionLabel(submission.Status) →
                                     </a>
+
+                                    @if (CanDelete(submission.Status))
+                                    {
+                                        @if (deletingSubmissionId == submission.Id)
+                                        {
+                                            <div class="submission-delete-confirmation">
+                                                <span>Delete this draft?</span>
+                                                <button class="ds-button ds-button-danger"
+                                                        type="button"
+                                                        @onclick="() => DeleteAsync(submission)"
+                                                        disabled="@deleting">
+                                                    Delete
+                                                </button>
+                                                <button class="ds-button ds-button-secondary"
+                                                        type="button"
+                                                        @onclick="CancelDelete"
+                                                        disabled="@deleting">
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <button class="ds-button ds-button-secondary"
+                                                    type="button"
+                                                    @onclick="() => BeginDelete(submission)">
+                                                Delete
+                                            </button>
+                                        }
+                                    }
                                 </div>
                             </article>
                         }
@@ -132,6 +163,8 @@
     private bool loading = true;
     private bool accessDenied;
     private string? loadError;
+    private Guid? deletingSubmissionId;
+    private bool deleting;
 
     protected override async Task OnInitializedAsync()
     {
@@ -146,28 +179,23 @@
 
         try
         {
-            using var response = await Http.GetAsync(
-                "api/v1/catalogue-submissions");
+            var result = await Catalogue.GetSubmissionsAsync();
 
-            if (response.StatusCode is
-                System.Net.HttpStatusCode.Unauthorized or
-                System.Net.HttpStatusCode.Forbidden)
+            switch (result.Status)
             {
-                accessDenied = true;
-                return;
+                case CatalogueSubmissionQueueResultStatus.Found:
+                    submissions = result.Submissions ?? [];
+                    break;
+
+                case CatalogueSubmissionQueueResultStatus.AccessDenied:
+                    accessDenied = true;
+                    break;
+
+                default:
+                    loadError = result.Message
+                        ?? "The catalogue submission queue could not be loaded just now.";
+                    break;
             }
-
-            if (!response.IsSuccessStatusCode)
-            {
-                loadError = "The catalogue submission queue could not be loaded just now.";
-                return;
-            }
-
-            var queue =
-                await response.Content.ReadFromJsonAsync<
-                    IReadOnlyList<CatalogueSubmissionQueueItem>>();
-
-            submissions = queue ?? [];
         }
         catch (HttpRequestException)
         {
@@ -176,6 +204,53 @@
         finally
         {
             loading = false;
+        }
+    }
+
+    private static bool CanDelete(CatalogueSubmissionStatus status) =>
+        status is CatalogueSubmissionStatus.Draft or CatalogueSubmissionStatus.NeedsChanges;
+
+    private void BeginDelete(CatalogueSubmissionQueueItem submission)
+    {
+        deletingSubmissionId = submission.Id;
+    }
+
+    private void CancelDelete()
+    {
+        deletingSubmissionId = null;
+    }
+
+    private async Task DeleteAsync(CatalogueSubmissionQueueItem submission)
+    {
+        deleting = true;
+        loadError = null;
+
+        try
+        {
+            var result = await Catalogue.DeleteSubmissionAsync(submission.Id);
+
+            if (result.Status == CatalogueSubmissionResultStatus.AccessDenied)
+            {
+                accessDenied = true;
+            }
+            else if (result.Status == CatalogueSubmissionResultStatus.Deleted)
+            {
+                deletingSubmissionId = null;
+                await LoadAsync();
+            }
+            else
+            {
+                loadError = result.Message
+                    ?? "The submission could not be deleted just now.";
+            }
+        }
+        catch (HttpRequestException)
+        {
+            loadError = "The submission could not be deleted just now.";
+        }
+        finally
+        {
+            deleting = false;
         }
     }
 

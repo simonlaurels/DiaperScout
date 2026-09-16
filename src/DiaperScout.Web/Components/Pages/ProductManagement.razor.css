@@ -126,6 +126,9 @@
 }
 
 .submission-queue-action {
+    display: flex;
+    align-items: center;
+    gap: .35rem;
     flex: 0 0 auto;
 }
 
@@ -180,4 +183,20 @@
     .submission-queue-action .ds-button {
         width: 100%;
     }
+}
+
+
+.submission-delete-confirmation {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    flex-wrap: wrap;
+}
+
+.submission-delete-confirmation > span {
+    font-size: .9rem;
+}
+
+.ds-button-danger {
+    border: 1px solid currentColor;
 }

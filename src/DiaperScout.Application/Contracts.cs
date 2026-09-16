@@ -448,6 +448,16 @@ public interface ICatalogueSubmissions
         CreateCatalogueSubmission command,
         CancellationToken cancellationToken = default);
 
+    Task<CatalogueSubmissionReceipt> GetAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        CancellationToken cancellationToken = default);
+
+    Task DeleteAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        CancellationToken cancellationToken = default);
+
     Task<CatalogueSubmissionVariantsResult> GetVariantsAsync(
         AuthenticatedUser actor,
         Guid submissionId,

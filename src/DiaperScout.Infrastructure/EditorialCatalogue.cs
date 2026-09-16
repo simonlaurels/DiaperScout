@@ -181,7 +181,7 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db) : ICanonicalCa
             product.Id,
             actor.UserId,
             DateTimeOffset.UtcNow,
-            JsonSerializer.Serialize(command with { Gtin = gtin }),
+            JsonSerializer.Serialize(command with { Gtin = gtin ?? string.Empty }),
             JsonSerializer.Serialize(createdEntityIds),
             command.SourceSummary.Trim(),
             JsonSerializer.Serialize(

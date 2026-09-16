@@ -47,7 +47,7 @@ internal sealed class CatalogueSubmissions(
                 actor.UserId,
                 command.ProposedManufacturerName.Trim(),
                 command.ProposedProductName.Trim(),
-                command.ProposedVariantName.Trim(),
+                command.ProposedVariantName?.Trim(),
                 command.ProposedBrandName?.Trim(),
                 command.Notes?.Trim());
 

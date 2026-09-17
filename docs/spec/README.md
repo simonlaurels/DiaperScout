@@ -8,6 +8,16 @@ It provides a stable, consistent foundation for product discovery by describing 
 
 The specification is intentionally independent of implementation details. It describes **what** the Guide records and **why**, not **how** it is stored.
 
+The core Product Model is:
+
+```text
+Product
+└── Product Variant
+    └── Size Variant
+```
+
+Retail selling arrangements are represented separately from the core Product Model.
+
 ---
 
 # Relationship to the World Documentation
@@ -50,6 +60,7 @@ Topics include:
 
 - Objective versus subjective information
 - Product-first modelling
+- Manufacturer product information versus Retail information
 - Discovery, comparison and reference
 - Avoiding duplication
 - Long-term maintainability
@@ -62,14 +73,13 @@ Read this document first.
 
 Defines the hierarchy used throughout the Guide.
 
-```
+```text
 Product
 └── Product Variant
     └── Size Variant
-        └── Pack Type
 ```
 
-This document explains what information belongs at each level of the model.
+This document explains what information belongs at each level of the core model and how Retail information remains separate.
 
 ---
 
@@ -131,11 +141,13 @@ Where documents overlap, authority follows the same order.
 
 The Guide records objective facts about products.
 
+Retail information records how those products are offered for sale.
+
 Explorers contribute observations about using those products.
 
 Neither replaces the other.
 
-Together they create a richer understanding than either could provide alone.
+Together they create a richer understanding than any one layer could provide alone.
 
 This distinction is fundamental to DiaperScout and should be preserved throughout the project.
 
@@ -149,7 +161,7 @@ When extending the Product Specification:
 2. Verify the proposal aligns with the World documentation.
 3. Ensure the information is objective.
 4. Confirm the attribute belongs at the correct level of the Product Model.
-5. Consider whether the information is better represented as a Community Observation.
+5. Consider whether the information is better represented as Retail information or a Community Observation.
 6. Record significant decisions in the Attribute Decision Log.
 
 The goal is not to create the largest product catalogue.
@@ -158,16 +170,16 @@ The goal is to create the most trustworthy explorer's guide to absorbent product
 
 ---
 
-# Design Principles
+# Core Model
 
-The Product Specification has been intentionally designed to be conservative.
+The core catalogue hierarchy is deliberately simple:
 
-New attributes should only be introduced when they provide clear value through one or more of the following:
+```text
+Product
+└── Product Variant
+    └── Size Variant
+```
 
-- Product discovery
-- Product comparison
-- Important reference information
+Manufacturer-stated information such as the number of individual products supplied in a standard pack may be recorded at Size Variant level where applicable.
 
-Keeping the specification focused makes the Guide easier to maintain, easier to contribute to and more valuable for Explorers.
-
-As the Guide grows, these principles ensure every product is documented consistently and every contribution strengthens the quality of the Guide.
+Retailers may sell the same product as individual samples, one manufacturer's pack, multiple packs together, or other retailer-defined presentations. These are Retail Offer arrangements and do not create new core catalogue entities.

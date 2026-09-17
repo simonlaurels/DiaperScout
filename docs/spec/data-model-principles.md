@@ -21,9 +21,9 @@ The Guide achieves this by combining two complementary sources of knowledge:
 - Product Specifications describe objective facts about products.
 - Community Observations describe real-world experiences of those products.
 
-Neither replaces the other.
+Retail information provides a third, distinct layer describing how products are offered for sale.
 
-Together they create a richer understanding than either could provide alone.
+Neither layer should replace the others.
 
 ---
 
@@ -90,7 +90,8 @@ For example:
 
 - A manufacturer belongs to the Product.
 - A waist measurement belongs to the Size Variant.
-- Pack quantity belongs to the Pack Type.
+- Manufacturer pack quantity belongs to the Size Variant.
+- A retailer's selling quantity belongs to the Retail Offer.
 
 Recording information once reduces duplication and prevents conflicting data.
 
@@ -100,19 +101,51 @@ Recording information once reduces duplication and prevents conflicting data.
 
 The Product Specification should reflect how products actually exist.
 
-A product may exist in:
+The core Product Model is:
 
-- Multiple variants
-- Multiple sizes
-- Multiple pack configurations
+```text
+Product
+└── Product Variant
+    └── Size Variant
+```
 
-The Guide models these relationships instead of flattening them into a single record.
+A product may exist in multiple variants and multiple sizes.
 
-Doing so makes the Product Specification easier to understand and easier to extend.
+Manufacturers may also state information about how a size is packaged, such as the number of individual products in its standard pack. That remains product information and may be recorded at Size Variant level where applicable.
+
+Retailers may sell the same underlying product in different quantities or presentations. Those arrangements belong to Retail information rather than the core Product Model.
 
 ---
 
-# Principle 6 — Separate Facts from Experiences
+# Principle 6 — Separate Manufacturer Product Information from Retail Selling Information
+
+Manufacturer product information and retailer selling information answer different questions.
+
+Manufacturer information may state:
+
+> "This size is supplied with 24 individual products in the standard pack."
+
+Retail information may state:
+
+> "This retailer sells one pack."
+
+or:
+
+> "This retailer sells three packs together."
+
+or:
+
+> "This retailer sells individual samples."
+
+The manufacturer's stated quantity is Product Specification information.
+
+The retailer's chosen quantity or presentation is Retail Offer information.
+
+Changing the retail offer must not silently change the underlying Product Specification.
+
+---
+
+# Principle 7 — Separate Facts from Experiences
 
 Product Specifications describe products.
 
@@ -131,7 +164,7 @@ This separation allows objective facts and subjective experiences to complement 
 
 ---
 
-# Principle 7 — Store Facts, Not Conclusions
+# Principle 8 — Store Facts, Not Conclusions
 
 The Guide should record information that allows Explorers to reach their own conclusions.
 
@@ -142,6 +175,7 @@ Prefer:
 - Absorbency capacity
 - Waist range
 - Product dimensions
+- Manufacturer pack quantity
 
 Instead of:
 
@@ -154,7 +188,7 @@ The latter are interpretations that vary between individuals and belong in Commu
 
 ---
 
-# Principle 8 — Every Attribute Must Justify Its Existence
+# Principle 9 — Every Attribute Must Justify Its Existence
 
 Every attribute increases the complexity of the Product Specification.
 
@@ -166,6 +200,7 @@ Before introducing a new attribute, ask:
 - Can it be recorded consistently?
 - Is it objective?
 - Does it belong in the Product Specification rather than Community Observations?
+- Is it manufacturer product information rather than retailer-specific selling information?
 
 If the answer is no, the attribute probably should not exist.
 
@@ -173,7 +208,7 @@ A smaller, well-designed Product Specification is more valuable than a larger, i
 
 ---
 
-# Principle 9 — Design for Longevity
+# Principle 10 — Design for Longevity
 
 Products change.
 
@@ -185,11 +220,13 @@ Packaging evolves.
 
 The Product Specification should be stable enough to accommodate these changes without requiring fundamental redesign.
 
+Retail selling arrangements can change without changing the underlying product.
+
 A well-designed model should continue to represent products accurately for many years.
 
 ---
 
-# Principle 10 — Respect the Product
+# Principle 11 — Respect the Product
 
 Every product deserves to be documented accurately regardless of:
 
@@ -232,7 +269,7 @@ Should it belong to:
 - Product
 - Product Variant
 - Size Variant
-- Pack Type
+- Retail Offer
 
 ## Is it already represented elsewhere?
 
@@ -271,16 +308,20 @@ Its purpose is not to capture every possible detail.
 
 Its purpose is to capture the right details.
 
-By modelling products objectively and leaving personal experiences to Community Observations, DiaperScout creates a Guide that remains trustworthy, maintainable and useful as it grows.
+By modelling products objectively, separating manufacturer product information from retailer selling arrangements, and leaving personal experiences to Community Observations, DiaperScout creates a Guide that remains trustworthy, maintainable and useful as it grows.
 
-Every Product Specification should help Explorers answer a simple question:
+Every Product Specification should help Explorers answer:
 
 > **"What is this product?"**
 
-Every Community Observation helps answer another:
+Retail information helps answer:
+
+> **"How is this product being offered here?"**
+
+Every Community Observation helps answer:
 
 > **"What is it like to use?"**
 
-Both questions matter.
+All three questions matter.
 
 Keeping them separate is one of the foundations of DiaperScout.

@@ -113,7 +113,6 @@ Examples include:
 - Product Type
 - Backing Type
 - Fastener Type
-- Packaging Type
 - Product Status
 
 ---
@@ -165,21 +164,13 @@ Global Trade Item Number.
 
 A GTIN is a globally recognised identifier used to identify a specific trade item.
 
-Within the DiaperScout Product Model, GTIN / Barcode is normally associated with the relevant Size Variant because different physical sizes of the same Product Variant commonly have different identifiers.
+Within the normal DiaperScout Product Model, manufacturer-issued GTIN / Barcode information is associated with the relevant Size Variant where that is the appropriate representation.
 
-For example:
-
-```text
-TENA Slip Plus
-├── Small  → GTIN A
-├── Medium → GTIN B
-├── Large  → GTIN C
-└── XL     → GTIN D
-```
+Different sizes commonly have different identifiers.
 
 A GTIN should only be recorded when the identifier can be reliably established.
 
-A packaging configuration or case does not automatically have its own GTIN.
+A retailer-created bundle or case is not automatically a new DiaperScout catalogue entity merely because it is sold as a separate retail offer.
 
 ---
 
@@ -211,6 +202,27 @@ Where the manufacturer does not provide reliable information, the value should r
 
 ---
 
+# M
+
+## Manufacturer Pack Quantity
+
+The number of individual products that the manufacturer states are supplied in the standard packaged product for a particular Size Variant, where published.
+
+Manufacturer Pack Quantity is Product Specification information recorded at Size Variant level because it may legitimately differ between sizes.
+
+For example:
+
+```text
+Medium → 24
+Large  → 22
+```
+
+Manufacturer Pack Quantity describes the manufacturer's product information. It does not describe the quantity a retailer chooses to sell.
+
+Manufacturer Pack Quantity is not a Pack Type.
+
+---
+
 # O
 
 ## Objective
@@ -232,29 +244,11 @@ Examples include:
 
 # P
 
-## Pack Type
-
-The lowest level of the Product Model.
-
-A Pack Type describes how a Size Variant is packaged or presented for sale.
-
-Examples include:
-
-- Sample
-- Pack
-- Case
-
-A Pack Type describes packaging rather than creating a different Product or Product Variant.
-
-A case may contain multiple retail packs and does not necessarily have its own GTIN / Barcode.
-
----
-
 ## Product
 
-The highest level of the Product Model.
+The highest level of the core Product Model.
 
-A Product represents the identity of an absorbent product regardless of its Product Variants, Size Variants or packaging.
+A Product represents the identity of an absorbent product regardless of its Product Variants, Size Variants or Retail Offers.
 
 Examples include:
 
@@ -282,10 +276,11 @@ The hierarchical structure used by DiaperScout to organise Product Specification
 Product
 └── Product Variant
     └── Size Variant
-        └── Pack Type
 ```
 
 Each level has a distinct purpose.
+
+Retail selling arrangements are deliberately outside the core Product Model.
 
 ---
 
@@ -359,7 +354,27 @@ Product Variants contain one or more Size Variants.
 
 A difference in physical size does not create a new Product Variant.
 
-A packaging difference does not create a new Product Variant.
+A retailer selling the product in a different quantity or presentation does not create a new Product Variant.
+
+---
+
+## Retail Offer
+
+Information describing how a retailer offers a catalogue product for sale.
+
+Retail Offer information may include:
+
+- Retailer
+- Quantity offered
+- Selling presentation
+- Retailer SKU
+- Individual sample
+- Multiple manufacturer's packs sold together
+- Retailer-created bundle or case
+- Availability
+- Price and other time-sensitive commercial information
+
+A Retail Offer does not redefine the underlying Product, Product Variant or Size Variant.
 
 ---
 
@@ -402,6 +417,7 @@ Each Size Variant may have its own:
 - capacity
 - dimensions
 - product weight
+- Manufacturer Pack Quantity
 - GTIN / Barcode
 
 A Size Variant belongs to one Product Variant.
@@ -481,6 +497,7 @@ Examples include:
 - Backing Type
 - Capacity
 - Waist Range
+- Manufacturer Pack Quantity
 - GTIN / Barcode
 
 Objective data belongs within the Product Specification.
@@ -504,13 +521,12 @@ Subjective Data belongs within Community Observations rather than the Product Sp
 
 # Product Hierarchy
 
-The DiaperScout data model is organised into four levels.
+The DiaperScout core data model is organised into three levels.
 
 ```text
 Product
 └── Product Variant
     └── Size Variant
-        └── Pack Type
 ```
 
 Each level stores information appropriate to that level.
@@ -538,7 +554,9 @@ TENA Slip
     └── XL
 ```
 
-A Size Variant may then have one or more Pack Types describing how that size is packaged or sold.
+Manufacturer-stated information such as the number of individual products in the standard packaged product may be recorded at Size Variant level.
+
+Retail selling arrangements are represented separately as Retail Offers.
 
 ---
 

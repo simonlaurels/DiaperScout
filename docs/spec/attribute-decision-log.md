@@ -37,9 +37,8 @@ The following attributes have been accepted for inclusion within the Product Spe
 | Capacity | Size Variant | Published performance specification. |
 | Product Dimensions | Size Variant | Objective physical measurements. |
 | Product Weight | Size Variant | Objective reference information. |
-| GTIN / Barcode | Size Variant | Identifies the relevant retail product for a specific size; different sizes commonly have different identifiers. |
-| Quantity per Pack | Pack Type | Defines the packaging configuration. |
-| Packaging Type | Pack Type | Describes the retail presentation. |
+| Manufacturer Pack Quantity | Size Variant | Manufacturer-stated quantity in the standard packaged product; may differ between sizes. |
+| GTIN / Barcode | Size Variant | Identifies the relevant manufacturer trade item where this is the appropriate catalogue representation. |
 
 ---
 
@@ -104,16 +103,15 @@ The Guide should never invent information simply to complete a Product Specifica
 
 Each attribute belongs to one level of the Product Model.
 
-Information should not be duplicated.
-
-The Product hierarchy is:
+The core Product hierarchy is:
 
 ```text
 Product
 └── Product Variant
     └── Size Variant
-        └── Pack Type
 ```
+
+Retail selling arrangements are deliberately outside this hierarchy.
 
 ---
 
@@ -121,91 +119,65 @@ Product
 
 A Product Variant represents a meaningful version of a Product.
 
-Examples may include manufacturer-defined versions such as:
-
-- Plus
-- Super
-- Ultima
-- Plastic-backed
-- Cloth-backed
-- Plain
-- Printed
-- Day
-- Night
-
 A Size Variant represents the physical size within that Product Variant.
 
-For example:
-
-```text
-TENA Slip
-├── Plus
-│   ├── Small
-│   ├── Medium
-│   ├── Large
-│   └── XL
-├── Super
-│   ├── Small
-│   ├── Medium
-│   ├── Large
-│   └── XL
-└── Ultima
-    ├── Medium
-    ├── Large
-    └── XL
-```
-
-A difference in size does not create a new Product Variant.
-
 ---
 
-## GTIN / Barcode belongs with Size Variant.
+## Manufacturer Pack Quantity belongs with Size Variant.
 
-GTIN / Barcode is recorded at Size Variant level.
+Manufacturers commonly state the number of individual products supplied in the standard packaged product for a particular size.
 
-The reason is that the barcode commonly identifies the retail product for a particular physical size.
+This information is useful Product Specification data and may differ between sizes.
 
 For example:
 
 ```text
-TENA Slip Plus
-├── Small  → GTIN A
-├── Medium → GTIN B
-├── Large  → GTIN C
-└── XL     → GTIN D
+TENA Slip Active Fit Maxi
+
+Medium
+└── Manufacturer Pack Quantity: 24
+
+Large
+└── Manufacturer Pack Quantity: 22
 ```
 
-A packaging configuration does not automatically create a new GTIN.
+The value therefore belongs with other size-specific information.
 
-A case may consist of multiple retail packs, for example:
-
-```text
-Case
-├── Bag of 10
-├── Bag of 10
-├── Bag of 10
-└── Bag of 10
-```
-
-A case may not have its own GTIN.
-
-Where a separate identifier genuinely exists for a packaging configuration, it should only be recorded when its meaning and scope can be reliably established.
+It does not create a separate Pack Type entity.
 
 ---
 
-## Pack Type describes packaging.
+## Pack Type is not part of the core Product Model.
 
-Pack Type describes how a Size Variant is packaged or presented for sale.
+The earlier Product Model included Pack Type beneath Size Variant.
 
-Examples include:
+That model is intentionally superseded.
 
-- Sample
-- Pack
-- Case
+Retailers may:
 
-Pack Type should not be used to represent Product Variants or physical sizes.
+- sell one manufacturer's pack
+- sell several manufacturer's packs together
+- break a manufacturer's pack down into individual samples
+- create bundles or cases
+- choose other selling quantities or presentations
 
-Packaging changes should not create new Products or Product Variants merely because the outer packaging has changed.
+These are Retail Offer arrangements, not additional Product Variants or Size Variants.
+
+A manufacturer-stated packaged quantity remains catalogue information, but the packaging hierarchy itself is not modelled as a core entity.
+
+This distinction prevents retailer-specific commercial arrangements from becoming accidental catalogue entities.
+
+---
+
+## GTIN / Barcode identifies a trade item.
+
+A GTIN is associated with a specific trade item.
+
+Within the normal DiaperScout catalogue model, GTIN / Barcode is recorded with the relevant Size Variant where that is the appropriate representation.
+
+A GTIN should only be recorded when its meaning and scope can be reliably established.
+
+A retailer-created bundle or case must not be assumed to be a new catalogue item simply because the retailer sells it as a distinct offer.
 
 ---
 
@@ -213,13 +185,17 @@ Packaging changes should not create new Products or Product Variants merely beca
 
 The Product Model reflects how products actually exist.
 
-It does not simplify reality simply to make implementation easier.
+It does not flatten meaningful manufacturer differences.
+
+It also does not turn every retailer selling arrangement into a catalogue entity.
 
 ---
 
 ## Objective information comes first.
 
-Manufacturer information and verifiable specifications take priority over retailer descriptions and community interpretation.
+Manufacturer information and verifiable specifications take priority over retailer descriptions and community interpretation for Product Specification facts.
+
+Retail-specific information remains Retail information.
 
 ---
 
@@ -239,7 +215,9 @@ When considering a new attribute, ask:
 - Does it improve comparison?
 - Does it provide important reference information?
 - Does it belong at the correct level of the Product Model?
+- Is it manufacturer product information or retailer selling information?
 - Could it instead be represented as a Community Observation?
+- Would introducing a new entity unnecessarily mix retail concerns into the core catalogue?
 
 Only attributes that provide lasting value should become part of the Product Specification.
 

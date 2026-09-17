@@ -10,12 +10,13 @@ Every approved attribute belongs to one level of the Product Model.
 Product
 └── Product Variant
     └── Size Variant
-        └── Pack Type
 ```
 
 Each attribute has one authoritative home and should only be recorded once.
 
-For catalogue entry, shared details are entered once at the highest applicable level. Variants inherit shared values by default and store an explicit override only when a characteristic genuinely differs for that variant. Sizes and retail packaging follow the same principle: a value belongs at the highest level where it is true.
+For catalogue entry, shared details are entered once at the highest applicable level. Variants inherit shared values by default and store an explicit override only when a characteristic genuinely differs for that variant. Size-specific information belongs at Size Variant level where it can legitimately differ between sizes.
+
+Retail selling arrangements are separate from the core Product Specification.
 
 Where subjective information is required, it belongs in Community Observations rather than the Product Specification.
 
@@ -25,7 +26,7 @@ Where subjective information is required, it belongs in Community Observations r
 
 These attributes describe the identity of a product.
 
-They remain constant regardless of variant, size or packaging.
+They remain constant regardless of variant or size.
 
 | Attribute | Type | Notes |
 |-----------|------|------|
@@ -73,7 +74,7 @@ Only attributes that genuinely differ between variants should be stored as varia
 
 # Size Variant Attributes
 
-These attributes change with physical size.
+These attributes describe information that may legitimately differ between physical sizes.
 
 | Attribute | Type | Unit |
 |-----------|------|------|
@@ -86,34 +87,55 @@ These attributes change with physical size.
 | Product Length | Integer | mm |
 | Product Width | Integer | mm |
 | Product Weight | Integer | g |
+| Manufacturer Pack Quantity | Integer | Individual products in manufacturer's stated standard pack |
 | GTIN / Barcode | Text | Global Trade Item Number |
 
 Manufacturers occasionally publish only some measurements.
 
 Unknown values should remain unknown.
 
-A GTIN / Barcode normally identifies the retail product represented by a particular Size Variant. Different sizes may therefore have different GTINs.
+### Manufacturer Pack Quantity
+
+Manufacturer Pack Quantity records the number of individual products that the manufacturer states are supplied in the standard packaged product for that size, where published.
+
+The value may be the same across several sizes or may differ between sizes.
+
+This is product information associated with the Size Variant. It is not a Pack Type and does not create a fourth level in the Product Model.
+
+Manufacturer Pack Quantity must not be confused with a retailer's selling quantity.
+
+---
+
+### GTIN / Barcode
+
+A GTIN / Barcode identifies a specific trade item.
+
+Within the normal DiaperScout catalogue model, manufacturer-issued identifiers are associated with the relevant Size Variant where that is the appropriate representation.
+
+Different sizes commonly have different GTINs.
 
 A GTIN should not be assumed to exist where no reliable identifier is published.
 
 ---
 
-# Pack Type Attributes
+# Retail Information
 
-Pack Types describe how a Size Variant is sold or packaged.
+Retail selling arrangements are not Product Specification attributes merely because they describe packaging or quantity.
 
-| Attribute | Type | Notes |
-|-----------|------|------|
-| Pack Type | Enum | Sample, Pack, Case |
-| Quantity per Pack | Integer | Number of products contained |
-| Packaging Type | Enum | Bag, Box, Case |
-| Case Quantity | Integer | Optional; number of retail packs in a case |
-| Retail Packaging Image | Image |
-| Packaging Notes | Markdown | Objective only |
+Retail information may include:
 
-Packaging changes should not create new Products or Product Variants.
+- Quantity offered by a retailer
+- Selling presentation
+- Retailer SKU
+- Individual samples
+- Multiple manufacturer's packs sold together
+- Retailer-created bundles or cases
+- Retail availability
+- Retail price and other time-sensitive commercial information
 
-A case may contain multiple retail packs and does not necessarily have its own GTIN / Barcode.
+A retailer-created bundle or case does not create a new Product Variant or Size Variant.
+
+Manufacturer-stated pack quantity remains Product Specification information because it describes the manufacturer's packaged product.
 
 ---
 
@@ -139,17 +161,19 @@ Subjective information belongs in Community Observations.
 
 Attributes should represent information that remains true for that Product Specification.
 
-Temporary promotions, retailer descriptions and marketing claims should not be recorded as Product Specification attributes.
+Temporary promotions, retailer descriptions and marketing claims should not be recorded as Product Specification attributes unless they meet the applicable evidence and attribute rules.
 
 ---
 
 ## Manufacturer First
 
-Where manufacturer information is available, it should take precedence over retailer information.
+Where manufacturer information is available, it should take precedence over retailer information for Product Specification facts.
 
 Retailers frequently rewrite product descriptions.
 
-The Product Specification should always prefer primary sources.
+The Product Specification should prefer primary sources.
+
+Retail-specific information should remain Retail information.
 
 ---
 
@@ -187,11 +211,10 @@ Examples include:
 - Product Type
 - Backing Type
 - Fastener Type
-- Packaging Type
 - Product Status
 - Fragrance
 
-Controlled vocabularies improve consistency and simplify filtering.
+Retail packaging terminology should not be used to create a core Product hierarchy level.
 
 ---
 
@@ -206,6 +229,7 @@ Unless otherwise stated:
 | Weight | g |
 | Capacity | ml |
 | Waist / Hip | cm |
+| Manufacturer Pack Quantity | Individual products |
 
 The Guide may display alternative units for Explorers, but Product Specifications should use a single canonical unit internally.
 

@@ -197,6 +197,205 @@ internal sealed class CatalogueSubmissions(
         return CatalogueSubmissionVariantsResult.Found(variants);
     }
 
+    public async Task<CatalogueSubmissionSizeVariantsResult> GetSizeVariantsAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        Guid variantId,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireModeratorAsync(actor, cancellationToken);
+
+        var variantExists = await db.CatalogueSubmissionVariants
+            .AsNoTracking()
+            .AnyAsync(
+                value => value.Id == variantId && value.SubmissionId == submissionId,
+                cancellationToken);
+
+        if (!variantExists)
+            return CatalogueSubmissionSizeVariantsResult.Invalid(
+                new Dictionary<string, string[]>
+                {
+                    ["variantId"] = ["The product variant was not found."]
+                });
+
+        var sizes = await db.CatalogueSubmissionSizeVariants
+            .AsNoTracking()
+            .Where(value => value.VariantId == variantId)
+            .OrderBy(value => value.CreatedAtUtc)
+            .Select(value => new CatalogueSubmissionSizeVariantReceipt(
+                value.Id,
+                value.VariantId,
+                value.ManufacturerSize,
+                value.WaistMinimumCm,
+                value.WaistMaximumCm,
+                value.HipMinimumCm,
+                value.HipMaximumCm,
+                value.CapacityMl,
+                value.LengthMm,
+                value.WidthMm,
+                value.WeightGrams,
+                value.ManufacturerPackQuantity,
+                value.Gtin,
+                value.CreatedAtUtc,
+                value.UpdatedAtUtc))
+            .ToListAsync(cancellationToken);
+
+        return CatalogueSubmissionSizeVariantsResult.Found(sizes);
+    }
+
+    public async Task<CatalogueSubmissionSizeVariantReceipt> AddSizeVariantAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        Guid variantId,
+        AddCatalogueSubmissionSizeVariant command,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireModeratorAsync(actor, cancellationToken);
+
+        var submission = await GetSubmissionAsync(submissionId, cancellationToken);
+        EnsureDraftEditable(submission);
+
+        var variantExists = await db.CatalogueSubmissionVariants.AnyAsync(
+            value => value.Id == variantId && value.SubmissionId == submissionId,
+            cancellationToken);
+
+        if (!variantExists)
+            throw new CatalogueValidationException("variantId", "The product variant was not found.");
+
+        try
+        {
+            var size = new CatalogueSubmissionSizeVariant(
+                variantId,
+                command.ManufacturerSize,
+                command.WaistMinimumCm,
+                command.WaistMaximumCm,
+                command.HipMinimumCm,
+                command.HipMaximumCm,
+                command.CapacityMl,
+                command.LengthMm,
+                command.WidthMm,
+                command.WeightGrams,
+                command.ManufacturerPackQuantity,
+                command.Gtin);
+
+            var duplicate = await db.CatalogueSubmissionSizeVariants.AnyAsync(
+                value => value.VariantId == variantId &&
+                         value.ManufacturerSize.ToLower() == size.ManufacturerSize.ToLower(),
+                cancellationToken);
+
+            if (duplicate)
+                throw new ArgumentException(
+                    "A size with this manufacturer size already exists for this product variant.",
+                    nameof(command.ManufacturerSize));
+
+            db.CatalogueSubmissionSizeVariants.Add(size);
+            await db.SaveChangesAsync(cancellationToken);
+            return ToSizeVariantReceipt(size);
+        }
+        catch (ArgumentException exception)
+        {
+            throw new CatalogueValidationException(
+                GetSizeVariantFieldName(exception.ParamName),
+                exception.Message);
+        }
+    }
+
+    public async Task<CatalogueSubmissionSizeVariantReceipt> UpdateSizeVariantAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        Guid variantId,
+        Guid sizeVariantId,
+        UpdateCatalogueSubmissionSizeVariant command,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireModeratorAsync(actor, cancellationToken);
+
+        var submission = await GetSubmissionAsync(submissionId, cancellationToken);
+        EnsureDraftEditable(submission);
+
+        var size = await db.CatalogueSubmissionSizeVariants
+            .SingleOrDefaultAsync(
+                value => value.Id == sizeVariantId && value.VariantId == variantId,
+                cancellationToken)
+            ?? throw new CatalogueValidationException(
+                "sizeVariantId",
+                "The size variant was not found.");
+
+        var variantExists = await db.CatalogueSubmissionVariants.AnyAsync(
+            value => value.Id == variantId && value.SubmissionId == submissionId,
+            cancellationToken);
+
+        if (!variantExists)
+            throw new CatalogueValidationException("variantId", "The product variant was not found.");
+
+        try
+        {
+            var duplicate = await db.CatalogueSubmissionSizeVariants.AnyAsync(
+                value => value.VariantId == variantId &&
+                         value.Id != sizeVariantId &&
+                         value.ManufacturerSize.ToLower() == command.ManufacturerSize.Trim().ToLower(),
+                cancellationToken);
+
+            if (duplicate)
+                throw new ArgumentException(
+                    "A size with this manufacturer size already exists for this product variant.",
+                    nameof(command.ManufacturerSize));
+
+            size.Update(
+                command.ManufacturerSize,
+                command.WaistMinimumCm,
+                command.WaistMaximumCm,
+                command.HipMinimumCm,
+                command.HipMaximumCm,
+                command.CapacityMl,
+                command.LengthMm,
+                command.WidthMm,
+                command.WeightGrams,
+                command.ManufacturerPackQuantity,
+                command.Gtin);
+
+            await db.SaveChangesAsync(cancellationToken);
+            return ToSizeVariantReceipt(size);
+        }
+        catch (ArgumentException exception)
+        {
+            throw new CatalogueValidationException(
+                GetSizeVariantFieldName(exception.ParamName),
+                exception.Message);
+        }
+    }
+
+    public async Task RemoveSizeVariantAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        Guid variantId,
+        Guid sizeVariantId,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireModeratorAsync(actor, cancellationToken);
+
+        var submission = await GetSubmissionAsync(submissionId, cancellationToken);
+        EnsureDraftEditable(submission);
+
+        var size = await db.CatalogueSubmissionSizeVariants
+            .SingleOrDefaultAsync(
+                value => value.Id == sizeVariantId && value.VariantId == variantId,
+                cancellationToken)
+            ?? throw new CatalogueValidationException(
+                "sizeVariantId",
+                "The size variant was not found.");
+
+        var variantExists = await db.CatalogueSubmissionVariants.AnyAsync(
+            value => value.Id == variantId && value.SubmissionId == submissionId,
+            cancellationToken);
+
+        if (!variantExists)
+            throw new CatalogueValidationException("variantId", "The product variant was not found.");
+
+        db.CatalogueSubmissionSizeVariants.Remove(size);
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
     public async Task<CatalogueSubmissionVariantOverrideReceipt?> GetVariantOverrideAsync(
         AuthenticatedUser actor,
         Guid submissionId,
@@ -1158,6 +1357,40 @@ internal sealed class CatalogueSubmissions(
                 "status",
                 "Only draft submissions or submissions needing changes can be edited.");
     }
+
+    private static CatalogueSubmissionSizeVariantReceipt ToSizeVariantReceipt(
+        CatalogueSubmissionSizeVariant size) =>
+        new(
+            size.Id,
+            size.VariantId,
+            size.ManufacturerSize,
+            size.WaistMinimumCm,
+            size.WaistMaximumCm,
+            size.HipMinimumCm,
+            size.HipMaximumCm,
+            size.CapacityMl,
+            size.LengthMm,
+            size.WidthMm,
+            size.WeightGrams,
+            size.ManufacturerPackQuantity,
+            size.Gtin,
+            size.CreatedAtUtc,
+            size.UpdatedAtUtc);
+
+    private static string GetSizeVariantFieldName(string? parameterName) =>
+        parameterName switch
+        {
+            "manufacturerSize" => "manufacturerSize",
+            "waistMinimumCm" or "waistMaximumCm" => "waist",
+            "hipMinimumCm" or "hipMaximumCm" => "hip",
+            "capacityMl" => "capacity",
+            "lengthMm" => "length",
+            "widthMm" => "width",
+            "weightGrams" => "weight",
+            "manufacturerPackQuantity" => "manufacturerPackQuantity",
+            "gtin" => "gtin",
+            _ => "size"
+        };
 
     private static CatalogueSubmissionVariantReceipt ToVariantReceipt(
         CatalogueSubmissionVariant variant) =>

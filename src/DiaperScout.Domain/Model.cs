@@ -638,6 +638,156 @@ public sealed class CatalogueSubmissionVariantOverride : Entity
     }
 }
 
+public sealed class CatalogueSubmissionSizeVariant : Entity
+{
+    private CatalogueSubmissionSizeVariant()
+    {
+        ManufacturerSize = null!;
+    }
+
+    public CatalogueSubmissionSizeVariant(
+        Guid variantId,
+        string manufacturerSize,
+        int? waistMinimumCm = null,
+        int? waistMaximumCm = null,
+        int? hipMinimumCm = null,
+        int? hipMaximumCm = null,
+        int? capacityMl = null,
+        int? lengthMm = null,
+        int? widthMm = null,
+        int? weightGrams = null,
+        int? manufacturerPackQuantity = null,
+        string? gtin = null)
+    {
+        if (variantId == Guid.Empty)
+            throw new ArgumentException("A product variant is required.", nameof(variantId));
+
+        ValidateManufacturerSize(manufacturerSize);
+        ValidateRange(waistMinimumCm, waistMaximumCm, "waist");
+        ValidateRange(hipMinimumCm, hipMaximumCm, "hip");
+        ValidateNonNegative(capacityMl, nameof(capacityMl));
+        ValidateNonNegative(lengthMm, nameof(lengthMm));
+        ValidateNonNegative(widthMm, nameof(widthMm));
+        ValidateNonNegative(weightGrams, nameof(weightGrams));
+        ValidatePackQuantity(manufacturerPackQuantity);
+        ValidateGtin(gtin);
+
+        VariantId = variantId;
+        ManufacturerSize = manufacturerSize.Trim();
+        WaistMinimumCm = waistMinimumCm;
+        WaistMaximumCm = waistMaximumCm;
+        HipMinimumCm = hipMinimumCm;
+        HipMaximumCm = hipMaximumCm;
+        CapacityMl = capacityMl;
+        LengthMm = lengthMm;
+        WidthMm = widthMm;
+        WeightGrams = weightGrams;
+        ManufacturerPackQuantity = manufacturerPackQuantity;
+        Gtin = NormaliseGtin(gtin);
+        CreatedAtUtc = DateTimeOffset.UtcNow;
+        UpdatedAtUtc = CreatedAtUtc;
+    }
+
+    public Guid VariantId { get; private set; }
+    public string ManufacturerSize { get; private set; }
+    public int? WaistMinimumCm { get; private set; }
+    public int? WaistMaximumCm { get; private set; }
+    public int? HipMinimumCm { get; private set; }
+    public int? HipMaximumCm { get; private set; }
+    public int? CapacityMl { get; private set; }
+    public int? LengthMm { get; private set; }
+    public int? WidthMm { get; private set; }
+    public int? WeightGrams { get; private set; }
+    public int? ManufacturerPackQuantity { get; private set; }
+    public string? Gtin { get; private set; }
+    public DateTimeOffset CreatedAtUtc { get; private set; }
+    public DateTimeOffset UpdatedAtUtc { get; private set; }
+
+    public void Update(
+        string manufacturerSize,
+        int? waistMinimumCm,
+        int? waistMaximumCm,
+        int? hipMinimumCm,
+        int? hipMaximumCm,
+        int? capacityMl,
+        int? lengthMm,
+        int? widthMm,
+        int? weightGrams,
+        int? manufacturerPackQuantity,
+        string? gtin)
+    {
+        ValidateManufacturerSize(manufacturerSize);
+        ValidateRange(waistMinimumCm, waistMaximumCm, "waist");
+        ValidateRange(hipMinimumCm, hipMaximumCm, "hip");
+        ValidateNonNegative(capacityMl, nameof(capacityMl));
+        ValidateNonNegative(lengthMm, nameof(lengthMm));
+        ValidateNonNegative(widthMm, nameof(widthMm));
+        ValidateNonNegative(weightGrams, nameof(weightGrams));
+        ValidatePackQuantity(manufacturerPackQuantity);
+        ValidateGtin(gtin);
+
+        ManufacturerSize = manufacturerSize.Trim();
+        WaistMinimumCm = waistMinimumCm;
+        WaistMaximumCm = waistMaximumCm;
+        HipMinimumCm = hipMinimumCm;
+        HipMaximumCm = hipMaximumCm;
+        CapacityMl = capacityMl;
+        LengthMm = lengthMm;
+        WidthMm = widthMm;
+        WeightGrams = weightGrams;
+        ManufacturerPackQuantity = manufacturerPackQuantity;
+        Gtin = NormaliseGtin(gtin);
+        UpdatedAtUtc = DateTimeOffset.UtcNow;
+    }
+
+    private static void ValidateManufacturerSize(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new ArgumentException("A manufacturer size is required.", nameof(value));
+
+        if (value.Trim().Length > 100)
+            throw new ArgumentException("Manufacturer size must be 100 characters or fewer.", nameof(value));
+    }
+
+    private static void ValidateRange(int? minimum, int? maximum, string name)
+    {
+        if (minimum is < 0 || maximum is < 0)
+            throw new ArgumentException($"{name} measurements cannot be negative.", name);
+
+        if (minimum.HasValue && maximum.HasValue && minimum > maximum)
+            throw new ArgumentException($"{name} minimum cannot be greater than maximum.", name);
+    }
+
+    private static void ValidateNonNegative(int? value, string name)
+    {
+        if (value is < 0)
+            throw new ArgumentException($"{name} cannot be negative.", name);
+    }
+
+    private static void ValidatePackQuantity(int? value)
+    {
+        if (value is <= 0)
+            throw new ArgumentException(
+                "Manufacturer pack quantity must be greater than zero when supplied.",
+                nameof(ManufacturerPackQuantity));
+    }
+
+    private static void ValidateGtin(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return;
+
+        var normalised = NormaliseGtin(value);
+        if (normalised is null || normalised.Length is < 8 or > 14 || normalised.Any(character => !char.IsDigit(character)))
+            throw new ArgumentException("GTIN must contain 8 to 14 digits.", nameof(Gtin));
+    }
+
+    private static string? NormaliseGtin(string? value) =>
+        string.IsNullOrWhiteSpace(value)
+            ? null
+            : value.Replace(" ", string.Empty).Replace("-", string.Empty).Trim();
+}
+
 public sealed class CatalogueSubmissionVariant : Entity
 {
     private CatalogueSubmissionVariant()
@@ -666,6 +816,8 @@ public sealed class CatalogueSubmissionVariant : Entity
     public string? Name { get; private set; }
     public DateTimeOffset CreatedAtUtc { get; private set; }
     public DateTimeOffset UpdatedAtUtc { get; private set; }
+
+    public ICollection<CatalogueSubmissionSizeVariant> Sizes { get; } = new List<CatalogueSubmissionSizeVariant>();
 
     public bool IsBaseVariant => Name is null;
 

@@ -65,3 +65,41 @@
     .submission-card-actions { width:100%; }
     .submission-card-editor .submission-card-actions { align-self:stretch; justify-content:flex-end; }
 }
+
+
+.submission-card-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.submission-card-heading > div {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+}
+
+.submission-card-heading small {
+    color: var(--ds-text-muted);
+}
+
+.submission-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.submission-card .submission-card {
+    margin-top: 1rem;
+}
+
+@media (max-width: 640px) {
+    .submission-card-heading {
+        flex-direction: column;
+    }
+
+    .submission-card-actions {
+        width: 100%;
+    }
+}

@@ -21,6 +21,7 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
     public DbSet<CatalogueAuditRecord> CatalogueAuditRecords => Set<CatalogueAuditRecord>();
     public DbSet<CatalogueSubmission> CatalogueSubmissions => Set<CatalogueSubmission>();
     public DbSet<CatalogueSubmissionVariant> CatalogueSubmissionVariants => Set<CatalogueSubmissionVariant>();
+    public DbSet<CatalogueSubmissionSizeVariant> CatalogueSubmissionSizeVariants => Set<CatalogueSubmissionSizeVariant>();
     public DbSet<CatalogueSubmissionVariantOverride> CatalogueSubmissionVariantOverrides => Set<CatalogueSubmissionVariantOverride>();
     public DbSet<CatalogueSubmissionVerification> CatalogueSubmissionVerifications => Set<CatalogueSubmissionVerification>();
     public DbSet<CatalogueSubmissionRetailDestination> CatalogueSubmissionRetailDestinations => Set<CatalogueSubmissionRetailDestination>();
@@ -416,6 +417,28 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
             entity.HasOne<CatalogueSubmission>()
                 .WithMany()
                 .HasForeignKey(x => x.SubmissionId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<CatalogueSubmissionSizeVariant>(entity =>
+        {
+            entity.ToTable("catalogue_submission_size_variants");
+
+            entity.Property(x => x.ManufacturerSize)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(x => x.Gtin)
+                .HasMaxLength(14);
+
+            entity.HasIndex(x => new { x.VariantId, x.ManufacturerSize })
+                .IsUnique();
+
+            entity.HasIndex(x => x.VariantId);
+
+            entity.HasOne<CatalogueSubmissionVariant>()
+                .WithMany(x => x.Sizes)
+                .HasForeignKey(x => x.VariantId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 

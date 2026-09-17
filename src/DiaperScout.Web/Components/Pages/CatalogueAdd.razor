@@ -234,12 +234,81 @@
             {
                 <section class="submission-panel">
                     <div class="submission-panel-heading"><div><p class="catalogue-kicker">STEP 3 OF 6</p><h2>Size Variants</h2></div></div>
-                    <p class="submission-help">Add the physical sizes available for this product variant. Each size can have its own measurements and GTIN/barcode.</p>
-                    <div class="submission-card submission-card-muted">
-                        <strong>＋ Add Size Variant</strong>
-                        <small>Size entities and their specification fields will be wired to the submission model next.</small>
+                    <p class="submission-help">Add the physical sizes available for each product variant. Size-specific manufacturer information can differ between sizes. Leave information blank when it is not known or published.</p>
+
+                    @if (variantsLoading)
+                    {
+                        <div class="submission-card submission-card-muted"><strong>Loading sizes…</strong></div>
+                    }
+                    else
+                    {
+                        @foreach (var variant in variants)
+                        {
+                            <div class="submission-card">
+                                <div class="submission-card-heading">
+                                    <div>
+                                        <strong>@(variant.Name ?? "Original / base product")</strong>
+                                        <small>@GetSizes(variant.Id).Count size@(GetSizes(variant.Id).Count == 1 ? "" : "s")</small>
+                                    </div>
+                                    <button class="ds-button ds-button-secondary" type="button" @onclick="() => BeginAddSize(variant.Id)" disabled="@saving">＋ Add size</button>
+                                </div>
+
+                                @if (editingSizeVariantId == variant.Id)
+                                {
+                                    <div class="submission-grid">
+                                        <div class="submission-field submission-field-wide">
+                                            <label>Manufacturer size *</label>
+                                            <InputText class="ds-input" @bind-Value="sizeEditor.ManufacturerSize" placeholder="e.g. Medium" />
+                                        </div>
+                                        <div class="submission-field"><label>Waist minimum (cm)</label><InputNumber class="ds-input" @bind-Value="sizeEditor.WaistMinimumCm" /></div>
+                                        <div class="submission-field"><label>Waist maximum (cm)</label><InputNumber class="ds-input" @bind-Value="sizeEditor.WaistMaximumCm" /></div>
+                                        <div class="submission-field"><label>Hip minimum (cm)</label><InputNumber class="ds-input" @bind-Value="sizeEditor.HipMinimumCm" /></div>
+                                        <div class="submission-field"><label>Hip maximum (cm)</label><InputNumber class="ds-input" @bind-Value="sizeEditor.HipMaximumCm" /></div>
+                                        <div class="submission-field"><label>Capacity (ml)</label><InputNumber class="ds-input" @bind-Value="sizeEditor.CapacityMl" /></div>
+                                        <div class="submission-field"><label>Length (mm)</label><InputNumber class="ds-input" @bind-Value="sizeEditor.LengthMm" /></div>
+                                        <div class="submission-field"><label>Width (mm)</label><InputNumber class="ds-input" @bind-Value="sizeEditor.WidthMm" /></div>
+                                        <div class="submission-field"><label>Weight (g)</label><InputNumber class="ds-input" @bind-Value="sizeEditor.WeightGrams" /></div>
+                                        <div class="submission-field"><label>Manufacturer pack quantity</label><InputNumber class="ds-input" @bind-Value="sizeEditor.ManufacturerPackQuantity" /><small>Number of individual products stated by the manufacturer as supplied in the standard pack for this size.</small></div>
+                                        <div class="submission-field submission-field-wide"><label>GTIN / barcode</label><InputText class="ds-input" @bind-Value="sizeEditor.Gtin" placeholder="8–14 digits" /></div>
+                                    </div>
+                                    <div class="submission-actions">
+                                        <button class="ds-button ds-button-secondary" type="button" @onclick="CancelEditSize" disabled="@saving">Cancel</button>
+                                        <button class="ds-button ds-button-primary" type="button" @onclick="SaveSizeAsync" disabled="@saving || string.IsNullOrWhiteSpace(sizeEditor.ManufacturerSize)">Save size</button>
+                                    </div>
+                                }
+                                else if (GetSizes(variant.Id).Count == 0)
+                                {
+                                    <div class="submission-card submission-card-muted"><small>No sizes added yet. Add at least one size before continuing.</small></div>
+                                }
+                                else
+                                {
+                                    @foreach (var size in GetSizes(variant.Id))
+                                    {
+                                        <div class="submission-card">
+                                            <div class="submission-card-heading">
+                                                <div>
+                                                    <strong>@size.ManufacturerSize</strong>
+                                                    <small>@FormatSizeSummary(size)</small>
+                                                </div>
+                                                <div class="submission-card-actions">
+                                                    <button class="ds-button ds-button-secondary" type="button" @onclick="() => BeginEditSize(variant.Id, size)" disabled="@saving">Edit</button>
+                                                    <button class="ds-button ds-button-danger" type="button" @onclick="() => RemoveSizeAsync(variant.Id, size)" disabled="@saving">Remove</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        }
+                    }
+
+                    <div class="submission-next">
+                        <div><p class="catalogue-kicker">NEXT</p><h2>Product Details</h2><p>Capture the remaining factual information about the product as a whole.</p></div>
+                        <div class="submission-card-actions">
+                            <button class="ds-button ds-button-secondary" type="button" @onclick="() => GoToStep(2)">← Back</button>
+                            <button class="ds-button ds-button-primary" type="button" @onclick="() => GoToStep(4)" disabled="@(saving || editingSizeVariantId is not null || variants.Count == 0 || variants.Any(variant => GetSizes(variant.Id).Count == 0))">Continue →</button>
+                        </div>
                     </div>
-                    <div class="submission-next"><div><p class="catalogue-kicker">NEXT</p><h2>Product Details</h2><p>Capture the remaining factual information about the product as a whole.</p></div><button class="ds-button ds-button-primary" type="button" @onclick="() => GoToStep(4)">Continue →</button></div>
                 </section>
             }
             else if (currentStep == 4)
@@ -296,6 +365,11 @@
     private bool addingVariant;
     private bool addingBaseVariant;
     private bool variantsLoading;
+
+    private readonly Dictionary<Guid, IReadOnlyList<CatalogueSubmissionSizeVariantReceipt>> sizeVariants = [];
+    private Guid? editingSizeVariantId;
+    private Guid? editingSizeId;
+    private readonly SizeEditorModel sizeEditor = new();
 
     private bool saving;
     private bool accessDenied;
@@ -394,6 +468,7 @@
         if (result.Status == CatalogueSubmissionVariantsStatus.Found)
         {
             variants = result.Variants ?? [];
+            await LoadSizeVariantsAsync();
             return;
         }
 
@@ -402,6 +477,185 @@
         else
             saveError = result.Message;
     }
+
+    private IReadOnlyList<CatalogueSubmissionSizeVariantReceipt> GetSizes(Guid variantId) =>
+        sizeVariants.TryGetValue(variantId, out var values) ? values : [];
+
+    private async Task LoadSizeVariantsAsync()
+    {
+        sizeVariants.Clear();
+
+        foreach (var variant in variants)
+        {
+            var result = await Catalogue.GetSubmissionSizeVariantsAsync(
+                submission!.Id,
+                variant.Id);
+
+            if (result.Status == CatalogueSubmissionSizeVariantsStatus.Found)
+            {
+                sizeVariants[variant.Id] = result.Sizes ?? [];
+            }
+            else if (result.Status == CatalogueSubmissionSizeVariantsStatus.AccessDenied)
+            {
+                accessDenied = true;
+                return;
+            }
+            else
+            {
+                saveError = result.Message;
+                return;
+            }
+        }
+    }
+
+    private void BeginAddSize(Guid variantId)
+    {
+        editingSizeVariantId = variantId;
+        editingSizeId = null;
+        sizeEditor.Clear();
+    }
+
+    private void BeginEditSize(
+        Guid variantId,
+        CatalogueSubmissionSizeVariantReceipt size)
+    {
+        editingSizeVariantId = variantId;
+        editingSizeId = size.Id;
+        sizeEditor.Load(size);
+    }
+
+    private void CancelEditSize()
+    {
+        editingSizeVariantId = null;
+        editingSizeId = null;
+        sizeEditor.Clear();
+    }
+
+    private async Task SaveSizeAsync()
+    {
+        if (submission is null || editingSizeVariantId is null)
+            return;
+
+        saving = true;
+        saveError = null;
+        var request = new UpdateCatalogueSubmissionSizeVariantRequest(
+            sizeEditor.ManufacturerSize.Trim(),
+            sizeEditor.WaistMinimumCm,
+            sizeEditor.WaistMaximumCm,
+            sizeEditor.HipMinimumCm,
+            sizeEditor.HipMaximumCm,
+            sizeEditor.CapacityMl,
+            sizeEditor.LengthMm,
+            sizeEditor.WidthMm,
+            sizeEditor.WeightGrams,
+            sizeEditor.ManufacturerPackQuantity,
+            sizeEditor.Gtin);
+
+        CatalogueSubmissionSizeVariantResult result;
+
+        if (editingSizeId is null)
+        {
+            result = await Catalogue.AddSubmissionSizeVariantAsync(
+                submission.Id,
+                editingSizeVariantId.Value,
+                new AddCatalogueSubmissionSizeVariantRequest(
+                    request.ManufacturerSize,
+                    request.WaistMinimumCm,
+                    request.WaistMaximumCm,
+                    request.HipMinimumCm,
+                    request.HipMaximumCm,
+                    request.CapacityMl,
+                    request.LengthMm,
+                    request.WidthMm,
+                    request.WeightGrams,
+                    request.ManufacturerPackQuantity,
+                    request.Gtin));
+        }
+        else
+        {
+            result = await Catalogue.UpdateSubmissionSizeVariantAsync(
+                submission.Id,
+                editingSizeVariantId.Value,
+                editingSizeId.Value,
+                request);
+        }
+
+        saving = false;
+
+        if (result.Status == CatalogueSubmissionSizeVariantResultStatus.Saved)
+        {
+            await LoadSizeVariantsAsync();
+            CancelEditSize();
+        }
+        else if (result.Status == CatalogueSubmissionSizeVariantResultStatus.Invalid)
+        {
+            saveError = string.Join(" ", result.Errors!.SelectMany(pair => pair.Value));
+        }
+        else if (result.Status == CatalogueSubmissionSizeVariantResultStatus.AccessDenied)
+        {
+            accessDenied = true;
+        }
+        else
+        {
+            saveError = result.Message;
+        }
+    }
+
+    private async Task RemoveSizeAsync(
+        Guid variantId,
+        CatalogueSubmissionSizeVariantReceipt size)
+    {
+        if (submission is null)
+            return;
+
+        saving = true;
+        saveError = null;
+
+        var result = await Catalogue.RemoveSubmissionSizeVariantAsync(
+            submission.Id,
+            variantId,
+            size.Id);
+
+        saving = false;
+
+        if (result.Status == CatalogueSubmissionSizeVariantResultStatus.Removed)
+        {
+            await LoadSizeVariantsAsync();
+        }
+        else if (result.Status == CatalogueSubmissionSizeVariantResultStatus.Invalid)
+        {
+            saveError = string.Join(" ", result.Errors!.SelectMany(pair => pair.Value));
+        }
+        else
+        {
+            saveError = result.Message;
+        }
+    }
+
+    private static string FormatSizeSummary(
+        CatalogueSubmissionSizeVariantReceipt size)
+    {
+        var parts = new List<string>();
+
+        if (size.WaistMinimumCm.HasValue || size.WaistMaximumCm.HasValue)
+            parts.Add($"Waist {FormatRange(size.WaistMinimumCm, size.WaistMaximumCm)} cm");
+
+        if (size.HipMinimumCm.HasValue || size.HipMaximumCm.HasValue)
+            parts.Add($"Hip {FormatRange(size.HipMinimumCm, size.HipMaximumCm)} cm");
+
+        if (size.ManufacturerPackQuantity.HasValue)
+            parts.Add($"Pack {size.ManufacturerPackQuantity.Value}");
+
+        if (!string.IsNullOrWhiteSpace(size.Gtin))
+            parts.Add($"GTIN {size.Gtin}");
+
+        return parts.Count == 0 ? "No optional size information supplied" : string.Join(" · ", parts);
+    }
+
+    private static string FormatRange(int? minimum, int? maximum) =>
+        minimum.HasValue && maximum.HasValue
+            ? $"{minimum}–{maximum}"
+            : minimum?.ToString() ?? maximum?.ToString() ?? "unknown";
 
     private void BeginAddVariant()
     {
@@ -616,6 +870,51 @@
     private void SetManufacturerNew(ChangeEventArgs _) => manufacturerMode = "new";
     private void SetBrandExisting(ChangeEventArgs _) => brandMode = "existing";
     private void SetBrandNew(ChangeEventArgs _) => brandMode = "new";
+
+    private sealed class SizeEditorModel
+    {
+        public string ManufacturerSize { get; set; } = "";
+        public int? WaistMinimumCm { get; set; }
+        public int? WaistMaximumCm { get; set; }
+        public int? HipMinimumCm { get; set; }
+        public int? HipMaximumCm { get; set; }
+        public int? CapacityMl { get; set; }
+        public int? LengthMm { get; set; }
+        public int? WidthMm { get; set; }
+        public int? WeightGrams { get; set; }
+        public int? ManufacturerPackQuantity { get; set; }
+        public string? Gtin { get; set; }
+
+        public void Clear()
+        {
+            ManufacturerSize = "";
+            WaistMinimumCm = null;
+            WaistMaximumCm = null;
+            HipMinimumCm = null;
+            HipMaximumCm = null;
+            CapacityMl = null;
+            LengthMm = null;
+            WidthMm = null;
+            WeightGrams = null;
+            ManufacturerPackQuantity = null;
+            Gtin = null;
+        }
+
+        public void Load(CatalogueSubmissionSizeVariantReceipt size)
+        {
+            ManufacturerSize = size.ManufacturerSize;
+            WaistMinimumCm = size.WaistMinimumCm;
+            WaistMaximumCm = size.WaistMaximumCm;
+            HipMinimumCm = size.HipMinimumCm;
+            HipMaximumCm = size.HipMaximumCm;
+            CapacityMl = size.CapacityMl;
+            LengthMm = size.LengthMm;
+            WidthMm = size.WidthMm;
+            WeightGrams = size.WeightGrams;
+            ManufacturerPackQuantity = size.ManufacturerPackQuantity;
+            Gtin = size.Gtin;
+        }
+    }
 
     private sealed class CreateModel
     {

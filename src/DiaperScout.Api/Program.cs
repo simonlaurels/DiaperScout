@@ -548,6 +548,186 @@ if (builder.Configuration.GetValue<bool>(
         .Produces<IReadOnlyList<CatalogueSubmissionVariantReceipt>>();
 
     app.MapGet(
+        "/api/v1/catalogue-submissions/{id:guid}/variants/{variantId:guid}/sizes",
+        async (
+            Guid id,
+            Guid variantId,
+            ICurrentUser currentUser,
+            ICatalogueSubmissions submissions,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null) return Results.Forbid();
+
+            var result = await submissions.GetSizeVariantsAsync(
+                actor,
+                id,
+                variantId,
+                cancellationToken);
+
+            return result.Status switch
+            {
+                CatalogueSubmissionSizeVariantsStatus.Found =>
+                    Results.Ok(result.Sizes),
+                CatalogueSubmissionSizeVariantsStatus.Invalid =>
+                    Results.ValidationProblem(result.Errors!),
+                CatalogueSubmissionSizeVariantsStatus.AccessDenied =>
+                    Results.Forbid(),
+                _ => Results.Problem(result.Message)
+            };
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("GetCatalogueSubmissionSizeVariants")
+        .WithTags("Catalogue Submissions")
+        .Produces<IReadOnlyList<CatalogueSubmissionSizeVariantReceipt>>();
+
+    app.MapPost(
+        "/api/v1/catalogue-submissions/{id:guid}/variants/{variantId:guid}/sizes",
+        async (
+            Guid id,
+            Guid variantId,
+            AddCatalogueSubmissionSizeVariantRequest request,
+            ICurrentUser currentUser,
+            ICatalogueSubmissions submissions,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null) return Results.Forbid();
+
+            try
+            {
+                var receipt = await submissions.AddSizeVariantAsync(
+                    actor,
+                    id,
+                    variantId,
+                    new AddCatalogueSubmissionSizeVariant(
+                        request.ManufacturerSize,
+                        request.WaistMinimumCm,
+                        request.WaistMaximumCm,
+                        request.HipMinimumCm,
+                        request.HipMaximumCm,
+                        request.CapacityMl,
+                        request.LengthMm,
+                        request.WidthMm,
+                        request.WeightGrams,
+                        request.ManufacturerPackQuantity,
+                        request.Gtin),
+                    cancellationToken);
+
+                return Results.Created(
+                    $"/api/v1/catalogue-submissions/{id}/variants/{variantId}/sizes/{receipt.Id}",
+                    receipt);
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(
+                    new Dictionary<string, string[]> { [exception.Field] = [exception.Message] });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("AddCatalogueSubmissionSizeVariant")
+        .WithTags("Catalogue Submissions")
+        .Produces<CatalogueSubmissionSizeVariantReceipt>(StatusCodes.Status201Created)
+        .ProducesValidationProblem();
+
+    app.MapPut(
+        "/api/v1/catalogue-submissions/{id:guid}/variants/{variantId:guid}/sizes/{sizeVariantId:guid}",
+        async (
+            Guid id,
+            Guid variantId,
+            Guid sizeVariantId,
+            UpdateCatalogueSubmissionSizeVariantRequest request,
+            ICurrentUser currentUser,
+            ICatalogueSubmissions submissions,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null) return Results.Forbid();
+
+            try
+            {
+                var receipt = await submissions.UpdateSizeVariantAsync(
+                    actor,
+                    id,
+                    variantId,
+                    sizeVariantId,
+                    new UpdateCatalogueSubmissionSizeVariant(
+                        request.ManufacturerSize,
+                        request.WaistMinimumCm,
+                        request.WaistMaximumCm,
+                        request.HipMinimumCm,
+                        request.HipMaximumCm,
+                        request.CapacityMl,
+                        request.LengthMm,
+                        request.WidthMm,
+                        request.WeightGrams,
+                        request.ManufacturerPackQuantity,
+                        request.Gtin),
+                    cancellationToken);
+
+                return Results.Ok(receipt);
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(
+                    new Dictionary<string, string[]> { [exception.Field] = [exception.Message] });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("UpdateCatalogueSubmissionSizeVariant")
+        .WithTags("Catalogue Submissions")
+        .Produces<CatalogueSubmissionSizeVariantReceipt>()
+        .ProducesValidationProblem();
+
+    app.MapDelete(
+        "/api/v1/catalogue-submissions/{id:guid}/variants/{variantId:guid}/sizes/{sizeVariantId:guid}",
+        async (
+            Guid id,
+            Guid variantId,
+            Guid sizeVariantId,
+            ICurrentUser currentUser,
+            ICatalogueSubmissions submissions,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null) return Results.Forbid();
+
+            try
+            {
+                await submissions.RemoveSizeVariantAsync(
+                    actor,
+                    id,
+                    variantId,
+                    sizeVariantId,
+                    cancellationToken);
+
+                return Results.NoContent();
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(
+                    new Dictionary<string, string[]> { [exception.Field] = [exception.Message] });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("RemoveCatalogueSubmissionSizeVariant")
+        .WithTags("Catalogue Submissions")
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesValidationProblem();
+
+    app.MapGet(
         "/api/v1/catalogue-submissions/{id:guid}/variants/{variantId:guid}/override",
         async (
             Guid id,

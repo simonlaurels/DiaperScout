@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -21,16 +21,6 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                 oldType: "character varying(200)",
                 oldMaxLength: 200);
 
-            // Older submissions used a synthetic "Single version" structural
-            // variant. Preserve those submissions as the real base variant
-            // before removing the obsolete structural-fallback flag.
-            migrationBuilder.Sql(
-                """
-                UPDATE diaperscout.catalogue_submission_variants
-                SET "Name" = NULL
-                WHERE "IsStructuralFallback" = TRUE;
-                """);
-
             migrationBuilder.AlterColumn<string>(
                 name: "Name",
                 schema: "diaperscout",
@@ -41,6 +31,16 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                 oldClrType: typeof(string),
                 oldType: "character varying(200)",
                 oldMaxLength: 200);
+
+            // Older submissions used a synthetic "Single version" structural
+            // variant. Preserve those submissions as the real base variant
+            // before removing the obsolete structural-fallback flag.
+            migrationBuilder.Sql(
+                """
+                UPDATE diaperscout.catalogue_submission_variants
+                SET "Name" = NULL
+                WHERE "IsStructuralFallback" = TRUE;
+                """);
 
             migrationBuilder.DropIndex(
                 name: "IX_catalogue_submission_variants_SubmissionId_IsStructuralFallback",

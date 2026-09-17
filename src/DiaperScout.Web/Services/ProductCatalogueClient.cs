@@ -198,6 +198,113 @@ public sealed class ProductCatalogueClient(HttpClient client)
             : CatalogueSubmissionVariantsResult.Found(variants);
     }
 
+    public async Task<CatalogueSubmissionSizeVariantsResult> GetSubmissionSizeVariantsAsync(
+        Guid submissionId,
+        Guid variantId,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.GetAsync(
+            $"api/v1/catalogue-submissions/{submissionId}/variants/{variantId}/sizes",
+            cancellationToken);
+
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            return CatalogueSubmissionSizeVariantsResult.AccessDenied();
+
+        if (!response.IsSuccessStatusCode)
+            return CatalogueSubmissionSizeVariantsResult.Failed();
+
+        var sizes = await response.Content.ReadFromJsonAsync<
+            IReadOnlyList<CatalogueSubmissionSizeVariantReceipt>>(cancellationToken);
+
+        return sizes is null
+            ? CatalogueSubmissionSizeVariantsResult.Failed()
+            : CatalogueSubmissionSizeVariantsResult.Found(sizes);
+    }
+
+    public async Task<CatalogueSubmissionSizeVariantResult> AddSubmissionSizeVariantAsync(
+        Guid submissionId,
+        Guid variantId,
+        AddCatalogueSubmissionSizeVariantRequest request,
+        CancellationToken cancellationToken = default) =>
+        await SendSizeVariantAsync(
+            HttpMethod.Post,
+            $"api/v1/catalogue-submissions/{submissionId}/variants/{variantId}/sizes",
+            request,
+            cancellationToken);
+
+    public async Task<CatalogueSubmissionSizeVariantResult> UpdateSubmissionSizeVariantAsync(
+        Guid submissionId,
+        Guid variantId,
+        Guid sizeVariantId,
+        UpdateCatalogueSubmissionSizeVariantRequest request,
+        CancellationToken cancellationToken = default) =>
+        await SendSizeVariantAsync(
+            HttpMethod.Put,
+            $"api/v1/catalogue-submissions/{submissionId}/variants/{variantId}/sizes/{sizeVariantId}",
+            request,
+            cancellationToken);
+
+    public async Task<CatalogueSubmissionSizeVariantResult> RemoveSubmissionSizeVariantAsync(
+        Guid submissionId,
+        Guid variantId,
+        Guid sizeVariantId,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.DeleteAsync(
+            $"api/v1/catalogue-submissions/{submissionId}/variants/{variantId}/sizes/{sizeVariantId}",
+            cancellationToken);
+
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            return CatalogueSubmissionSizeVariantResult.AccessDenied();
+
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>(cancellationToken);
+            return CatalogueSubmissionSizeVariantResult.Invalid(
+                problem?.Errors is null
+                    ? new Dictionary<string, string[]> { ["sizeVariant"] = ["The size variant could not be removed."] }
+                    : new Dictionary<string, string[]>(problem.Errors));
+        }
+
+        return response.IsSuccessStatusCode
+            ? CatalogueSubmissionSizeVariantResult.Removed()
+            : CatalogueSubmissionSizeVariantResult.Failed();
+    }
+
+    private async Task<CatalogueSubmissionSizeVariantResult> SendSizeVariantAsync<TRequest>(
+        HttpMethod method,
+        string url,
+        TRequest request,
+        CancellationToken cancellationToken)
+    {
+        using var message = new HttpRequestMessage(method, url)
+        {
+            Content = JsonContent.Create(request)
+        };
+
+        using var response = await client.SendAsync(message, cancellationToken);
+
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            return CatalogueSubmissionSizeVariantResult.AccessDenied();
+
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>(cancellationToken);
+            return CatalogueSubmissionSizeVariantResult.Invalid(
+                problem?.Errors is null
+                    ? new Dictionary<string, string[]> { ["sizeVariant"] = ["The size variant could not be saved."] }
+                    : new Dictionary<string, string[]>(problem.Errors));
+        }
+
+        if (!response.IsSuccessStatusCode)
+            return CatalogueSubmissionSizeVariantResult.Failed();
+
+        var receipt = await response.Content.ReadFromJsonAsync<CatalogueSubmissionSizeVariantReceipt>(cancellationToken);
+        return receipt is null
+            ? CatalogueSubmissionSizeVariantResult.Failed()
+            : CatalogueSubmissionSizeVariantResult.Saved(receipt);
+    }
+
     public async Task<CatalogueSubmissionVariantOverrideResult> GetSubmissionVariantOverrideAsync(
         Guid submissionId,
         Guid variantId,
@@ -725,7 +832,7 @@ public sealed record CreateCatalogueSubmissionRequest(
     string ProposedManufacturerName,
     string? ProposedBrandName,
     string ProposedProductName,
-    string ProposedVariantName,
+    string? ProposedVariantName,
     string? Notes);
 
 public sealed record UpdateCatalogueSubmissionIdentityRequest(

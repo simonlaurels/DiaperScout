@@ -193,6 +193,140 @@ public sealed record CatalogueSubmissionVariantReceipt(
     DateTimeOffset CreatedAtUtc,
     DateTimeOffset UpdatedAtUtc);
 
+public sealed record CatalogueSubmissionSizeVariantReceipt(
+    Guid Id,
+    Guid VariantId,
+    string ManufacturerSize,
+    int? WaistMinimumCm,
+    int? WaistMaximumCm,
+    int? HipMinimumCm,
+    int? HipMaximumCm,
+    int? CapacityMl,
+    int? LengthMm,
+    int? WidthMm,
+    int? WeightGrams,
+    int? ManufacturerPackQuantity,
+    string? Gtin,
+    DateTimeOffset CreatedAtUtc,
+    DateTimeOffset UpdatedAtUtc);
+
+public sealed record AddCatalogueSubmissionSizeVariantRequest(
+    string ManufacturerSize,
+    int? WaistMinimumCm,
+    int? WaistMaximumCm,
+    int? HipMinimumCm,
+    int? HipMaximumCm,
+    int? CapacityMl,
+    int? LengthMm,
+    int? WidthMm,
+    int? WeightGrams,
+    int? ManufacturerPackQuantity,
+    string? Gtin);
+
+public sealed record UpdateCatalogueSubmissionSizeVariantRequest(
+    string ManufacturerSize,
+    int? WaistMinimumCm,
+    int? WaistMaximumCm,
+    int? HipMinimumCm,
+    int? HipMaximumCm,
+    int? CapacityMl,
+    int? LengthMm,
+    int? WidthMm,
+    int? WeightGrams,
+    int? ManufacturerPackQuantity,
+    string? Gtin);
+
+public sealed record AddCatalogueSubmissionSizeVariant(
+    string ManufacturerSize,
+    int? WaistMinimumCm,
+    int? WaistMaximumCm,
+    int? HipMinimumCm,
+    int? HipMaximumCm,
+    int? CapacityMl,
+    int? LengthMm,
+    int? WidthMm,
+    int? WeightGrams,
+    int? ManufacturerPackQuantity,
+    string? Gtin);
+
+public sealed record UpdateCatalogueSubmissionSizeVariant(
+    string ManufacturerSize,
+    int? WaistMinimumCm,
+    int? WaistMaximumCm,
+    int? HipMinimumCm,
+    int? HipMaximumCm,
+    int? CapacityMl,
+    int? LengthMm,
+    int? WidthMm,
+    int? WeightGrams,
+    int? ManufacturerPackQuantity,
+    string? Gtin);
+
+public sealed record CatalogueSubmissionSizeVariantsResult(
+    CatalogueSubmissionSizeVariantsStatus Status,
+    IReadOnlyList<CatalogueSubmissionSizeVariantReceipt>? Sizes = null,
+    IReadOnlyDictionary<string, string[]>? Errors = null,
+    string? Message = null)
+{
+    public static CatalogueSubmissionSizeVariantsResult Found(
+        IReadOnlyList<CatalogueSubmissionSizeVariantReceipt> sizes) =>
+        new(CatalogueSubmissionSizeVariantsStatus.Found, sizes);
+
+    public static CatalogueSubmissionSizeVariantsResult Invalid(
+        IReadOnlyDictionary<string, string[]> errors) =>
+        new(CatalogueSubmissionSizeVariantsStatus.Invalid, Errors: errors);
+
+    public static CatalogueSubmissionSizeVariantsResult AccessDenied() =>
+        new(CatalogueSubmissionSizeVariantsStatus.AccessDenied,
+            Message: "You need Moderator editorial authority to manage the catalogue.");
+
+    public static CatalogueSubmissionSizeVariantsResult Failed() =>
+        new(CatalogueSubmissionSizeVariantsStatus.Failed,
+            Message: "The size variants could not be loaded just now.");
+}
+
+public enum CatalogueSubmissionSizeVariantsStatus
+{
+    Found,
+    Invalid,
+    AccessDenied,
+    Failed
+}
+
+public sealed record CatalogueSubmissionSizeVariantResult(
+    CatalogueSubmissionSizeVariantResultStatus Status,
+    CatalogueSubmissionSizeVariantReceipt? Size = null,
+    IReadOnlyDictionary<string, string[]>? Errors = null,
+    string? Message = null)
+{
+    public static CatalogueSubmissionSizeVariantResult Saved(CatalogueSubmissionSizeVariantReceipt size) =>
+        new(CatalogueSubmissionSizeVariantResultStatus.Saved, size);
+
+    public static CatalogueSubmissionSizeVariantResult Removed() =>
+        new(CatalogueSubmissionSizeVariantResultStatus.Removed);
+
+    public static CatalogueSubmissionSizeVariantResult Invalid(
+        IReadOnlyDictionary<string, string[]> errors) =>
+        new(CatalogueSubmissionSizeVariantResultStatus.Invalid, Errors: errors);
+
+    public static CatalogueSubmissionSizeVariantResult AccessDenied() =>
+        new(CatalogueSubmissionSizeVariantResultStatus.AccessDenied,
+            Message: "You need Moderator editorial authority to manage the catalogue.");
+
+    public static CatalogueSubmissionSizeVariantResult Failed() =>
+        new(CatalogueSubmissionSizeVariantResultStatus.Failed,
+            Message: "The size variant could not be saved.");
+}
+
+public enum CatalogueSubmissionSizeVariantResultStatus
+{
+    Saved,
+    Removed,
+    Invalid,
+    AccessDenied,
+    Failed
+}
+
 public sealed record CatalogueSubmissionVariantOverrideReceipt(
     Guid VariantId,
     BackingType? BackingType,
@@ -462,6 +596,34 @@ public interface ICatalogueSubmissions
         Guid submissionId,
         CancellationToken cancellationToken = default);
 
+    Task<CatalogueSubmissionSizeVariantsResult> GetSizeVariantsAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        Guid variantId,
+        CancellationToken cancellationToken = default);
+
+    Task<CatalogueSubmissionSizeVariantReceipt> AddSizeVariantAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        Guid variantId,
+        AddCatalogueSubmissionSizeVariant command,
+        CancellationToken cancellationToken = default);
+
+    Task<CatalogueSubmissionSizeVariantReceipt> UpdateSizeVariantAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        Guid variantId,
+        Guid sizeVariantId,
+        UpdateCatalogueSubmissionSizeVariant command,
+        CancellationToken cancellationToken = default);
+
+    Task RemoveSizeVariantAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        Guid variantId,
+        Guid sizeVariantId,
+        CancellationToken cancellationToken = default);
+
     Task<CatalogueSubmissionVariantOverrideReceipt?> GetVariantOverrideAsync(
         AuthenticatedUser actor,
         Guid submissionId,
@@ -567,7 +729,22 @@ public sealed record CataloguePublicationReceipt(
 
 public sealed record CreateCanonicalProductVariant(
     string Name,
-    BackingType BackingType);
+    BackingType BackingType,
+    FastenerType FastenerType = FastenerType.Unknown,
+    string? PrintDesign = null,
+    string? PrimaryColour = null,
+    string? SecondaryColours = null,
+    bool? HasWetnessIndicator = null,
+    bool? HasStandingLeakGuards = null,
+    bool? HasInnerLeakGuards = null,
+    bool? HasElasticWaistbandFront = null,
+    bool? HasElasticWaistbandRear = null,
+    WaistbandStyle WaistbandStyle = WaistbandStyle.Unknown,
+    FragranceType Fragrance = FragranceType.Unknown,
+    bool? IsLatexFree = null,
+    bool? IsChlorineFree = null,
+    int? FastenerCount = null,
+    string? ConstructionNotes = null);
 
 public sealed record CreateCanonicalProduct(
     Guid ManufacturerId,
@@ -586,7 +763,10 @@ public sealed record CreateCanonicalProduct(
     string SourceSummary,
     IReadOnlyList<string> SourceReferences,
     string EditorialRationale,
-    string? CorrelationId);
+    string? CorrelationId,
+    string? ProductFamily = null,
+    string? Description = null,
+    string? OfficialWebsiteUrl = null);
 
 public sealed record CanonicalProductReceipt(
     Guid ProductId,

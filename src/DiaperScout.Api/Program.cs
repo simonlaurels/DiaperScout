@@ -413,7 +413,7 @@ if (builder.Configuration.GetValue<bool>(
                 return Results.ValidationProblem(
                     new Dictionary<string, string[]>
                     {
-                        [exception.Field] = [exception.Message]
+                        [exception.Field] = new[] { exception.Message }
                     });
             }
             catch (UnauthorizedAccessException)
@@ -457,7 +457,7 @@ if (builder.Configuration.GetValue<bool>(
                 return Results.ValidationProblem(
                     new Dictionary<string, string[]>
                     {
-                        [exception.Field] = [exception.Message]
+                        [exception.Field] = new[] { exception.Message }
                     });
             }
             catch (UnauthorizedAccessException)
@@ -499,7 +499,7 @@ if (builder.Configuration.GetValue<bool>(
                 return Results.ValidationProblem(
                     new Dictionary<string, string[]>
                     {
-                        [exception.Field] = [exception.Message]
+                        [exception.Field] = new[] { exception.Message }
                     });
             }
             catch (UnauthorizedAccessException)
@@ -831,7 +831,7 @@ if (builder.Configuration.GetValue<bool>(
                 return Results.ValidationProblem(
                     new Dictionary<string, string[]>
                     {
-                        [exception.Field] = [exception.Message]
+                        [exception.Field] = new[] { exception.Message }
                     });
             }
             catch (UnauthorizedAccessException)
@@ -876,7 +876,7 @@ if (builder.Configuration.GetValue<bool>(
                 return Results.ValidationProblem(
                     new Dictionary<string, string[]>
                     {
-                        [exception.Field] = [exception.Message]
+                        [exception.Field] = new[] { exception.Message }
                     });
             }
             catch (UnauthorizedAccessException)
@@ -919,7 +919,7 @@ if (builder.Configuration.GetValue<bool>(
                 return Results.ValidationProblem(
                     new Dictionary<string, string[]>
                     {
-                        [exception.Field] = [exception.Message]
+                        [exception.Field] = new[] { exception.Message }
                     });
             }
             catch (UnauthorizedAccessException)
@@ -967,7 +967,7 @@ if (builder.Configuration.GetValue<bool>(
                 return Results.ValidationProblem(
                     new Dictionary<string, string[]>
                     {
-                        [exception.Field] = [exception.Message]
+                        [exception.Field] = new[] { exception.Message }
                     });
             }
             catch (UnauthorizedAccessException)
@@ -1038,7 +1038,7 @@ if (builder.Configuration.GetValue<bool>(
                 return Results.ValidationProblem(
                     new Dictionary<string, string[]>
                     {
-                        [exception.Field] = [exception.Message]
+                        [exception.Field] = new[] { exception.Message }
                     });
             }
             catch (UnauthorizedAccessException)
@@ -1088,7 +1088,7 @@ if (builder.Configuration.GetValue<bool>(
                 return Results.ValidationProblem(
                     new Dictionary<string, string[]>
                     {
-                        [exception.Field] = [exception.Message]
+                        [exception.Field] = new[] { exception.Message }
                     });
             }
             catch (UnauthorizedAccessException)
@@ -1133,7 +1133,7 @@ if (builder.Configuration.GetValue<bool>(
                 return Results.ValidationProblem(
                     new Dictionary<string, string[]>
                     {
-                        [exception.Field] = [exception.Message]
+                        [exception.Field] = new[] { exception.Message }
                     });
             }
             catch (UnauthorizedAccessException)
@@ -1240,7 +1240,7 @@ if (builder.Configuration.GetValue<bool>(
                 return Results.ValidationProblem(
                     new Dictionary<string, string[]>
                     {
-                        [exception.Field] = [exception.Message]
+                        [exception.Field] = new[] { exception.Message }
                     });
             }
             catch (UnauthorizedAccessException)
@@ -1285,7 +1285,7 @@ if (builder.Configuration.GetValue<bool>(
                 return Results.ValidationProblem(
                     new Dictionary<string, string[]>
                     {
-                        [exception.Field] = [exception.Message]
+                        [exception.Field] = new[] { exception.Message }
                     });
             }
             catch (UnauthorizedAccessException)
@@ -1331,7 +1331,7 @@ if (builder.Configuration.GetValue<bool>(
                 return Results.ValidationProblem(
                     new Dictionary<string, string[]>
                     {
-                        [exception.Field] = [exception.Message]
+                        [exception.Field] = new[] { exception.Message }
                     });
             }
             catch (UnauthorizedAccessException)
@@ -1374,7 +1374,7 @@ if (builder.Configuration.GetValue<bool>(
                 return Results.ValidationProblem(
                     new Dictionary<string, string[]>
                     {
-                        [exception.Field] = [exception.Message]
+                        [exception.Field] = new[] { exception.Message }
                     });
             }
             catch (UnauthorizedAccessException)
@@ -1428,7 +1428,7 @@ if (builder.Configuration.GetValue<bool>(
                 return Results.ValidationProblem(
                     new Dictionary<string, string[]>
                     {
-                        [exception.Field] = [exception.Message]
+                        [exception.Field] = new[] { exception.Message }
                     });
             }
             catch (UnauthorizedAccessException)
@@ -1472,7 +1472,7 @@ if (builder.Configuration.GetValue<bool>(
                 return Results.ValidationProblem(
                     new Dictionary<string, string[]>
                     {
-                        [exception.Field] = [exception.Message]
+                        [exception.Field] = new[] { exception.Message }
                     });
             }
             catch (UnauthorizedAccessException)
@@ -1515,7 +1515,7 @@ if (builder.Configuration.GetValue<bool>(
                 return Results.ValidationProblem(
                     new Dictionary<string, string[]>
                     {
-                        [exception.Field] = [exception.Message]
+                        [exception.Field] = new[] { exception.Message }
                     });
             }
             catch (UnauthorizedAccessException)
@@ -1573,20 +1573,34 @@ if (builder.Configuration.GetValue<bool>(
                             {
                                 new CreateCanonicalProductVariant(
                                     request.VariantName,
-                                    request.BackingType)
+                                    request.BackingType,
+                                    Sizes:
+                                    new[]
+                                    {
+                                        new CreateCanonicalProductSizeVariant(
+                                            request.ManufacturerSize,
+                                            request.WaistMinimumCm,
+                                            request.WaistMaximumCm,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            request.QuantityPerPack,
+                                            request.PackagingType,
+                                            request.Gtin)
+                                    })
                             },
-                            request.ManufacturerSize,
-                            request.WaistMinimumCm,
-                            request.WaistMaximumCm,
-                            request.QuantityPerPack,
-                            request.PackagingType,
-                            request.Gtin,
                             request.SourceSummary,
                             request.SourceReferences,
                             request.EditorialRationale,
                             httpContext.Request.Headers["X-Correlation-ID"]
                                 .FirstOrDefault()
-                                ?? httpContext.TraceIdentifier),
+                                ?? httpContext.TraceIdentifier,
+                            request.ProductFamily,
+                            request.Description,
+                            request.OfficialWebsiteUrl),
                         cancellationToken);
 
                 return Results.Created(
@@ -1598,7 +1612,7 @@ if (builder.Configuration.GetValue<bool>(
                 return Results.ValidationProblem(
                     new Dictionary<string, string[]>
                     {
-                        [exception.Field] = [exception.Message]
+                        [exception.Field] = new[] { exception.Message }
                     });
             }
         })
@@ -1637,7 +1651,10 @@ public sealed record CreateCanonicalProductRequest(
     string Gtin,
     string SourceSummary,
     IReadOnlyList<string> SourceReferences,
-    string EditorialRationale);
+    string EditorialRationale,
+    string? ProductFamily = null,
+    string? Description = null,
+    string? OfficialWebsiteUrl = null);
 
 public sealed record CreateCatalogueSubmissionRequest(
     CatalogueSubmissionSource Source,

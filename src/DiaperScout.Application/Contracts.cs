@@ -727,6 +727,20 @@ public sealed record CataloguePublicationReceipt(
     Guid AuditRecordId,
     string? Gtin);
 
+public sealed record CreateCanonicalProductSizeVariant(
+    string ManufacturerSize,
+    int? WaistMinimumCm,
+    int? WaistMaximumCm,
+    int? HipMinimumCm,
+    int? HipMaximumCm,
+    int? CapacityMl,
+    int? LengthMm,
+    int? WidthMm,
+    int? WeightGrams,
+    int ManufacturerPackQuantity,
+    PackagingType PackagingType,
+    string? Gtin = null);
+
 public sealed record CreateCanonicalProductVariant(
     string Name,
     BackingType BackingType,
@@ -744,7 +758,8 @@ public sealed record CreateCanonicalProductVariant(
     bool? IsLatexFree = null,
     bool? IsChlorineFree = null,
     int? FastenerCount = null,
-    string? ConstructionNotes = null);
+    string? ConstructionNotes = null,
+    IReadOnlyList<CreateCanonicalProductSizeVariant>? Sizes = null);
 
 public sealed record CreateCanonicalProduct(
     Guid ManufacturerId,
@@ -754,12 +769,6 @@ public sealed record CreateCanonicalProduct(
     ProductType ProductType,
     ProductStatus Status,
     IReadOnlyList<CreateCanonicalProductVariant> Variants,
-    string ManufacturerSize,
-    int? WaistMinimumCm,
-    int? WaistMaximumCm,
-    int QuantityPerPack,
-    PackagingType PackagingType,
-    string Gtin,
     string SourceSummary,
     IReadOnlyList<string> SourceReferences,
     string EditorialRationale,

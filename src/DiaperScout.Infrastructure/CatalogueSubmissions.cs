@@ -652,7 +652,23 @@ internal sealed class CatalogueSubmissions(
                 command.ProposedWaistbandStyle,
                 command.ProposedFragranceType,
                 command.ProposedQuantityPerPack,
-                command.ProposedPackagingType);
+                command.ProposedPackagingType,
+                command.ProposedProductFamily,
+                command.ProposedDescription,
+                command.ProposedProductStatus,
+                command.ProposedOfficialWebsiteUrl,
+                command.SharedPrintDesign,
+                command.SharedPrimaryColour,
+                command.SharedSecondaryColours,
+                command.SharedWetnessIndicator,
+                command.SharedStandingLeakGuards,
+                command.SharedInnerLeakGuards,
+                command.SharedElasticWaistbandFront,
+                command.SharedElasticWaistbandRear,
+                command.SharedLatexFree,
+                command.SharedChlorineFree,
+                command.SharedFastenerCount,
+                command.SharedConstructionNotes);
         }
         catch (ArgumentException exception)
         {
@@ -970,16 +986,6 @@ internal sealed class CatalogueSubmissions(
                 "proposedProductType",
                 "A product type is required before publication.");
 
-        if (string.IsNullOrWhiteSpace(submission.ProposedManufacturerSize))
-            throw new CatalogueValidationException(
-                "proposedManufacturerSize",
-                "A manufacturer size is required before publication.");
-
-        if (submission.ProposedQuantityPerPack is null)
-            throw new CatalogueValidationException(
-                "proposedQuantityPerPack",
-                "A quantity per pack is required before publication.");
-
         if (submission.ProposedPackagingType is null)
             throw new CatalogueValidationException(
                 "proposedPackagingType",
@@ -1063,6 +1069,32 @@ internal sealed class CatalogueSubmissions(
 
         var variantIds = submissionVariants.Select(value => value.Id).ToArray();
 
+        var submissionSizes = await db.CatalogueSubmissionSizeVariants
+            .AsNoTracking()
+            .Where(value => variantIds.Contains(value.VariantId))
+            .OrderBy(value => value.CreatedAtUtc)
+            .ToListAsync(cancellationToken);
+
+        var sizesByVariant = submissionSizes
+            .GroupBy(value => value.VariantId)
+            .ToDictionary(
+                group => group.Key,
+                group => group.ToList());
+
+        if (submissionVariants.Any(variant =>
+                !sizesByVariant.TryGetValue(variant.Id, out var sizes) ||
+                sizes.Count == 0))
+        {
+            throw new CatalogueValidationException(
+                "sizes",
+                "Every product variant must have at least one size variant before publication.");
+        }
+
+        if (submissionSizes.Any(size => size.ManufacturerPackQuantity is null))
+            throw new CatalogueValidationException(
+                "manufacturerPackQuantity",
+                "Manufacturer pack quantity is required for every size before publication.");
+
         var overrides = await db.CatalogueSubmissionVariantOverrides
             .AsNoTracking()
             .Where(value => variantIds.Contains(value.VariantId))
@@ -1072,6 +1104,22 @@ internal sealed class CatalogueSubmissions(
             .Select(variant =>
             {
                 overrides.TryGetValue(variant.Id, out var overrideValue);
+
+                var sizes = sizesByVariant[variant.Id]
+                    .Select(size => new CreateCanonicalProductSizeVariant(
+                        size.ManufacturerSize,
+                        size.WaistMinimumCm,
+                        size.WaistMaximumCm,
+                        size.HipMinimumCm,
+                        size.HipMaximumCm,
+                        size.CapacityMl,
+                        size.LengthMm,
+                        size.WidthMm,
+                        size.WeightGrams,
+                        size.ManufacturerPackQuantity!.Value,
+                        submission.ProposedPackagingType.Value,
+                        size.Gtin))
+                    .ToList();
 
                 return new CreateCanonicalProductVariant(
                     variant.Name ?? submission.ProposedProductName,
@@ -1090,14 +1138,10 @@ internal sealed class CatalogueSubmissions(
                     overrideValue?.IsLatexFree ?? submission.SharedLatexFree,
                     overrideValue?.IsChlorineFree ?? submission.SharedChlorineFree,
                     overrideValue?.FastenerCount ?? submission.SharedFastenerCount,
-                    overrideValue?.ConstructionNotes ?? submission.SharedConstructionNotes);
+                    overrideValue?.ConstructionNotes ?? submission.SharedConstructionNotes,
+                    sizes);
             })
             .ToList();
-
-        if (canonicalVariants.Count > 1 && !string.IsNullOrWhiteSpace(submission.ProposedGtin))
-            throw new CatalogueValidationException(
-                "proposedGtin",
-                "GTIN must be captured against the specific size and pack before a multi-variant product is published.");
 
         var productSlug = Slugify(
             submission.ProposedProductName);
@@ -1112,12 +1156,6 @@ internal sealed class CatalogueSubmissions(
                 submission.ProposedProductType.Value,
                 submission.ProposedProductStatus ?? ProductStatus.Current,
                 canonicalVariants,
-                submission.ProposedManufacturerSize,
-                submission.ProposedWaistMinimumCm,
-                submission.ProposedWaistMaximumCm,
-                submission.ProposedQuantityPerPack.Value,
-                submission.ProposedPackagingType.Value,
-                submission.ProposedGtin ?? string.Empty,
                 "Published from an approved catalogue submission.",
                 new[]
                 {

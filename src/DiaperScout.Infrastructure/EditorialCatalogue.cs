@@ -79,10 +79,6 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db) : ICanonicalCa
     {
         Validate(command);
 
-        var gtin = string.IsNullOrWhiteSpace(command.Gtin)
-            ? null
-            : command.Gtin.Replace(" ", string.Empty).Replace("-", string.Empty);
-
         await using var transaction =
             await db.Database.BeginTransactionAsync(cancellationToken);
 
@@ -111,16 +107,6 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db) : ICanonicalCa
                 "productSlug",
                 "A product with this slug already exists.");
 
-        if (gtin is not null &&
-            await db.ProductIdentifiers.AnyAsync(
-                identifier =>
-                    identifier.Type == IdentifierType.Gtin &&
-                    identifier.Value == gtin,
-                cancellationToken))
-            throw new CatalogueValidationException(
-                "gtin",
-                "This GTIN is already assigned to a pack type.");
-
         var product = new Product(
             command.ManufacturerId,
             command.BrandId,
@@ -136,6 +122,7 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db) : ICanonicalCa
 
         var createdVariantIds = new List<Guid>();
         var createdEntityIds = new List<Guid> { product.Id };
+        var firstGtin = default(string);
 
         foreach (var variantCommand in command.Variants)
         {
@@ -159,36 +146,58 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db) : ICanonicalCa
                 variantCommand.FastenerCount,
                 variantCommand.ConstructionNotes);
 
-            var size = new SizeVariant(
-                variant.Id,
-                command.ManufacturerSize.Trim(),
-                command.WaistMinimumCm,
-                command.WaistMaximumCm);
-
-            var pack = new PackType(
-                size.Id,
-                command.QuantityPerPack,
-                command.PackagingType);
-
-            db.AddRange(variant, size, pack);
-
+            db.ProductVariants.Add(variant);
             createdVariantIds.Add(variant.Id);
             createdEntityIds.Add(variant.Id);
-            createdEntityIds.Add(size.Id);
-            createdEntityIds.Add(pack.Id);
 
-            // A submission-level GTIN is only valid for a single-variant
-            // publication. Multi-variant submissions must capture GTINs at
-            // their eventual size/pack level.
-            if (gtin is not null)
+            foreach (var sizeCommand in variantCommand.Sizes!)
             {
-                var identifier = new ProductIdentifier(
-                    pack.Id,
-                    IdentifierType.Gtin,
-                    gtin);
+                var size = new SizeVariant(
+                    variant.Id,
+                    sizeCommand.ManufacturerSize.Trim(),
+                    sizeCommand.WaistMinimumCm,
+                    sizeCommand.WaistMaximumCm,
+                    sizeCommand.HipMinimumCm,
+                    sizeCommand.HipMaximumCm,
+                    sizeCommand.CapacityMl,
+                    sizeCommand.LengthMm,
+                    sizeCommand.WidthMm,
+                    sizeCommand.WeightGrams);
 
-                db.ProductIdentifiers.Add(identifier);
-                createdEntityIds.Add(identifier.Id);
+                var pack = new PackType(
+                    size.Id,
+                    sizeCommand.ManufacturerPackQuantity,
+                    sizeCommand.PackagingType);
+
+                db.AddRange(size, pack);
+
+                createdEntityIds.Add(size.Id);
+                createdEntityIds.Add(pack.Id);
+
+                var gtin = string.IsNullOrWhiteSpace(sizeCommand.Gtin)
+                    ? null
+                    : NormaliseGtin(sizeCommand.Gtin);
+
+                if (gtin is not null)
+                {
+                    if (await db.ProductIdentifiers.AnyAsync(
+                            identifier =>
+                                identifier.Type == IdentifierType.Gtin &&
+                                identifier.Value == gtin,
+                            cancellationToken))
+                        throw new CatalogueValidationException(
+                            "gtin",
+                            $"GTIN {gtin} is already assigned to a pack type.");
+
+                    var identifier = new ProductIdentifier(
+                        pack.Id,
+                        IdentifierType.Gtin,
+                        gtin);
+
+                    db.ProductIdentifiers.Add(identifier);
+                    createdEntityIds.Add(identifier.Id);
+                    firstGtin ??= gtin;
+                }
             }
         }
 
@@ -199,7 +208,7 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db) : ICanonicalCa
             product.Id,
             actor.UserId,
             DateTimeOffset.UtcNow,
-            JsonSerializer.Serialize(command with { Gtin = gtin ?? string.Empty }),
+            JsonSerializer.Serialize(command),
             JsonSerializer.Serialize(createdEntityIds),
             command.SourceSummary.Trim(),
             JsonSerializer.Serialize(
@@ -212,38 +221,36 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db) : ICanonicalCa
         await transaction.CommitAsync(cancellationToken);
 
         var firstVariantId = createdVariantIds[0];
-        var firstVariant = await db.ProductVariants
-            .AsNoTracking()
-            .SingleAsync(
-                value => value.Id == firstVariantId,
-                cancellationToken);
-
         var firstSizeId = await db.SizeVariants
             .AsNoTracking()
             .Where(value => value.ProductVariantId == firstVariantId)
+            .OrderBy(value => value.Id)
             .Select(value => value.Id)
-            .SingleAsync(cancellationToken);
+            .FirstAsync(cancellationToken);
 
         var firstPackId = await db.PackTypes
             .AsNoTracking()
             .Where(value => value.SizeVariantId == firstSizeId)
+            .OrderBy(value => value.Id)
             .Select(value => value.Id)
-            .SingleAsync(cancellationToken);
+            .FirstAsync(cancellationToken);
 
         return new CanonicalProductReceipt(
             product.Id,
-            firstVariant.Id,
+            firstVariantId,
             firstSizeId,
             firstPackId,
             audit.Id,
-            gtin);
+            firstGtin);
     }
+
+    private static string NormaliseGtin(string value) =>
+        value.Replace(" ", string.Empty).Replace("-", string.Empty);
 
     private static void Validate(CreateCanonicalProduct command)
     {
         Required(command.ProductName, "productName");
         Required(command.ProductSlug, "productSlug");
-        Required(command.ManufacturerSize, "manufacturerSize");
         Required(command.SourceSummary, "sourceSummary");
         Required(command.EditorialRationale, "editorialRationale");
 
@@ -264,42 +271,65 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db) : ICanonicalCa
                 "variants",
                 "Canonical product variant names must be unique.");
 
+        if (command.Variants.Any(variant => variant.Sizes is null || variant.Sizes.Count == 0))
+            throw new CatalogueValidationException(
+                "variants",
+                "Every canonical product variant must have at least one size variant.");
+
         if (!SlugPattern.IsMatch(command.ProductSlug))
             throw new CatalogueValidationException(
                 "productSlug",
                 "Product slug must contain lowercase letters, digits, and single hyphens only.");
 
-        if (!string.IsNullOrWhiteSpace(command.Gtin) &&
-            !GtinPattern.IsMatch(
-                command.Gtin.Replace(" ", string.Empty).Replace("-", string.Empty)))
-            throw new CatalogueValidationException(
-                "gtin",
-                "GTIN must contain 8 to 14 digits.");
-
-        if (command.Variants.Count > 1 && !string.IsNullOrWhiteSpace(command.Gtin))
-            throw new CatalogueValidationException(
-                "gtin",
-                "A single GTIN cannot be assigned to a multi-variant product.");
-
         if (!Enum.IsDefined(command.ProductType) ||
             !Enum.IsDefined(command.Status) ||
-            !Enum.IsDefined(command.PackagingType) ||
-            command.Variants.Any(variant => !Enum.IsDefined(variant.BackingType)))
+            command.Variants.Any(variant => !Enum.IsDefined(variant.BackingType) ||
+                !Enum.IsDefined(variant.FastenerType) ||
+                !Enum.IsDefined(variant.WaistbandStyle) ||
+                !Enum.IsDefined(variant.Fragrance)))
             throw new CatalogueValidationException(
                 "catalogue",
                 "One or more catalogue classifications are invalid.");
 
-        if (command.QuantityPerPack <= 0)
-            throw new CatalogueValidationException(
-                "quantityPerPack",
-                "Quantity per pack must be greater than zero.");
+        var gtins = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var variant in command.Variants)
+        {
+            foreach (var size in variant.Sizes!)
+            {
+                Required(size.ManufacturerSize, "manufacturerSize");
 
-        if (command.WaistMinimumCm is not null &&
-            command.WaistMaximumCm is not null &&
-            command.WaistMinimumCm > command.WaistMaximumCm)
-            throw new CatalogueValidationException(
-                "waist",
-                "Waist minimum cannot exceed waist maximum.");
+                if (size.ManufacturerPackQuantity <= 0)
+                    throw new CatalogueValidationException(
+                        "manufacturerPackQuantity",
+                        "Manufacturer pack quantity must be greater than zero.");
+
+                if (!Enum.IsDefined(size.PackagingType))
+                    throw new CatalogueValidationException(
+                        "packagingType",
+                        "Packaging type is invalid.");
+
+                ValidateRange(size.WaistMinimumCm, size.WaistMaximumCm, "waist");
+                ValidateRange(size.HipMinimumCm, size.HipMaximumCm, "hip");
+                ValidateNonNegative(size.CapacityMl, "capacityMl");
+                ValidateNonNegative(size.LengthMm, "lengthMm");
+                ValidateNonNegative(size.WidthMm, "widthMm");
+                ValidateNonNegative(size.WeightGrams, "weightGrams");
+
+                if (!string.IsNullOrWhiteSpace(size.Gtin))
+                {
+                    var gtin = NormaliseGtin(size.Gtin);
+                    if (!GtinPattern.IsMatch(gtin))
+                        throw new CatalogueValidationException(
+                            "gtin",
+                            "GTIN must contain 8 to 14 digits.");
+
+                    if (!gtins.Add(gtin))
+                        throw new CatalogueValidationException(
+                            "gtin",
+                            "GTINs must be unique within the product.");
+                }
+            }
+        }
 
         if (command.SourceReferences is null ||
             command.SourceReferences.Count == 0 ||
@@ -307,6 +337,27 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db) : ICanonicalCa
             throw new CatalogueValidationException(
                 "sourceReferences",
                 "At least one source reference is required.");
+    }
+
+    private static void ValidateRange(int? minimum, int? maximum, string name)
+    {
+        if (minimum is < 0 || maximum is < 0)
+            throw new CatalogueValidationException(
+                name,
+                $"{name} measurements cannot be negative.");
+
+        if (minimum.HasValue && maximum.HasValue && minimum > maximum)
+            throw new CatalogueValidationException(
+                name,
+                $"{name} minimum cannot exceed maximum.");
+    }
+
+    private static void ValidateNonNegative(int? value, string name)
+    {
+        if (value is < 0)
+            throw new CatalogueValidationException(
+                name,
+                $"{name} cannot be negative.");
     }
 
     private static void Required(string value, string field)

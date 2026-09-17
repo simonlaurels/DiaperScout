@@ -1294,6 +1294,60 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
             new { name = "Second Variant" });
         Assert.Equal(HttpStatusCode.Created, secondVariantResponse.StatusCode);
 
+        var secondVariant = await secondVariantResponse.Content
+            .ReadFromJsonAsync<CatalogueSubmissionVariantReceipt>();
+        Assert.NotNull(secondVariant);
+
+        var variantsResponse = await client.GetAsync(
+            $"/api/v1/catalogue-submissions/{created.Id}/variants");
+        Assert.Equal(HttpStatusCode.OK, variantsResponse.StatusCode);
+
+        var submissionVariants = await variantsResponse.Content
+            .ReadFromJsonAsync<List<CatalogueSubmissionVariantReceipt>>();
+        Assert.NotNull(submissionVariants);
+
+        var firstVariant = Assert.Single(
+            submissionVariants,
+            value => value.Name == "Integration Published Variant");
+
+        Assert.Equal(
+            HttpStatusCode.Created,
+            (await client.PostAsJsonAsync(
+                $"/api/v1/catalogue-submissions/{created.Id}/variants/{firstVariant.Id}/sizes",
+                new
+                {
+                    manufacturerSize = "Medium",
+                    waistMinimumCm = 80,
+                    waistMaximumCm = 100,
+                    hipMinimumCm = 90,
+                    hipMaximumCm = 110,
+                    capacityMl = 2500,
+                    lengthMm = 850,
+                    widthMm = 700,
+                    weightGrams = 120,
+                    manufacturerPackQuantity = 10,
+                    gtin = "99000001"
+                })).StatusCode);
+
+        Assert.Equal(
+            HttpStatusCode.Created,
+            (await client.PostAsJsonAsync(
+                $"/api/v1/catalogue-submissions/{created.Id}/variants/{secondVariant!.Id}/sizes",
+                new
+                {
+                    manufacturerSize = "Large",
+                    waistMinimumCm = 100,
+                    waistMaximumCm = 120,
+                    hipMinimumCm = 110,
+                    hipMaximumCm = 130,
+                    capacityMl = 3000,
+                    lengthMm = 900,
+                    widthMm = 750,
+                    weightGrams = 135,
+                    manufacturerPackQuantity = 8,
+                    gtin = "99000002"
+                })).StatusCode);
+
         Assert.Equal(
             HttpStatusCode.OK,
             (await client.PutAsJsonAsync(
@@ -1309,7 +1363,10 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
                     proposedWaistbandStyle = WaistbandStyle.FrontAndRear,
                     proposedFragranceType = FragranceType.None,
                     proposedQuantityPerPack = 10,
-                    proposedPackagingType = PackagingType.Bag
+                    proposedPackagingType = PackagingType.Bag,
+                    proposedProductFamily = "Integration Test Family",
+                    proposedDescription = "Published integration test description.",
+                    proposedOfficialWebsiteUrl = "https://example.test/product"
                 })).StatusCode);
 
         Assert.Equal(
@@ -1379,7 +1436,7 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
         Assert.NotEqual(Guid.Empty, receipt.SizeVariantId);
         Assert.NotEqual(Guid.Empty, receipt.PackTypeId);
         Assert.NotEqual(Guid.Empty, receipt.AuditRecordId);
-        Assert.Null(receipt.Gtin);
+        Assert.Equal("99000001", receipt.Gtin);
 
         await using var db = _fixture.CreateDbContext();
 
@@ -1401,6 +1458,64 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
         Assert.Equal(_fixture.ManufacturerId, product.ManufacturerId);
         Assert.Equal(_fixture.BrandId, product.BrandId);
         Assert.Equal(ProductType.Tape, product.ProductType);
+        Assert.Equal("Integration Test Family", product.Family);
+        Assert.Equal("Published integration test description.", product.Description);
+        Assert.Equal("https://example.test/product", product.OfficialWebsiteUrl);
+
+        var publishedSizes = await db.SizeVariants
+            .Where(value => db.ProductVariants.Any(variant =>
+                variant.Id == value.ProductVariantId &&
+                variant.ProductId == product.Id))
+            .OrderBy(value => value.ManufacturerSize)
+            .ToListAsync();
+
+        Assert.Equal(2, publishedSizes.Count);
+
+        var publishedFirstVariantSize = Assert.Single(
+            publishedSizes,
+            value => value.ProductVariantId == publishedVariants.Single(
+                variant => variant.Name == "Integration Published Variant").Id);
+        Assert.Equal("Medium", publishedFirstVariantSize.ManufacturerSize);
+        Assert.Equal(80, publishedFirstVariantSize.WaistMinimumCm);
+        Assert.Equal(100, publishedFirstVariantSize.WaistMaximumCm);
+        Assert.Equal(90, publishedFirstVariantSize.HipMinimumCm);
+        Assert.Equal(110, publishedFirstVariantSize.HipMaximumCm);
+        Assert.Equal(2500, publishedFirstVariantSize.CapacityMl);
+        Assert.Equal(850, publishedFirstVariantSize.LengthMm);
+        Assert.Equal(700, publishedFirstVariantSize.WidthMm);
+        Assert.Equal(120, publishedFirstVariantSize.WeightGrams);
+
+        var publishedSecondVariantSize = Assert.Single(
+            publishedSizes,
+            value => value.ProductVariantId == publishedVariants.Single(
+                variant => variant.Name == "Second Variant").Id);
+        Assert.Equal("Large", publishedSecondVariantSize.ManufacturerSize);
+        Assert.Equal(100, publishedSecondVariantSize.WaistMinimumCm);
+        Assert.Equal(120, publishedSecondVariantSize.WaistMaximumCm);
+        Assert.Equal(110, publishedSecondVariantSize.HipMinimumCm);
+        Assert.Equal(130, publishedSecondVariantSize.HipMaximumCm);
+        Assert.Equal(3000, publishedSecondVariantSize.CapacityMl);
+        Assert.Equal(900, publishedSecondVariantSize.LengthMm);
+        Assert.Equal(750, publishedSecondVariantSize.WidthMm);
+        Assert.Equal(135, publishedSecondVariantSize.WeightGrams);
+
+        var publishedPackQuantities = await db.PackTypes
+            .Where(pack => publishedSizes.Select(size => size.Id).Contains(pack.SizeVariantId))
+            .OrderBy(pack => pack.QuantityPerPack)
+            .Select(pack => pack.QuantityPerPack)
+            .ToListAsync();
+
+        Assert.Equal([8, 10], publishedPackQuantities);
+
+        var publishedGtins = await db.ProductIdentifiers
+            .Where(identifier => db.PackTypes.Any(pack =>
+                pack.Id == identifier.PackTypeId &&
+                publishedSizes.Select(size => size.Id).Contains(pack.SizeVariantId)))
+            .Select(identifier => identifier.Value)
+            .OrderBy(value => value)
+            .ToListAsync();
+
+        Assert.Equal(["99000001", "99000002"], publishedGtins);
 
         Assert.True(await db.ProductVariants.AnyAsync(value => value.Id == receipt.ProductVariantId && value.ProductId == product.Id));
         Assert.True(await db.SizeVariants.AnyAsync(value => value.Id == receipt.SizeVariantId && value.ProductVariantId == receipt.ProductVariantId));

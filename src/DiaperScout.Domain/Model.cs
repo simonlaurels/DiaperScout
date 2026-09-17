@@ -194,16 +194,47 @@ public sealed class ProductVariant : Entity
 public sealed class SizeVariant : Entity
 {
     private SizeVariant() { ManufacturerSize = null!; }
-    public SizeVariant(Guid productVariantId, string manufacturerSize, int? waistMinimumCm = null, int? waistMaximumCm = null)
+
+    public SizeVariant(
+        Guid productVariantId,
+        string manufacturerSize,
+        int? waistMinimumCm = null,
+        int? waistMaximumCm = null,
+        int? hipMinimumCm = null,
+        int? hipMaximumCm = null,
+        int? capacityMl = null,
+        int? lengthMm = null,
+        int? widthMm = null,
+        int? weightGrams = null)
     {
-        if (waistMinimumCm is not null && waistMaximumCm is not null && waistMinimumCm > waistMaximumCm)
-            throw new ArgumentException("Waist minimum cannot exceed waist maximum.", nameof(waistMinimumCm));
+        if (productVariantId == Guid.Empty)
+            throw new ArgumentException("A product variant is required.", nameof(productVariantId));
+
+        if (string.IsNullOrWhiteSpace(manufacturerSize))
+            throw new ArgumentException("A manufacturer size is required.", nameof(manufacturerSize));
+
+        if (manufacturerSize.Trim().Length > 100)
+            throw new ArgumentException("Manufacturer size must be 100 characters or fewer.", nameof(manufacturerSize));
+
+        ValidateRange(waistMinimumCm, waistMaximumCm, "waist");
+        ValidateRange(hipMinimumCm, hipMaximumCm, "hip");
+        ValidateNonNegative(capacityMl, nameof(capacityMl));
+        ValidateNonNegative(lengthMm, nameof(lengthMm));
+        ValidateNonNegative(widthMm, nameof(widthMm));
+        ValidateNonNegative(weightGrams, nameof(weightGrams));
 
         ProductVariantId = productVariantId;
-        ManufacturerSize = manufacturerSize;
+        ManufacturerSize = manufacturerSize.Trim();
         WaistMinimumCm = waistMinimumCm;
         WaistMaximumCm = waistMaximumCm;
+        HipMinimumCm = hipMinimumCm;
+        HipMaximumCm = hipMaximumCm;
+        CapacityMl = capacityMl;
+        LengthMm = lengthMm;
+        WidthMm = widthMm;
+        WeightGrams = weightGrams;
     }
+
     public Guid ProductVariantId { get; private set; }
     public string ManufacturerSize { get; private set; }
     public int? WaistMinimumCm { get; private set; }
@@ -215,6 +246,21 @@ public sealed class SizeVariant : Entity
     public int? WidthMm { get; private set; }
     public int? WeightGrams { get; private set; }
     public ICollection<PackType> PackTypes { get; } = new List<PackType>();
+
+    private static void ValidateRange(int? minimum, int? maximum, string name)
+    {
+        if (minimum is < 0 || maximum is < 0)
+            throw new ArgumentException($"{name} measurements cannot be negative.", name);
+
+        if (minimum.HasValue && maximum.HasValue && minimum > maximum)
+            throw new ArgumentException($"{name} minimum cannot be greater than maximum.", name);
+    }
+
+    private static void ValidateNonNegative(int? value, string name)
+    {
+        if (value is < 0)
+            throw new ArgumentException($"{name} cannot be negative.", name);
+    }
 }
 
 public sealed class PackType : Entity

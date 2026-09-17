@@ -305,8 +305,7 @@ The Product hierarchy is:
 Product
 └── Product Variant
     └── Size Variant
-        └── Pack Type
-            └── GTIN
+        └── GTIN / Barcode
 ```
 
 The implementation must preserve these distinctions.
@@ -703,7 +702,6 @@ A practical sequence is:
 * Product;
 * Product Variant;
 * Size Variant;
-* Pack Type;
 * GTIN;
 * Product Specification.
 
@@ -927,7 +925,7 @@ Canonical terms include:
 * Product;
 * Product Variant;
 * Size Variant;
-* Pack Type;
+* Manufacturer Pack Quantity;
 * Manufacturer;
 * Brand;
 * Retailer;

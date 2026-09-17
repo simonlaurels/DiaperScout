@@ -177,7 +177,7 @@ Examples include:
 * Backing Type
 * Capacity
 * GTIN
-* Pack Type
+* Manufacturer Pack Quantity
 
 ---
 

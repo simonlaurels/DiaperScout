@@ -112,7 +112,7 @@ Examples include:
 - Product rules
 - Product Variant rules
 - Size Variant rules
-- Pack Type rules
+- Manufacturer Pack Quantity and Size Variant identifier rules
 - Observation rules
 - Evidence rules
 - Editorial state transitions

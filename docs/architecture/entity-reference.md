@@ -252,30 +252,8 @@ Examples include:
 * Waist Range
 * Dimensions
 * Capacity
-* Size-specific identifiers
-
----
-
-## Pack Type
-
-**Purpose:** Describes how a Size Variant is packaged for sale.
-
-Examples:
-
-* Pack of 10
-* Pack of 14
-* Case of 48
-
-### Relationship
-
-```text
-Size Variant
-  │
-  └── Pack Type
-       └── GTIN
-```
-
-Pack Type describes packaging rather than the underlying Product.
+* Manufacturer Pack Quantity, where published
+* Size-specific identifiers such as GTIN / Barcode
 
 ---
 
@@ -306,7 +284,7 @@ Regional Variations should not be inferred merely from country-specific observat
 
 ## GTIN
 
-**Purpose:** Identifies a specific retail representation of a Product or Pack Type.
+**Purpose:** Identifies an appropriate catalogue or trade-item representation of a Product, normally at Size Variant level where applicable.
 
 GTINs should be associated with the appropriate level of the Product Model.
 
@@ -677,9 +655,8 @@ Brand ── Manufacturer           │
  └── Product ◄──────────────────┘
       │
       ├── Product Variants
-      │     └── Size Variants
-      │            └── Pack Types
-      │                   └── GTIN
+     │     └── Size Variants
+     │            └── GTIN
       │
       └── Product Specification
 
@@ -850,7 +827,6 @@ Brand
 Product
 Product Variant
 Size Variant
-Pack Type
 Product Specification
 Regional Variation
 GTIN

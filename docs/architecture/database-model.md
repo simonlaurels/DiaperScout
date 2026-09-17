@@ -70,7 +70,6 @@ Examples include:
 * Brands;
 * Product Variants;
 * Size Variants;
-* Pack Types;
 * Canonical Media;
 * Regional Variations;
 * Product identifiers.
@@ -221,8 +220,8 @@ Examples include:
 * Brands contain Products.
 * Products contain Product Variants.
 * Product Variants contain Size Variants.
-* Size Variants are sold through Pack Types.
-* Pack Types may have GTINs.
+* Size Variants may record manufacturer-specific pack quantity and identifiers.
+* Retail selling arrangements are separate from the core Product hierarchy.
 * Retailers operate Locations.
 * Observations describe Products and, where relevant, Locations.
 * Evidence supports Observations.
@@ -247,8 +246,8 @@ The persistent Product Model follows the conceptual hierarchy:
 Product
 └── Product Variant
     └── Size Variant
-        └── Pack Type
-            └── GTIN
+        ├── Manufacturer Pack Quantity
+        └── GTIN / Barcode
 ```
 
 The database should preserve these distinctions.
@@ -259,7 +258,6 @@ A Product may have multiple:
 
 * Product Variants;
 * Size Variants;
-* Pack Types;
 * regional representations;
 * identifiers.
 
@@ -318,11 +316,9 @@ A Product Variant owns or is associated with:
 
 A Size Variant owns or is associated with:
 
-* Pack Types.
-
-A Pack Type may own or be associated with:
-
-* GTINs.
+* size-specific product information;
+* Manufacturer Pack Quantity, where published;
+* manufacturer-issued identifiers such as GTIN / Barcode.
 
 An Observation owns:
 

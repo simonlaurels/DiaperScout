@@ -19,7 +19,7 @@ configuration and testing documents; and the community and world documentation.
 The first migration establishes six connected areas:
 
 1. **Atlas reference data**: Manufacturer, Brand, Product, ProductVariant,
-   SizeVariant, PackType and ProductIdentifier. Product facts are kept at their
+   SizeVariant and ProductIdentifier. Product facts are kept at their
    documented level. A product is not identified by a barcode.
 2. **Retail reference data**: Country, Retailer and Location. There is no
    permanent Product-to-Location stock table.
@@ -42,9 +42,10 @@ records are workflow/provenance data.
 
 ## Important invariants
 
-* A Product has ProductVariants; a ProductVariant has SizeVariants; a
-  SizeVariant has PackTypes; identifiers belong to PackTypes.
-* Pack GTINs are globally unique when populated.
+* A Product has ProductVariants; a ProductVariant has SizeVariants; manufacturer-issued
+  identifiers belong to the appropriate SizeVariant.
+* SizeVariant may record Manufacturer Pack Quantity where published.
+* GTINs are globally unique when populated.
 * A Location belongs to one Retailer and one Country.
 * An Observation must identify a subject through either a known Product or a
   CandidateProductName; it must always have an author and observation time.

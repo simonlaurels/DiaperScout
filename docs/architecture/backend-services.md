@@ -87,7 +87,6 @@ It is responsible for:
 * Brands;
 * Product Variants;
 * Size Variants;
-* Pack Types;
 * canonical Product Media;
 * Regional Variations;
 * published knowledge.

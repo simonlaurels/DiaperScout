@@ -180,7 +180,7 @@ They do not directly modify the Atlas.
 
 Represents a recognised product identifier.
 
-A barcode identifies a specific retail representation of a Product or Pack Type as defined by the Product Model.
+A barcode identifies an appropriate catalogue or trade-item representation of a Product, normally associated with the relevant Size Variant where that is the appropriate level.
 
 Multiple barcodes may exist where appropriate.
 

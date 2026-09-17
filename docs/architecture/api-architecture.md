@@ -153,8 +153,7 @@ The Product API must preserve the conceptual hierarchy:
 Product
 └── Product Variant
     └── Size Variant
-        └── Pack Type
-            └── GTIN
+        └── GTIN
 ```
 
 Clients should not have to reconstruct this hierarchy from unrelated database records.

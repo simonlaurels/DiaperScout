@@ -1,0 +1,37 @@
+@page "/signin"
+
+<PageTitle>Sign in · DiaperScout</PageTitle>
+
+<section class="ds-auth-page">
+    <div class="ds-auth-card">
+        <p class="catalogue-kicker">DIAPERSCOUT</p>
+        <h1>Sign in</h1>
+        <p>
+            Sign in to access your DiaperScout account and any tools available to your role.
+        </p>
+
+        @if (Environment.IsDevelopment())
+        {
+            <div class="ds-auth-development">
+                <strong>Development environment</strong>
+                <p>
+                    Use the development moderator identity to exercise catalogue management locally.
+                </p>
+                <a class="ds-button ds-button-primary" href="/signin/development">
+                    Sign in as development moderator
+                </a>
+            </div>
+        }
+        else
+        {
+            <p>
+                Production sign-in is not connected yet.
+            </p>
+        }
+    </div>
+</section>
+
+@code {
+    [Inject]
+    private IHostEnvironment Environment { get; set; } = default!;
+}

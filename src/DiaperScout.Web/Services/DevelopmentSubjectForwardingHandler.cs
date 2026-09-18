@@ -1,19 +1,34 @@
 namespace DiaperScout.Web.Services;
 
-/// <summary>Forwards the existing development-only test identity to the API; production credentials are never forwarded here.</summary>
-public sealed class DevelopmentSubjectForwardingHandler(IHttpContextAccessor httpContextAccessor, IHostEnvironment environment, IConfiguration configuration) : DelegatingHandler
+/// <summary>
+/// Forwards the development-only moderator identity to the API when the browser
+/// is authenticated. Production credentials are never forwarded here.
+/// </summary>
+public sealed class DevelopmentSubjectForwardingHandler(
+    IHttpContextAccessor httpContextAccessor,
+    IHostEnvironment environment,
+    IConfiguration configuration) : DelegatingHandler
 {
-    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    protected override Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage request,
+        CancellationToken cancellationToken)
     {
         if (environment.IsDevelopment())
         {
-            var subject = httpContextAccessor.HttpContext?.Request.Headers["X-Development-Subject"].FirstOrDefault();
+            var httpContext = httpContextAccessor.HttpContext;
+            var user = httpContext?.User;
 
-            if (string.IsNullOrWhiteSpace(subject))
-                subject = configuration["Authentication:Development:Subject"];
+            if (user?.Identity?.IsAuthenticated == true &&
+                (user.IsInRole("Moderator") || user.IsInRole("Administrator")))
+            {
+                var subject = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                    ?? configuration["Authentication:Development:Subject"];
 
-            if (!string.IsNullOrWhiteSpace(subject))
-                request.Headers.TryAddWithoutValidation("X-Development-Subject", subject);
+                if (!string.IsNullOrWhiteSpace(subject))
+                    request.Headers.TryAddWithoutValidation(
+                        "X-Development-Subject",
+                        subject);
+            }
         }
 
         return base.SendAsync(request, cancellationToken);

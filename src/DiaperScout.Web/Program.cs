@@ -1,7 +1,28 @@
 using DiaperScout.Web.Components;
 using DiaperScout.Web.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services
+        .AddAuthentication("DevelopmentCookie")
+        .AddCookie("DevelopmentCookie", options =>
+        {
+            options.Cookie.Name = "DiaperScout.DevelopmentAuth";
+            options.LoginPath = "/signin";
+            options.LogoutPath = "/signout";
+        });
+}
+else
+{
+    builder.Services.AddAuthentication();
+}
+
+builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
 
 // Add services to the container.
@@ -43,11 +64,48 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+
 
 app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapGet("/signin/development", async (
+        HttpContext httpContext,
+        IConfiguration configuration) =>
+    {
+        var subject = configuration["Authentication:Development:Subject"]
+            ?? "development-moderator";
+
+        var claims = new[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, subject),
+            new Claim(ClaimTypes.Name, subject),
+            new Claim(ClaimTypes.Role, "Moderator")
+        };
+
+        var identity = new ClaimsIdentity(claims, "DevelopmentCookie");
+        var principal = new ClaimsPrincipal(identity);
+
+        await httpContext.SignInAsync(
+            "DevelopmentCookie",
+            principal,
+            new AuthenticationProperties { IsPersistent = false });
+
+        return Results.LocalRedirect("/catalogue/products");
+    });
+
+    app.MapGet("/signout", async (HttpContext httpContext) =>
+    {
+        await httpContext.SignOutAsync("DevelopmentCookie");
+        return Results.LocalRedirect("/");
+    });
+}
 
 app.Run();

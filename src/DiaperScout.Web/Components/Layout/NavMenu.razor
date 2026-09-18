@@ -10,9 +10,13 @@
             Products
         </NavLink>
 
-        <NavLink class="ds-navigation-link" href="/catalogue/products">
-            Product Management
-        </NavLink>
+        <AuthorizeView Roles="Moderator,Administrator">
+            <Authorized>
+                <NavLink class="ds-navigation-link" href="/catalogue/products">
+                    Product Management
+                </NavLink>
+            </Authorized>
+        </AuthorizeView>
 
         <NavLink class="ds-navigation-link ds-navigation-link-about" href="about">
             About

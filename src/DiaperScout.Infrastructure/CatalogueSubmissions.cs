@@ -288,6 +288,30 @@ internal sealed class CatalogueSubmissions(
                     "A size with this manufacturer size already exists for this product variant.",
                     nameof(command.ManufacturerSize));
 
+            var gtin = size.Gtin;
+            if (gtin is not null)
+            {
+                var alreadyInSubmission = await db.CatalogueSubmissionSizeVariants.AnyAsync(
+                    value => value.Gtin == gtin,
+                    cancellationToken);
+
+                if (alreadyInSubmission)
+                    throw new ArgumentException(
+                        $"GTIN {gtin} is already used by another size in this submission.",
+                        nameof(command.Gtin));
+
+                var alreadyInCatalogue = await db.ProductIdentifiers.AnyAsync(
+                    identifier =>
+                        identifier.Type == IdentifierType.Gtin &&
+                        identifier.Value == gtin,
+                    cancellationToken);
+
+                if (alreadyInCatalogue)
+                    throw new ArgumentException(
+                        $"GTIN {gtin} is already assigned to a published catalogue product.",
+                        nameof(command.Gtin));
+            }
+
             db.CatalogueSubmissionSizeVariants.Add(size);
             await db.SaveChangesAsync(cancellationToken);
             return ToSizeVariantReceipt(size);
@@ -340,6 +364,33 @@ internal sealed class CatalogueSubmissions(
                 throw new ArgumentException(
                     "A size with this manufacturer size already exists for this product variant.",
                     nameof(command.ManufacturerSize));
+
+            var gtin = string.IsNullOrWhiteSpace(command.Gtin)
+                ? null
+                : command.Gtin.Trim();
+
+            if (gtin is not null)
+            {
+                var alreadyInSubmission = await db.CatalogueSubmissionSizeVariants.AnyAsync(
+                    value => value.Id != sizeVariantId && value.Gtin == gtin,
+                    cancellationToken);
+
+                if (alreadyInSubmission)
+                    throw new ArgumentException(
+                        $"GTIN {gtin} is already used by another size in this submission.",
+                        nameof(command.Gtin));
+
+                var alreadyInCatalogue = await db.ProductIdentifiers.AnyAsync(
+                    identifier =>
+                        identifier.Type == IdentifierType.Gtin &&
+                        identifier.Value == gtin,
+                    cancellationToken);
+
+                if (alreadyInCatalogue)
+                    throw new ArgumentException(
+                        $"GTIN {gtin} is already assigned to a published catalogue product.",
+                        nameof(command.Gtin));
+            }
 
             size.Update(
                 command.ManufacturerSize,
@@ -589,10 +640,10 @@ internal sealed class CatalogueSubmissions(
                 "variantId",
                 "The product variant was not found.");
 
-        if (variant.IsBaseVariant)
+        if (variants.Count <= 1)
             throw new CatalogueValidationException(
                 "variantId",
-                "The base product variant cannot be removed.");
+                "A product must have at least one variant.");
 
         db.CatalogueSubmissionVariants.Remove(variant);
         await db.SaveChangesAsync(cancellationToken);

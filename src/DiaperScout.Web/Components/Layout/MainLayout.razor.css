@@ -54,6 +54,13 @@
 
 /* Header actions */
 
+.ds-header-user {
+    color: var(--color-primary);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
 .ds-header-actions {
     display: flex;
     align-items: center;

@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Authorization
 
 <div class="ds-app-shell">
     <header class="ds-app-header">
@@ -12,14 +13,24 @@
             <NavMenu />
 
             <div class="ds-header-actions">
-                <a class="ds-header-signin" href="/signin">
-                    Sign in
-                </a>
+                <AuthorizeView>
+                    <Authorized>
+                        <span class="ds-header-user">@context.User.Identity?.Name</span>
+                        <a class="ds-header-signin" href="/signout">
+                            Sign out
+                        </a>
+                    </Authorized>
+                    <NotAuthorized>
+                        <a class="ds-header-signin" href="/signin">
+                            Sign in
+                        </a>
 
-                <a class="ds-header-join" href="/join">
-                    Join DiaperScout
-                    <span aria-hidden="true">★</span>
-                </a>
+                        <a class="ds-header-join" href="/join">
+                            Join DiaperScout
+                            <span aria-hidden="true">★</span>
+                        </a>
+                    </NotAuthorized>
+                </AuthorizeView>
             </div>
         </div>
     </header>

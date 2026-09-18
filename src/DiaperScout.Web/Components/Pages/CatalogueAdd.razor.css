@@ -103,3 +103,113 @@
         width: 100%;
     }
 }
+
+.submission-size-variant {
+    display: block;
+}
+
+.submission-size-variant > .submission-card-heading {
+    width: 100%;
+}
+
+.submission-size-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: .75rem;
+    margin-top: 1rem;
+}
+
+.submission-size-list .submission-card {
+    margin: 0;
+}
+
+.submission-size-card {
+    min-width: 0;
+}
+
+.submission-copy-prompt {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.25rem;
+    margin: .75rem 0;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--color-primary-light) 7%, transparent);
+}
+
+.submission-copy-prompt p {
+    margin: .3rem 0 0;
+    color: var(--color-muted);
+    line-height: 1.5;
+}
+
+.submission-copy-prompt .submission-card-actions {
+    flex: 0 0 auto;
+}
+
+@media (max-width: 640px) {
+    .submission-copy-prompt {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .submission-copy-prompt .submission-card-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+
+.submission-size-variant > .submission-card-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    width: 100%;
+}
+
+.submission-size-variant > .submission-card-heading > div:first-child {
+    min-width: 0;
+}
+
+.submission-size-variant > .submission-card-heading > .ds-button {
+    justify-self: end;
+}
+
+.submission-size-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: .75rem;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.submission-size-list .submission-size-card {
+    width: auto;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.submission-size-list .submission-size-card .submission-card-heading {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+}
+
+.submission-size-list .submission-size-card .submission-card-actions {
+    width: 100%;
+    justify-content: flex-start;
+}
+
+@media (max-width: 640px) {
+    .submission-size-variant > .submission-card-heading {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .submission-size-variant > .submission-card-heading > .ds-button {
+        justify-self: auto;
+        align-self: flex-start;
+    }
+}

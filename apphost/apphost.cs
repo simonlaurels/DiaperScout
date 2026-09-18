@@ -5,7 +5,17 @@
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var postgres = builder.AddPostgres("postgres")
+// Local development only: keep PostgreSQL credentials and host port stable
+// across machines. Production/deployment credentials are configured separately.
+var postgresPassword = builder.AddParameter(
+    "postgres-password",
+    "postgres",
+    secret: true);
+
+var postgres = builder.AddPostgres(
+        "postgres",
+        password: postgresPassword,
+        port: 5432)
     .WithDataVolume();
 
 var database = postgres.AddDatabase("diaperscout");
@@ -13,7 +23,8 @@ var database = postgres.AddDatabase("diaperscout");
 var api = builder.AddCSharpApp(
     "api",
     "../src/DiaperScout.Api/DiaperScout.Api.csproj")
-    .WithReference(database);
+    .WithReference(database)
+    .WaitFor(database);
 
 var web = builder.AddCSharpApp(
     "web",

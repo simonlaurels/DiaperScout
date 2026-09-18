@@ -6,6 +6,7 @@ using DiaperScout.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DiaperScout.Api.IntegrationTests;
 
@@ -278,12 +279,21 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
         var removeBaseResponse = await client.DeleteAsync(
             $"/api/v1/catalogue-submissions/{created.Id}/variants/{baseVariant.Id}");
 
-        Assert.Equal(HttpStatusCode.BadRequest, removeBaseResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, removeBaseResponse.StatusCode);
 
-        var removeNamedResponse = await client.DeleteAsync(
+        var remainingAfterBaseRemoval = await client.GetFromJsonAsync<
+            IReadOnlyList<CatalogueSubmissionVariantReceipt>>(
+            $"/api/v1/catalogue-submissions/{created.Id}/variants");
+
+        Assert.NotNull(remainingAfterBaseRemoval);
+        var remainingNamedVariant = Assert.Single(remainingAfterBaseRemoval);
+        Assert.Equal(namedVariant.Id, remainingNamedVariant.Id);
+        Assert.Equal("Plastic Edition", remainingNamedVariant.Name);
+
+        var removeLastVariantResponse = await client.DeleteAsync(
             $"/api/v1/catalogue-submissions/{created.Id}/variants/{namedVariant.Id}");
 
-        Assert.Equal(HttpStatusCode.NoContent, removeNamedResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, removeLastVariantResponse.StatusCode);
 
         var remainingVariants = await client.GetFromJsonAsync<
             IReadOnlyList<CatalogueSubmissionVariantReceipt>>(
@@ -291,7 +301,8 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
 
         Assert.NotNull(remainingVariants);
         var remaining = Assert.Single(remainingVariants);
-        Assert.Null(remaining.Name);
+        Assert.Equal(namedVariant.Id, remaining.Id);
+        Assert.Equal("Plastic Edition", remaining.Name);
     }
 
     [Fact]

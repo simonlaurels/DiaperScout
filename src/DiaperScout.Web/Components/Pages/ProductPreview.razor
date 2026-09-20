@@ -1,0 +1,98 @@
+@page "/catalogue/products/preview/{ProductId:guid}"
+@rendermode InteractiveServer
+@using DiaperScout.Application
+@using DiaperScout.Domain
+@using DiaperScout.Web.Services
+@inject ProductCatalogueClient Catalogue
+
+<PageTitle>Catalogue Preview · DiaperScout</PageTitle>
+
+<section class="product-management-page">
+    <div class="product-management-container">
+        @if (loading)
+        {
+            <section class="product-management-panel"><div class="product-management-empty"><strong>Loading preview…</strong></div></section>
+        }
+        else if (accessDenied)
+        {
+            <div class="product-management-message product-management-message-error"><strong>Moderator preview unavailable</strong><p>Moderator editorial authority is required.</p></div>
+        }
+        else if (product is null)
+        {
+            <div class="product-management-message product-management-message-error"><strong>Product preview unavailable</strong><p>The published product could not be loaded.</p></div>
+        }
+        else
+        {
+            <section class="product-management-panel">
+                <p class="catalogue-kicker">MODERATOR PREVIEW</p>
+                <h1>@product.Name</h1>
+                <p>@product.ManufacturerName</p>
+                @if (!string.IsNullOrWhiteSpace(product.BrandName))
+                {
+                    <p>@product.BrandName</p>
+                }
+
+                @if (product.DescriptionVisibility == CatalogueContentVisibility.ModeratorOnly)
+                {
+                    <div class="product-management-message product-management-message-error">
+                        <strong>Moderator-only description</strong>
+                        <p>This description is published in the canonical record but is hidden from public users until its publication rights are established.</p>
+                        <p>@product.Description</p>
+                        <button class="ds-button ds-button-primary" type="button" @onclick="() => SetDescriptionVisibilityAsync(CatalogueContentVisibility.Public)">Mark description public</button>
+                    </div>
+                }
+                else if (!string.IsNullOrWhiteSpace(product.Description))
+                {
+                    <p>@product.Description</p>
+                }
+
+                @if (product.Images.Count > 0)
+                {
+                    <div class="submission-queue">
+                        @foreach (var image in product.Images)
+                        {
+                            <article class="submission-queue-item">
+                                <div>
+                                    <strong>@FormatEnum(image.Role)</strong>
+                                    <div>@image.Visibility · @FormatEnum(image.PermissionStatus)</div>
+                                </div>
+                                <img src="@image.ContentUrl" alt="@FormatEnum(image.Role)" style="max-width:240px;max-height:240px;object-fit:contain" />
+                            </article>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p>No catalogue images are currently attached.</p>
+                }
+            </section>
+        }
+    </div>
+</section>
+
+@code {
+    [Parameter] public Guid ProductId { get; set; }
+    private bool loading = true;
+    private bool accessDenied;
+    private CatalogueModeratorProductDetails? product;
+    private async Task SetDescriptionVisibilityAsync(CatalogueContentVisibility visibility)
+    {
+        if (await Catalogue.SetProductDescriptionVisibilityAsync(ProductId, visibility) &&
+            product is not null)
+        {
+            product = product with { DescriptionVisibility = visibility };
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        loading = true;
+        var result = await Catalogue.GetModeratorProductPreviewAsync(ProductId);
+        accessDenied = result.Status == CatalogueModeratorProductPreviewStatus.AccessDenied;
+        product = result.Product;
+        loading = false;
+    }
+
+    private static string FormatEnum<T>(T value) =>
+        System.Text.RegularExpressions.Regex.Replace(value?.ToString() ?? string.Empty, "(?<!^)([A-Z])", " $1");
+}

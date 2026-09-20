@@ -38,8 +38,15 @@ else
             <a class="catalogue-back" href="/products">← Back to catalogue</a>
 
             <div class="product-detail-hero">
-                <div class="product-detail-image" aria-label="Product image coming soon">
-                    <span>Product image</span>
+                <div class="product-detail-image" aria-label="Product image">
+                    @if (product.Images.Count > 0)
+                    {
+                        <img src="@product.Images[0].ContentUrl" alt="@product.Name" />
+                    }
+                    else
+                    {
+                        <span>Product image</span>
+                    }
                 </div>
 
                 <div class="product-detail-copy">

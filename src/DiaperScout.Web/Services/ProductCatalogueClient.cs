@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using DiaperScout.Application;
 using DiaperScout.Domain;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace DiaperScout.Web.Services;
 
@@ -88,6 +89,37 @@ public sealed class ProductCatalogueClient(HttpClient client)
             parameters.Add($"{name}={Uri.EscapeDataString(value)}");
     }
 
+    public async Task<bool> SetProductDescriptionVisibilityAsync(
+        Guid productId,
+        CatalogueContentVisibility visibility,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.PutAsJsonAsync(
+            $"api/v1/products/{productId}/description-visibility",
+            new { visibility },
+            cancellationToken);
+        return response.IsSuccessStatusCode;
+    }
+
+    public async Task<CatalogueModeratorProductPreviewResult> GetModeratorProductPreviewAsync(
+        Guid productId,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.GetAsync(
+            $"api/v1/products/{productId}/moderator-preview",
+            cancellationToken);
+
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            return CatalogueModeratorProductPreviewResult.AccessDenied();
+        if (response.StatusCode == HttpStatusCode.NotFound)
+            return CatalogueModeratorProductPreviewResult.NotFound();
+        if (!response.IsSuccessStatusCode)
+            return CatalogueModeratorProductPreviewResult.Failed();
+
+        var product = await response.Content.ReadFromJsonAsync<CatalogueModeratorProductDetails>(cancellationToken);
+        return product is null ? CatalogueModeratorProductPreviewResult.Failed() : CatalogueModeratorProductPreviewResult.Found(product);
+    }
+
     public async Task<ProductCatalogueDetailResult> GetAsync(
         string slug,
         CancellationToken cancellationToken = default)
@@ -124,6 +156,39 @@ public sealed class ProductCatalogueClient(HttpClient client)
             response,
             cancellationToken);
     }
+
+    public async Task<CatalogueSubmissionImportClientResult> ImportSubmissionsCsvAsync(
+        IBrowserFile file,
+        CancellationToken cancellationToken = default)
+    {
+        await using var stream = file.OpenReadStream(10 * 1024 * 1024, cancellationToken);
+        using var content = new MultipartFormDataContent();
+        using var streamContent = new StreamContent(stream);
+        streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/csv");
+        content.Add(streamContent, "file", file.Name);
+
+        using var response = await client.PostAsync(
+            "api/v1/catalogue-submissions/import-csv",
+            content,
+            cancellationToken);
+
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            return CatalogueSubmissionImportClientResult.AccessDenied();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var problem = await response.Content.ReadFromJsonAsync<ImportErrorResponse>(cancellationToken);
+            return CatalogueSubmissionImportClientResult.Failed(problem?.Message);
+        }
+
+        var result = await response.Content.ReadFromJsonAsync<CatalogueSubmissionImportResult>(cancellationToken);
+        return result is null
+            ? CatalogueSubmissionImportClientResult.Failed("The import completed without a result.")
+            : CatalogueSubmissionImportClientResult.Succeeded(result);
+    }
+
+    public string GetSubmissionImportTemplateUrl() =>
+        new Uri(client.BaseAddress!, "api/v1/catalogue-submissions/import-template").ToString();
 
     public async Task<CatalogueSubmissionQueueResult> GetSubmissionsAsync(
         CancellationToken cancellationToken = default)
@@ -316,10 +381,18 @@ public sealed class ProductCatalogueClient(HttpClient client)
 
         if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
             return CatalogueSubmissionVariantOverrideResult.AccessDenied();
+        if (response.StatusCode == HttpStatusCode.NoContent)
+            return CatalogueSubmissionVariantOverrideResult.Found(null);
         if (!response.IsSuccessStatusCode)
-            return CatalogueSubmissionVariantOverrideResult.Failed();
+            return CatalogueSubmissionVariantOverrideResult.Failed($"The variant details could not be loaded (HTTP {(int)response.StatusCode}).");
 
-        var value = await response.Content.ReadFromJsonAsync<CatalogueSubmissionVariantOverrideReceipt>(cancellationToken);
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+        if (string.IsNullOrWhiteSpace(content) || content.Trim() == "null")
+            return CatalogueSubmissionVariantOverrideResult.Found(null);
+
+        var value = System.Text.Json.JsonSerializer.Deserialize<CatalogueSubmissionVariantOverrideReceipt>(
+            content,
+            new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web));
         return CatalogueSubmissionVariantOverrideResult.Found(value);
     }
 
@@ -347,10 +420,18 @@ public sealed class ProductCatalogueClient(HttpClient client)
         }
 
         if (!response.IsSuccessStatusCode)
-            return CatalogueSubmissionVariantOverrideResult.Failed();
+            return CatalogueSubmissionVariantOverrideResult.Failed($"The variant attribute could not be saved (HTTP {(int)response.StatusCode}).");
 
-        var value = await response.Content.ReadFromJsonAsync<CatalogueSubmissionVariantOverrideReceipt>(cancellationToken);
-        return value is null ? CatalogueSubmissionVariantOverrideResult.Failed() : CatalogueSubmissionVariantOverrideResult.Saved(value);
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+        if (string.IsNullOrWhiteSpace(content) || content.Trim() == "null")
+            return CatalogueSubmissionVariantOverrideResult.Failed("The server saved the variant attribute but returned no receipt.");
+
+        var value = System.Text.Json.JsonSerializer.Deserialize<CatalogueSubmissionVariantOverrideReceipt>(
+            content,
+            new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web));
+        return value is null
+            ? CatalogueSubmissionVariantOverrideResult.Failed("The server saved the variant attribute but returned an invalid receipt.")
+            : CatalogueSubmissionVariantOverrideResult.Saved(value);
     }
 
     public async Task<CatalogueSubmissionVariantResult> AddSubmissionBaseVariantAsync(
@@ -763,6 +844,168 @@ public sealed class ProductCatalogueClient(HttpClient client)
             : CatalogueSubmissionVerificationResult.Added(receipt);
     }
 
+    public async Task<CatalogueSubmissionImagesResult> GetSubmissionImagesAsync(
+        Guid submissionId,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.GetAsync(
+            $"api/v1/catalogue-submissions/{submissionId}/images",
+            cancellationToken);
+
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            return CatalogueSubmissionImagesResult.AccessDenied();
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+            return CatalogueSubmissionImagesResult.NotFound();
+
+        if (!response.IsSuccessStatusCode)
+            return CatalogueSubmissionImagesResult.Failed();
+
+        var images = await response.Content.ReadFromJsonAsync<IReadOnlyList<CatalogueSubmissionImageReceipt>>(
+            cancellationToken);
+
+        return images is null
+            ? CatalogueSubmissionImagesResult.Failed()
+            : CatalogueSubmissionImagesResult.Found(images);
+    }
+
+    public async Task<CatalogueSubmissionImageResult> AddSubmissionImageAsync(
+        Guid submissionId,
+        CatalogueSubmissionImageRole role,
+        IBrowserFile file,
+        CatalogueImageSourceType sourceType,
+        string? sourceUrl,
+        string? sourceNotes,
+        CatalogueImagePermissionStatus permissionStatus,
+        string? permissionEvidence,
+        CancellationToken cancellationToken = default)
+    {
+        const long maxAllowedSize = 15 * 1024 * 1024;
+
+        await using var fileStream = file.OpenReadStream(maxAllowedSize, cancellationToken);
+        using var content = new MultipartFormDataContent();
+        using var streamContent = new StreamContent(fileStream);
+
+        streamContent.Headers.ContentType =
+            new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+
+        content.Add(streamContent, "file", Path.GetFileName(file.Name));
+        content.Add(new StringContent(role.ToString()), "role");
+        content.Add(new StringContent(sourceType.ToString()), "sourceType");
+        content.Add(new StringContent(sourceUrl ?? string.Empty), "sourceUrl");
+        content.Add(new StringContent(sourceNotes ?? string.Empty), "sourceNotes");
+        content.Add(new StringContent(permissionStatus.ToString()), "permissionStatus");
+        content.Add(new StringContent(permissionEvidence ?? string.Empty), "permissionEvidence");
+
+        using var response = await client.PostAsync(
+            $"api/v1/catalogue-submissions/{submissionId}/images",
+            content,
+            cancellationToken);
+
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            return CatalogueSubmissionImageResult.AccessDenied();
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+            return CatalogueSubmissionImageResult.NotFound();
+
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>(
+                cancellationToken);
+
+            var errors = problem?.Errors is not null
+                ? new Dictionary<string, string[]>(problem.Errors)
+                : new Dictionary<string, string[]>
+                {
+                    ["image"] = ["The image could not be validated."]
+                };
+
+            return CatalogueSubmissionImageResult.Invalid(errors);
+        }
+
+        if (!response.IsSuccessStatusCode)
+            return CatalogueSubmissionImageResult.Failed();
+
+        var receipt = await response.Content.ReadFromJsonAsync<CatalogueSubmissionImageReceipt>(
+            cancellationToken);
+
+        return receipt is null
+            ? CatalogueSubmissionImageResult.Failed()
+            : CatalogueSubmissionImageResult.Saved(receipt);
+    }
+
+    public async Task<CatalogueSubmissionImageResult> UpdateSubmissionImageMetadataAsync(
+        Guid submissionId,
+        Guid imageId,
+        UpdateCatalogueSubmissionImageMetadata request,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.PutAsJsonAsync(
+            $"api/v1/catalogue-submissions/{submissionId}/images/{imageId}",
+            request,
+            cancellationToken);
+
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            return CatalogueSubmissionImageResult.AccessDenied();
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+            return CatalogueSubmissionImageResult.NotFound();
+
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>(
+                cancellationToken);
+
+            var errors = problem?.Errors is not null
+                ? new Dictionary<string, string[]>(problem.Errors)
+                : new Dictionary<string, string[]>
+                {
+                    ["image"] = ["The image could not be validated."]
+                };
+
+            return CatalogueSubmissionImageResult.Invalid(errors);
+        }
+
+        if (!response.IsSuccessStatusCode)
+            return CatalogueSubmissionImageResult.Failed();
+
+        var receipt = await response.Content.ReadFromJsonAsync<CatalogueSubmissionImageReceipt>(
+            cancellationToken);
+
+        return receipt is null
+            ? CatalogueSubmissionImageResult.Failed()
+            : CatalogueSubmissionImageResult.Saved(receipt);
+    }
+
+    public async Task<bool> RemoveSubmissionImageAsync(
+        Guid submissionId,
+        Guid imageId,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.DeleteAsync(
+            $"api/v1/catalogue-submissions/{submissionId}/images/{imageId}",
+            cancellationToken);
+
+        return response.IsSuccessStatusCode;
+    }
+
+    public async Task<string?> GetSubmissionImageDataUriAsync(
+        Guid submissionId,
+        Guid imageId,
+        string contentType,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.GetAsync(
+            $"api/v1/catalogue-submissions/{submissionId}/images/{imageId}/content",
+            cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+            return null;
+
+        var bytes = await response.Content.ReadAsByteArrayAsync(cancellationToken);
+        return $"data:{contentType};base64,{Convert.ToBase64String(bytes)}";
+    }
+
     private static async Task<CatalogueSubmissionResult>
         ReadSubmissionResponseAsync(
             HttpResponseMessage response,
@@ -842,29 +1085,20 @@ public sealed record UpdateCatalogueSubmissionIdentityRequest(
 
 public sealed record UpdateCatalogueSubmissionSpecificationsRequest(
     ProductType? ProposedProductType,
-    string? ProposedManufacturerSize,
-    int? ProposedWaistMinimumCm,
-    int? ProposedWaistMaximumCm,
-    BackingType? ProposedBackingType,
-    FastenerType? ProposedFastenerType,
-    WaistbandStyle? ProposedWaistbandStyle,
-    FragranceType? ProposedFragranceType,
-    int? ProposedQuantityPerPack,
     PackagingType? ProposedPackagingType,
     string? ProposedProductFamily,
     string? ProposedDescription,
+    CatalogueContentVisibility ProposedDescriptionVisibility,
     ProductStatus? ProposedProductStatus,
     string? ProposedOfficialWebsiteUrl,
     string? SharedPrintDesign,
     string? SharedPrimaryColour,
-    string? SharedSecondaryColours,
     bool? SharedWetnessIndicator,
     bool? SharedStandingLeakGuards,
-    bool? SharedInnerLeakGuards,
-    bool? SharedElasticWaistbandFront,
-    bool? SharedElasticWaistbandRear,
+    WaistbandStyle? SharedWaistbandStyle,
+    FragranceType? SharedFragrance,
     bool? SharedLatexFree,
-    bool? SharedChlorineFree,
+    string? SharedDesignedFor,
     int? SharedFastenerCount,
     string? SharedConstructionNotes);
 
@@ -1289,8 +1523,8 @@ public sealed record CatalogueSubmissionVariantOverrideResult(
         new(CatalogueSubmissionVariantOverrideResultStatus.Invalid, Errors: errors);
     public static CatalogueSubmissionVariantOverrideResult AccessDenied() =>
         new(CatalogueSubmissionVariantOverrideResultStatus.AccessDenied, Message: "You need Moderator editorial authority to manage the catalogue.");
-    public static CatalogueSubmissionVariantOverrideResult Failed() =>
-        new(CatalogueSubmissionVariantOverrideResultStatus.Failed, Message: "The variant difference could not be loaded or saved just now.");
+    public static CatalogueSubmissionVariantOverrideResult Failed(string message = "The variant difference could not be loaded or saved just now.") =>
+        new(CatalogueSubmissionVariantOverrideResultStatus.Failed, Message: message);
 }
 
 public enum CatalogueSubmissionVariantOverrideResultStatus
@@ -1326,4 +1560,25 @@ public sealed record CatalogueSubmissionQueueResult(
     public static CatalogueSubmissionQueueResult Failed(
         string? message = null) =>
         new(CatalogueSubmissionQueueResultStatus.Failed, Message: message);
+}
+
+public sealed record CatalogueSubmissionImportClientResult(CatalogueSubmissionImportClientStatus Status, CatalogueSubmissionImportResult? Result = null, string? Message = null)
+{
+    public static CatalogueSubmissionImportClientResult Succeeded(CatalogueSubmissionImportResult result) => new(CatalogueSubmissionImportClientStatus.Succeeded, result);
+    public static CatalogueSubmissionImportClientResult AccessDenied() => new(CatalogueSubmissionImportClientStatus.AccessDenied);
+    public static CatalogueSubmissionImportClientResult Failed(string? message = null) => new(CatalogueSubmissionImportClientStatus.Failed, Message: message);
+}
+
+public enum CatalogueSubmissionImportClientStatus { Succeeded, AccessDenied, Failed }
+
+internal sealed record ImportErrorResponse(string? Message);
+
+public enum CatalogueModeratorProductPreviewStatus { Found, AccessDenied, NotFound, Failed }
+
+public sealed record CatalogueModeratorProductPreviewResult(CatalogueModeratorProductPreviewStatus Status, CatalogueModeratorProductDetails? Product = null)
+{
+    public static CatalogueModeratorProductPreviewResult Found(CatalogueModeratorProductDetails product) => new(CatalogueModeratorProductPreviewStatus.Found, product);
+    public static CatalogueModeratorProductPreviewResult AccessDenied() => new(CatalogueModeratorProductPreviewStatus.AccessDenied);
+    public static CatalogueModeratorProductPreviewResult NotFound() => new(CatalogueModeratorProductPreviewStatus.NotFound);
+    public static CatalogueModeratorProductPreviewResult Failed() => new(CatalogueModeratorProductPreviewStatus.Failed);
 }

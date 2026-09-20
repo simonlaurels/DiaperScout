@@ -27,6 +27,7 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
     public DbSet<CatalogueSubmissionRetailDestination> CatalogueSubmissionRetailDestinations => Set<CatalogueSubmissionRetailDestination>();
     public DbSet<CatalogueSubmissionRetailAffiliate> CatalogueSubmissionRetailAffiliates => Set<CatalogueSubmissionRetailAffiliate>();
     public DbSet<CatalogueSubmissionEditorialDecision> CatalogueSubmissionEditorialDecisions => Set<CatalogueSubmissionEditorialDecision>();
+    public DbSet<CatalogueSubmissionImage> CatalogueSubmissionImages => Set<CatalogueSubmissionImage>();
     public DbSet<ExplorerProfile> ExplorerProfiles => Set<ExplorerProfile>();
     public DbSet<Backpack> Backpacks => Set<Backpack>();
     public DbSet<SavedProduct> SavedProducts => Set<SavedProduct>();
@@ -72,6 +73,7 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
             entity.Property(x => x.Name).HasMaxLength(250).IsRequired();
             entity.Property(x => x.Slug).HasMaxLength(250).IsRequired();
             entity.Property(x => x.Description).HasColumnType("text");
+            entity.Property(x => x.DescriptionVisibility).HasConversion<string>().HasMaxLength(32).IsRequired();
             entity.HasIndex(x => x.Slug).IsUnique();
             entity.HasIndex(x => new { x.ManufacturerId, x.Name });
             entity.HasOne<Manufacturer>()
@@ -88,6 +90,13 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
         {
             entity.ToTable("product_variants");
             entity.Property(x => x.Name).HasMaxLength(200).IsRequired();
+            entity.Property(x => x.BackingType).HasConversion<string>().HasMaxLength(32);
+            entity.Property(x => x.FastenerType).HasConversion<string>().HasMaxLength(32);
+            entity.Property(x => x.WaistbandStyle).HasConversion<string>().HasMaxLength(32);
+            entity.Property(x => x.Fragrance).HasConversion<string>().HasMaxLength(32);
+            entity.Property(x => x.PrintDesign).HasMaxLength(500);
+            entity.Property(x => x.PrimaryColour).HasMaxLength(100);
+            entity.Property(x => x.DesignedFor).HasMaxLength(100);
             entity.Property(x => x.ConstructionNotes).HasColumnType("text");
             entity.HasIndex(x => new { x.ProductId, x.Name }).IsUnique();
             entity.HasOne<Product>()
@@ -345,33 +354,25 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
                 .HasConversion<string>()
                 .HasMaxLength(32);
 
-            entity.Property(x => x.ProposedManufacturerSize)
-                .HasMaxLength(100);
-
-            entity.Property(x => x.ProposedWaistMinimumCm);
-            entity.Property(x => x.ProposedWaistMaximumCm);
-
-            entity.Property(x => x.ProposedBackingType)
+            entity.Property(x => x.ProposedDescriptionVisibility)
                 .HasConversion<string>()
-                .HasMaxLength(32);
-
-            entity.Property(x => x.ProposedFastenerType)
-                .HasConversion<string>()
-                .HasMaxLength(32);
-
-            entity.Property(x => x.ProposedWaistbandStyle)
-                .HasConversion<string>()
-                .HasMaxLength(32);
-
-            entity.Property(x => x.ProposedFragranceType)
-                .HasConversion<string>()
-                .HasMaxLength(32);
-
-            entity.Property(x => x.ProposedQuantityPerPack);
+                .HasMaxLength(32)
+                .IsRequired();
 
             entity.Property(x => x.ProposedPackagingType)
                 .HasConversion<string>()
                 .HasMaxLength(32);
+
+            entity.Property(x => x.SharedWaistbandStyle)
+                .HasConversion<string>()
+                .HasMaxLength(32);
+
+            entity.Property(x => x.SharedFragrance)
+                .HasConversion<string>()
+                .HasMaxLength(32);
+
+            entity.Property(x => x.SharedDesignedFor)
+                .HasMaxLength(100);
 
             entity.Property(x => x.Notes)
                 .HasColumnType("text");
@@ -428,6 +429,10 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
                 .HasMaxLength(100)
                 .IsRequired();
 
+            entity.Property(x => x.FitMeasurementBasis).HasMaxLength(200);
+            entity.Property(x => x.AbsorbencyBasisMethod).HasMaxLength(500);
+            entity.Property(x => x.AbsorbencySource).HasMaxLength(2048);
+
             entity.Property(x => x.Gtin)
                 .HasMaxLength(14);
 
@@ -452,7 +457,7 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
             entity.Property(x => x.Fragrance).HasConversion<string>().HasMaxLength(32);
             entity.Property(x => x.PrintDesign).HasMaxLength(500);
             entity.Property(x => x.PrimaryColour).HasMaxLength(100);
-            entity.Property(x => x.SecondaryColours).HasMaxLength(500);
+            entity.Property(x => x.DesignedFor).HasMaxLength(100);
             entity.Property(x => x.ConstructionNotes).HasColumnType("text");
 
             entity.HasIndex(x => x.VariantId).IsUnique();
@@ -529,6 +534,35 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
                 .WithMany()
                 .HasForeignKey(x => x.ModeratorUserId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<CatalogueSubmissionImage>(entity =>
+        {
+            entity.ToTable("catalogue_submission_images");
+            entity.Property(x => x.Role).HasConversion<string>().HasMaxLength(32).IsRequired();
+            entity.Property(x => x.StorageKey).HasMaxLength(500).IsRequired();
+            entity.Property(x => x.OriginalFileName).HasMaxLength(255).IsRequired();
+            entity.Property(x => x.ContentType).HasMaxLength(100).IsRequired();
+            entity.Property(x => x.SourceType).HasConversion<string>().HasMaxLength(40).IsRequired();
+            entity.Property(x => x.SourceUrl).HasMaxLength(2000);
+            entity.Property(x => x.SourceNotes).HasColumnType("text");
+            entity.Property(x => x.PermissionStatus).HasConversion<string>().HasMaxLength(40).IsRequired();
+            entity.Property(x => x.PermissionEvidence).HasColumnType("text");
+            entity.Property(x => x.Visibility).HasConversion<string>().HasMaxLength(32).IsRequired();
+            entity.HasIndex(x => new { x.ProductId, x.Role })
+                .IsUnique()
+                .HasFilter("\"ProductId\" IS NOT NULL AND \"Role\" <> 'Other'");
+            entity.HasOne<Product>()
+                .WithMany()
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+            entity.HasIndex(x => new { x.SubmissionId, x.Role })
+                .IsUnique()
+                .HasFilter("\"Role\" <> 'Other'");
+            entity.HasOne<CatalogueSubmission>()
+                .WithMany(x => x.Images)
+                .HasForeignKey(x => x.SubmissionId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<ExplorerProfile>(entity =>

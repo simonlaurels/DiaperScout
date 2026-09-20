@@ -341,9 +341,118 @@ app.MapGet(
     .Produces<CatalogueProductDetails>()
     .Produces(StatusCodes.Status404NotFound);
 
+app.MapGet(
+    "/api/v1/products/{productId:guid}/images/{imageId:guid}",
+    async (
+        Guid productId,
+        Guid imageId,
+        IAtlasQueries atlasQueries,
+        CancellationToken cancellationToken) =>
+    {
+        var content = await atlasQueries.GetProductImageContentAsync(productId, imageId, false, cancellationToken);
+        return content is null
+            ? Results.NotFound()
+            : Results.File(content.Content, content.ContentType, content.FileName, enableRangeProcessing: true);
+    })
+    .WithName("GetPublicCatalogueProductImage")
+    .WithTags("Products")
+    .Produces(StatusCodes.Status404NotFound);
+
+app.MapGet(
+    "/api/v1/products/{productId:guid}/moderator-preview",
+    async (
+        Guid productId,
+        ICurrentUser currentUser,
+        IAtlasQueries atlasQueries,
+        CancellationToken cancellationToken) =>
+    {
+        var actor = await currentUser.GetAsync(cancellationToken);
+        if (actor is null)
+            return Results.Forbid();
+
+        try
+        {
+            var product = await atlasQueries.GetProductDetailsForModeratorAsync(actor, productId, cancellationToken);
+            return product is null ? Results.NotFound() : Results.Ok(product);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Results.Forbid();
+        }
+    })
+    .RequireAuthorization("PublishAtlas")
+    .WithName("GetModeratorCatalogueProductPreview")
+    .WithTags("Products")
+    .Produces<CatalogueModeratorProductDetails>()
+    .Produces(StatusCodes.Status404NotFound);
+
+app.MapGet(
+    "/api/v1/products/{productId:guid}/moderator-images/{imageId:guid}",
+    async (
+        Guid productId,
+        Guid imageId,
+        ICurrentUser currentUser,
+        IAtlasQueries atlasQueries,
+        CancellationToken cancellationToken) =>
+    {
+        var actor = await currentUser.GetAsync(cancellationToken);
+        if (actor is null)
+            return Results.Forbid();
+
+        var content = await atlasQueries.GetProductImageContentAsync(productId, imageId, true, cancellationToken);
+        return content is null
+            ? Results.NotFound()
+            : Results.File(content.Content, content.ContentType, content.FileName, enableRangeProcessing: true);
+    })
+    .RequireAuthorization("PublishAtlas")
+    .WithName("GetModeratorCatalogueProductImage")
+    .WithTags("Products")
+    .Produces(StatusCodes.Status404NotFound);
+
 if (builder.Configuration.GetValue<bool>(
         "Editorial:CatalogueWritesEnabled"))
 {
+    app.MapPut(
+        "/api/v1/products/{productId:guid}/description-visibility",
+        async (
+            Guid productId,
+            UpdateCatalogueProductDescriptionVisibilityRequest request,
+            ICurrentUser currentUser,
+            ICanonicalCatalogue canonicalCatalogue,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null)
+                return Results.Forbid();
+
+            try
+            {
+                await canonicalCatalogue.SetDescriptionVisibilityAsync(
+                    actor,
+                    productId,
+                    request.Visibility,
+                    cancellationToken);
+                return Results.NoContent();
+            }
+            catch (KeyNotFoundException)
+            {
+                return Results.NotFound();
+            }
+            catch (ArgumentException exception)
+            {
+                return Results.ValidationProblem(new Dictionary<string, string[]> { ["visibility"] = [exception.Message] });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("UpdateCatalogueProductDescriptionVisibility")
+        .WithTags("Products")
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesValidationProblem();
+
     app.MapGet(
         "/api/v1/catalogue-submissions",
         async (
@@ -375,6 +484,67 @@ if (builder.Configuration.GetValue<bool>(
         .WithName("GetCatalogueSubmissionQueue")
         .WithTags("Catalogue Submissions")
         .Produces<IReadOnlyList<CatalogueSubmissionQueueItem>>();
+
+    app.MapGet(
+        "/api/v1/catalogue-submissions/import-template",
+        () => Results.Text(
+            "Manufacturer,Brand,ProductName,ProductType,PackagingType,ProductFamily,Description,ProductStatus,OfficialWebsite,VariantName,BackingType,FastenerType,FastenerCount,Appearance,PrimaryColour,WetnessIndicator,StandingLeakGuards,WaistbandStyle,Fragrance,LatexFree,DesignedFor,ConstructionNotes,ManufacturerSize,WaistMinCm,WaistMaxCm,HipMinCm,HipMaxCm,FitMeasurementBasis,AbsorbencyMl,AbsorbencyBasisMethod,AbsorbencySource,LengthMm,WidthMm,WeightGrams,ManufacturerPackQuantity,GTIN,IdentitySourceUrl,Notes,DescriptionVisibility\nExample Manufacturer,Example Brand,Example Product,Diaper,Bag,Example Family,,Current,https://example.com,Single version,Plastic,AdhesiveTape,2,Plain,White,Yes,Yes,AllAroundElastic,None,No,Adult,,Medium,80,110,,,,Waist,7500,Manufacturer stated,Manufacturer,900,700,1800,10,1234567890123,https://example.com/product,,ModeratorOnly\n",
+            "text/csv",
+            System.Text.Encoding.UTF8))
+        .RequireAuthorization("PublishAtlas")
+        .WithName("GetCatalogueSubmissionImportTemplate")
+        .WithTags("Catalogue Submissions");
+
+    app.MapPost(
+        "/api/v1/catalogue-submissions/import-csv",
+        async (
+            HttpRequest httpRequest,
+            ICurrentUser currentUser,
+            ICatalogueSubmissions submissions,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null)
+                return Results.Forbid();
+
+            if (!httpRequest.HasFormContentType)
+                return Results.BadRequest(new { message = "A multipart/form-data CSV upload is required." });
+
+            var form = await httpRequest.ReadFormAsync(cancellationToken);
+            var file = form.Files.GetFile("file");
+            if (file is null || file.Length == 0)
+                return Results.BadRequest(new { message = "Choose a CSV file to import." });
+
+            if (file.Length > 10 * 1024 * 1024)
+                return Results.BadRequest(new { message = "CSV imports are limited to 10 MB." });
+
+            try
+            {
+                await using var stream = file.OpenReadStream();
+                var result = await submissions.ImportCsvAsync(
+                    actor,
+                    stream,
+                    new CatalogueSubmissionImportOptions(
+                        TreatImportedDescriptionsAsModeratorOnly: true),
+                    cancellationToken);
+
+                return Results.Ok(result);
+            }
+            catch (FormatException exception)
+            {
+                return Results.BadRequest(new { message = exception.Message });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("ImportCatalogueSubmissionsCsv")
+        .WithTags("Catalogue Submissions")
+        .DisableAntiforgery()
+        .Produces<CatalogueSubmissionImportResult>()
+        .Produces(StatusCodes.Status400BadRequest);
 
     app.MapPost(
         "/api/v1/catalogue-submissions",
@@ -606,7 +776,10 @@ if (builder.Configuration.GetValue<bool>(
                         request.WaistMaximumCm,
                         request.HipMinimumCm,
                         request.HipMaximumCm,
-                        request.CapacityMl,
+                        request.ManufacturerStatedAbsorbencyMl,
+                        request.FitMeasurementBasis,
+                        request.AbsorbencyBasisMethod,
+                        request.AbsorbencySource,
                         request.LengthMm,
                         request.WidthMm,
                         request.WeightGrams,
@@ -661,7 +834,10 @@ if (builder.Configuration.GetValue<bool>(
                         request.WaistMaximumCm,
                         request.HipMinimumCm,
                         request.HipMaximumCm,
-                        request.CapacityMl,
+                        request.ManufacturerStatedAbsorbencyMl,
+                        request.FitMeasurementBasis,
+                        request.AbsorbencyBasisMethod,
+                        request.AbsorbencySource,
                         request.LengthMm,
                         request.WidthMm,
                         request.WeightGrams,
@@ -742,7 +918,9 @@ if (builder.Configuration.GetValue<bool>(
             try
             {
                 var result = await submissions.GetVariantOverrideAsync(actor, id, variantId, cancellationToken);
-                return Results.Ok(result);
+                return result is null
+                    ? Results.NoContent()
+                    : Results.Ok(result);
             }
             catch (CatalogueValidationException exception)
             {
@@ -1004,29 +1182,20 @@ if (builder.Configuration.GetValue<bool>(
                         id,
                         new UpdateCatalogueSubmissionSpecifications(
                             request.ProposedProductType,
-                            request.ProposedManufacturerSize,
-                            request.ProposedWaistMinimumCm,
-                            request.ProposedWaistMaximumCm,
-                            request.ProposedBackingType,
-                            request.ProposedFastenerType,
-                            request.ProposedWaistbandStyle,
-                            request.ProposedFragranceType,
-                            request.ProposedQuantityPerPack,
                             request.ProposedPackagingType,
                             request.ProposedProductFamily,
                             request.ProposedDescription,
+                            request.ProposedDescriptionVisibility,
                             request.ProposedProductStatus,
                             request.ProposedOfficialWebsiteUrl,
-                            request.SharedPrintDesign,
+                            request.SharedAppearance,
                             request.SharedPrimaryColour,
-                            request.SharedSecondaryColours,
                             request.SharedWetnessIndicator,
                             request.SharedStandingLeakGuards,
-                            request.SharedInnerLeakGuards,
-                            request.SharedElasticWaistbandFront,
-                            request.SharedElasticWaistbandRear,
+                            request.SharedWaistbandStyle,
+                            request.SharedFragrance,
                             request.SharedLatexFree,
-                            request.SharedChlorineFree,
+                            request.SharedDesignedFor,
                             request.SharedFastenerCount,
                             request.SharedConstructionNotes),
                         cancellationToken);
@@ -1102,6 +1271,255 @@ if (builder.Configuration.GetValue<bool>(
         .Produces<CatalogueSubmissionRetailDestinationReceipt>(
             StatusCodes.Status201Created)
         .ProducesValidationProblem();
+
+    // Catalogue submission images.
+    app.MapGet(
+        "/api/v1/catalogue-submissions/{id:guid}/images",
+        async (
+            Guid id,
+            ICurrentUser currentUser,
+            ICatalogueSubmissions submissions,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null)
+                return Results.Forbid();
+
+            try
+            {
+                var result = await submissions.GetImagesAsync(actor, id, cancellationToken);
+                return Results.Ok(result.Images);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+            catch (KeyNotFoundException)
+            {
+                return Results.NotFound();
+            }
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("GetCatalogueSubmissionImages")
+        .WithTags("Catalogue Submissions")
+        .Produces<IReadOnlyList<CatalogueSubmissionImageReceipt>>();
+
+    app.MapPost(
+        "/api/v1/catalogue-submissions/{id:guid}/images",
+        async (
+            Guid id,
+            HttpRequest request,
+            ICurrentUser currentUser,
+            ICatalogueSubmissions submissions,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null)
+                return Results.Forbid();
+
+            var form = await request.ReadFormAsync(cancellationToken);
+            var file = form.Files.GetFile("file");
+
+            if (file is null)
+                return Results.ValidationProblem(new Dictionary<string, string[]>
+                {
+                    ["file"] = ["An image file is required."]
+                });
+
+            if (!Enum.TryParse<CatalogueSubmissionImageRole>(form["role"].ToString(), true, out var role) ||
+                !Enum.IsDefined(role))
+                return Results.ValidationProblem(new Dictionary<string, string[]>
+                {
+                    ["role"] = ["A valid image role is required."]
+                });
+
+            if (!Enum.TryParse<CatalogueImageSourceType>(form["sourceType"].ToString(), true, out var sourceType) ||
+                !Enum.IsDefined(sourceType))
+                return Results.ValidationProblem(new Dictionary<string, string[]>
+                {
+                    ["sourceType"] = ["A valid image source type is required."]
+                });
+
+            if (!Enum.TryParse<CatalogueImagePermissionStatus>(form["permissionStatus"].ToString(), true, out var permissionStatus) ||
+                !Enum.IsDefined(permissionStatus))
+                return Results.ValidationProblem(new Dictionary<string, string[]>
+                {
+                    ["permissionStatus"] = ["A valid image permission status is required."]
+                });
+
+            if (file.Length is <= 0 or > 15 * 1024 * 1024)
+                return Results.ValidationProblem(new Dictionary<string, string[]>
+                {
+                    ["file"] = ["Images must be greater than zero and no larger than 15 MB."]
+                });
+
+            if (file.ContentType is not "image/jpeg" and not "image/png" and not "image/webp")
+                return Results.ValidationProblem(new Dictionary<string, string[]>
+                {
+                    ["file"] = ["Only JPEG, PNG and WebP images are supported."]
+                });
+
+            try
+            {
+                await using var stream = file.OpenReadStream();
+
+                var receipt = await submissions.AddImageAsync(
+                    actor,
+                    id,
+                    new AddCatalogueSubmissionImage(
+                        role,
+                        Path.GetFileName(file.FileName),
+                        file.ContentType,
+                        file.Length,
+                        stream,
+                        sourceType,
+                        form["sourceUrl"].ToString(),
+                        form["sourceNotes"].ToString(),
+                        permissionStatus,
+                        form["permissionEvidence"].ToString()),
+                    cancellationToken);
+
+                return Results.Created(receipt.ContentUrl, receipt);
+            }
+            catch (ArgumentException exception)
+            {
+                return Results.ValidationProblem(new Dictionary<string, string[]>
+                {
+                    ["image"] = [exception.Message]
+                });
+            }
+            catch (KeyNotFoundException exception)
+            {
+                return Results.NotFound(new { message = exception.Message });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("AddCatalogueSubmissionImage")
+        .WithTags("Catalogue Submissions")
+        .DisableAntiforgery()
+        .Produces<CatalogueSubmissionImageReceipt>(StatusCodes.Status201Created)
+        .ProducesValidationProblem();
+
+    app.MapPut(
+        "/api/v1/catalogue-submissions/{id:guid}/images/{imageId:guid}",
+        async (
+            Guid id,
+            Guid imageId,
+            UpdateCatalogueSubmissionImageMetadataRequest request,
+            ICurrentUser currentUser,
+            ICatalogueSubmissions submissions,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null)
+                return Results.Forbid();
+
+            try
+            {
+                var receipt = await submissions.UpdateImageMetadataAsync(
+                    actor,
+                    id,
+                    imageId,
+                    new UpdateCatalogueSubmissionImageMetadata(
+                        request.SourceType,
+                        request.SourceUrl,
+                        request.SourceNotes,
+                        request.PermissionStatus,
+                        request.PermissionEvidence),
+                    cancellationToken);
+
+                return Results.Ok(receipt);
+            }
+            catch (ArgumentException exception)
+            {
+                return Results.ValidationProblem(new Dictionary<string, string[]>
+                {
+                    ["image"] = [exception.Message]
+                });
+            }
+            catch (KeyNotFoundException exception)
+            {
+                return Results.NotFound(new { message = exception.Message });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("UpdateCatalogueSubmissionImageMetadata")
+        .WithTags("Catalogue Submissions")
+        .Produces<CatalogueSubmissionImageReceipt>()
+        .ProducesValidationProblem();
+
+    app.MapDelete(
+        "/api/v1/catalogue-submissions/{id:guid}/images/{imageId:guid}",
+        async (
+            Guid id,
+            Guid imageId,
+            ICurrentUser currentUser,
+            ICatalogueSubmissions submissions,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null)
+                return Results.Forbid();
+
+            try
+            {
+                await submissions.RemoveImageAsync(actor, id, imageId, cancellationToken);
+                return Results.NoContent();
+            }
+            catch (KeyNotFoundException exception)
+            {
+                return Results.NotFound(new { message = exception.Message });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("RemoveCatalogueSubmissionImage")
+        .WithTags("Catalogue Submissions");
+
+    app.MapGet(
+        "/api/v1/catalogue-submissions/{id:guid}/images/{imageId:guid}/content",
+        async (
+            Guid id,
+            Guid imageId,
+            ICurrentUser currentUser,
+            ICatalogueSubmissions submissions,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null)
+                return Results.Forbid();
+
+            try
+            {
+                var content = await submissions.GetImageContentAsync(actor, id, imageId, cancellationToken);
+
+                return content is null
+                    ? Results.NotFound()
+                    : Results.File(
+                        content.Content,
+                        content.ContentType,
+                        content.FileName,
+                        enableRangeProcessing: true);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("GetCatalogueSubmissionImageContent")
+        .WithTags("Catalogue Submissions");
 
     // Retail workspace
     app.MapGet(
@@ -1587,6 +2005,9 @@ if (builder.Configuration.GetValue<bool>(
                                             null,
                                             null,
                                             null,
+                                            null,
+                                            null,
+                                            null,
                                             request.QuantityPerPack,
                                             request.PackagingType,
                                             request.Gtin)
@@ -1656,6 +2077,9 @@ public sealed record CreateCanonicalProductRequest(
     string? Description = null,
     string? OfficialWebsiteUrl = null);
 
+public sealed record UpdateCatalogueProductDescriptionVisibilityRequest(
+    CatalogueContentVisibility Visibility);
+
 public sealed record CreateCatalogueSubmissionRequest(
     CatalogueSubmissionSource Source,
     string ProposedManufacturerName,
@@ -1697,31 +2121,29 @@ public sealed record AddCatalogueSubmissionVerificationRequest(
     string? Notes,
     string? PermissionTerms);
 
+public sealed record UpdateCatalogueSubmissionImageMetadataRequest(
+    CatalogueImageSourceType SourceType,
+    string? SourceUrl,
+    string? SourceNotes,
+    CatalogueImagePermissionStatus PermissionStatus,
+    string? PermissionEvidence);
+
 public sealed record UpdateCatalogueSubmissionSpecificationsRequest(
     ProductType? ProposedProductType,
-    string? ProposedManufacturerSize,
-    int? ProposedWaistMinimumCm,
-    int? ProposedWaistMaximumCm,
-    BackingType? ProposedBackingType,
-    FastenerType? ProposedFastenerType,
-    WaistbandStyle? ProposedWaistbandStyle,
-    FragranceType? ProposedFragranceType,
-    int? ProposedQuantityPerPack,
     PackagingType? ProposedPackagingType,
     string? ProposedProductFamily,
     string? ProposedDescription,
+    CatalogueContentVisibility ProposedDescriptionVisibility,
     ProductStatus? ProposedProductStatus,
     string? ProposedOfficialWebsiteUrl,
-    string? SharedPrintDesign,
+    CatalogueVariantAppearance? SharedAppearance,
     string? SharedPrimaryColour,
-    string? SharedSecondaryColours,
     bool? SharedWetnessIndicator,
     bool? SharedStandingLeakGuards,
-    bool? SharedInnerLeakGuards,
-    bool? SharedElasticWaistbandFront,
-    bool? SharedElasticWaistbandRear,
+    WaistbandStyle? SharedWaistbandStyle,
+    FragranceType? SharedFragrance,
     bool? SharedLatexFree,
-    bool? SharedChlorineFree,
+    string? SharedDesignedFor,
     int? SharedFastenerCount,
     string? SharedConstructionNotes);
 

@@ -136,10 +136,6 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
-                    b.Property<string>("ProposedBackingType")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
-
                     b.Property<string>("ProposedBrandName")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
@@ -147,11 +143,8 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                     b.Property<string>("ProposedDescription")
                         .HasColumnType("text");
 
-                    b.Property<string>("ProposedFastenerType")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
-
-                    b.Property<string>("ProposedFragranceType")
+                    b.Property<string>("ProposedDescriptionVisibility")
+                        .IsRequired()
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)");
 
@@ -163,10 +156,6 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
-
-                    b.Property<string>("ProposedManufacturerSize")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("ProposedOfficialWebsiteUrl")
                         .HasColumnType("text");
@@ -190,9 +179,6 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)");
 
-                    b.Property<int?>("ProposedQuantityPerPack")
-                        .HasColumnType("integer");
-
                     b.Property<string>("ProposedSku")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
@@ -201,36 +187,22 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<int?>("ProposedWaistMaximumCm")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("ProposedWaistMinimumCm")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ProposedWaistbandStyle")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
-
                     b.Property<Guid?>("PublishedProductId")
                         .HasColumnType("uuid");
-
-                    b.Property<bool?>("SharedChlorineFree")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("SharedConstructionNotes")
                         .HasColumnType("text");
 
-                    b.Property<bool?>("SharedElasticWaistbandFront")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool?>("SharedElasticWaistbandRear")
-                        .HasColumnType("boolean");
+                    b.Property<string>("SharedDesignedFor")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<int?>("SharedFastenerCount")
                         .HasColumnType("integer");
 
-                    b.Property<bool?>("SharedInnerLeakGuards")
-                        .HasColumnType("boolean");
+                    b.Property<string>("SharedFragrance")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.Property<bool?>("SharedLatexFree")
                         .HasColumnType("boolean");
@@ -241,11 +213,12 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                     b.Property<string>("SharedPrintDesign")
                         .HasColumnType("text");
 
-                    b.Property<string>("SharedSecondaryColours")
-                        .HasColumnType("text");
-
                     b.Property<bool?>("SharedStandingLeakGuards")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("SharedWaistbandStyle")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.Property<bool?>("SharedWetnessIndicator")
                         .HasColumnType("boolean");
@@ -309,6 +282,85 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                     b.HasIndex("SubmissionId", "DecidedAtUtc");
 
                     b.ToTable("catalogue_submission_editorial_decisions", "diaperscout");
+                });
+
+            modelBuilder.Entity("DiaperScout.Domain.CatalogueSubmissionImage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("FileSizeBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("OriginalFileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("PermissionEvidence")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PermissionStatus")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<Guid?>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<string>("SourceNotes")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SourceType")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<string>("SourceUrl")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("StorageKey")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<Guid>("SubmissionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Visibility")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId", "Role")
+                        .IsUnique()
+                        .HasFilter("\"ProductId\" IS NOT NULL AND \"Role\" <> 'Other'");
+
+                    b.HasIndex("SubmissionId", "Role")
+                        .IsUnique()
+                        .HasFilter("\"Role\" <> 'Other'");
+
+                    b.ToTable("catalogue_submission_images", "diaperscout");
                 });
 
             modelBuilder.Entity("DiaperScout.Domain.CatalogueSubmissionRetailAffiliate", b =>
@@ -401,11 +453,20 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int?>("CapacityMl")
-                        .HasColumnType("integer");
+                    b.Property<string>("AbsorbencyBasisMethod")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("AbsorbencySource")
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
 
                     b.Property<DateTimeOffset>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FitMeasurementBasis")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("Gtin")
                         .HasMaxLength(14)
@@ -427,6 +488,9 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<int?>("ManufacturerStatedAbsorbencyMl")
+                        .HasColumnType("integer");
 
                     b.Property<DateTimeOffset>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone");
@@ -500,6 +564,10 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                     b.Property<string>("ConstructionNotes")
                         .HasColumnType("text");
 
+                    b.Property<string>("DesignedFor")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<int?>("FastenerCount")
                         .HasColumnType("integer");
 
@@ -511,22 +579,10 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)");
 
-                    b.Property<bool?>("HasElasticWaistbandFront")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool?>("HasElasticWaistbandRear")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool?>("HasInnerLeakGuards")
-                        .HasColumnType("boolean");
-
                     b.Property<bool?>("HasStandingLeakGuards")
                         .HasColumnType("boolean");
 
                     b.Property<bool?>("HasWetnessIndicator")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool?>("IsChlorineFree")
                         .HasColumnType("boolean");
 
                     b.Property<bool?>("IsLatexFree")
@@ -537,10 +593,6 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<string>("PrintDesign")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("SecondaryColours")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
@@ -1045,6 +1097,11 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<string>("DescriptionVisibility")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
                     b.Property<string>("Family")
                         .HasColumnType("text");
 
@@ -1115,37 +1172,35 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("BackingType")
-                        .HasColumnType("integer");
+                    b.Property<string>("BackingType")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.Property<string>("ConstructionNotes")
                         .HasColumnType("text");
 
+                    b.Property<string>("DesignedFor")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<int?>("FastenerCount")
                         .HasColumnType("integer");
 
-                    b.Property<int>("FastenerType")
-                        .HasColumnType("integer");
+                    b.Property<string>("FastenerType")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
-                    b.Property<int>("Fragrance")
-                        .HasColumnType("integer");
-
-                    b.Property<bool?>("HasElasticWaistbandFront")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool?>("HasElasticWaistbandRear")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool?>("HasInnerLeakGuards")
-                        .HasColumnType("boolean");
+                    b.Property<string>("Fragrance")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.Property<bool?>("HasStandingLeakGuards")
                         .HasColumnType("boolean");
 
                     b.Property<bool?>("HasWetnessIndicator")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool?>("IsChlorineFree")
                         .HasColumnType("boolean");
 
                     b.Property<bool?>("IsLatexFree")
@@ -1157,19 +1212,20 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(200)");
 
                     b.Property<string>("PrimaryColour")
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("PrintDesign")
-                        .HasColumnType("text");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("SecondaryColours")
-                        .HasColumnType("text");
-
-                    b.Property<int>("WaistbandStyle")
-                        .HasColumnType("integer");
+                    b.Property<string>("WaistbandStyle")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.HasKey("Id");
 
@@ -1262,8 +1318,14 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int?>("CapacityMl")
-                        .HasColumnType("integer");
+                    b.Property<string>("AbsorbencyBasisMethod")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AbsorbencySource")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FitMeasurementBasis")
+                        .HasColumnType("text");
 
                     b.Property<int?>("HipMaximumCm")
                         .HasColumnType("integer");
@@ -1278,6 +1340,9 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<int?>("ManufacturerStatedAbsorbencyMl")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("ProductVariantId")
                         .HasColumnType("uuid");
@@ -1383,6 +1448,20 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
 
                     b.HasOne("DiaperScout.Domain.CatalogueSubmission", null)
                         .WithMany()
+                        .HasForeignKey("SubmissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DiaperScout.Domain.CatalogueSubmissionImage", b =>
+                {
+                    b.HasOne("DiaperScout.Domain.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("DiaperScout.Domain.CatalogueSubmission", null)
+                        .WithMany("Images")
                         .HasForeignKey("SubmissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1686,6 +1765,11 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                     b.Navigation("SavedLocations");
 
                     b.Navigation("SavedProducts");
+                });
+
+            modelBuilder.Entity("DiaperScout.Domain.CatalogueSubmission", b =>
+                {
+                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("DiaperScout.Domain.CatalogueSubmissionVariant", b =>

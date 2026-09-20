@@ -1,4 +1,5 @@
 using DiaperScout.Application;
+using System.Globalization;
 using DiaperScout.Domain;
 using DiaperScout.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +9,8 @@ namespace DiaperScout.Infrastructure;
 internal sealed class CatalogueSubmissions(
     DiaperScoutDbContext db,
     IEditorialAuthorisation editorialAuthorisation,
-    ICanonicalCatalogue canonicalCatalogue) : ICatalogueSubmissions
+    ICanonicalCatalogue canonicalCatalogue,
+    ICatalogueSubmissionImageStorage imageStorage) : ICatalogueSubmissions
 {
     public async Task<IReadOnlyList<CatalogueSubmissionQueueItem>> GetSubmissionsAsync(
         AuthenticatedUser actor,
@@ -25,9 +27,134 @@ internal sealed class CatalogueSubmissions(
                 value.ProposedManufacturerName,
                 value.ProposedBrandName,
                 value.ProposedProductName,
+                value.PublishedProductId,
                 value.CreatedAtUtc,
                 value.UpdatedAtUtc))
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<CatalogueSubmissionImportResult> ImportCsvAsync(
+        AuthenticatedUser actor,
+        Stream csvContent,
+        CatalogueSubmissionImportOptions options,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireModeratorAsync(actor, cancellationToken);
+
+        var rows = CatalogueSubmissionCsvParser.Parse(csvContent, options.TreatImportedDescriptionsAsModeratorOnly);
+        var warnings = new List<string>();
+        var created = 0;
+        var imported = 0;
+        var skipped = 0;
+
+        foreach (var row in rows)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            try
+            {
+                await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+
+                if (!string.IsNullOrWhiteSpace(row.Gtin) && await db.ProductIdentifiers.AnyAsync(
+                        value => value.Type == IdentifierType.Gtin && value.Value == row.Gtin,
+                        cancellationToken))
+                {
+                    skipped++;
+                    warnings.Add($"Line {row.LineNumber}: GTIN {row.Gtin} already exists in the canonical catalogue.");
+                    await transaction.RollbackAsync(cancellationToken);
+                    continue;
+                }
+
+                var submission = new CatalogueSubmission(
+                    CatalogueSubmissionSource.BulkImport,
+                    actor.UserId,
+                    row.Manufacturer,
+                    row.ProductName,
+                    row.VariantName,
+                    row.Brand,
+                    row.Notes);
+
+                submission.UpdateIdentity(row.Gtin, null, row.IdentitySourceUrl);
+                submission.UpdateSpecifications(
+                    row.ProductType,
+                    row.PackagingType,
+                    row.ProductFamily,
+                    row.Description,
+                    row.DescriptionVisibility,
+                    row.ProductStatus,
+                    row.OfficialWebsite,
+                    null,
+                    row.PrimaryColour,
+                    row.WetnessIndicator,
+                    row.StandingLeakGuards,
+                    row.WaistbandStyle,
+                    row.Fragrance,
+                    row.LatexFree,
+                    row.DesignedFor,
+                    row.FastenerCount,
+                    row.ConstructionNotes);
+
+                db.CatalogueSubmissions.Add(submission);
+
+                var variant = new CatalogueSubmissionVariant(submission.Id, string.IsNullOrWhiteSpace(row.VariantName) ? null : row.VariantName.Trim());
+                db.CatalogueSubmissionVariants.Add(variant);
+
+                var overrideValue = new CatalogueSubmissionVariantOverride(variant.Id);
+                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.BackingType, row.BackingType?.ToString());
+                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.FastenerType, row.FastenerType?.ToString());
+                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.Appearance, row.Appearance?.ToString());
+                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.PrimaryColour, row.PrimaryColour);
+                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.WetnessIndicator, row.WetnessIndicator?.ToString());
+                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.StandingLeakGuards, row.StandingLeakGuards?.ToString());
+                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.WaistbandStyle, row.WaistbandStyle?.ToString());
+                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.Fragrance, row.Fragrance?.ToString());
+                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.LatexFree, row.LatexFree?.ToString());
+                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.DesignedFor, row.DesignedFor);
+                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.FastenerCount, row.FastenerCount?.ToString(CultureInfo.InvariantCulture));
+                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.ConstructionNotes, row.ConstructionNotes);
+                if (overrideValue.HasAnyOverride)
+                    db.CatalogueSubmissionVariantOverrides.Add(overrideValue);
+
+                if (!string.IsNullOrWhiteSpace(row.ManufacturerSize))
+                {
+                    var size = new CatalogueSubmissionSizeVariant(
+                        variant.Id,
+                        row.ManufacturerSize,
+                        row.WaistMinCm,
+                        row.WaistMaxCm,
+                        row.HipMinCm,
+                        row.HipMaxCm,
+                        row.AbsorbencyMl,
+                        row.FitMeasurementBasis,
+                        row.AbsorbencyBasisMethod,
+                        row.AbsorbencySource,
+                        row.LengthMm,
+                        row.WidthMm,
+                        row.WeightGrams,
+                        row.ManufacturerPackQuantity,
+                        row.Gtin);
+                    db.CatalogueSubmissionSizeVariants.Add(size);
+                }
+
+                await db.SaveChangesAsync(cancellationToken);
+                await transaction.CommitAsync(cancellationToken);
+                created++;
+                imported++;
+            }
+            catch (Exception exception) when (exception is ArgumentException or CatalogueValidationException or FormatException)
+            {
+                skipped++;
+                warnings.Add($"Line {row.LineNumber}: {exception.Message}");
+            }
+        }
+
+        return new CatalogueSubmissionImportResult(rows.Count, created, imported, skipped, warnings);
+    }
+
+    private static void SetImportOverride(CatalogueSubmissionVariantOverride value, CatalogueVariantOverrideAttribute attribute, string? text)
+    {
+        if (!string.IsNullOrWhiteSpace(text))
+            value.Set(attribute, text);
     }
 
     public async Task<CatalogueSubmissionReceipt> CreateAsync(
@@ -158,8 +285,16 @@ internal sealed class CatalogueSubmissions(
         db.CatalogueSubmissionRetailDestinations.RemoveRange(retailDestinations);
         db.CatalogueSubmissionEditorialDecisions.RemoveRange(editorialDecisions);
         db.CatalogueSubmissionVerifications.RemoveRange(verifications);
+        var images = await db.CatalogueSubmissionImages
+            .Where(value => value.SubmissionId == submissionId)
+            .ToListAsync(cancellationToken);
+
+        db.CatalogueSubmissionImages.RemoveRange(images);
         db.CatalogueSubmissionVariants.RemoveRange(variants);
         db.CatalogueSubmissions.Remove(submission);
+
+        foreach (var image in images)
+            await imageStorage.DeleteAsync(image.StorageKey, cancellationToken);
 
         await db.SaveChangesAsync(cancellationToken);
     }
@@ -230,7 +365,10 @@ internal sealed class CatalogueSubmissions(
                 value.WaistMaximumCm,
                 value.HipMinimumCm,
                 value.HipMaximumCm,
-                value.CapacityMl,
+                value.ManufacturerStatedAbsorbencyMl,
+                value.FitMeasurementBasis,
+                value.AbsorbencyBasisMethod,
+                value.AbsorbencySource,
                 value.LengthMm,
                 value.WidthMm,
                 value.WeightGrams,
@@ -271,7 +409,10 @@ internal sealed class CatalogueSubmissions(
                 command.WaistMaximumCm,
                 command.HipMinimumCm,
                 command.HipMaximumCm,
-                command.CapacityMl,
+                command.ManufacturerStatedAbsorbencyMl,
+                command.FitMeasurementBasis,
+                command.AbsorbencyBasisMethod,
+                command.AbsorbencySource,
                 command.LengthMm,
                 command.WidthMm,
                 command.WeightGrams,
@@ -398,7 +539,10 @@ internal sealed class CatalogueSubmissions(
                 command.WaistMaximumCm,
                 command.HipMinimumCm,
                 command.HipMaximumCm,
-                command.CapacityMl,
+                command.ManufacturerStatedAbsorbencyMl,
+                command.FitMeasurementBasis,
+                command.AbsorbencyBasisMethod,
+                command.AbsorbencySource,
                 command.LengthMm,
                 command.WidthMm,
                 command.WeightGrams,
@@ -695,29 +839,20 @@ internal sealed class CatalogueSubmissions(
         {
             submission.UpdateSpecifications(
                 command.ProposedProductType,
-                command.ProposedManufacturerSize,
-                command.ProposedWaistMinimumCm,
-                command.ProposedWaistMaximumCm,
-                command.ProposedBackingType,
-                command.ProposedFastenerType,
-                command.ProposedWaistbandStyle,
-                command.ProposedFragranceType,
-                command.ProposedQuantityPerPack,
                 command.ProposedPackagingType,
                 command.ProposedProductFamily,
                 command.ProposedDescription,
+                command.ProposedDescriptionVisibility,
                 command.ProposedProductStatus,
                 command.ProposedOfficialWebsiteUrl,
-                command.SharedPrintDesign,
+                command.SharedAppearance,
                 command.SharedPrimaryColour,
-                command.SharedSecondaryColours,
                 command.SharedWetnessIndicator,
                 command.SharedStandingLeakGuards,
-                command.SharedInnerLeakGuards,
-                command.SharedElasticWaistbandFront,
-                command.SharedElasticWaistbandRear,
+                command.SharedWaistbandStyle,
+                command.SharedFragrance,
                 command.SharedLatexFree,
-                command.SharedChlorineFree,
+                command.SharedDesignedFor,
                 command.SharedFastenerCount,
                 command.SharedConstructionNotes);
         }
@@ -834,6 +969,167 @@ internal sealed class CatalogueSubmissions(
             submission.ProposedProductName,
             submission.ProposedVariantName ?? "Multiple variants",
             destinations);
+    }
+
+    public async Task<CatalogueSubmissionImagesWorkspace> GetImagesAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireModeratorAsync(actor, cancellationToken);
+
+        _ = await GetSubmissionAsync(submissionId, cancellationToken);
+
+        var images = (await db.CatalogueSubmissionImages
+            .AsNoTracking()
+            .Where(value => value.SubmissionId == submissionId)
+            .OrderBy(value => value.Role)
+            .ThenBy(value => value.CreatedAtUtc)
+            .ToListAsync(cancellationToken))
+            .Select(ToImageReceipt)
+            .ToList();
+
+        return new CatalogueSubmissionImagesWorkspace(submissionId, images);
+    }
+
+    public async Task<CatalogueSubmissionImageReceipt> AddImageAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        AddCatalogueSubmissionImage command,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireModeratorAsync(actor, cancellationToken);
+
+        var submission = await GetSubmissionAsync(submissionId, cancellationToken);
+        EnsureDraftEditable(submission);
+        ValidateImageUpload(command);
+
+        var existing = command.Role == CatalogueSubmissionImageRole.Other
+            ? null
+            : await db.CatalogueSubmissionImages
+                .SingleOrDefaultAsync(
+                    value => value.SubmissionId == submissionId && value.Role == command.Role,
+                    cancellationToken);
+
+        var extension = command.ContentType switch
+        {
+            "image/jpeg" => ".jpg",
+            "image/png" => ".png",
+            "image/webp" => ".webp",
+            _ => throw new ArgumentException("Only JPEG, PNG and WebP images are supported.", nameof(command))
+        };
+
+        var storageKey = $"{submissionId:N}/{Guid.NewGuid():N}{extension}";
+        var image = new CatalogueSubmissionImage(
+            submissionId,
+            command.Role,
+            storageKey,
+            command.OriginalFileName,
+            command.ContentType,
+            command.FileSizeBytes,
+            command.SourceType,
+            command.SourceUrl,
+            command.SourceNotes,
+            command.PermissionStatus,
+            command.PermissionEvidence);
+
+        try
+        {
+            await imageStorage.SaveAsync(storageKey, command.Content, cancellationToken);
+
+            if (existing is not null)
+                db.CatalogueSubmissionImages.Remove(existing);
+
+            db.CatalogueSubmissionImages.Add(image);
+            await db.SaveChangesAsync(cancellationToken);
+
+            if (existing is not null)
+                await imageStorage.DeleteAsync(existing.StorageKey, cancellationToken);
+
+            return ToImageReceipt(image);
+        }
+        catch
+        {
+            await imageStorage.DeleteAsync(storageKey, cancellationToken);
+            throw;
+        }
+    }
+
+    public async Task<CatalogueSubmissionImageReceipt> UpdateImageMetadataAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        Guid imageId,
+        UpdateCatalogueSubmissionImageMetadata command,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireModeratorAsync(actor, cancellationToken);
+
+        var submission = await GetSubmissionAsync(submissionId, cancellationToken);
+        EnsureImageMetadataEditable(submission);
+
+        var image = await db.CatalogueSubmissionImages
+            .SingleOrDefaultAsync(
+                value => value.Id == imageId && value.SubmissionId == submissionId,
+                cancellationToken)
+            ?? throw new KeyNotFoundException("The catalogue submission image was not found.");
+
+        image.UpdateMetadata(
+            command.SourceType,
+            command.SourceUrl,
+            command.SourceNotes,
+            command.PermissionStatus,
+            command.PermissionEvidence);
+
+        await db.SaveChangesAsync(cancellationToken);
+        return ToImageReceipt(image);
+    }
+
+    public async Task RemoveImageAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        Guid imageId,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireModeratorAsync(actor, cancellationToken);
+
+        var submission = await GetSubmissionAsync(submissionId, cancellationToken);
+        EnsureDraftEditable(submission);
+
+        var image = await db.CatalogueSubmissionImages
+            .SingleOrDefaultAsync(
+                value => value.Id == imageId && value.SubmissionId == submissionId,
+                cancellationToken)
+            ?? throw new KeyNotFoundException("The catalogue submission image was not found.");
+
+        db.CatalogueSubmissionImages.Remove(image);
+        await db.SaveChangesAsync(cancellationToken);
+        await imageStorage.DeleteAsync(image.StorageKey, cancellationToken);
+    }
+
+    public async Task<CatalogueSubmissionImageContent?> GetImageContentAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        Guid imageId,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireModeratorAsync(actor, cancellationToken);
+
+        var image = await db.CatalogueSubmissionImages
+            .AsNoTracking()
+            .SingleOrDefaultAsync(
+                value => value.Id == imageId && value.SubmissionId == submissionId,
+                cancellationToken);
+
+        if (image is null)
+            return null;
+
+        var stream = await imageStorage.OpenReadAsync(image.StorageKey, cancellationToken);
+        return stream is null
+            ? null
+            : new CatalogueSubmissionImageContent(
+                stream,
+                image.ContentType,
+                image.OriginalFileName);
     }
 
     public async Task<CatalogueSubmissionVerificationWorkspace> GetVerificationWorkspaceAsync(
@@ -1163,7 +1459,10 @@ internal sealed class CatalogueSubmissions(
                         size.WaistMaximumCm,
                         size.HipMinimumCm,
                         size.HipMaximumCm,
-                        size.CapacityMl,
+                        size.ManufacturerStatedAbsorbencyMl,
+                        size.FitMeasurementBasis,
+                        size.AbsorbencyBasisMethod,
+                        size.AbsorbencySource,
                         size.LengthMm,
                         size.WidthMm,
                         size.WeightGrams,
@@ -1174,20 +1473,16 @@ internal sealed class CatalogueSubmissions(
 
                 return new CreateCanonicalProductVariant(
                     variant.Name ?? submission.ProposedProductName,
-                    overrideValue?.BackingType ?? submission.ProposedBackingType ?? BackingType.Unknown,
-                    overrideValue?.FastenerType ?? submission.ProposedFastenerType ?? FastenerType.Unknown,
-                    overrideValue?.PrintDesign ?? submission.SharedPrintDesign,
+                    overrideValue?.BackingType ?? BackingType.Unknown,
+                    overrideValue?.FastenerType ?? FastenerType.Unknown,
+                    ParseAppearance(overrideValue?.PrintDesign ?? submission.SharedPrintDesign),
                     overrideValue?.PrimaryColour ?? submission.SharedPrimaryColour,
-                    overrideValue?.SecondaryColours ?? submission.SharedSecondaryColours,
                     overrideValue?.HasWetnessIndicator ?? submission.SharedWetnessIndicator,
                     overrideValue?.HasStandingLeakGuards ?? submission.SharedStandingLeakGuards,
-                    overrideValue?.HasInnerLeakGuards ?? submission.SharedInnerLeakGuards,
-                    overrideValue?.HasElasticWaistbandFront ?? submission.SharedElasticWaistbandFront,
-                    overrideValue?.HasElasticWaistbandRear ?? submission.SharedElasticWaistbandRear,
-                    overrideValue?.WaistbandStyle ?? submission.ProposedWaistbandStyle ?? WaistbandStyle.Unknown,
-                    overrideValue?.Fragrance ?? submission.ProposedFragranceType ?? FragranceType.Unknown,
+                    overrideValue?.WaistbandStyle ?? submission.SharedWaistbandStyle ?? WaistbandStyle.Unknown,
+                    overrideValue?.Fragrance ?? submission.SharedFragrance ?? FragranceType.Unknown,
                     overrideValue?.IsLatexFree ?? submission.SharedLatexFree,
-                    overrideValue?.IsChlorineFree ?? submission.SharedChlorineFree,
+                    overrideValue?.DesignedFor ?? submission.SharedDesignedFor,
                     overrideValue?.FastenerCount ?? submission.SharedFastenerCount,
                     overrideValue?.ConstructionNotes ?? submission.SharedConstructionNotes,
                     sizes);
@@ -1216,8 +1511,16 @@ internal sealed class CatalogueSubmissions(
                 submission.Id.ToString(),
                 submission.ProposedProductFamily,
                 submission.ProposedDescription,
-                submission.ProposedOfficialWebsiteUrl),
+                submission.ProposedOfficialWebsiteUrl,
+                submission.ProposedDescriptionVisibility),
             cancellationToken);
+
+        var submissionImages = await db.CatalogueSubmissionImages
+            .Where(value => value.SubmissionId == submission.Id && value.ProductId == null)
+            .ToListAsync(cancellationToken);
+
+        foreach (var image in submissionImages)
+            image.PublishToProduct(canonicalReceipt.ProductId);
 
         submission.Publish(
             canonicalReceipt.ProductId);
@@ -1439,6 +1742,40 @@ internal sealed class CatalogueSubmissions(
             verification.PermissionTerms,
             verification.VerifiedAtUtc);
 
+    private static void ValidateImageUpload(AddCatalogueSubmissionImage command)
+    {
+        if (!Enum.IsDefined(command.Role))
+            throw new ArgumentException("The image role is invalid.", nameof(command));
+
+        if (!Enum.IsDefined(command.SourceType))
+            throw new ArgumentException("The image source type is invalid.", nameof(command));
+
+        if (!Enum.IsDefined(command.PermissionStatus))
+            throw new ArgumentException("The image permission status is invalid.", nameof(command));
+
+        if (command.FileSizeBytes is <= 0 or > 15 * 1024 * 1024)
+            throw new ArgumentException("Images must be greater than zero and no larger than 15 MB.", nameof(command));
+
+        if (string.IsNullOrWhiteSpace(command.OriginalFileName))
+            throw new ArgumentException("An image file name is required.", nameof(command));
+
+        if (command.OriginalFileName.Trim().Length > 255)
+            throw new ArgumentException("Image file names must be 255 characters or fewer.", nameof(command));
+
+        if (command.ContentType is not "image/jpeg" and not "image/png" and not "image/webp")
+            throw new ArgumentException("Only JPEG, PNG and WebP images are supported.", nameof(command));
+    }
+
+    private static void EnsureImageMetadataEditable(CatalogueSubmission submission)
+    {
+        if (submission.Status is not CatalogueSubmissionStatus.Draft and
+            not CatalogueSubmissionStatus.NeedsChanges and
+            not CatalogueSubmissionStatus.Published)
+            throw new CatalogueValidationException(
+                "status",
+                "Image rights metadata can be edited while a submission is being prepared or after publication.");
+    }
+
     private static void EnsureDraftEditable(CatalogueSubmission submission)
     {
         if (submission.Status is not CatalogueSubmissionStatus.Draft and not CatalogueSubmissionStatus.NeedsChanges)
@@ -1457,7 +1794,10 @@ internal sealed class CatalogueSubmissions(
             size.WaistMaximumCm,
             size.HipMinimumCm,
             size.HipMaximumCm,
-            size.CapacityMl,
+            size.ManufacturerStatedAbsorbencyMl,
+            size.FitMeasurementBasis,
+            size.AbsorbencyBasisMethod,
+            size.AbsorbencySource,
             size.LengthMm,
             size.WidthMm,
             size.WeightGrams,
@@ -1472,7 +1812,7 @@ internal sealed class CatalogueSubmissions(
             "manufacturerSize" => "manufacturerSize",
             "waistMinimumCm" or "waistMaximumCm" => "waist",
             "hipMinimumCm" or "hipMaximumCm" => "hip",
-            "capacityMl" => "capacity",
+            "manufacturerStatedAbsorbencyMl" => "absorbency",
             "lengthMm" => "length",
             "widthMm" => "width",
             "weightGrams" => "weight",
@@ -1496,20 +1836,54 @@ internal sealed class CatalogueSubmissions(
             value.VariantId,
             value.BackingType,
             value.FastenerType,
-            value.PrintDesign,
-            value.PrimaryColour,
-            value.SecondaryColours,
+            ParseAppearance(value.PrintDesign),
+            ParseColour(value.PrimaryColour),
             value.HasWetnessIndicator,
             value.HasStandingLeakGuards,
-            value.HasInnerLeakGuards,
-            value.HasElasticWaistbandFront,
-            value.HasElasticWaistbandRear,
             value.WaistbandStyle,
             value.Fragrance,
             value.IsLatexFree,
-            value.IsChlorineFree,
+            ParseDesignedFor(value.DesignedFor),
             value.FastenerCount,
             value.ConstructionNotes);
+
+    private static CatalogueVariantColour? ParseColour(string? value) =>
+        Enum.TryParse<CatalogueVariantColour>(value, true, out var parsed) && Enum.IsDefined(parsed)
+            ? parsed
+            : null;
+
+    private static CatalogueVariantDesignedFor? ParseDesignedFor(string? value) =>
+        Enum.TryParse<CatalogueVariantDesignedFor>(value, true, out var parsed) && Enum.IsDefined(parsed)
+            ? parsed
+            : null;
+
+    private static CatalogueVariantAppearance? ParseAppearance(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
+
+        return Enum.TryParse<CatalogueVariantAppearance>(value, true, out var parsed) && Enum.IsDefined(parsed)
+            ? parsed
+            : CatalogueVariantAppearance.Printed;
+    }
+
+    private static CatalogueSubmissionImageReceipt ToImageReceipt(CatalogueSubmissionImage image) =>
+        new(
+            image.Id,
+            image.SubmissionId,
+            image.Role,
+            image.OriginalFileName,
+            image.ContentType,
+            image.FileSizeBytes,
+            image.SourceType,
+            image.SourceUrl,
+            image.SourceNotes,
+            image.PermissionStatus,
+            image.PermissionEvidence,
+            image.Visibility,
+            $"/api/v1/catalogue-submissions/{image.SubmissionId}/images/{image.Id}/content",
+            image.CreatedAtUtc,
+            image.UpdatedAtUtc);
 
     private static CatalogueSubmissionReceipt ToReceipt(
         CatalogueSubmission submission) =>
@@ -1527,27 +1901,18 @@ internal sealed class CatalogueSubmissions(
             submission.ProposedProductType,
             submission.ProposedProductFamily,
             submission.ProposedDescription,
+            submission.ProposedDescriptionVisibility,
             submission.ProposedProductStatus,
             submission.ProposedOfficialWebsiteUrl,
-            submission.ProposedManufacturerSize,
-            submission.ProposedWaistMinimumCm,
-            submission.ProposedWaistMaximumCm,
-            submission.ProposedBackingType,
-            submission.ProposedFastenerType,
-            submission.ProposedWaistbandStyle,
-            submission.ProposedFragranceType,
-            submission.ProposedQuantityPerPack,
             submission.ProposedPackagingType,
-            submission.SharedPrintDesign,
+            ParseAppearance(submission.SharedPrintDesign),
             submission.SharedPrimaryColour,
-            submission.SharedSecondaryColours,
             submission.SharedWetnessIndicator,
             submission.SharedStandingLeakGuards,
-            submission.SharedInnerLeakGuards,
-            submission.SharedElasticWaistbandFront,
-            submission.SharedElasticWaistbandRear,
+            submission.SharedWaistbandStyle,
+            submission.SharedFragrance,
             submission.SharedLatexFree,
-            submission.SharedChlorineFree,
+            submission.SharedDesignedFor,
             submission.SharedFastenerCount,
             submission.SharedConstructionNotes,
             submission.Notes,

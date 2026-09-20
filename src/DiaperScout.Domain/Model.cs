@@ -8,9 +8,12 @@ public abstract class Entity
 
 public enum ProductType { Tape, PullUp, Pad, Booster, AllInOne, Other }
 public enum ProductStatus { Current, Discontinued, Prototype }
-public enum BackingType { Unknown, Plastic, Cloth, Hybrid }
-public enum FastenerType { Unknown, Tape, HookAndLoop, PullUp }
-public enum WaistbandStyle { Unknown, None, Front, Rear, FrontAndRear }
+public enum BackingType { Unknown, Plastic, Cloth, Hybrid, Other }
+public enum FastenerType { Unknown, AdhesiveTape, HookAndLoop, Other }
+public enum CatalogueVariantAppearance { Unknown, Plain, Printed }
+public enum CatalogueVariantColour { Unknown, White, Black, Grey, Silver, Beige, Brown, Red, Orange, Yellow, Green, Blue, Purple, Pink, Clear, Multicolour, Other }
+public enum CatalogueVariantDesignedFor { Unknown, Baby, Child, Youth, Adult, Unisex, Other }
+public enum WaistbandStyle { Unknown, NoElasticWaistband, FrontElastic, RearElastic, FrontAndRearElastic, AllAroundElastic, Other }
 public enum FragranceType { Unknown, None, Fragranced }
 public enum PackagingType { Bag, Box, Case }
 public enum IdentifierType { Gtin, Other }
@@ -24,7 +27,7 @@ public enum EvidenceType { Photograph, BarcodeImage, Document, Measurement, Note
 public enum EditorialOutcome { Accepted, Rejected, RequestAdditionalEvidence, Deferred }
 public enum KnowledgeGapType { Availability, NewProduct, ConflictingEvidence, Correction, RegionalVariation, Specification }
 public enum DiscoveryTaskState { Open, Accepted, Resolved, PartiallyResolved, Unresolved, Invalid, Closed }
-public enum CatalogueVariantOverrideAttribute { BackingType, FastenerType, PrintDesign, PrimaryColour, SecondaryColours, WetnessIndicator, StandingLeakGuards, InnerLeakGuards, ElasticWaistbandFront, ElasticWaistbandRear, WaistbandStyle, Fragrance, LatexFree, ChlorineFree, NumberOfFasteners, ConstructionNotes }
+public enum CatalogueVariantOverrideAttribute { BackingType, FastenerType, Appearance, PrimaryColour, WetnessIndicator, StandingLeakGuards, WaistbandStyle, Fragrance, LatexFree, DesignedFor, FastenerCount, ConstructionNotes }
 
 public enum CatalogueSubmissionStatus
 {
@@ -42,7 +45,14 @@ public enum CatalogueSubmissionSource
     Moderator,
     Explorer,
     Manufacturer,
+    BulkImport,
     Other
+}
+
+public enum CatalogueContentVisibility
+{
+    Public,
+    ModeratorOnly
 }
 
 public enum CatalogueVerificationArea
@@ -59,6 +69,37 @@ public enum CatalogueVerificationStatus
     Verified,
     Inherited,
     Exception
+}
+
+public enum CatalogueSubmissionImageRole
+{
+    PackFront,
+    PackBack,
+    ProductFront,
+    ProductRear,
+    ProductInterior,
+    ProductDetail,
+    SizeMeasurement,
+    Other
+}
+
+public enum CatalogueImageSourceType
+{
+    Unknown,
+    Manufacturer,
+    Retailer,
+    OfficialProductWebsite,
+    UserCommunity,
+    Other
+}
+
+public enum CatalogueImagePermissionStatus
+{
+    Unknown,
+    PermissionGranted,
+    PermissionNotRequired,
+    PermissionRequested,
+    PermissionDenied
 }
 
 public enum AffiliateProgrammeStatus
@@ -104,7 +145,8 @@ public sealed class Product : Entity
         ProductStatus status = ProductStatus.Current,
         string? family = null,
         string? description = null,
-        string? officialWebsiteUrl = null)
+        string? officialWebsiteUrl = null,
+        CatalogueContentVisibility descriptionVisibility = CatalogueContentVisibility.Public)
     {
         ManufacturerId = manufacturerId;
         BrandId = brandId;
@@ -115,6 +157,7 @@ public sealed class Product : Entity
         Family = string.IsNullOrWhiteSpace(family) ? null : family.Trim();
         Description = string.IsNullOrWhiteSpace(description) ? null : description.Trim();
         OfficialWebsiteUrl = string.IsNullOrWhiteSpace(officialWebsiteUrl) ? null : officialWebsiteUrl.Trim();
+        DescriptionVisibility = descriptionVisibility;
     }
     public Guid ManufacturerId { get; private set; }
     public Guid? BrandId { get; private set; }
@@ -124,8 +167,12 @@ public sealed class Product : Entity
     public ProductType ProductType { get; private set; }
     public ProductStatus Status { get; private set; }
     public string? Description { get; private set; }
+    public CatalogueContentVisibility DescriptionVisibility { get; private set; }
     public string? OfficialWebsiteUrl { get; private set; }
     public ICollection<ProductVariant> Variants { get; } = new List<ProductVariant>();
+
+    public void SetDescriptionVisibility(CatalogueContentVisibility visibility) =>
+        DescriptionVisibility = visibility;
 }
 
 public sealed class ProductVariant : Entity
@@ -136,18 +183,14 @@ public sealed class ProductVariant : Entity
         string name,
         BackingType backingType = BackingType.Unknown,
         FastenerType fastenerType = FastenerType.Unknown,
-        string? printDesign = null,
+        CatalogueVariantAppearance? appearance = null,
         string? primaryColour = null,
-        string? secondaryColours = null,
         bool? hasWetnessIndicator = null,
         bool? hasStandingLeakGuards = null,
-        bool? hasInnerLeakGuards = null,
-        bool? hasElasticWaistbandFront = null,
-        bool? hasElasticWaistbandRear = null,
         WaistbandStyle waistbandStyle = WaistbandStyle.Unknown,
         FragranceType fragrance = FragranceType.Unknown,
         bool? isLatexFree = null,
-        bool? isChlorineFree = null,
+        string? designedFor = null,
         int? fastenerCount = null,
         string? constructionNotes = null)
     {
@@ -155,18 +198,14 @@ public sealed class ProductVariant : Entity
         Name = name;
         BackingType = backingType;
         FastenerType = fastenerType;
-        PrintDesign = string.IsNullOrWhiteSpace(printDesign) ? null : printDesign.Trim();
+        PrintDesign = appearance?.ToString();
         PrimaryColour = string.IsNullOrWhiteSpace(primaryColour) ? null : primaryColour.Trim();
-        SecondaryColours = string.IsNullOrWhiteSpace(secondaryColours) ? null : secondaryColours.Trim();
         HasWetnessIndicator = hasWetnessIndicator;
         HasStandingLeakGuards = hasStandingLeakGuards;
-        HasInnerLeakGuards = hasInnerLeakGuards;
-        HasElasticWaistbandFront = hasElasticWaistbandFront;
-        HasElasticWaistbandRear = hasElasticWaistbandRear;
         WaistbandStyle = waistbandStyle;
         Fragrance = fragrance;
         IsLatexFree = isLatexFree;
-        IsChlorineFree = isChlorineFree;
+        DesignedFor = string.IsNullOrWhiteSpace(designedFor) ? null : designedFor.Trim();
         FastenerCount = fastenerCount;
         ConstructionNotes = string.IsNullOrWhiteSpace(constructionNotes) ? null : constructionNotes.Trim();
     }
@@ -176,16 +215,12 @@ public sealed class ProductVariant : Entity
     public FastenerType FastenerType { get; private set; }
     public string? PrintDesign { get; private set; }
     public string? PrimaryColour { get; private set; }
-    public string? SecondaryColours { get; private set; }
     public bool? HasWetnessIndicator { get; private set; }
     public bool? HasStandingLeakGuards { get; private set; }
-    public bool? HasInnerLeakGuards { get; private set; }
-    public bool? HasElasticWaistbandFront { get; private set; }
-    public bool? HasElasticWaistbandRear { get; private set; }
     public WaistbandStyle WaistbandStyle { get; private set; }
     public FragranceType Fragrance { get; private set; }
     public bool? IsLatexFree { get; private set; }
-    public bool? IsChlorineFree { get; private set; }
+    public string? DesignedFor { get; private set; }
     public int? FastenerCount { get; private set; }
     public string? ConstructionNotes { get; private set; }
     public ICollection<SizeVariant> Sizes { get; } = new List<SizeVariant>();
@@ -202,7 +237,10 @@ public sealed class SizeVariant : Entity
         int? waistMaximumCm = null,
         int? hipMinimumCm = null,
         int? hipMaximumCm = null,
-        int? capacityMl = null,
+        int? manufacturerStatedAbsorbencyMl = null,
+        string? fitMeasurementBasis = null,
+        string? absorbencyBasisMethod = null,
+        string? absorbencySource = null,
         int? lengthMm = null,
         int? widthMm = null,
         int? weightGrams = null)
@@ -218,7 +256,7 @@ public sealed class SizeVariant : Entity
 
         ValidateRange(waistMinimumCm, waistMaximumCm, "waist");
         ValidateRange(hipMinimumCm, hipMaximumCm, "hip");
-        ValidateNonNegative(capacityMl, nameof(capacityMl));
+        ValidateNonNegative(manufacturerStatedAbsorbencyMl, nameof(manufacturerStatedAbsorbencyMl));
         ValidateNonNegative(lengthMm, nameof(lengthMm));
         ValidateNonNegative(widthMm, nameof(widthMm));
         ValidateNonNegative(weightGrams, nameof(weightGrams));
@@ -229,7 +267,10 @@ public sealed class SizeVariant : Entity
         WaistMaximumCm = waistMaximumCm;
         HipMinimumCm = hipMinimumCm;
         HipMaximumCm = hipMaximumCm;
-        CapacityMl = capacityMl;
+        FitMeasurementBasis = NormaliseText(fitMeasurementBasis);
+        AbsorbencyBasisMethod = NormaliseText(absorbencyBasisMethod);
+        AbsorbencySource = NormaliseText(absorbencySource);
+        ManufacturerStatedAbsorbencyMl = manufacturerStatedAbsorbencyMl;
         LengthMm = lengthMm;
         WidthMm = widthMm;
         WeightGrams = weightGrams;
@@ -241,11 +282,16 @@ public sealed class SizeVariant : Entity
     public int? WaistMaximumCm { get; private set; }
     public int? HipMinimumCm { get; private set; }
     public int? HipMaximumCm { get; private set; }
-    public int? CapacityMl { get; private set; }
+    public int? ManufacturerStatedAbsorbencyMl { get; private set; }
+    public string? FitMeasurementBasis { get; private set; }
+    public string? AbsorbencyBasisMethod { get; private set; }
+    public string? AbsorbencySource { get; private set; }
     public int? LengthMm { get; private set; }
     public int? WidthMm { get; private set; }
     public int? WeightGrams { get; private set; }
     public ICollection<PackType> PackTypes { get; } = new List<PackType>();
+
+    private static string? NormaliseText(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
     private static void ValidateRange(int? minimum, int? maximum, string name)
     {
@@ -473,6 +519,142 @@ public sealed class CatalogueAuditRecord : Entity
     public string? CorrelationId { get; private set; }
 }
 
+public sealed class CatalogueSubmissionImage : Entity
+{
+    private CatalogueSubmissionImage()
+    {
+        StorageKey = null!;
+        OriginalFileName = null!;
+        ContentType = null!;
+        SourceType = CatalogueImageSourceType.Other;
+        PermissionStatus = CatalogueImagePermissionStatus.Unknown;
+    }
+
+    public CatalogueSubmissionImage(
+        Guid submissionId,
+        CatalogueSubmissionImageRole role,
+        string storageKey,
+        string originalFileName,
+        string contentType,
+        long fileSizeBytes,
+        CatalogueImageSourceType sourceType,
+        string? sourceUrl = null,
+        string? sourceNotes = null,
+        CatalogueImagePermissionStatus permissionStatus = CatalogueImagePermissionStatus.Unknown,
+        string? permissionEvidence = null)
+    {
+        if (submissionId == Guid.Empty)
+            throw new ArgumentException("A catalogue submission is required.", nameof(submissionId));
+
+        if (!Enum.IsDefined(role))
+            throw new ArgumentException("The image role is invalid.", nameof(role));
+
+        if (string.IsNullOrWhiteSpace(storageKey))
+            throw new ArgumentException("An image storage key is required.", nameof(storageKey));
+
+        if (string.IsNullOrWhiteSpace(originalFileName))
+            throw new ArgumentException("An original file name is required.", nameof(originalFileName));
+
+        if (string.IsNullOrWhiteSpace(contentType))
+            throw new ArgumentException("An image content type is required.", nameof(contentType));
+
+        if (fileSizeBytes <= 0)
+            throw new ArgumentOutOfRangeException(nameof(fileSizeBytes), "Image file size must be greater than zero.");
+
+        if (!Enum.IsDefined(sourceType))
+            throw new ArgumentException("The image source type is invalid.", nameof(sourceType));
+
+        if (!Enum.IsDefined(permissionStatus))
+            throw new ArgumentException("The image permission status is invalid.", nameof(permissionStatus));
+
+        SubmissionId = submissionId;
+        Role = role;
+        StorageKey = storageKey.Trim();
+        OriginalFileName = originalFileName.Trim();
+        ContentType = contentType.Trim();
+        FileSizeBytes = fileSizeBytes;
+        SourceType = sourceType;
+        SourceUrl = NormaliseUrl(sourceUrl);
+        SourceNotes = NormaliseText(sourceNotes);
+        PermissionStatus = permissionStatus;
+        PermissionEvidence = NormaliseText(permissionEvidence);
+        Visibility = CalculateVisibility(sourceType, permissionStatus);
+        CreatedAtUtc = DateTimeOffset.UtcNow;
+        UpdatedAtUtc = CreatedAtUtc;
+    }
+
+    public Guid SubmissionId { get; private set; }
+    public Guid? ProductId { get; private set; }
+    public CatalogueSubmissionImageRole Role { get; private set; }
+    public string StorageKey { get; private set; }
+    public string OriginalFileName { get; private set; }
+    public string ContentType { get; private set; }
+    public long FileSizeBytes { get; private set; }
+    public CatalogueImageSourceType SourceType { get; private set; }
+    public string? SourceUrl { get; private set; }
+    public string? SourceNotes { get; private set; }
+    public CatalogueImagePermissionStatus PermissionStatus { get; private set; }
+    public string? PermissionEvidence { get; private set; }
+    public CatalogueContentVisibility Visibility { get; private set; }
+    public DateTimeOffset CreatedAtUtc { get; private set; }
+    public DateTimeOffset UpdatedAtUtc { get; private set; }
+
+    public void UpdateMetadata(
+        CatalogueImageSourceType sourceType,
+        string? sourceUrl,
+        string? sourceNotes,
+        CatalogueImagePermissionStatus permissionStatus,
+        string? permissionEvidence)
+    {
+        if (!Enum.IsDefined(sourceType))
+            throw new ArgumentException("The image source type is invalid.", nameof(sourceType));
+
+        if (!Enum.IsDefined(permissionStatus))
+            throw new ArgumentException("The image permission status is invalid.", nameof(permissionStatus));
+
+        SourceType = sourceType;
+        SourceUrl = NormaliseUrl(sourceUrl);
+        SourceNotes = NormaliseText(sourceNotes);
+        PermissionStatus = permissionStatus;
+        PermissionEvidence = NormaliseText(permissionEvidence);
+        Visibility = CalculateVisibility(sourceType, permissionStatus);
+        UpdatedAtUtc = DateTimeOffset.UtcNow;
+    }
+
+    public void PublishToProduct(Guid productId)
+    {
+        if (productId == Guid.Empty)
+            throw new ArgumentException("A canonical product is required.", nameof(productId));
+
+        ProductId = productId;
+        Visibility = CalculateVisibility(SourceType, PermissionStatus);
+        UpdatedAtUtc = DateTimeOffset.UtcNow;
+    }
+
+    private static CatalogueContentVisibility CalculateVisibility(
+        CatalogueImageSourceType sourceType,
+        CatalogueImagePermissionStatus permissionStatus) =>
+        sourceType != CatalogueImageSourceType.Unknown &&
+        permissionStatus is CatalogueImagePermissionStatus.PermissionGranted or CatalogueImagePermissionStatus.PermissionNotRequired
+            ? CatalogueContentVisibility.Public
+            : CatalogueContentVisibility.ModeratorOnly;
+
+    private static string? NormaliseText(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+    private static string? NormaliseUrl(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
+
+        if (!Uri.TryCreate(value.Trim(), UriKind.Absolute, out var uri) ||
+            (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+            throw new ArgumentException("Image source URL must be an absolute HTTP or HTTPS URL.", nameof(value));
+
+        return uri.AbsoluteUri;
+    }
+}
+
 /// <summary>
 /// A proposed catalogue entry being researched and verified before it can become
 /// a canonical Product. Submission data is intentionally separate from canonical
@@ -596,25 +778,20 @@ public sealed class CatalogueSubmissionVariantOverride : Entity
     public FastenerType? FastenerType { get; private set; }
     public string? PrintDesign { get; private set; }
     public string? PrimaryColour { get; private set; }
-    public string? SecondaryColours { get; private set; }
     public bool? HasWetnessIndicator { get; private set; }
     public bool? HasStandingLeakGuards { get; private set; }
-    public bool? HasInnerLeakGuards { get; private set; }
-    public bool? HasElasticWaistbandFront { get; private set; }
-    public bool? HasElasticWaistbandRear { get; private set; }
     public WaistbandStyle? WaistbandStyle { get; private set; }
     public FragranceType? Fragrance { get; private set; }
     public bool? IsLatexFree { get; private set; }
-    public bool? IsChlorineFree { get; private set; }
+    public string? DesignedFor { get; private set; }
     public int? FastenerCount { get; private set; }
     public string? ConstructionNotes { get; private set; }
 
     public bool HasAnyOverride =>
         BackingType.HasValue || FastenerType.HasValue || PrintDesign is not null || PrimaryColour is not null ||
-        SecondaryColours is not null || HasWetnessIndicator.HasValue || HasStandingLeakGuards.HasValue ||
-        HasInnerLeakGuards.HasValue || HasElasticWaistbandFront.HasValue || HasElasticWaistbandRear.HasValue ||
-        WaistbandStyle.HasValue || Fragrance.HasValue || IsLatexFree.HasValue || IsChlorineFree.HasValue ||
-        FastenerCount.HasValue || ConstructionNotes is not null;
+        HasWetnessIndicator.HasValue || HasStandingLeakGuards.HasValue || WaistbandStyle.HasValue ||
+        Fragrance.HasValue || IsLatexFree.HasValue || DesignedFor is not null || FastenerCount.HasValue ||
+        ConstructionNotes is not null;
 
     public void Set(CatalogueVariantOverrideAttribute attribute, string? value)
     {
@@ -624,31 +801,23 @@ public sealed class CatalogueSubmissionVariantOverride : Entity
                 BackingType = ParseEnum<BackingType>(value, attribute); break;
             case CatalogueVariantOverrideAttribute.FastenerType:
                 FastenerType = ParseEnum<FastenerType>(value, attribute); break;
-            case CatalogueVariantOverrideAttribute.PrintDesign:
-                PrintDesign = NormaliseText(value); break;
+            case CatalogueVariantOverrideAttribute.Appearance:
+                PrintDesign = ParseAppearance(value, attribute); break;
             case CatalogueVariantOverrideAttribute.PrimaryColour:
-                PrimaryColour = NormaliseText(value); break;
-            case CatalogueVariantOverrideAttribute.SecondaryColours:
-                SecondaryColours = NormaliseText(value); break;
+                PrimaryColour = ParseColour(value, attribute); break;
             case CatalogueVariantOverrideAttribute.WetnessIndicator:
                 HasWetnessIndicator = ParseBool(value, attribute); break;
             case CatalogueVariantOverrideAttribute.StandingLeakGuards:
                 HasStandingLeakGuards = ParseBool(value, attribute); break;
-            case CatalogueVariantOverrideAttribute.InnerLeakGuards:
-                HasInnerLeakGuards = ParseBool(value, attribute); break;
-            case CatalogueVariantOverrideAttribute.ElasticWaistbandFront:
-                HasElasticWaistbandFront = ParseBool(value, attribute); break;
-            case CatalogueVariantOverrideAttribute.ElasticWaistbandRear:
-                HasElasticWaistbandRear = ParseBool(value, attribute); break;
             case CatalogueVariantOverrideAttribute.WaistbandStyle:
                 WaistbandStyle = ParseEnum<WaistbandStyle>(value, attribute); break;
             case CatalogueVariantOverrideAttribute.Fragrance:
                 Fragrance = ParseEnum<FragranceType>(value, attribute); break;
             case CatalogueVariantOverrideAttribute.LatexFree:
                 IsLatexFree = ParseBool(value, attribute); break;
-            case CatalogueVariantOverrideAttribute.ChlorineFree:
-                IsChlorineFree = ParseBool(value, attribute); break;
-            case CatalogueVariantOverrideAttribute.NumberOfFasteners:
+            case CatalogueVariantOverrideAttribute.DesignedFor:
+                DesignedFor = ParseDesignedFor(value, attribute); break;
+            case CatalogueVariantOverrideAttribute.FastenerCount:
                 FastenerCount = ParseInt(value, attribute); break;
             case CatalogueVariantOverrideAttribute.ConstructionNotes:
                 ConstructionNotes = NormaliseText(value); break;
@@ -658,6 +827,30 @@ public sealed class CatalogueSubmissionVariantOverride : Entity
     }
 
     private static string? NormaliseText(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+    private static string? ParseAppearance(string? value, CatalogueVariantOverrideAttribute attribute)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return null;
+        return Enum.TryParse<CatalogueVariantAppearance>(value, true, out var parsed) && Enum.IsDefined(parsed)
+            ? parsed.ToString()
+            : throw new ArgumentException($"The value for {attribute} is invalid.", nameof(value));
+    }
+
+    private static string? ParseColour(string? value, CatalogueVariantOverrideAttribute attribute)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return null;
+        return Enum.TryParse<CatalogueVariantColour>(value, true, out var parsed) && Enum.IsDefined(parsed)
+            ? parsed.ToString()
+            : throw new ArgumentException($"The value for {attribute} is invalid.", nameof(value));
+    }
+
+    private static string? ParseDesignedFor(string? value, CatalogueVariantOverrideAttribute attribute)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return null;
+        return Enum.TryParse<CatalogueVariantDesignedFor>(value, true, out var parsed) && Enum.IsDefined(parsed)
+            ? parsed.ToString()
+            : throw new ArgumentException($"The value for {attribute} is invalid.", nameof(value));
+    }
 
     private static T? ParseEnum<T>(string? value, CatalogueVariantOverrideAttribute attribute) where T : struct, Enum
     {
@@ -698,7 +891,10 @@ public sealed class CatalogueSubmissionSizeVariant : Entity
         int? waistMaximumCm = null,
         int? hipMinimumCm = null,
         int? hipMaximumCm = null,
-        int? capacityMl = null,
+        int? manufacturerStatedAbsorbencyMl = null,
+        string? fitMeasurementBasis = null,
+        string? absorbencyBasisMethod = null,
+        string? absorbencySource = null,
         int? lengthMm = null,
         int? widthMm = null,
         int? weightGrams = null,
@@ -711,7 +907,7 @@ public sealed class CatalogueSubmissionSizeVariant : Entity
         ValidateManufacturerSize(manufacturerSize);
         ValidateRange(waistMinimumCm, waistMaximumCm, "waist");
         ValidateRange(hipMinimumCm, hipMaximumCm, "hip");
-        ValidateNonNegative(capacityMl, nameof(capacityMl));
+        ValidateNonNegative(manufacturerStatedAbsorbencyMl, nameof(manufacturerStatedAbsorbencyMl));
         ValidateNonNegative(lengthMm, nameof(lengthMm));
         ValidateNonNegative(widthMm, nameof(widthMm));
         ValidateNonNegative(weightGrams, nameof(weightGrams));
@@ -724,7 +920,10 @@ public sealed class CatalogueSubmissionSizeVariant : Entity
         WaistMaximumCm = waistMaximumCm;
         HipMinimumCm = hipMinimumCm;
         HipMaximumCm = hipMaximumCm;
-        CapacityMl = capacityMl;
+        FitMeasurementBasis = NormaliseText(fitMeasurementBasis);
+        AbsorbencyBasisMethod = NormaliseText(absorbencyBasisMethod);
+        AbsorbencySource = NormaliseText(absorbencySource);
+        ManufacturerStatedAbsorbencyMl = manufacturerStatedAbsorbencyMl;
         LengthMm = lengthMm;
         WidthMm = widthMm;
         WeightGrams = weightGrams;
@@ -740,7 +939,10 @@ public sealed class CatalogueSubmissionSizeVariant : Entity
     public int? WaistMaximumCm { get; private set; }
     public int? HipMinimumCm { get; private set; }
     public int? HipMaximumCm { get; private set; }
-    public int? CapacityMl { get; private set; }
+    public int? ManufacturerStatedAbsorbencyMl { get; private set; }
+    public string? FitMeasurementBasis { get; private set; }
+    public string? AbsorbencyBasisMethod { get; private set; }
+    public string? AbsorbencySource { get; private set; }
     public int? LengthMm { get; private set; }
     public int? WidthMm { get; private set; }
     public int? WeightGrams { get; private set; }
@@ -755,7 +957,10 @@ public sealed class CatalogueSubmissionSizeVariant : Entity
         int? waistMaximumCm,
         int? hipMinimumCm,
         int? hipMaximumCm,
-        int? capacityMl,
+        int? manufacturerStatedAbsorbencyMl,
+        string? fitMeasurementBasis,
+        string? absorbencyBasisMethod,
+        string? absorbencySource,
         int? lengthMm,
         int? widthMm,
         int? weightGrams,
@@ -765,7 +970,7 @@ public sealed class CatalogueSubmissionSizeVariant : Entity
         ValidateManufacturerSize(manufacturerSize);
         ValidateRange(waistMinimumCm, waistMaximumCm, "waist");
         ValidateRange(hipMinimumCm, hipMaximumCm, "hip");
-        ValidateNonNegative(capacityMl, nameof(capacityMl));
+        ValidateNonNegative(manufacturerStatedAbsorbencyMl, nameof(manufacturerStatedAbsorbencyMl));
         ValidateNonNegative(lengthMm, nameof(lengthMm));
         ValidateNonNegative(widthMm, nameof(widthMm));
         ValidateNonNegative(weightGrams, nameof(weightGrams));
@@ -777,7 +982,10 @@ public sealed class CatalogueSubmissionSizeVariant : Entity
         WaistMaximumCm = waistMaximumCm;
         HipMinimumCm = hipMinimumCm;
         HipMaximumCm = hipMaximumCm;
-        CapacityMl = capacityMl;
+        FitMeasurementBasis = NormaliseText(fitMeasurementBasis);
+        AbsorbencyBasisMethod = NormaliseText(absorbencyBasisMethod);
+        AbsorbencySource = NormaliseText(absorbencySource);
+        ManufacturerStatedAbsorbencyMl = manufacturerStatedAbsorbencyMl;
         LengthMm = lengthMm;
         WidthMm = widthMm;
         WeightGrams = weightGrams;
@@ -785,6 +993,8 @@ public sealed class CatalogueSubmissionSizeVariant : Entity
         Gtin = NormaliseGtin(gtin);
         UpdatedAtUtc = DateTimeOffset.UtcNow;
     }
+
+    private static string? NormaliseText(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
     private static void ValidateManufacturerSize(string value)
     {
@@ -944,37 +1154,20 @@ public sealed class CatalogueSubmission : Entity
     public ProductType? ProposedProductType { get; private set; }
     public string? ProposedProductFamily { get; private set; }
     public string? ProposedDescription { get; private set; }
+    public CatalogueContentVisibility ProposedDescriptionVisibility { get; private set; } = CatalogueContentVisibility.Public;
     public ProductStatus? ProposedProductStatus { get; private set; }
     public string? ProposedOfficialWebsiteUrl { get; private set; }
-
-    public string? ProposedManufacturerSize { get; private set; }
-
-    public int? ProposedWaistMinimumCm { get; private set; }
-
-    public int? ProposedWaistMaximumCm { get; private set; }
-
-    public BackingType? ProposedBackingType { get; private set; }
-
-    public FastenerType? ProposedFastenerType { get; private set; }
-
-    public WaistbandStyle? ProposedWaistbandStyle { get; private set; }
-
-    public FragranceType? ProposedFragranceType { get; private set; }
-
-    public int? ProposedQuantityPerPack { get; private set; }
 
     public PackagingType? ProposedPackagingType { get; private set; }
 
     public string? SharedPrintDesign { get; private set; }
     public string? SharedPrimaryColour { get; private set; }
-    public string? SharedSecondaryColours { get; private set; }
     public bool? SharedWetnessIndicator { get; private set; }
     public bool? SharedStandingLeakGuards { get; private set; }
-    public bool? SharedInnerLeakGuards { get; private set; }
-    public bool? SharedElasticWaistbandFront { get; private set; }
-    public bool? SharedElasticWaistbandRear { get; private set; }
+    public WaistbandStyle? SharedWaistbandStyle { get; private set; }
+    public FragranceType? SharedFragrance { get; private set; }
     public bool? SharedLatexFree { get; private set; }
-    public bool? SharedChlorineFree { get; private set; }
+    public string? SharedDesignedFor { get; private set; }
     public int? SharedFastenerCount { get; private set; }
     public string? SharedConstructionNotes { get; private set; }
 
@@ -985,6 +1178,8 @@ public sealed class CatalogueSubmission : Entity
     public DateTimeOffset CreatedAtUtc { get; private set; }
 
     public DateTimeOffset UpdatedAtUtc { get; private set; }
+
+    public ICollection<CatalogueSubmissionImage> Images { get; } = new List<CatalogueSubmissionImage>();
 
     public void UpdateProposal(
         string proposedManufacturerName,
@@ -1053,48 +1248,25 @@ public sealed class CatalogueSubmission : Entity
 
     public void UpdateSpecifications(
         ProductType? proposedProductType,
-        string? proposedManufacturerSize,
-        int? proposedWaistMinimumCm,
-        int? proposedWaistMaximumCm,
-        BackingType? proposedBackingType,
-        FastenerType? proposedFastenerType,
-        WaistbandStyle? proposedWaistbandStyle,
-        FragranceType? proposedFragranceType,
-        int? proposedQuantityPerPack,
         PackagingType? proposedPackagingType,
         string? proposedProductFamily = null,
         string? proposedDescription = null,
+        CatalogueContentVisibility proposedDescriptionVisibility = CatalogueContentVisibility.Public,
         ProductStatus? proposedProductStatus = null,
         string? proposedOfficialWebsiteUrl = null,
-        string? sharedPrintDesign = null,
+        CatalogueVariantAppearance? sharedAppearance = null,
         string? sharedPrimaryColour = null,
-        string? sharedSecondaryColours = null,
         bool? sharedWetnessIndicator = null,
         bool? sharedStandingLeakGuards = null,
-        bool? sharedInnerLeakGuards = null,
-        bool? sharedElasticWaistbandFront = null,
-        bool? sharedElasticWaistbandRear = null,
+        WaistbandStyle? sharedWaistbandStyle = null,
+        FragranceType? sharedFragrance = null,
         bool? sharedLatexFree = null,
-        bool? sharedChlorineFree = null,
+        string? sharedDesignedFor = null,
         int? sharedFastenerCount = null,
         string? sharedConstructionNotes = null)
     {
         if (Status is not CatalogueSubmissionStatus.Draft and not CatalogueSubmissionStatus.NeedsChanges)
             throw new InvalidOperationException("Only draft submissions or submissions needing changes can be edited.");
-
-        if (proposedWaistMinimumCm is < 0)
-            throw new ArgumentException("Minimum waist measurement cannot be negative.", nameof(proposedWaistMinimumCm));
-
-        if (proposedWaistMaximumCm is < 0)
-            throw new ArgumentException("Maximum waist measurement cannot be negative.", nameof(proposedWaistMaximumCm));
-
-        if (proposedWaistMinimumCm.HasValue &&
-            proposedWaistMaximumCm.HasValue &&
-            proposedWaistMinimumCm.Value > proposedWaistMaximumCm.Value)
-            throw new ArgumentException("Minimum waist measurement cannot exceed maximum waist measurement.", nameof(proposedWaistMinimumCm));
-
-        if (proposedQuantityPerPack is <= 0)
-            throw new ArgumentException("Quantity per pack must be greater than zero.", nameof(proposedQuantityPerPack));
 
         if (proposedProductStatus.HasValue && !Enum.IsDefined(proposedProductStatus.Value))
             throw new ArgumentException("The product status is invalid.", nameof(proposedProductStatus));
@@ -1109,31 +1281,20 @@ public sealed class CatalogueSubmission : Entity
         }
 
         ProposedProductType = proposedProductType;
-        ProposedManufacturerSize = string.IsNullOrWhiteSpace(proposedManufacturerSize)
-            ? null
-            : proposedManufacturerSize.Trim();
-        ProposedWaistMinimumCm = proposedWaistMinimumCm;
-        ProposedWaistMaximumCm = proposedWaistMaximumCm;
-        ProposedBackingType = proposedBackingType;
-        ProposedFastenerType = proposedFastenerType;
-        ProposedWaistbandStyle = proposedWaistbandStyle;
-        ProposedFragranceType = proposedFragranceType;
-        ProposedQuantityPerPack = proposedQuantityPerPack;
         ProposedPackagingType = proposedPackagingType;
         ProposedProductFamily = string.IsNullOrWhiteSpace(proposedProductFamily) ? null : proposedProductFamily.Trim();
         ProposedDescription = string.IsNullOrWhiteSpace(proposedDescription) ? null : proposedDescription.Trim();
+        ProposedDescriptionVisibility = proposedDescriptionVisibility;
         ProposedProductStatus = proposedProductStatus;
         ProposedOfficialWebsiteUrl = string.IsNullOrWhiteSpace(proposedOfficialWebsiteUrl) ? null : proposedOfficialWebsiteUrl.Trim();
-        SharedPrintDesign = string.IsNullOrWhiteSpace(sharedPrintDesign) ? null : sharedPrintDesign.Trim();
+        SharedPrintDesign = sharedAppearance?.ToString();
         SharedPrimaryColour = string.IsNullOrWhiteSpace(sharedPrimaryColour) ? null : sharedPrimaryColour.Trim();
-        SharedSecondaryColours = string.IsNullOrWhiteSpace(sharedSecondaryColours) ? null : sharedSecondaryColours.Trim();
         SharedWetnessIndicator = sharedWetnessIndicator;
         SharedStandingLeakGuards = sharedStandingLeakGuards;
-        SharedInnerLeakGuards = sharedInnerLeakGuards;
-        SharedElasticWaistbandFront = sharedElasticWaistbandFront;
-        SharedElasticWaistbandRear = sharedElasticWaistbandRear;
+        SharedWaistbandStyle = sharedWaistbandStyle;
+        SharedFragrance = sharedFragrance;
         SharedLatexFree = sharedLatexFree;
-        SharedChlorineFree = sharedChlorineFree;
+        SharedDesignedFor = string.IsNullOrWhiteSpace(sharedDesignedFor) ? null : sharedDesignedFor.Trim();
         SharedFastenerCount = sharedFastenerCount;
         SharedConstructionNotes = string.IsNullOrWhiteSpace(sharedConstructionNotes) ? null : sharedConstructionNotes.Trim();
         Touch();

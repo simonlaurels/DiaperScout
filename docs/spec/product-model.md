@@ -4,19 +4,9 @@
 
 This document defines the hierarchical structure used to represent absorbent products within DiaperScout.
 
-The hierarchy separates information that belongs to an entire product from information that varies between product variants and sizes.
+The hierarchy separates information that belongs to an entire product from information that varies between product variants, physical sizes, packaging and retail arrangements.
 
-```text
-Product
-└── Product Variant
-    └── Size Variant
-```
-
-Each level has a distinct purpose.
-
-Information should be recorded at the highest appropriate level and only once.
-
-Retail selling arrangements are deliberately kept separate from the core Product Model.
+The model is intended to reflect how products exist in the real world rather than how they might be simplified for software implementation.
 
 ---
 
@@ -26,9 +16,16 @@ Retail selling arrangements are deliberately kept separate from the core Product
 Product
 └── Product Variant
     └── Size Variant
+        └── Pack / Retail
 ```
 
-## Product
+Each level has a distinct purpose.
+
+Information should be recorded at the highest appropriate level and only once.
+
+---
+
+# Product
 
 The Product represents the overall identity of a product.
 
@@ -36,390 +33,165 @@ It answers:
 
 > "What product is this?"
 
-A Product may contain multiple Product Variants.
-
-The Product remains the same regardless of:
-
-- size
-- product variant
-- retailer
-- retail selling arrangement
-
-Typical Product information includes:
+Product-level information includes:
 
 - Manufacturer
 - Brand
-- Product name
-- Product family
-- Product type
+- Product Name
+- Product Family
+- Product Type
 - Description
-- Official product information
-- Product status
-- Representative product images
+- Product Status
+- Official Website
+
+A Product may contain multiple Product Variants.
+
+A difference in physical size, packaging or retailer does not create a new Product.
 
 ---
 
 # Product Variant
 
-A Product Variant represents a materially different version of a Product.
+A Product Variant represents a meaningful manufacturer-defined version of a Product.
 
 It answers:
 
-> "Which meaningful version of this product is this?"
+> "Which version of this product is this?"
 
-A Product Variant may differ in:
+A Product Variant may differ in construction, backing, fastening, print, colour, features or other objective characteristics.
 
-- construction
-- materials
-- backing
-- fastening system
-- appearance
-- print
-- features
-- performance characteristics
+Product Variant attributes are:
 
-Examples include:
+- Variant Name
+- Backing Type
+- Fastener Type
+- Fastener Count
+- Print Design
+- Primary Colour
+- Wetness Indicator
+- Standing Leak Guards
+- Waistband Style
+- Fragrance
+- Latex Free
+- Designed For
+- Construction Notes
 
-- Plus
-- Super
-- Ultima
-- Plastic-backed
-- Cloth-backed
-- Plain
-- Printed
-- Day
-- Night
+A difference in physical size does not create a Product Variant.
 
-Variants should only exist when meaningful differences are present.
-
-A difference in physical size does not create a new Product Variant.
-
-A difference in retailer or retail selling arrangement does not create a new Product Variant.
+A packaging or retailer difference does not create a Product Variant.
 
 ---
 
 # Size Variant
 
-A Size Variant represents one manufacturer-defined physical size of a Product Variant.
+A Size Variant represents one physical manufacturer-defined size of a Product Variant.
 
 It answers:
 
-> "Which size is this?"
+> "Which physical size is this?"
 
-Examples include:
+Size Variant attributes are:
 
-- Small
-- Medium
-- Large
-- XL
-- 3XL
-
-or manufacturer-specific sizing systems such as:
-
-- Size 5
-- Size 6
-- Size 7
-
-A Size Variant is the natural home for characteristics that may legitimately differ between sizes.
-
-## Typical Size Variant Information
-
-Examples include:
-
-- Manufacturer size
-- Manufacturer size code
-- Waist range
-- Hip range
-- Capacity
-- Product dimensions
-- Product weight
-- Manufacturer pack quantity
+- Manufacturer Size
+- Manufacturer Fit Measurements
+- Fit Measurement Basis
+- Manufacturer-Stated Absorbency
+- Absorbency Basis / Method
+- Product Length
+- Product Width
+- Product Weight
 - GTIN / Barcode
+- Manufacturer Pack Quantity
 
-Manufacturers do not necessarily publish every value for every size. Unknown values remain unknown.
+Manufacturers use different sizing conventions. DiaperScout must preserve the manufacturer's stated measurement basis and must not infer waist from hip or hip from waist.
 
-### Manufacturer Pack Quantity
+If a manufacturer says to use the larger of waist or hip, record that method rather than copying the same range into both fields.
 
-Where a manufacturer states how many individual products are supplied in its standard packaged product for a particular size, this may be recorded as **Manufacturer Pack Quantity**.
-
-For example:
-
-```text
-TENA Slip Active Fit Maxi
-
-Medium
-└── Manufacturer pack quantity: 24
-
-Large
-└── Manufacturer pack quantity: 22
-```
-
-This is product information, not a separate Pack Type entity.
-
-The quantity may legitimately differ between sizes and therefore belongs with the other size-specific information.
-
-The field describes the manufacturer's stated packaged quantity. It does not describe how a retailer chooses to sell the product.
-
-### GTIN / Barcode
-
-A GTIN / Barcode identifies a specific trade item.
-
-Within the normal DiaperScout catalogue model, manufacturer-issued identifiers are associated with the relevant Size Variant where that is the appropriate representation.
-
-Different sizes commonly have different identifiers.
-
-A GTIN should not be assumed to exist where no reliable identifier is published.
-
-Unknown identifiers remain unknown.
+Manufacturer-stated absorbency must retain source/methodology context where available. Different manufacturers' figures must not be treated as automatically equivalent.
 
 ---
 
-# Retail Selling Arrangements
+# Pack / Retail
 
-Retail selling arrangements are not part of the core Product Model.
+Packaging and retail arrangements are separate from the core Product hierarchy.
 
-A retailer may sell the same manufacturer product in different ways, including:
+They answer:
 
-- one manufacturer's pack
-- multiple manufacturer's packs together
-- an individual sample taken from a manufacturer's pack
-- a retailer-created bundle or case
-- another retailer-defined quantity or presentation
+> "How is this size packaged, offered or sold?"
 
-These arrangements belong to Retail information and must not create new Products, Product Variants or Size Variants merely because the selling arrangement differs.
+Pack/Retail information may include:
 
-For example:
+- Pack Type
+- Retail Quantity
+- Packaging Type
+- Case Quantity
+- Retail Packaging Image
+- Packaging Notes
+- Retailer
+- Retailer SKU
+- Retail Quantity
+- Retail Price
+- Retail Availability
+- Retail Destination
+- Affiliate Destination
 
-```text
-Catalogue Product
-└── TENA Slip Active Fit Maxi
-    └── Large
-        └── Manufacturer pack quantity: 22
-```
+A retail pack, case or retailer bundle does not automatically create a new Product, Product Variant or Size Variant.
 
-A retailer may then offer that same Size Variant as:
-
-```text
-Retail Offer A
-└── 1 manufacturer's pack
-
-Retail Offer B
-└── 3 manufacturer's packs bundled together
-
-Retail Offer C
-└── 1 individual sample
-```
-
-The retail offers do not create three catalogue variants.
-
-A retailer-created bundle or case should not be confused with a manufacturer-defined product configuration.
+Retail quantity is distinct from Manufacturer Pack Quantity.
 
 ---
 
-# What Does Not Create a New Level?
-
-Not every difference creates a new Product, Product Variant or Size Variant.
-
-Examples that normally do not create new core catalogue entities include:
-
-- New retailer
-- Temporary discount
-- Promotional bundle
-- Retailer-created case or multipack
-- Individual sample
-- Different shipping carton
-- Warehouse labels
-- Retail stickers
-- Changes to outer retail packaging that do not change the underlying manufactured product
-
-A meaningful manufacturer-defined product difference may create a Product Variant.
-
-A manufacturer-defined physical size creates a Size Variant.
-
-Retail selling arrangements do not.
-
----
-
-# Why This Model?
-
-## 1. Accuracy
-
-Information is recorded where it naturally belongs.
-
-A manufacturer name should not be repeated on every size.
-
-A waist measurement should not be attached to the entire Product.
-
-A Product Variant characteristic should not be repeated on every Size Variant when it remains the same across the variant.
-
-Manufacturer-stated pack quantity belongs with Size Variant information because it can vary by size.
-
-Retailer-created quantities and selling presentations belong with Retail information because they describe the offer rather than the underlying product.
-
----
-
-## 2. Maintainability
-
-Changes are made once.
-
-If a manufacturer changes its name, only the Product requires updating.
-
-If a new Product Variant is introduced, only that Product Variant and its associated Size Variants need to be added.
-
-If a new size is introduced, only a new Size Variant is required.
-
-If a retailer changes how it sells the product, the Retail Offer can change without altering the core Product Specification.
-
----
-
-## 3. Scalability
-
-The model supports:
-
-- International products
-- Limited editions
-- Seasonal releases
-- Regional variants
-- Discontinued products
-- Different manufacturer-defined product variants
-- Different sizing systems
-- Manufacturer-stated packaged quantities
-- Multiple retail selling arrangements
-
-without treating retailer packaging as part of the core product hierarchy.
-
----
-
-# Design Principles
-
-## Record Information Once
+# Record Information Once
 
 Every fact should have one authoritative home.
 
-Avoid duplication.
+If a fact remains true across all sizes of a Product Variant, it normally belongs at Product Variant level.
 
-If a fact remains true across all Sizes of a Product Variant, it belongs at Product Variant level rather than being repeated on every Size Variant.
+If it changes with physical size, it belongs at Size Variant level.
 
-If a fact changes with physical size, it belongs at Size Variant level.
+If it describes packaging or a retail offer, it belongs in Pack/Retail information.
 
-If a fact describes how a retailer is selling the product, it belongs in Retail information.
-
----
-
-## Model Reality
-
-The Guide should reflect how products exist in the real world rather than how software prefers to store them.
-
-The core catalogue describes the manufactured product.
-
-Retail describes how that product is offered for sale.
+Do not duplicate facts merely because they are relevant at more than one level.
 
 ---
 
-## Manufacturer Information vs Retail Information
+# Separate Product Specification from Community Observations
 
-The following distinction is fundamental:
+The Product Specification records objective product facts.
 
-**Manufacturer product information**
+Community Observations record experiences, opinions and discoveries.
 
-> "This size is supplied by the manufacturer with 24 individual products in its standard pack."
+Examples of Community Observations include:
 
-**Retail information**
+- comfort
+- softness
+- noise
+- perceived discretion
+- personal fit
+- real-world leakage experience
+- reviews
+- ratings
+- comparisons
 
-> "This retailer sells one pack."
-
-> "This retailer sells three packs together."
-
-> "This retailer sells individual samples."
-
-The first is part of the Product Specification.
-
-The latter are Retail Offer information.
-
-A retailer changing the quantity or presentation it offers must not silently change the underlying Product Specification.
-
----
-
-## Separate Product Variant from Size
-
-A Product Variant represents a meaningful version of a Product.
-
-A Size Variant represents a physical size of that Product Variant.
-
-For example:
-
-```text
-TENA Slip
-└── Super
-    ├── Medium
-    ├── Large
-    └── XL
-```
-
-Here, Super is the Product Variant and Medium, Large and XL are Size Variants.
-
----
-
-## Separate Facts from Observations
-
-The Product Model describes products.
-
-Community Observations describe experiences with those products.
-
-Neither should replace the other.
-
-Objective product information belongs in the Product Specification.
-
-Subjective experiences belong in Community Observations.
-
----
-
-## Keep Retail Separate
-
-Retailers may create bundles, cases, samples and other selling arrangements.
-
-Those arrangements are useful catalogue-adjacent information but do not redefine the underlying product.
-
-This separation prevents retailer-specific commercial arrangements from becoming accidental Product Variants or Size Variants.
-
----
-
-# Future Evolution
-
-The Product Model has been designed to accommodate future growth.
-
-New attributes may be added to existing levels when justified.
-
-New entity types should only be introduced when there is a clear modelling need that cannot be represented within the existing hierarchy.
-
-Retail concepts should not be introduced into the core Product Model merely because retailers present products in different ways.
-
-Stability should always be preferred over unnecessary complexity.
+These should not be converted into objective Product Specification facts.
 
 ---
 
 # Summary
 
-The Product Model provides the structure that underpins every Product Specification in DiaperScout.
-
-The core hierarchy is:
+The canonical hierarchy is:
 
 ```text
 Product
 └── Product Variant
     └── Size Variant
+        └── Pack / Retail
 ```
 
-A Product identifies **what the product is**.
+A Product identifies what the product is.
 
-A Product Variant identifies **which meaningful version it is**.
+A Product Variant identifies which meaningful version it is.
 
-A Size Variant identifies **which manufacturer-defined physical size it is**.
+A Size Variant identifies which physical manufacturer-defined size it is.
 
-Manufacturer-stated information such as pack quantity may be recorded at Size Variant level where it describes that size's standard packaged product.
-
-Retailer quantities, samples, bundles, cases and selling presentations are Retail information and do not create new core catalogue entities.
-
-Every piece of information has a natural home.
-
-Keeping information in that home is one of the foundations of a trustworthy explorer's guide.
+Pack/Retail information identifies how that size is packaged or offered for sale.

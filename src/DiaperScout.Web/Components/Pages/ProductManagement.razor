@@ -3,6 +3,7 @@
 @using DiaperScout.Application
 @using DiaperScout.Domain
 @using DiaperScout.Web.Services
+@using Microsoft.AspNetCore.Components.Forms
 @inject ProductCatalogueClient Catalogue
 @inject NavigationManager Navigation
 
@@ -20,9 +21,14 @@
                 </p>
             </div>
 
-            <a class="ds-button ds-button-primary" href="/catalogue/add">
-                ＋ Add Product
-            </a>
+            <div class="product-management-header-actions">
+                <a class="ds-button ds-button-secondary" href="@Catalogue.GetSubmissionImportTemplateUrl()">Download CSV template</a>
+                <label class="ds-button ds-button-secondary import-file-button">
+                    Import CSV
+                    <InputFile OnChange="HandleCsvSelected" accept=".csv,text/csv" />
+                </label>
+                <a class="ds-button ds-button-primary" href="/catalogue/add">＋ Add Product</a>
+            </div>
         </header>
 
         @if (loading)
@@ -50,6 +56,44 @@
         }
         else
         {
+            @if (importFile is not null)
+            {
+                <section class="product-management-import-panel">
+                    <div>
+                        <p class="catalogue-kicker">BULK INGESTION</p>
+                        <h2>Import catalogue candidates</h2>
+                        <p>CSV rows become normal moderator submissions. Imported descriptions are moderator-only by default until their publication rights are established. Nothing is published automatically.</p>
+                        @if (importResult is not null)
+                        {
+                            <p class="product-management-import-result">
+                                Imported @importResult.RowsImported of @importResult.RowsRead rows · @importResult.SubmissionsCreated submissions created · @importResult.RowsSkipped skipped.
+                            </p>
+                            @if (importResult.Warnings.Count > 0)
+                            {
+                                <details>
+                                    <summary>@importResult.Warnings.Count warning@(importResult.Warnings.Count == 1 ? "" : "s")</summary>
+                                    <ul>
+                                        @foreach (var warning in importResult.Warnings.Take(20))
+                                        {
+                                            <li>@warning</li>
+                                        }
+                                    </ul>
+                                </details>
+                            }
+                        }
+                        @if (importError is not null)
+                        {
+                            <div class="product-management-message product-management-message-error" role="alert">@importError</div>
+                        }
+                    </div>
+                    <div class="submission-queue-action">
+                        <span>@importFile.Name</span>
+                        <button class="ds-button ds-button-primary" type="button" @onclick="ImportCsvAsync" disabled="@importing">@(importing ? "Importing…" : "Import CSV")</button>
+                        <button class="ds-button ds-button-secondary" type="button" @onclick="ClearImport">Cancel</button>
+                    </div>
+                </section>
+            }
+
             <section class="product-management-panel">
                 <div class="product-management-panel-heading">
                     <div>
@@ -119,6 +163,11 @@
                                         @GetActionLabel(submission.Status) →
                                     </a>
 
+                                    @if (submission.Status == CatalogueSubmissionStatus.Published && submission.PublishedProductId is Guid publishedProductId)
+                                    {
+                                        <a class="ds-button ds-button-secondary" href="/catalogue/products/preview/@publishedProductId">Moderator preview</a>
+                                    }
+
                                     @if (CanDelete(submission.Status))
                                     {
                                         @if (deletingSubmissionId == submission.Id)
@@ -165,6 +214,53 @@
     private string? loadError;
     private Guid? deletingSubmissionId;
     private bool deleting;
+    private IBrowserFile? importFile;
+    private bool importing;
+    private string? importError;
+    private CatalogueSubmissionImportResult? importResult;
+
+    private void HandleCsvSelected(InputFileChangeEventArgs args)
+    {
+        importFile = args.File;
+        importError = null;
+        importResult = null;
+    }
+
+    private void ClearImport()
+    {
+        importFile = null;
+        importError = null;
+        importResult = null;
+    }
+
+    private async Task ImportCsvAsync()
+    {
+        if (importFile is null) return;
+        importing = true;
+        importError = null;
+        importResult = null;
+        try
+        {
+            var result = await Catalogue.ImportSubmissionsCsvAsync(importFile);
+            if (result.Status == CatalogueSubmissionImportClientStatus.AccessDenied)
+                importError = "You need Moderator editorial authority to import catalogue submissions.";
+            else if (result.Status == CatalogueSubmissionImportClientStatus.Failed)
+                importError = result.Message ?? "The CSV import could not be completed.";
+            else
+            {
+                importResult = result.Result;
+                await LoadAsync();
+            }
+        }
+        catch (Exception exception) when (exception is HttpRequestException or IOException)
+        {
+            importError = "The CSV import could not be completed just now.";
+        }
+        finally
+        {
+            importing = false;
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {

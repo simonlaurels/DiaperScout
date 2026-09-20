@@ -22,6 +22,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAtlasQueries, AtlasQueries>();
         services.AddScoped<IObservationSubmissions, ObservationSubmissions>();
         services.AddScoped<ICatalogueSubmissions, CatalogueSubmissions>();
+        services.AddSingleton<ICatalogueSubmissionImageStorage, CatalogueSubmissionImageStorage>();
         services.AddScoped<ICatalogueRetailQueries, CatalogueRetailQueries>();
         services.AddScoped<ICurrentExplorer, CurrentExplorer>();
         services.AddScoped<ICurrentUser, CurrentUser>();
@@ -50,7 +51,7 @@ public sealed class CurrentExplorer(DiaperScoutDbContext db, IHttpContextAccesso
     }
 }
 
-internal sealed class AtlasQueries(DiaperScoutDbContext db) : IAtlasQueries
+internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmissionImageStorage imageStorage, IEditorialAuthorisation editorialAuthorisation) : IAtlasQueries
 {
     public async Task<ProductSummary?> GetProductBySlugAsync(string slug, CancellationToken cancellationToken = default) =>
         await db.Products.AsNoTracking()
@@ -262,13 +263,66 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db) : IAtlasQueries
     }
 
     public async Task<CatalogueProductDetails?> GetProductDetailsBySlugAsync(string slug, CancellationToken cancellationToken = default)
+        => (await GetProductDetailsCoreAsync(slug, includeModeratorOnly: false, cancellationToken))?.PublicDetails;
+
+    public async Task<CatalogueModeratorProductDetails?> GetProductDetailsForModeratorAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        CancellationToken cancellationToken = default)
+    {
+        if (!await editorialAuthorisation.CanPublishAtlasAsync(actor, cancellationToken))
+            throw new UnauthorizedAccessException();
+
+        return (await GetProductDetailsCoreByIdAsync(productId, includeModeratorOnly: true, cancellationToken))?.ModeratorDetails;
+    }
+
+    public async Task<CatalogueProductImageContent?> GetProductImageContentAsync(
+        Guid productId,
+        Guid imageId,
+        bool moderatorOnly,
+        CancellationToken cancellationToken = default)
+    {
+        var image = await db.CatalogueSubmissionImages
+            .AsNoTracking()
+            .SingleOrDefaultAsync(
+                value => value.ProductId == productId &&
+                         value.Id == imageId &&
+                         (moderatorOnly || value.Visibility == CatalogueContentVisibility.Public),
+                cancellationToken);
+
+        if (image is null)
+            return null;
+
+        var stream = await imageStorage.OpenReadAsync(image.StorageKey, cancellationToken);
+        return stream is null
+            ? null
+            : new CatalogueProductImageContent(stream, image.ContentType, image.OriginalFileName);
+    }
+
+    private async Task<(CatalogueProductDetails PublicDetails, CatalogueModeratorProductDetails ModeratorDetails)?> GetProductDetailsCoreByIdAsync(
+        Guid productId,
+        bool includeModeratorOnly,
+        CancellationToken cancellationToken)
+    {
+        var slug = await db.Products.AsNoTracking()
+            .Where(value => value.Id == productId)
+            .Select(value => value.Slug)
+            .SingleOrDefaultAsync(cancellationToken);
+
+        return slug is null ? null : await GetProductDetailsCoreAsync(slug, includeModeratorOnly, cancellationToken);
+    }
+
+    private async Task<(CatalogueProductDetails PublicDetails, CatalogueModeratorProductDetails ModeratorDetails)?> GetProductDetailsCoreAsync(
+        string slug,
+        bool includeModeratorOnly,
+        CancellationToken cancellationToken)
     {
         var product = await (from value in db.Products.AsNoTracking()
                              join manufacturer in db.Manufacturers.AsNoTracking() on value.ManufacturerId equals manufacturer.Id
                              join brand in db.Brands.AsNoTracking() on value.BrandId equals brand.Id into brandJoin
                              from brand in brandJoin.DefaultIfEmpty()
                              where value.Slug == slug
-                             select new { value.Id, value.Name, value.Slug, value.ProductType, value.Status, ManufacturerName = manufacturer.Name, BrandName = brand == null ? null : brand.Name, value.Description, value.OfficialWebsiteUrl })
+                             select new { value.Id, value.Name, value.Slug, value.ProductType, value.Status, ManufacturerName = manufacturer.Name, BrandName = brand == null ? null : brand.Name, value.Description, value.DescriptionVisibility, value.OfficialWebsiteUrl })
             .SingleOrDefaultAsync(cancellationToken);
 
         if (product is null)
@@ -313,8 +367,42 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db) : IAtlasQueries
             variantResults.Add(new CatalogueProductVariant(variant.Id, variant.Name, variant.BackingType, sizeResults));
         }
 
-        return new CatalogueProductDetails(product.Id, product.Name, product.Slug, product.ProductType, product.Status, product.ManufacturerName, product.BrandName, product.Description, product.OfficialWebsiteUrl, variantResults);
+        var images = await db.CatalogueSubmissionImages
+            .AsNoTracking()
+            .Where(value => value.ProductId == product.Id && (includeModeratorOnly || value.Visibility == CatalogueContentVisibility.Public))
+            .OrderBy(value => value.Role)
+            .ThenBy(value => value.CreatedAtUtc)
+            .ToListAsync(cancellationToken);
+
+        var publicImages = images
+            .Where(value => value.Visibility == CatalogueContentVisibility.Public)
+            .Select(value => new CatalogueProductImage(
+                value.Id,
+                value.Role,
+                $"/api/v1/products/{product.Id}/images/{value.Id}"))
+            .ToList();
+
+        var moderatorImages = images
+            .Select(value => new CatalogueModeratorProductImage(
+                value.Id,
+                value.Role,
+                value.Visibility,
+                value.SourceType,
+                value.SourceUrl,
+                value.PermissionStatus,
+                $"/api/v1/products/{product.Id}/moderator-images/{value.Id}"))
+            .ToList();
+
+        var publicDescription = product.DescriptionVisibility == CatalogueContentVisibility.Public
+            ? product.Description
+            : null;
+
+        return (
+            new CatalogueProductDetails(product.Id, product.Name, product.Slug, product.ProductType, product.Status, product.ManufacturerName, product.BrandName, publicDescription, product.DescriptionVisibility, product.OfficialWebsiteUrl, variantResults, publicImages),
+            new CatalogueModeratorProductDetails(product.Id, product.Name, product.Slug, product.ProductType, product.Status, product.ManufacturerName, product.BrandName, product.Description, product.DescriptionVisibility, product.OfficialWebsiteUrl, variantResults, moderatorImages));
     }
+
+
 }
 
 internal sealed class ObservationSubmissions(DiaperScoutDbContext db) : IObservationSubmissions

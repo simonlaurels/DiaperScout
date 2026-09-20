@@ -1,5 +1,7 @@
+@using Microsoft.AspNetCore.Components.Web
 @page "/catalogue/add"
 @page "/catalogue/add/{submissionId:guid}/{step:int}"
+@using Microsoft.AspNetCore.Components.Forms
 @rendermode InteractiveServer
 @inject ProductCatalogueClient Catalogue
 @inject NavigationManager Navigation
@@ -36,12 +38,48 @@
         }
 
         <ol class="submission-steps" aria-label="Product creation progress">
-            <li class="@(StepClass(1))"><span>1</span><div><strong>Identity</strong><small>What is it?</small></div></li>
-            <li class="@(StepClass(2))"><span>2</span><div><strong>Variants</strong><small>What versions?</small></div></li>
-            <li class="@(StepClass(3))"><span>3</span><div><strong>Sizes</strong><small>What sizes?</small></div></li>
-            <li class="@(StepClass(4))"><span>4</span><div><strong>Details</strong><small>Product facts</small></div></li>
-            <li class="@(StepClass(5))"><span>5</span><div><strong>Images</strong><small>Images &amp; rights</small></div></li>
-            <li class="@(StepClass(6))"><span>6</span><div><strong>Verify</strong><small>Ready to catalogue</small></div></li>
+            <li class="@(StepClass(1)) @(IsStepNavigable(1) ? "submission-step-navigable" : "")"
+                @onclick="() => NavigateToStepFromTab(1)"
+                @onkeydown="(e) => HandleStepKeyDown(e, 1)"
+                tabindex="@(IsStepNavigable(1) ? 0 : -1)"
+                role="@(IsStepNavigable(1) ? "button" : null)">
+                <span>1</span><div><strong>Identity</strong><small>What is it?</small></div>
+            </li>
+            <li class="@(StepClass(2)) @(IsStepNavigable(2) ? "submission-step-navigable" : "")"
+                @onclick="() => NavigateToStepFromTab(2)"
+                @onkeydown="(e) => HandleStepKeyDown(e, 2)"
+                tabindex="@(IsStepNavigable(2) ? 0 : -1)"
+                role="@(IsStepNavigable(2) ? "button" : null)">
+                <span>2</span><div><strong>Variants</strong><small>What versions?</small></div>
+            </li>
+            <li class="@(StepClass(3)) @(IsStepNavigable(3) ? "submission-step-navigable" : "")"
+                @onclick="() => NavigateToStepFromTab(3)"
+                @onkeydown="(e) => HandleStepKeyDown(e, 3)"
+                tabindex="@(IsStepNavigable(3) ? 0 : -1)"
+                role="@(IsStepNavigable(3) ? "button" : null)">
+                <span>3</span><div><strong>Sizes</strong><small>What sizes?</small></div>
+            </li>
+            <li class="@(StepClass(4)) @(IsStepNavigable(4) ? "submission-step-navigable" : "")"
+                @onclick="() => NavigateToStepFromTab(4)"
+                @onkeydown="(e) => HandleStepKeyDown(e, 4)"
+                tabindex="@(IsStepNavigable(4) ? 0 : -1)"
+                role="@(IsStepNavigable(4) ? "button" : null)">
+                <span>4</span><div><strong>Details</strong><small>Product facts</small></div>
+            </li>
+            <li class="@(StepClass(5)) @(IsStepNavigable(5) ? "submission-step-navigable" : "")"
+                @onclick="() => NavigateToStepFromTab(5)"
+                @onkeydown="(e) => HandleStepKeyDown(e, 5)"
+                tabindex="@(IsStepNavigable(5) ? 0 : -1)"
+                role="@(IsStepNavigable(5) ? "button" : null)">
+                <span>5</span><div><strong>Images</strong><small>Images &amp; rights</small></div>
+            </li>
+            <li class="@(StepClass(6)) @(IsStepNavigable(6) ? "submission-step-navigable" : "")"
+                @onclick="() => NavigateToStepFromTab(6)"
+                @onkeydown="(e) => HandleStepKeyDown(e, 6)"
+                tabindex="@(IsStepNavigable(6) ? 0 : -1)"
+                role="@(IsStepNavigable(6) ? "button" : null)">
+                <span>6</span><div><strong>Verify</strong><small>Ready to catalogue</small></div>
+            </li>
         </ol>
 
         @if (submission is null)
@@ -169,13 +207,13 @@
                                     <strong>@(variant.Name ?? "Original version")</strong>
                                     <small>@(variant.Name is null ? "Base product · No separate variant name" : "Named product variant")</small>
                                 </div>
-                                @if (variant.Name is not null)
-                                {
-                                    <div class="submission-card-actions">
-                                        <button class="ds-button ds-button-secondary" type="button" @onclick="() => BeginEditVariant(variant)">Edit</button>
+                                <div class="submission-card-actions">
+                                    <button class="ds-button ds-button-secondary" type="button" @onclick="() => BeginEditVariant(variant)">Edit</button>
+                                    @if (variant.Name is not null || variants.Count > 1)
+                                    {
                                         <button class="ds-button ds-button-secondary" type="button" @onclick="() => RemoveVariantAsync(variant)" disabled="@saving">Remove</button>
-                                    </div>
-                                }
+                                    }
+                                </div>
                             </div>
                         }
 
@@ -191,14 +229,38 @@
                                     else
                                     {
                                         <label for="variant-name">Variant name</label>
-                                        <InputText id="variant-name" class="ds-input" @bind-Value="variantEditorName" />
+                                        <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:.75rem;width:100%;">
+                                            <InputText id="variant-name" class="ds-input" @bind-Value="variantEditorName" />
+                                            <div class="submission-card-actions" style="align-self:center;">
+                                                <button class="ds-button ds-button-secondary" type="button" @onclick="CancelEditVariant">Cancel</button>
+                                                <button class="ds-button ds-button-primary" type="button" @onclick="SaveVariantAsync">Save</button>
+                                            </div>
+                                        </div>
                                         <small>Enter the manufacturer's meaningful variant name. Don't include size, pack quantity or barcode information.</small>
                                     }
                                 </div>
-                                <div class="submission-card-actions">
-                                    <button class="ds-button ds-button-secondary" type="button" @onclick="CancelEditVariant">Cancel</button>
-                                    <button class="ds-button ds-button-primary" type="button" @onclick="SaveVariantAsync">Save</button>
+
+                                <div class="submission-grid submission-variant-attributes">
+                                    <div class="submission-field"><label>Backing type</label><InputSelect class="ds-select" @bind-Value="variantEditor.BackingType"><option value="">Unknown</option>@foreach (var value in Enum.GetValues<BackingType>().Where(value => value != BackingType.Unknown)) { <option value="@value">@FormatEnum(value)</option> }</InputSelect></div>
+                                    <div class="submission-field"><label>Fastener type</label><InputSelect class="ds-select" @bind-Value="variantEditor.FastenerType"><option value="">Unknown</option>@foreach (var value in Enum.GetValues<FastenerType>().Where(value => value != FastenerType.Unknown)) { <option value="@value">@FormatEnum(value)</option> }</InputSelect></div>
+                                    <div class="submission-field"><label>Fastener count</label><InputNumber class="ds-input" @bind-Value="variantEditor.FastenerCount" /></div>
+                                    <div class="submission-field"><label>Primary colour</label><InputSelect class="ds-select" @bind-Value="variantEditor.PrimaryColour"><option value="">Unknown</option>@foreach (var value in Enum.GetValues<CatalogueVariantColour>().Where(value => value != CatalogueVariantColour.Unknown)) { <option value="@value">@FormatEnum(value)</option> }</InputSelect></div>
+                                    <div class="submission-field"><label>Appearance</label><InputSelect class="ds-select" @bind-Value="variantEditor.Appearance"><option value="">Unknown</option>@foreach (var value in Enum.GetValues<CatalogueVariantAppearance>().Where(value => value != CatalogueVariantAppearance.Unknown)) { <option value="@value">@FormatEnum(value)</option> }</InputSelect></div>
+                                    <div class="submission-field"><label>Wetness indicator</label><InputSelect class="ds-select" @bind-Value="variantEditor.HasWetnessIndicator"><option value="">Unknown</option><option value="true">Yes</option><option value="false">No</option></InputSelect></div>
+                                    <div class="submission-field"><label>Standing leak guards</label><InputSelect class="ds-select" @bind-Value="variantEditor.HasStandingLeakGuards"><option value="">Unknown</option><option value="true">Yes</option><option value="false">No</option></InputSelect></div>
+                                    <div class="submission-field"><label>Waistband style</label><InputSelect class="ds-select" @bind-Value="variantEditor.WaistbandStyle"><option value="">Unknown</option>@foreach (var value in Enum.GetValues<WaistbandStyle>().Where(value => value != WaistbandStyle.Unknown)) { <option value="@value">@FormatEnum(value)</option> }</InputSelect></div>
+                                    <div class="submission-field"><label>Fragrance</label><InputSelect class="ds-select" @bind-Value="variantEditor.Fragrance"><option value="">Unknown</option>@foreach (var value in Enum.GetValues<FragranceType>().Where(value => value != FragranceType.Unknown)) { <option value="@value">@FormatEnum(value)</option> }</InputSelect></div>
+                                    <div class="submission-field"><label>Latex free</label><InputSelect class="ds-select" @bind-Value="variantEditor.IsLatexFree"><option value="">Unknown</option><option value="true">Yes</option><option value="false">No</option></InputSelect></div>
+                                    <div class="submission-field"><label>Designed for</label><InputSelect class="ds-select" @bind-Value="variantEditor.DesignedFor"><option value="">Unknown</option>@foreach (var value in Enum.GetValues<CatalogueVariantDesignedFor>().Where(value => value != CatalogueVariantDesignedFor.Unknown)) { <option value="@value">@FormatEnum(value)</option> }</InputSelect></div>
+                                    <div class="submission-field submission-field-wide"><label>Construction notes</label><InputTextArea class="ds-input ds-textarea" @bind-Value="variantEditor.ConstructionNotes" rows="3" /></div>
                                 </div>
+                                @if (addingBaseVariant)
+                                {
+                                    <div class="submission-card-actions">
+                                        <button class="ds-button ds-button-secondary" type="button" @onclick="CancelEditVariant">Cancel</button>
+                                        <button class="ds-button ds-button-primary" type="button" @onclick="SaveVariantAsync">Save</button>
+                                    </div>
+                                }
                             </div>
                         }
 
@@ -244,7 +306,7 @@
                     {
                         @foreach (var variant in variants)
                         {
-                            <div class="submission-card">
+                            <div class="submission-card submission-size-variant">
                                 <div class="submission-card-heading">
                                     <div>
                                         <strong>@(variant.Name ?? "Original / base product")</strong>
@@ -265,7 +327,10 @@
                                         <div class="submission-field"><label>Waist maximum (cm)</label><InputNumber class="ds-input" @bind-Value="sizeEditor.WaistMaximumCm" /></div>
                                         <div class="submission-field"><label>Hip minimum (cm)</label><InputNumber class="ds-input" @bind-Value="sizeEditor.HipMinimumCm" /></div>
                                         <div class="submission-field"><label>Hip maximum (cm)</label><InputNumber class="ds-input" @bind-Value="sizeEditor.HipMaximumCm" /></div>
-                                        <div class="submission-field"><label>Capacity (ml)</label><InputNumber class="ds-input" @bind-Value="sizeEditor.CapacityMl" /></div>
+                                        <div class="submission-field submission-field-wide"><label>Fit measurement basis</label><InputText class="ds-input" @bind-Value="sizeEditor.FitMeasurementBasis" placeholder="e.g. Waist and hip; use larger measurement" /></div>
+                                        <div class="submission-field"><label>Manufacturer-stated absorbency (ml)</label><InputNumber class="ds-input" @bind-Value="sizeEditor.ManufacturerStatedAbsorbencyMl" /></div>
+                                        <div class="submission-field"><label>Absorbency basis / method</label><InputText class="ds-input" @bind-Value="sizeEditor.AbsorbencyBasisMethod" /></div>
+                                        <div class="submission-field submission-field-wide"><label>Absorbency source / provenance</label><InputText class="ds-input" @bind-Value="sizeEditor.AbsorbencySource" /></div>
                                         <div class="submission-field"><label>Length (mm)</label><InputNumber class="ds-input" @bind-Value="sizeEditor.LengthMm" /></div>
                                         <div class="submission-field"><label>Width (mm)</label><InputNumber class="ds-input" @bind-Value="sizeEditor.WidthMm" /></div>
                                         <div class="submission-field"><label>Weight (g)</label><InputNumber class="ds-input" @bind-Value="sizeEditor.WeightGrams" /></div>
@@ -280,25 +345,36 @@
                                 }
                                 else if (GetSizes(variant.Id).Count == 0)
                                 {
-                                    <div class="submission-card submission-card-muted"><small>No sizes added yet. Add at least one size before continuing.</small></div>
+                                    <div class="submission-card submission-card-muted">
+                                        @if (variant.Name is not null && variants.Any(value => value.Name is null) && GetSizes(variants.First(value => value.Name is null).Id).Count > 0)
+                                        {
+                                            <small>No sizes are currently assigned to this variant. New named variants normally start with a copy of the Original version's sizes; you can add or remove sizes independently here.</small>
+                                        }
+                                        else
+                                        {
+                                            <small>No sizes added yet. Add at least one size before continuing.</small>
+                                        }
+                                    </div>
                                 }
                                 else
                                 {
-                                    @foreach (var size in GetSizes(variant.Id))
-                                    {
-                                        <div class="submission-card">
-                                            <div class="submission-card-heading">
-                                                <div>
-                                                    <strong>@size.ManufacturerSize</strong>
-                                                    <small>@FormatSizeSummary(size)</small>
-                                                </div>
-                                                <div class="submission-card-actions">
-                                                    <button class="ds-button ds-button-secondary" type="button" @onclick="() => BeginEditSize(variant.Id, size)" disabled="@saving">Edit</button>
-                                                    <button class="ds-button ds-button-danger" type="button" @onclick="() => RemoveSizeAsync(variant.Id, size)" disabled="@saving">Remove</button>
+                                    <div class="submission-size-list">
+                                        @foreach (var size in GetSizes(variant.Id).OrderBy(GetSizeSortKey))
+                                        {
+                                            <div class="submission-card submission-size-card">
+                                                <div class="submission-card-heading">
+                                                    <div>
+                                                        <strong>@size.ManufacturerSize</strong>
+                                                        <small>@FormatSizeSummary(size)</small>
+                                                    </div>
+                                                    <div class="submission-card-actions">
+                                                        <button class="ds-button ds-button-secondary" type="button" @onclick="() => BeginEditSize(variant.Id, size)" disabled="@saving">Edit</button>
+                                                        <button class="ds-button ds-button-danger" type="button" @onclick="() => RemoveSizeAsync(variant.Id, size)" disabled="@saving">Remove</button>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    }
+                                        }
+                                    </div>
                                 }
                             </div>
                         }
@@ -323,6 +399,7 @@
                         <div class="submission-field"><label for="family">Product family</label><InputText id="family" class="ds-input" @bind-Value="detailsModel.ProductFamily" /></div>
                         <div class="submission-field submission-field-wide"><label for="description">Description</label><InputTextArea id="description" class="ds-input ds-textarea" @bind-Value="detailsModel.Description" rows="5" /></div>
                         <div class="submission-field"><label for="status">Product status</label><InputSelect id="status" class="ds-select" @bind-Value="detailsModel.ProductStatus"><option value="">Unknown</option>@foreach (var value in Enum.GetValues<ProductStatus>()) { <option value="@value">@FormatEnum(value)</option> }</InputSelect></div>
+                        <div class="submission-field"><label for="packaging">Packaging type</label><InputSelect id="packaging" class="ds-select" @bind-Value="detailsModel.PackagingType"><option value="">Unknown</option>@foreach (var value in Enum.GetValues<PackagingType>()) { <option value="@value">@FormatEnum(value)</option> }</InputSelect></div>
                         <div class="submission-field submission-field-wide"><label for="website">Official website</label><InputText id="website" class="ds-input" @bind-Value="detailsModel.OfficialWebsiteUrl" placeholder="https://…" /></div>
                     </div>
                     <div class="submission-actions"><button class="ds-button ds-button-primary" type="submit" disabled="@saving">Continue →</button></div>
@@ -331,13 +408,118 @@
             else if (currentStep == 5)
             {
                 <section class="submission-panel">
-                    <div class="submission-panel-heading"><div><p class="catalogue-kicker">STEP 5 OF 6</p><h2>Images</h2></div></div>
-                    <p class="submission-help">Add consistent catalogue images. Every image needs a known source and permission to use it before it can appear publicly.</p>
-                    @foreach (var imageType in imageTypes)
-                    {
-                        <div class="submission-card"><strong>@imageType</strong><small>No image added yet</small><button class="ds-button ds-button-secondary" type="button">Add image</button></div>
-                    }
-                    <div class="submission-next"><div><p class="catalogue-kicker">NEXT</p><h2>Verification</h2><p>Review the catalogue entry and the evidence supporting it.</p></div><button class="ds-button ds-button-primary" type="button" @onclick="BeginVerificationAsync">Continue →</button></div>
+                    <div class="submission-panel-heading">
+                        <div><p class="catalogue-kicker">STEP 5 OF 6</p><h2>Images</h2></div>
+                    </div>
+                    <p class="submission-help">Add consistent catalogue images. Each image records where it came from and whether DiaperScout has permission to use it publicly.</p>
+
+                    <div class="submission-image-grid">
+                        @foreach (var role in imageRoles)
+                        {
+                            var roleImages = images.Where(image => image.Role == role).ToList();
+
+                            <div class="submission-card submission-image-card">
+                                <div class="submission-image-card-heading">
+                                    <div>
+                                        <strong>@ImageLabel(role)</strong>
+                                        <small>@ImageRoleHelp(role)</small>
+                                    </div>
+                                    <span class="submission-image-status">
+                                        @(roleImages.Count == 0 ? "Not added" : roleImages.Count == 1 ? "Added" : $"{roleImages.Count} added")
+                                    </span>
+                                </div>
+
+                                @if (roleImages.Count > 0)
+                                {
+                                    @foreach (var image in roleImages)
+                                    {
+                                        <div class="submission-image-item">
+                                            @if (imagePreviewDataUris.TryGetValue(image.Id, out var preview))
+                                            {
+                                                <img src="@preview" alt="@ImageLabel(role)" class="submission-image-preview" />
+                                            }
+                                            <div class="submission-image-meta">
+                                                <strong>@image.OriginalFileName</strong>
+                                                <small>@FormatFileSize(image.FileSizeBytes) · @FormatEnum(image.SourceType) · @FormatEnum(image.PermissionStatus)</small>
+                                                @if (image.Visibility == CatalogueContentVisibility.ModeratorOnly)
+                                                {
+                                                    <small class="submission-image-warning">Moderator-only until publication rights are established.</small>
+                                                }
+                                            </div>
+                                            <div class="submission-image-actions">
+                                                <button class="ds-button ds-button-secondary" type="button" @onclick="() => BeginEditImage(image)">Edit rights</button>
+                                                <button class="ds-button ds-button-secondary" type="button" @onclick="() => RemoveImageAsync(image)">Remove</button>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+
+                                @if (activeImageRole == role)
+                                {
+                                    <div class="submission-image-editor">
+                                        <div class="submission-field submission-field-wide">
+                                            <label>Image file</label>
+                                            <InputFile @key="imageInputKey" OnChange="HandleImageSelectedAsync" accept="image/jpeg,image/png,image/webp" />
+                                            <small>JPEG, PNG or WebP · maximum 15 MB</small>
+                                            @if (selectedImageFile is not null)
+                                            {
+                                                <small>Selected: @selectedImageFile.Name (@FormatFileSize(selectedImageFile.Size))</small>
+                                            }
+                                        </div>
+                                        <div class="submission-grid">
+                                            <div class="submission-field">
+                                                <label>Source</label>
+                                                <InputSelect class="ds-select" @bind-Value="imageEditor.SourceType">
+                                                    @foreach (var value in Enum.GetValues<CatalogueImageSourceType>())
+                                                    {
+                                                        <option value="@value">@FormatEnum(value)</option>
+                                                    }
+                                                </InputSelect>
+                                            </div>
+                                            <div class="submission-field">
+                                                <label>Permission</label>
+                                                <InputSelect class="ds-select" @bind-Value="imageEditor.PermissionStatus">
+                                                    @foreach (var value in Enum.GetValues<CatalogueImagePermissionStatus>())
+                                                    {
+                                                        <option value="@value">@FormatEnum(value)</option>
+                                                    }
+                                                </InputSelect>
+                                            </div>
+                                            <div class="submission-field submission-field-wide">
+                                                <label>Source URL</label>
+                                                <InputText class="ds-input" @bind-Value="imageEditor.SourceUrl" placeholder="https://…" />
+                                            </div>
+                                            <div class="submission-field submission-field-wide">
+                                                <label>Source / permission notes</label>
+                                                <InputTextArea class="ds-textarea" @bind-Value="imageEditor.SourceNotes" placeholder="Where did the image come from? Add any useful context." />
+                                            </div>
+                                            <div class="submission-field submission-field-wide">
+                                                <label>Permission evidence</label>
+                                                <InputTextArea class="ds-textarea" @bind-Value="imageEditor.PermissionEvidence" placeholder="How was permission established, or why is permission not required?" />
+                                            </div>
+                                        </div>
+                                        <div class="submission-actions">
+                                            <button class="ds-button ds-button-secondary" type="button" @onclick="CancelImageEdit">Cancel</button>
+                                            <button class="ds-button ds-button-primary" type="button" disabled="@imageSaving" @onclick="SaveImageAsync">Save image</button>
+                                        </div>
+                                    </div>
+                                }
+                                else if (role != CatalogueSubmissionImageRole.Other || roleImages.Count == 0)
+                                {
+                                    <button class="ds-button ds-button-secondary" type="button" @onclick="() => BeginAddImage(role)">@(roleImages.Count == 0 ? "Add image" : "Replace image")</button>
+                                }
+                                else
+                                {
+                                    <button class="ds-button ds-button-secondary" type="button" @onclick="() => BeginAddImage(role)">Add another image</button>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    <div class="submission-next">
+                        <div><p class="catalogue-kicker">NEXT</p><h2>Verification</h2><p>Review the catalogue entry and the evidence supporting it.</p></div>
+                        <button class="ds-button ds-button-primary" type="button" @onclick="BeginVerificationAsync">Continue →</button>
+                    </div>
                 </section>
             }
             else
@@ -349,7 +531,39 @@
                     <div class="submission-card"><strong>✓ Product variants</strong><small>Variant structure reviewed</small></div>
                     <div class="submission-card"><strong>✓ Size variants</strong><small>Physical sizes reviewed</small></div>
                     <div class="submission-card"><strong>✓ Product details</strong><small>Factual product information reviewed</small></div>
-                    <div class="submission-card"><strong>✓ Images &amp; rights</strong><small>Image provenance and permission reviewed separately</small></div>
+                    <div class="submission-card submission-card-rights">
+                        <div>
+                            <strong>Content publication rights</strong>
+                            <small>Moderator-only content remains visible here to authorised staff but is omitted from the public catalogue.</small>
+                        </div>
+                        <div class="submission-field">
+                            <label>Description visibility</label>
+                            <InputSelect class="ds-input" @bind-Value="detailsModel.DescriptionVisibility">
+                                @foreach (var value in Enum.GetValues<CatalogueContentVisibility>())
+                                {
+                                    <option value="@value">@FormatEnum(value)</option>
+                                }
+                            </InputSelect>
+                        </div>
+                        <button class="ds-button ds-button-secondary" type="button" @onclick="SaveSpecificationsAsync" disabled="@saving">Save rights setting</button>
+                    </div>
+                    <div class="submission-card">
+                        @if (images.Count == 0)
+                        {
+                            <strong>⚠ Images &amp; rights</strong>
+                            <small>No catalogue images have been added yet.</small>
+                        }
+                        else if (ImageRightsReady)
+                        {
+                            <strong>✓ Images &amp; rights</strong>
+                            <small>@images.Count image@(images.Count == 1 ? "" : "s") added; every uploaded image has a known source and usable permission status.</small>
+                        }
+                        else
+                        {
+                            <strong>✓ Images &amp; rights</strong>
+                            <small>@images.Count image@(images.Count == 1 ? "" : "s") added. Any uncleared images will remain moderator-only until their rights are established.</small>
+                        }
+                    </div>
                     <div class="submission-next"><div><p class="catalogue-kicker">CATALOGUE READY</p><h2>What would you like to do?</h2><p>The product has completed the creation workflow. Retail and Affiliate can be handled separately.</p></div><div class="submission-actions"><button class="ds-button ds-button-secondary" type="button">Save unpublished</button><button class="ds-button ds-button-primary" type="button">Publish now →</button></div></div>
                 </section>
             }
@@ -366,7 +580,10 @@
     private string variantEditorName = "";
     private bool addingVariant;
     private bool addingBaseVariant;
+    private Guid? variantCopySourceId;
     private bool variantsLoading;
+    private readonly Dictionary<Guid, CatalogueSubmissionVariantOverrideReceipt?> variantOverrides = [];
+    private readonly VariantEditorModel variantEditor = new();
 
     private readonly Dictionary<Guid, IReadOnlyList<CatalogueSubmissionSizeVariantReceipt>> sizeVariants = [];
     private Guid? editingSizeVariantId;
@@ -378,22 +595,33 @@
     private string? saveError;
     [Parameter] public Guid? submissionId { get; set; }
     [Parameter] public int? step { get; set; }
+    [SupplyParameterFromQuery(Name = "maxStep")] private int? maxStep { get; set; }
 
     private int currentStep = 1;
+    private int maxReachedStep = 1;
     private string manufacturerMode = "existing";
     private string brandMode = "existing";
 
-    private static readonly string[] imageTypes =
+    private static readonly CatalogueSubmissionImageRole[] imageRoles =
     [
-        "Front of pack",
-        "Back of pack",
-        "Product front",
-        "Product rear",
-        "Product interior",
-        "Product detail",
-        "Size / measurement",
-        "Other"
+        CatalogueSubmissionImageRole.PackFront,
+        CatalogueSubmissionImageRole.PackBack,
+        CatalogueSubmissionImageRole.ProductFront,
+        CatalogueSubmissionImageRole.ProductRear,
+        CatalogueSubmissionImageRole.ProductInterior,
+        CatalogueSubmissionImageRole.ProductDetail,
+        CatalogueSubmissionImageRole.SizeMeasurement,
+        CatalogueSubmissionImageRole.Other
     ];
+
+    private IReadOnlyList<CatalogueSubmissionImageReceipt> images = [];
+    private readonly Dictionary<Guid, string> imagePreviewDataUris = [];
+    private CatalogueSubmissionImageRole? activeImageRole;
+    private Guid? editingImageId;
+    private IBrowserFile? selectedImageFile;
+    private int imageInputKey;
+    private bool imageSaving;
+    private readonly ImageEditorModel imageEditor = new();
 
     protected override async Task OnParametersSetAsync()
     {
@@ -404,6 +632,10 @@
         }
 
         currentStep = Math.Clamp(step ?? 1, 1, 6);
+        maxReachedStep = Math.Clamp(
+            maxStep ?? currentStep,
+            currentStep,
+            6);
 
         var result = await Catalogue.GetSubmissionAsync(submissionId.Value);
 
@@ -424,13 +656,20 @@
                 result.Receipt.ProposedProductFamily;
             detailsModel.Description =
                 result.Receipt.ProposedDescription;
+            detailsModel.DescriptionVisibility =
+                result.Receipt.ProposedDescriptionVisibility;
             detailsModel.ProductStatus =
                 result.Receipt.ProposedProductStatus;
+            detailsModel.PackagingType =
+                result.Receipt.ProposedPackagingType;
             detailsModel.OfficialWebsiteUrl =
                 result.Receipt.ProposedOfficialWebsiteUrl;
 
             if (currentStep >= 2)
                 await LoadVariantsAsync();
+
+            if (currentStep >= 5)
+                await LoadImagesAsync();
 
             return;
         }
@@ -438,6 +677,219 @@
         accessDenied = result.Status == CatalogueSubmissionResultStatus.AccessDenied;
         saveError = result.Message ?? "The catalogue submission could not be loaded.";
     }
+
+    private async Task LoadImagesAsync()
+    {
+        if (submission is null)
+            return;
+
+        var result = await Catalogue.GetSubmissionImagesAsync(submission.Id);
+
+        if (result.Status != CatalogueSubmissionImagesResultStatus.Found)
+        {
+            images = [];
+            return;
+        }
+
+        images = result.Images ?? [];
+        imagePreviewDataUris.Clear();
+
+        foreach (var image in images)
+        {
+            var preview = await Catalogue.GetSubmissionImageDataUriAsync(
+                submission.Id,
+                image.Id,
+                image.ContentType);
+
+            if (preview is not null)
+                imagePreviewDataUris[image.Id] = preview;
+        }
+    }
+
+    private void BeginAddImage(CatalogueSubmissionImageRole role)
+    {
+        activeImageRole = role;
+        editingImageId = null;
+        selectedImageFile = null;
+        imageEditor.Reset();
+        imageInputKey++;
+        saveError = null;
+    }
+
+    private void BeginEditImage(CatalogueSubmissionImageReceipt image)
+    {
+        activeImageRole = image.Role;
+        editingImageId = image.Id;
+        selectedImageFile = null;
+        imageEditor.Load(image);
+        imageInputKey++;
+        saveError = null;
+    }
+
+    private void CancelImageEdit()
+    {
+        activeImageRole = null;
+        editingImageId = null;
+        selectedImageFile = null;
+        imageEditor.Reset();
+        imageInputKey++;
+        saveError = null;
+    }
+
+    private async Task HandleImageSelectedAsync(InputFileChangeEventArgs args)
+    {
+        saveError = null;
+        selectedImageFile = args.File;
+
+        if (selectedImageFile.Size <= 0 || selectedImageFile.Size > 15 * 1024 * 1024)
+        {
+            selectedImageFile = null;
+            saveError = "Images must be greater than zero and no larger than 15 MB.";
+            return;
+        }
+
+        if (selectedImageFile.ContentType is not "image/jpeg" and not "image/png" and not "image/webp")
+        {
+            selectedImageFile = null;
+            saveError = "Only JPEG, PNG and WebP images are supported.";
+            return;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task SaveImageAsync()
+    {
+        if (submission is null || activeImageRole is null)
+            return;
+
+        imageSaving = true;
+        saveError = null;
+
+        try
+        {
+            CatalogueSubmissionImageResult result;
+
+            if (editingImageId is Guid imageId)
+            {
+                result = await Catalogue.UpdateSubmissionImageMetadataAsync(
+                    submission.Id,
+                    imageId,
+                    new UpdateCatalogueSubmissionImageMetadata(
+                        imageEditor.SourceType,
+                        imageEditor.SourceUrl,
+                        imageEditor.SourceNotes,
+                        imageEditor.PermissionStatus,
+                        imageEditor.PermissionEvidence));
+            }
+            else
+            {
+                if (selectedImageFile is null)
+                {
+                    saveError = "Choose an image file first.";
+                    return;
+                }
+
+                result = await Catalogue.AddSubmissionImageAsync(
+                    submission.Id,
+                    activeImageRole.Value,
+                    selectedImageFile,
+                    imageEditor.SourceType,
+                    imageEditor.SourceUrl,
+                    imageEditor.SourceNotes,
+                    imageEditor.PermissionStatus,
+                    imageEditor.PermissionEvidence);
+            }
+
+            if (result.Status == CatalogueSubmissionImageResultStatus.Saved)
+            {
+                CancelImageEdit();
+                await LoadImagesAsync();
+            }
+            else if (result.Status == CatalogueSubmissionImageResultStatus.Invalid)
+            {
+                saveError = result.Errors is null
+                    ? "The image could not be saved."
+                    : string.Join(" ", result.Errors.SelectMany(value => value.Value));
+            }
+            else if (result.Status == CatalogueSubmissionImageResultStatus.AccessDenied)
+            {
+                accessDenied = true;
+            }
+            else
+            {
+                saveError = "The image could not be saved just now.";
+            }
+        }
+        finally
+        {
+            imageSaving = false;
+        }
+    }
+
+    private async Task RemoveImageAsync(CatalogueSubmissionImageReceipt image)
+    {
+        if (submission is null)
+            return;
+
+        saveError = null;
+
+        if (!await Catalogue.RemoveSubmissionImageAsync(submission.Id, image.Id))
+        {
+            saveError = "The image could not be removed just now.";
+            return;
+        }
+
+        if (editingImageId == image.Id)
+            CancelImageEdit();
+
+        await LoadImagesAsync();
+    }
+
+    private bool ImageRightsReady =>
+        images.Count > 0 &&
+        images.All(image =>
+            image.SourceType != CatalogueImageSourceType.Unknown &&
+            image.PermissionStatus is CatalogueImagePermissionStatus.PermissionGranted or CatalogueImagePermissionStatus.PermissionNotRequired);
+
+    private string ProductTypeLabel =>
+        submission?.ProposedProductType is ProductType productType
+            ? FormatEnum(productType)
+            : "Product";
+
+    private string ImageLabel(CatalogueSubmissionImageRole role) =>
+        role switch
+        {
+            CatalogueSubmissionImageRole.PackFront => "Pack — Front",
+            CatalogueSubmissionImageRole.PackBack => "Pack — Back",
+            CatalogueSubmissionImageRole.ProductFront => $"{ProductTypeLabel} — Front",
+            CatalogueSubmissionImageRole.ProductRear => $"{ProductTypeLabel} — Rear",
+            CatalogueSubmissionImageRole.ProductInterior => $"{ProductTypeLabel} — Interior",
+            CatalogueSubmissionImageRole.ProductDetail => $"{ProductTypeLabel} — Detail",
+            CatalogueSubmissionImageRole.SizeMeasurement => "Size / Measurement",
+            _ => "Other"
+        };
+
+    private static string ImageRoleHelp(CatalogueSubmissionImageRole role) =>
+        role switch
+        {
+            CatalogueSubmissionImageRole.PackFront => "Front of the retail pack or packaging.",
+            CatalogueSubmissionImageRole.PackBack => "Back of the retail pack or packaging.",
+            CatalogueSubmissionImageRole.ProductFront => "Overall front view of the product.",
+            CatalogueSubmissionImageRole.ProductRear => "Rear view of the product.",
+            CatalogueSubmissionImageRole.ProductInterior => "Interior or opened-product view.",
+            CatalogueSubmissionImageRole.ProductDetail => "Useful close-up of a notable product detail.",
+            CatalogueSubmissionImageRole.SizeMeasurement => "Photo showing dimensions or measurement context.",
+            _ => "Additional image useful to the catalogue entry."
+        };
+
+    private static string FormatFileSize(long bytes) =>
+        bytes switch
+        {
+            >= 1024 * 1024 => $"{bytes / (1024d * 1024d):0.0} MB",
+            >= 1024 => $"{bytes / 1024d:0} KB",
+            _ => $"{bytes} B"
+        };
 
     private async Task CreateAsync()
     {
@@ -482,6 +934,15 @@
 
     private IReadOnlyList<CatalogueSubmissionSizeVariantReceipt> GetSizes(Guid variantId) =>
         sizeVariants.TryGetValue(variantId, out var values) ? values : [];
+
+    private static (int HasMinimumWaist, int MinimumWaist, string ManufacturerSize) GetSizeSortKey(
+        CatalogueSubmissionSizeVariantReceipt size)
+    {
+        return (
+            size.WaistMinimumCm.HasValue ? 0 : 1,
+            size.WaistMinimumCm ?? int.MaxValue,
+            size.ManufacturerSize?.Trim() ?? string.Empty);
+    }
 
     private async Task LoadSizeVariantsAsync()
     {
@@ -557,7 +1018,10 @@
                 sizeEditor.WaistMaximumCm,
                 sizeEditor.HipMinimumCm,
                 sizeEditor.HipMaximumCm,
-                sizeEditor.CapacityMl,
+                sizeEditor.ManufacturerStatedAbsorbencyMl,
+                sizeEditor.FitMeasurementBasis,
+                sizeEditor.AbsorbencyBasisMethod,
+                sizeEditor.AbsorbencySource,
                 sizeEditor.LengthMm,
                 sizeEditor.WidthMm,
                 sizeEditor.WeightGrams,
@@ -577,7 +1041,10 @@
                         request.WaistMaximumCm,
                         request.HipMinimumCm,
                         request.HipMaximumCm,
-                        request.CapacityMl,
+                        request.ManufacturerStatedAbsorbencyMl,
+                        request.FitMeasurementBasis,
+                        request.AbsorbencyBasisMethod,
+                        request.AbsorbencySource,
                         request.LengthMm,
                         request.WidthMm,
                         request.WeightGrams,
@@ -595,6 +1062,56 @@
 
             if (result.Status == CatalogueSubmissionSizeVariantResultStatus.Saved)
             {
+                // Sizes are entered against Original/base first. When a new size
+                // is added there, seed that size into every existing named
+                // variant. Copies are independent afterwards; GTIN is never
+                // propagated.
+                if (editingSizeId is null)
+                {
+                    var originalVariant = variants.FirstOrDefault(value => value.Name is null);
+
+                    if (originalVariant is not null &&
+                        editingSizeVariantId.Value == originalVariant.Id)
+                    {
+                        foreach (var namedVariant in variants.Where(value => value.Name is not null))
+                        {
+                            var alreadyExists = GetSizes(namedVariant.Id)
+                                .Any(value => string.Equals(
+                                    value.ManufacturerSize?.Trim(),
+                                    request.ManufacturerSize,
+                                    StringComparison.OrdinalIgnoreCase));
+
+                            if (alreadyExists)
+                                continue;
+
+                            var copyResult = await Catalogue.AddSubmissionSizeVariantAsync(
+                                submission.Id,
+                                namedVariant.Id,
+                                new AddCatalogueSubmissionSizeVariantRequest(
+                                    request.ManufacturerSize,
+                                    request.WaistMinimumCm,
+                                    request.WaistMaximumCm,
+                                    request.HipMinimumCm,
+                                    request.HipMaximumCm,
+                                    request.ManufacturerStatedAbsorbencyMl,
+                                    request.FitMeasurementBasis,
+                                    request.AbsorbencyBasisMethod,
+                                    request.AbsorbencySource,
+                                    request.LengthMm,
+                                    request.WidthMm,
+                                    request.WeightGrams,
+                                    request.ManufacturerPackQuantity,
+                                    null));
+
+                            if (copyResult.Status != CatalogueSubmissionSizeVariantResultStatus.Saved)
+                            {
+                                saveError = $"The Original size was saved, but it could not be copied to {namedVariant.Name}. {copyResult.Message}".Trim();
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 await LoadSizeVariantsAsync();
                 CancelEditSize();
             }
@@ -677,31 +1194,65 @@
             ? $"{minimum}–{maximum}"
             : minimum?.ToString() ?? maximum?.ToString() ?? "unknown";
 
-    private void BeginAddVariant()
+    private async Task BeginAddVariant()
     {
         editingVariant = null;
         variantEditorName = "";
+        variantEditor.Clear();
         addingVariant = true;
         addingBaseVariant = false;
+        variantCopySourceId = null;
+
+        var sourceVariant = variants.FirstOrDefault();
+        if (sourceVariant is null || submission is null)
+            return;
+
+        variantCopySourceId = sourceVariant.Id;
+
+        var result = await Catalogue.GetSubmissionVariantOverrideAsync(
+            submission.Id,
+            sourceVariant.Id);
+
+        if (result.Status == CatalogueSubmissionVariantOverrideResultStatus.Found)
+        {
+            variantOverrides[sourceVariant.Id] = result.Override;
+            variantEditor.Load(result.Override);
+        }
+        else if (result.Status == CatalogueSubmissionVariantOverrideResultStatus.AccessDenied)
+        {
+            accessDenied = true;
+        }
     }
 
     private void BeginAddBaseVariant()
     {
         editingVariant = null;
         variantEditorName = "";
+        variantEditor.Clear();
         addingVariant = false;
         addingBaseVariant = true;
+        variantCopySourceId = null;
     }
 
-    private void BeginEditVariant(CatalogueSubmissionVariantReceipt variant)
+    private async Task BeginEditVariant(CatalogueSubmissionVariantReceipt variant)
     {
-        if (variant.Name is null)
-            return;
-
         editingVariant = variant;
-        variantEditorName = variant.Name;
+        variantEditorName = variant.Name ?? "";
         addingVariant = false;
         addingBaseVariant = false;
+        variantCopySourceId = null;
+        variantEditor.Clear();
+
+        var result = await Catalogue.GetSubmissionVariantOverrideAsync(submission!.Id, variant.Id);
+        if (result.Status == CatalogueSubmissionVariantOverrideResultStatus.Found)
+        {
+            variantOverrides[variant.Id] = result.Override;
+            variantEditor.Load(result.Override);
+        }
+        else if (result.Status == CatalogueSubmissionVariantOverrideResultStatus.AccessDenied)
+        {
+            accessDenied = true;
+        }
     }
 
     private void CancelEditVariant()
@@ -710,6 +1261,7 @@
         variantEditorName = "";
         addingVariant = false;
         addingBaseVariant = false;
+        variantCopySourceId = null;
     }
 
     private async Task SaveVariantAsync()
@@ -719,66 +1271,156 @@
 
         saving = true;
         saveError = null;
+        accessDenied = false;
 
-        CatalogueSubmissionVariantResult result;
+        try
+        {
+            CatalogueSubmissionVariantResult result;
 
-        if (addingBaseVariant)
-        {
-            result = await Catalogue.AddSubmissionBaseVariantAsync(
-                submission.Id);
-        }
-        else if (addingVariant)
-        {
-            if (string.IsNullOrWhiteSpace(variantEditorName))
+            if (addingBaseVariant)
             {
-                saving = false;
-                saveError = "A named variant requires a manufacturer-defined name.";
+                result = await Catalogue.AddSubmissionBaseVariantAsync(
+                    submission.Id);
+            }
+            else if (addingVariant)
+            {
+                if (string.IsNullOrWhiteSpace(variantEditorName))
+                {
+                    saveError = "A named variant requires a manufacturer-defined name.";
+                    return;
+                }
+
+                result = await Catalogue.AddSubmissionNamedVariantAsync(
+                    submission.Id,
+                    variantEditorName.Trim());
+            }
+            else if (editingVariant is not null)
+            {
+                if (string.IsNullOrWhiteSpace(variantEditorName))
+                {
+                    saveError = "A named variant requires a manufacturer-defined name.";
+                    return;
+                }
+
+                result = await Catalogue.UpdateSubmissionVariantAsync(
+                    submission.Id,
+                    editingVariant.Id,
+                    new UpdateCatalogueSubmissionVariantRequest(variantEditorName.Trim()));
+            }
+            else
+            {
                 return;
             }
 
-            result = await Catalogue.AddSubmissionNamedVariantAsync(
-                submission.Id,
-                variantEditorName.Trim());
-        }
-        else if (editingVariant is not null)
-        {
-            if (string.IsNullOrWhiteSpace(variantEditorName))
+            if (result.Status != CatalogueSubmissionVariantResultStatus.Saved || result.Variant is null)
             {
-                saving = false;
-                saveError = "A named variant requires a manufacturer-defined name.";
+                if (result.Status == CatalogueSubmissionVariantResultStatus.Invalid && result.Errors is not null)
+                    saveError = string.Join(" ", result.Errors.SelectMany(pair => pair.Value));
+                else if (result.Status == CatalogueSubmissionVariantResultStatus.AccessDenied)
+                {
+                    accessDenied = true;
+                    saveError = result.Message;
+                }
+                else
+                    saveError = result.Message ?? "The variant could not be saved.";
+
                 return;
             }
 
-            result = await Catalogue.UpdateSubmissionVariantAsync(
-                submission.Id,
-                editingVariant.Id,
-                new UpdateCatalogueSubmissionVariantRequest(variantEditorName.Trim()));
-        }
-        else
-        {
-            saving = false;
-            return;
-        }
+            // Save all variant attributes before closing the editor. If one
+            // attribute fails, keep the editor open so the failure is visible
+            // and the moderator can correct it instead of silently discarding
+            // the edited values.
+            var overrideError = await SaveVariantOverrideAsync(result.Variant.Id);
+            if (overrideError is not null)
+            {
+                saveError = overrideError;
+                return;
+            }
 
-        saving = false;
+            // A new named variant starts as a copy of the first existing
+            // variant's sizes. The moderator can then adjust the copied values
+            // before saving. GTINs are deliberately not copied because
+            // identifiers are globally unique.
+            if (addingVariant && variantCopySourceId is not null)
+            {
+                var sourceSizes = GetSizes(variantCopySourceId.Value);
 
-        if (result.Status == CatalogueSubmissionVariantResultStatus.Saved)
-        {
+                foreach (var size in sourceSizes)
+                {
+                    var copyResult = await Catalogue.AddSubmissionSizeVariantAsync(
+                        submission.Id,
+                        result.Variant.Id,
+                        new AddCatalogueSubmissionSizeVariantRequest(
+                            size.ManufacturerSize,
+                            size.WaistMinimumCm,
+                            size.WaistMaximumCm,
+                            size.HipMinimumCm,
+                            size.HipMaximumCm,
+                            size.ManufacturerStatedAbsorbencyMl,
+                            size.FitMeasurementBasis,
+                            size.AbsorbencyBasisMethod,
+                            size.AbsorbencySource,
+                            size.LengthMm,
+                            size.WidthMm,
+                            size.WeightGrams,
+                            size.ManufacturerPackQuantity,
+                            null));
+
+                    if (copyResult.Status != CatalogueSubmissionSizeVariantResultStatus.Saved)
+                    {
+                        saveError = $"The variant was saved, but its sizes could not all be copied. {copyResult.Message}".Trim();
+                        return;
+                    }
+                }
+            }
+
             await LoadVariantsAsync();
             CancelEditVariant();
         }
-        else if (result.Status == CatalogueSubmissionVariantResultStatus.Invalid)
+        catch (Exception exception)
         {
-            saveError = string.Join(" ", result.Errors!.SelectMany(pair => pair.Value));
+            saveError = $"The variant could not be saved: {exception.Message}";
         }
-        else if (result.Status == CatalogueSubmissionVariantResultStatus.AccessDenied)
+        finally
         {
-            accessDenied = true;
+            saving = false;
         }
-        else
+    }
+
+    private async Task<string?> SaveVariantOverrideAsync(Guid variantId)
+    {
+        var values = new (CatalogueVariantOverrideAttribute Attribute, string? Value)[]
         {
-            saveError = result.Message;
+            (CatalogueVariantOverrideAttribute.BackingType, variantEditor.BackingType?.ToString()),
+            (CatalogueVariantOverrideAttribute.FastenerType, variantEditor.FastenerType?.ToString()),
+            (CatalogueVariantOverrideAttribute.Appearance, variantEditor.Appearance?.ToString()),
+            (CatalogueVariantOverrideAttribute.PrimaryColour, variantEditor.PrimaryColour?.ToString()),
+            (CatalogueVariantOverrideAttribute.WetnessIndicator, variantEditor.HasWetnessIndicator?.ToString()),
+            (CatalogueVariantOverrideAttribute.StandingLeakGuards, variantEditor.HasStandingLeakGuards?.ToString()),
+            (CatalogueVariantOverrideAttribute.WaistbandStyle, variantEditor.WaistbandStyle?.ToString()),
+            (CatalogueVariantOverrideAttribute.Fragrance, variantEditor.Fragrance?.ToString()),
+            (CatalogueVariantOverrideAttribute.LatexFree, variantEditor.IsLatexFree?.ToString()),
+            (CatalogueVariantOverrideAttribute.DesignedFor, variantEditor.DesignedFor?.ToString()),
+            (CatalogueVariantOverrideAttribute.FastenerCount, variantEditor.FastenerCount?.ToString()),
+            (CatalogueVariantOverrideAttribute.ConstructionNotes, variantEditor.ConstructionNotes)
+        };
+
+        foreach (var value in values)
+        {
+            var result = await Catalogue.UpdateSubmissionVariantOverrideAsync(
+                submission!.Id,
+                variantId,
+                new UpdateCatalogueSubmissionVariantOverrideRequest(value.Attribute, value.Value));
+
+            if (result.Status != CatalogueSubmissionVariantOverrideResultStatus.Saved)
+            {
+                var attributeName = FormatEnum(value.Attribute);
+                return $"Could not save {attributeName}: {result.Message ?? "The variant attribute could not be saved."}";
+            }
         }
+
+        return null;
     }
 
     private async Task RemoveVariantAsync(CatalogueSubmissionVariantReceipt variant)
@@ -814,34 +1456,25 @@
         if (submission is null) return;
         saving = true; saveError = null; accessDenied = false;
         var result = await Catalogue.UpdateSubmissionSpecificationsAsync(
-    submission.Id,
-    new UpdateCatalogueSubmissionSpecificationsRequest(
-        detailsModel.ProposedProductType,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        detailsModel.ProductFamily,
-        detailsModel.Description,
-        detailsModel.ProductStatus,
-        detailsModel.OfficialWebsiteUrl,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null));
+            submission.Id,
+            new UpdateCatalogueSubmissionSpecificationsRequest(
+                ProposedProductType: detailsModel.ProposedProductType,
+                ProposedPackagingType: detailsModel.PackagingType,
+                ProposedProductFamily: detailsModel.ProductFamily,
+                ProposedDescription: detailsModel.Description,
+                ProposedDescriptionVisibility: detailsModel.DescriptionVisibility,
+                ProposedProductStatus: detailsModel.ProductStatus,
+                ProposedOfficialWebsiteUrl: detailsModel.OfficialWebsiteUrl,
+                SharedPrimaryColour: null,
+                SharedPrintDesign: null,
+                SharedWetnessIndicator: null,
+                SharedStandingLeakGuards: null,
+                SharedWaistbandStyle: null,
+                SharedFragrance: null,
+                SharedLatexFree: null,
+                SharedDesignedFor: null,
+                SharedFastenerCount: null,
+                SharedConstructionNotes: null));
         Apply(result);
         saving = false;
         if (submission is not null && result.Status != CatalogueSubmissionResultStatus.Invalid && result.Status != CatalogueSubmissionResultStatus.Failed)
@@ -879,17 +1512,87 @@
             return;
         }
 
+        // Moving forward through the normal Continue buttons marks that step
+        // as reached. Going backwards never reduces the furthest reached step.
+        if (targetStep > maxReachedStep && targetStep <= currentStep + 1)
+            maxReachedStep = targetStep;
+
+        if (targetStep > maxReachedStep)
+            return;
+
         currentStep = targetStep;
-        Navigation.NavigateTo($"/catalogue/add/{submission.Id}/{currentStep}");
+        Navigation.NavigateTo(
+            $"/catalogue/add/{submission.Id}/{currentStep}?maxStep={maxReachedStep}");
     }
 
-    private string StepClass(int step) => step == currentStep ? "submission-step-active" : step < currentStep ? "submission-step-complete" : "";
-    private static string FormatEnum<T>(T value) => System.Text.RegularExpressions.Regex.Replace(value?.ToString() ?? string.Empty, "(?<!^)([A-Z])", " $1");
+    private bool IsStepNavigable(int step) =>
+        submission is not null &&
+        step <= maxReachedStep &&
+        step != currentStep;
+
+    private void NavigateToStepFromTab(int targetStep)
+    {
+        if (IsStepNavigable(targetStep))
+            GoToStep(targetStep);
+    }
+
+    private void HandleStepKeyDown(KeyboardEventArgs e, int targetStep)
+    {
+        if (!IsStepNavigable(targetStep))
+            return;
+
+        if (e.Key is "Enter" or " ")
+            GoToStep(targetStep);
+    }
+
+    private string StepClass(int step) =>
+        step == currentStep
+            ? "submission-step-active"
+            : step <= maxReachedStep
+                ? "submission-step-complete"
+                : "";
+
+    private static string FormatEnum<T>(T value)
+    {
+        var name = value?.ToString() ?? string.Empty;
+
+        if (typeof(T) == typeof(ProductType) && string.Equals(name, "Tape", StringComparison.Ordinal))
+            return "Diaper";
+
+        return System.Text.RegularExpressions.Regex.Replace(name, "(?<!^)([A-Z])", " $1");
+    }
 
     private void SetManufacturerExisting(ChangeEventArgs _) => manufacturerMode = "existing";
     private void SetManufacturerNew(ChangeEventArgs _) => manufacturerMode = "new";
     private void SetBrandExisting(ChangeEventArgs _) => brandMode = "existing";
     private void SetBrandNew(ChangeEventArgs _) => brandMode = "new";
+
+    private sealed class ImageEditorModel
+    {
+        public CatalogueImageSourceType SourceType { get; set; } = CatalogueImageSourceType.Unknown;
+        public string? SourceUrl { get; set; }
+        public string? SourceNotes { get; set; }
+        public CatalogueImagePermissionStatus PermissionStatus { get; set; } = CatalogueImagePermissionStatus.Unknown;
+        public string? PermissionEvidence { get; set; }
+
+        public void Reset()
+        {
+            SourceType = CatalogueImageSourceType.Unknown;
+            SourceUrl = null;
+            SourceNotes = null;
+            PermissionStatus = CatalogueImagePermissionStatus.Unknown;
+            PermissionEvidence = null;
+        }
+
+        public void Load(CatalogueSubmissionImageReceipt image)
+        {
+            SourceType = image.SourceType;
+            SourceUrl = image.SourceUrl;
+            SourceNotes = image.SourceNotes;
+            PermissionStatus = image.PermissionStatus;
+            PermissionEvidence = image.PermissionEvidence;
+        }
+    }
 
     private sealed class SizeEditorModel
     {
@@ -898,7 +1601,10 @@
         public int? WaistMaximumCm { get; set; }
         public int? HipMinimumCm { get; set; }
         public int? HipMaximumCm { get; set; }
-        public int? CapacityMl { get; set; }
+        public int? ManufacturerStatedAbsorbencyMl { get; set; }
+        public string? FitMeasurementBasis { get; set; }
+        public string? AbsorbencyBasisMethod { get; set; }
+        public string? AbsorbencySource { get; set; }
         public int? LengthMm { get; set; }
         public int? WidthMm { get; set; }
         public int? WeightGrams { get; set; }
@@ -912,7 +1618,10 @@
             WaistMaximumCm = null;
             HipMinimumCm = null;
             HipMaximumCm = null;
-            CapacityMl = null;
+            ManufacturerStatedAbsorbencyMl = null;
+            FitMeasurementBasis = null;
+            AbsorbencyBasisMethod = null;
+            AbsorbencySource = null;
             LengthMm = null;
             WidthMm = null;
             WeightGrams = null;
@@ -927,12 +1636,45 @@
             WaistMaximumCm = size.WaistMaximumCm;
             HipMinimumCm = size.HipMinimumCm;
             HipMaximumCm = size.HipMaximumCm;
-            CapacityMl = size.CapacityMl;
+            ManufacturerStatedAbsorbencyMl = size.ManufacturerStatedAbsorbencyMl;
             LengthMm = size.LengthMm;
             WidthMm = size.WidthMm;
             WeightGrams = size.WeightGrams;
             ManufacturerPackQuantity = size.ManufacturerPackQuantity;
             Gtin = size.Gtin;
+        }
+    }
+
+    private sealed class VariantEditorModel
+    {
+        public BackingType? BackingType { get; set; }
+        public FastenerType? FastenerType { get; set; }
+        public CatalogueVariantAppearance? Appearance { get; set; }
+        public CatalogueVariantColour? PrimaryColour { get; set; }
+        public bool? HasWetnessIndicator { get; set; }
+        public bool? HasStandingLeakGuards { get; set; }
+        public WaistbandStyle? WaistbandStyle { get; set; }
+        public FragranceType? Fragrance { get; set; }
+        public bool? IsLatexFree { get; set; }
+        public CatalogueVariantDesignedFor? DesignedFor { get; set; }
+        public int? FastenerCount { get; set; }
+        public string? ConstructionNotes { get; set; }
+
+        public void Clear()
+        {
+            BackingType = null; FastenerType = null; Appearance = null; PrimaryColour = null;
+            HasWetnessIndicator = null; HasStandingLeakGuards = null; WaistbandStyle = null;
+            Fragrance = null; IsLatexFree = null; DesignedFor = null; FastenerCount = null; ConstructionNotes = null;
+        }
+
+        public void Load(CatalogueSubmissionVariantOverrideReceipt? value)
+        {
+            if (value is null) return;
+            BackingType = value.BackingType; FastenerType = value.FastenerType; Appearance = value.Appearance;
+            PrimaryColour = value.PrimaryColour; HasWetnessIndicator = value.HasWetnessIndicator;
+            HasStandingLeakGuards = value.HasStandingLeakGuards; WaistbandStyle = value.WaistbandStyle;
+            Fragrance = value.Fragrance; IsLatexFree = value.IsLatexFree; DesignedFor = value.DesignedFor;
+            FastenerCount = value.FastenerCount; ConstructionNotes = value.ConstructionNotes;
         }
     }
 
@@ -946,8 +1688,10 @@
     private sealed class DetailsModel
     {
         public ProductType? ProposedProductType { get; set; }
+        public PackagingType? PackagingType { get; set; }
         public string? ProductFamily { get; set; }
         public string? Description { get; set; }
+        public CatalogueContentVisibility DescriptionVisibility { get; set; } = CatalogueContentVisibility.Public;
         public ProductStatus? ProductStatus { get; set; }
         public string? OfficialWebsiteUrl { get; set; }
     }

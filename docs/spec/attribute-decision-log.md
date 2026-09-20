@@ -2,231 +2,218 @@
 
 ## Overview
 
-The Product Specification has been developed through discussion, experimentation and careful evaluation.
+This document records significant decisions about which attributes DiaperScout should store, where they belong and why.
 
-This document records significant attribute decisions and the reasoning behind them.
+The current Product Specification is authoritative for the attributes that are actually stored.
 
-Its purpose is to preserve design intent so that future contributors understand not only *what* was decided, but *why*.
+Where an older decision conflicts with the current Product Specification, the current Product Specification wins.
 
-The Decision Log should be updated whenever a significant modelling decision is made.
-
----
-
-# Accepted Attributes
-
-The following attributes have been accepted for inclusion within the Product Specification.
-
-| Attribute | Level | Reason |
-|----------|-------|--------|
-| Manufacturer | Product | Identifies the organisation responsible for manufacture. |
-| Brand | Product | Consumer-facing identity. |
-| Product Name | Product | Official product name. |
-| Product Type | Product | Essential for discovery and filtering. |
-| Product Status | Product | Supports discontinued and historical products. |
-| Backing Type | Product Variant | Significant construction difference. |
-| Fastener Type | Product Variant | Fundamental product characteristic. |
-| Wetness Indicator | Product Variant | Objective product feature. |
-| Standing Leak Guards | Product Variant | Objective construction feature. |
-| Inner Leak Guards | Product Variant | Objective construction feature. |
-| Elastic Waistbands | Product Variant | Construction detail affecting comparison. |
-| Print Design | Product Variant | Identifies visually distinct variants. |
-| Number of Fasteners | Product Variant | Supports comparison between otherwise similar products. |
-| Manufacturer Size | Size Variant | Manufacturer-defined sizing. |
-| Waist Range | Size Variant | Essential sizing information. |
-| Hip Range | Size Variant | Additional fit measurement where available. |
-| Capacity | Size Variant | Published performance specification. |
-| Product Dimensions | Size Variant | Objective physical measurements. |
-| Product Weight | Size Variant | Objective reference information. |
-| Manufacturer Pack Quantity | Size Variant | Manufacturer-stated quantity in the standard packaged product; may differ between sizes. |
-| GTIN / Barcode | Size Variant | Identifies the relevant manufacturer trade item where this is the appropriate catalogue representation. |
+This document preserves useful rationale and historical terminology so that superseded decisions are not accidentally reintroduced.
 
 ---
 
-# Rejected Attributes
+# Current Product Attributes
 
-The following proposals have been intentionally excluded from the Product Specification.
+## Product
 
-These may still be valuable as Community Observations.
+| Attribute | Decision | Reason |
+|---|---|---|
+| Manufacturer | Include | Core identity |
+| Brand | Include | Consumer-facing identity |
+| Product Name | Include | Manufacturer product identity |
+| Product Family | Include | Useful manufacturer range grouping |
+| Product Type | Include | Fundamental discovery/classification |
+| Description | Include | Neutral factual context |
+| Product Status | Include | Supports current and historical products |
+| Official Website | Include | Primary information destination |
 
-| Proposal | Reason |
-|----------|--------|
-| Comfort | Subjective experience. |
-| Softness | Varies between individuals. |
-| Quietness | Depends on environment and perception. |
-| Discreteness | Interpretation rather than objective fact. |
-| Confidence | Personal experience. |
-| Value for Money | Depends on retailer and purchaser. |
-| Best for Overnight | Usage recommendation rather than specification. |
-| Good for Heavy Wetting | Interpretation of performance. |
-| Popularity | Changes over time. |
-| Community Rating | Community Observation. |
-| Review Score | Community Observation. |
-| Favourite Product | Community Observation. |
+## Product Variant
 
----
+| Attribute | Decision | Reason |
+|---|---|---|
+| Variant Name | Include | Meaningful manufacturer-defined version |
+| Backing Type | Include | Useful objective construction distinction |
+| Fastener Type | Include | Meaningful user-facing closure distinction |
+| Fastener Count | Include | Two- vs four-fastener products can materially differ |
+| Print Design | Include | Useful visual/product distinction |
+| Primary Colour | Include | Objective and visually verifiable |
+| Wetness Indicator | Include | Useful and commonly disclosed |
+| Standing Leak Guards | Include | Visible, objective and functionally meaningful |
+| Waistband Style | Include | Cleaner replacement for separate front/rear elastic fields |
+| Fragrance | Include | Useful and commonly disclosed |
+| Latex Free | Include | Important manufacturer-stated characteristic |
+| Designed For | Include | Records explicit manufacturer-stated audience without inference |
+| Construction Notes | Include | Factual home for useful unstructured construction details |
 
-# Deferred Attributes
+## Size Variant
 
-The following ideas remain under consideration.
+| Attribute | Decision | Reason |
+|---|---|---|
+| Manufacturer Size | Include | Manufacturer-defined size |
+| Waist Measurements | Include | Useful when explicitly stated |
+| Hip Measurements | Include | Useful when explicitly stated |
+| Fit Measurement Basis | Include | Preserves manufacturer-specific sizing semantics |
+| Manufacturer-Stated Absorbency | Include | Useful, but requires source/method context |
+| Product Length | Include | Objective physical reference |
+| Product Width | Include | Objective physical reference |
+| Product Weight | Include | Objective physical reference |
+| GTIN / Barcode | Include | Size-specific trade-item identification |
 
-They may become Product Specification attributes if future evidence demonstrates sufficient value.
+## Pack / Retail
 
-| Proposal | Current Position |
-|----------|------------------|
-| SAP Percentage | Awaiting reliable manufacturer data. |
-| Pulp Percentage | Awaiting consistent sources. |
-| Core Construction Details | Requires further modelling. |
-| Sustainability Metrics | Awaiting standardised definitions. |
-| Manufacturing Facility | May become useful if reliable sources emerge. |
-
----
-
-# Significant Design Decisions
-
-## Product Specifications describe products.
-
-Community Observations describe experiences.
-
-This distinction is fundamental to the Guide.
-
----
-
-## Unknown is better than incorrect.
-
-Unknown values remain preferable to assumptions.
-
-The Guide should never invent information simply to complete a Product Specification.
+Pack Type, Quantity per Pack, Packaging Type, Case Quantity, Retail Packaging Image, Packaging Notes, retailer, retailer SKU, retail quantity, price, availability and affiliate destinations remain separate from the core product hierarchy.
 
 ---
 
-## Every fact has one home.
+# Consolidated Decisions
 
-Each attribute belongs to one level of the Product Model.
+## Landing Strip / Landing Zone
 
-The core Product hierarchy is:
+**Decision: Remove as a standalone attribute.**
+
+The useful information is represented through Fastener Type.
+
+The terminology becomes less consistent across adhesive and hook-and-loop closure systems, so a separate yes/no engineering field is not justified.
+
+## Front and Rear Elastic Waistbands
+
+**Decision: Replace with Waistband Style.**
+
+The previous separate Boolean fields are consolidated into a single construction attribute that can represent:
+
+- no elastic
+- front elastic
+- rear elastic
+- front + rear elastic
+- all-around elastic
+- other
+- unknown
+
+## Standing Leak Guards vs Inner Leak Guards
+
+**Decision: Keep Standing Leak Guards; remove Inner Leak Guards as a separate field.**
+
+Standing Leak Guards are visually meaningful raised barriers that can be seen on the product.
+
+"Inner Leak Guards", "inner cuffs" and similar terminology remain useful source terminology but do not create a duplicate catalogue attribute.
+
+## Appearance
+
+**Decision: Remove generic Appearance.**
+
+The useful objective information is represented through Primary Colour, Print Design, imagery and factual description.
+
+Do not create subjective categories such as "medical-looking" or "underwear-like".
+
+## Secondary Colours
+
+**Decision: Remove.**
+
+Primary Colour is sufficient as a structured colour field. Additional colours can be represented through Print Design, imagery and factual description.
+
+## Target Gender
+
+**Decision: Rename to Designed For.**
+
+Record the manufacturer's explicit intended audience.
+
+Do not infer it from colour, artwork, styling, anatomy assumptions or marketing imagery.
+
+## Tape Count / Number of Fasteners
+
+**Decision: Rename to Fastener Count.**
+
+The number of fastening points is useful, but "Tape Count" is too narrow because not all closure systems are accurately described as tape.
+
+## Manufacturer Rated Capacity / Capacity
+
+**Decision: Reframe as Manufacturer-Stated Absorbency.**
+
+Manufacturer-published absorbency figures are useful, but can use different test methods or bases.
+
+The catalogue should preserve the stated figure together with methodology/basis and provenance where available.
+
+Do not treat figures from different manufacturers as automatically comparable.
+
+## Waist and Hip Sizing
+
+**Decision: Keep at Size Variant level and preserve manufacturer semantics.**
+
+Manufacturers may publish waist ranges, hip ranges, both, combined ranges or instructions such as "use the larger of waist or hip".
+
+Never infer one measurement from another.
+
+---
+
+# Explicit Exclusions
+
+## ADL / Acquisition Distribution Layer
+
+Exclude from the core Product Specification.
+
+The feature is real, but it is not consistently disclosed in a way that makes it a useful core consumer-facing catalogue attribute.
+
+Explicit manufacturer references can remain in source material or factual descriptions.
+
+## Chlorine Free
+
+Exclude from the core Product Specification.
+
+Chlorine-related claims can involve different processing terminology and definitions. Do not require moderators to classify bleaching processes as a standard product field.
+
+Explicit manufacturer claims can remain in source information where useful.
+
+---
+
+# Historical / Superseded Terminology
+
+| Historical term | Current treatment |
+|---|---|
+| Target Gender | Designed For |
+| Tape Count | Fastener Count |
+| Number of Fasteners | Fastener Count |
+| Elastic Waistband Front | Waistband Style |
+| Elastic Waistband Rear | Waistband Style |
+| Capacity | Manufacturer-Stated Absorbency |
+| Manufacturer Rated Capacity | Manufacturer-Stated Absorbency |
+| Landing Strip | No standalone field; represented through Fastener Type |
+| Landing Zone | No standalone field; represented through Fastener Type |
+| Inner Leak Guards | No separate field; Standing Leak Guards retained |
+| Appearance | No generic field |
+| Secondary Colours | No structured field |
+| ADL | Excluded |
+| Chlorine Free | Excluded |
+
+---
+
+# Decision Principles
+
+Every proposed attribute should pass four tests:
+
+1. **Useful** — Does it help someone understand, compare or find products?
+2. **Available** — Can it realistically be obtained from manufacturers or reliable supporting sources?
+3. **Objective** — Can it be recorded consistently without subjective judgement?
+4. **Worth it** — Is the value worth the moderation and maintenance effort?
+
+A fifth question determines its placement:
+
+5. **Where does it belong?** — Product, Product Variant, Size Variant or Pack/Retail?
+
+Unknown is better than incorrect.
+
+The catalogue is not intended to become an engineering database.
+
+---
+
+# Current Canonical Hierarchy
 
 ```text
 Product
 └── Product Variant
     └── Size Variant
+        └── Pack / Retail
 ```
 
-Retail selling arrangements are deliberately outside this hierarchy.
+The Product Specification describes objective product facts.
 
----
-
-## Product Variant is not Size Variant.
-
-A Product Variant represents a meaningful version of a Product.
-
-A Size Variant represents the physical size within that Product Variant.
-
----
-
-## Manufacturer Pack Quantity belongs with Size Variant.
-
-Manufacturers commonly state the number of individual products supplied in the standard packaged product for a particular size.
-
-This information is useful Product Specification data and may differ between sizes.
-
-For example:
-
-```text
-TENA Slip Active Fit Maxi
-
-Medium
-└── Manufacturer Pack Quantity: 24
-
-Large
-└── Manufacturer Pack Quantity: 22
-```
-
-The value therefore belongs with other size-specific information.
-
-It does not create a separate Pack Type entity.
-
----
-
-## Pack Type is not part of the core Product Model.
-
-The earlier Product Model included Pack Type beneath Size Variant.
-
-That model is intentionally superseded.
-
-Retailers may:
-
-- sell one manufacturer's pack
-- sell several manufacturer's packs together
-- break a manufacturer's pack down into individual samples
-- create bundles or cases
-- choose other selling quantities or presentations
-
-These are Retail Offer arrangements, not additional Product Variants or Size Variants.
-
-A manufacturer-stated packaged quantity remains catalogue information, but the packaging hierarchy itself is not modelled as a core entity.
-
-This distinction prevents retailer-specific commercial arrangements from becoming accidental catalogue entities.
-
----
-
-## GTIN / Barcode identifies a trade item.
-
-A GTIN is associated with a specific trade item.
-
-Within the normal DiaperScout catalogue model, GTIN / Barcode is recorded with the relevant Size Variant where that is the appropriate representation.
-
-A GTIN should only be recorded when its meaning and scope can be reliably established.
-
-A retailer-created bundle or case must not be assumed to be a new catalogue item simply because the retailer sells it as a distinct offer.
-
----
-
-## Model reality.
-
-The Product Model reflects how products actually exist.
-
-It does not flatten meaningful manufacturer differences.
-
-It also does not turn every retailer selling arrangement into a catalogue entity.
-
----
-
-## Objective information comes first.
-
-Manufacturer information and verifiable specifications take priority over retailer descriptions and community interpretation for Product Specification facts.
-
-Retail-specific information remains Retail information.
-
----
-
-## Community Observations complement the Product Specification.
-
-Community knowledge strengthens the Guide without replacing objective facts.
-
----
-
-# Evaluating Future Proposals
-
-When considering a new attribute, ask:
-
-- Is it objective?
-- Can it be verified?
-- Does it improve discovery?
-- Does it improve comparison?
-- Does it provide important reference information?
-- Does it belong at the correct level of the Product Model?
-- Is it manufacturer product information or retailer selling information?
-- Could it instead be represented as a Community Observation?
-- Would introducing a new entity unnecessarily mix retail concerns into the core catalogue?
-
-Only attributes that provide lasting value should become part of the Product Specification.
-
----
-
-# Living Document
-
-The Decision Log is expected to evolve.
-
-New decisions should be added rather than replacing historical reasoning.
-
-Preserving previous discussions helps future contributors understand how the Product Specification reached its current form and avoids revisiting the same questions repeatedly.
+Community Observations describe experience, opinion and discovery.

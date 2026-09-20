@@ -453,14 +453,6 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
             new
             {
                 proposedProductType = ProductType.Tape,
-                proposedManufacturerSize = "Medium",
-                proposedWaistMinimumCm = 80,
-                proposedWaistMaximumCm = 110,
-                proposedBackingType = BackingType.Plastic,
-                proposedFastenerType = FastenerType.Tape,
-                proposedWaistbandStyle = WaistbandStyle.FrontAndRear,
-                proposedFragranceType = FragranceType.None,
-                proposedQuantityPerPack = 20,
                 proposedPackagingType = PackagingType.Bag
             });
 
@@ -473,21 +465,13 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
 
         Assert.NotNull(receipt);
         Assert.Equal(ProductType.Tape, receipt.ProposedProductType);
-        Assert.Equal("Medium", receipt.ProposedManufacturerSize);
-        Assert.Equal(80, receipt.ProposedWaistMinimumCm);
-        Assert.Equal(110, receipt.ProposedWaistMaximumCm);
-        Assert.Equal(BackingType.Plastic, receipt.ProposedBackingType);
-        Assert.Equal(FastenerType.Tape, receipt.ProposedFastenerType);
-        Assert.Equal(WaistbandStyle.FrontAndRear, receipt.ProposedWaistbandStyle);
-        Assert.Equal(FragranceType.None, receipt.ProposedFragranceType);
-        Assert.Equal(20, receipt.ProposedQuantityPerPack);
         Assert.Equal(PackagingType.Bag, receipt.ProposedPackagingType);
 
         await using var db = _fixture.CreateDbContext();
         var submission = await db.CatalogueSubmissions.SingleAsync(value => value.Id == created.Id);
 
         Assert.Equal(ProductType.Tape, submission.ProposedProductType);
-        Assert.Equal(20, submission.ProposedQuantityPerPack);
+        Assert.Equal(PackagingType.Bag, submission.ProposedPackagingType);
     }
 
     [Fact]
@@ -949,7 +933,7 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
     }
 
     [Fact]
-    public async Task UpdateCatalogueSubmissionSpecifications_WithInvalidMeasurements_ReturnsValidationProblem()
+    public async Task AddCatalogueSubmissionSizeVariant_WithInvalidMeasurements_ReturnsValidationProblem()
     {
         using var client = AuthenticatedClient(PostgreSqlFixture.ModeratorSubject);
 
@@ -964,15 +948,32 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
 
         Assert.NotNull(created);
 
-        var response = await client.PutAsJsonAsync(
-            $"/api/v1/catalogue-submissions/{created.Id}/specifications",
+        var variantResponse = await client.PostAsJsonAsync(
+            $"/api/v1/catalogue-submissions/{created.Id}/variants",
+            new { name = "Invalid Measurement Variant" });
+
+        Assert.Equal(HttpStatusCode.Created, variantResponse.StatusCode);
+
+        var variant = await variantResponse.Content
+            .ReadFromJsonAsync<CatalogueSubmissionVariantReceipt>();
+
+        Assert.NotNull(variant);
+
+        var response = await client.PostAsJsonAsync(
+            $"/api/v1/catalogue-submissions/{created.Id}/variants/{variant.Id}/sizes",
             new
             {
-                proposedWaistMinimumCm = 120,
-                proposedWaistMaximumCm = 100
+                manufacturerSize = "Medium",
+                waistMinimumCm = 120,
+                waistMaximumCm = 100
             });
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        await using var db = _fixture.CreateDbContext();
+
+        Assert.False(await db.CatalogueSubmissionSizeVariants
+            .AnyAsync(value => value.VariantId == variant.Id));
     }
 
     [Fact]
@@ -1332,7 +1333,7 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
                     waistMaximumCm = 100,
                     hipMinimumCm = 90,
                     hipMaximumCm = 110,
-                    capacityMl = 2500,
+                    manufacturerStatedAbsorbencyMl = 2500,
                     lengthMm = 850,
                     widthMm = 700,
                     weightGrams = 120,
@@ -1351,7 +1352,7 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
                     waistMaximumCm = 120,
                     hipMinimumCm = 110,
                     hipMaximumCm = 130,
-                    capacityMl = 3000,
+                    manufacturerStatedAbsorbencyMl = 3000,
                     lengthMm = 900,
                     widthMm = 750,
                     weightGrams = 135,
@@ -1370,8 +1371,8 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
                     proposedWaistMinimumCm = 80,
                     proposedWaistMaximumCm = 100,
                     proposedBackingType = BackingType.Plastic,
-                    proposedFastenerType = FastenerType.Tape,
-                    proposedWaistbandStyle = WaistbandStyle.FrontAndRear,
+                    proposedFastenerType = FastenerType.AdhesiveTape,
+                    proposedWaistbandStyle = WaistbandStyle.FrontAndRearElastic,
                     proposedFragranceType = FragranceType.None,
                     proposedQuantityPerPack = 10,
                     proposedPackagingType = PackagingType.Bag,
@@ -1491,7 +1492,7 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
         Assert.Equal(100, publishedFirstVariantSize.WaistMaximumCm);
         Assert.Equal(90, publishedFirstVariantSize.HipMinimumCm);
         Assert.Equal(110, publishedFirstVariantSize.HipMaximumCm);
-        Assert.Equal(2500, publishedFirstVariantSize.CapacityMl);
+        Assert.Equal(2500, publishedFirstVariantSize.ManufacturerStatedAbsorbencyMl);
         Assert.Equal(850, publishedFirstVariantSize.LengthMm);
         Assert.Equal(700, publishedFirstVariantSize.WidthMm);
         Assert.Equal(120, publishedFirstVariantSize.WeightGrams);
@@ -1505,7 +1506,7 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
         Assert.Equal(120, publishedSecondVariantSize.WaistMaximumCm);
         Assert.Equal(110, publishedSecondVariantSize.HipMinimumCm);
         Assert.Equal(130, publishedSecondVariantSize.HipMaximumCm);
-        Assert.Equal(3000, publishedSecondVariantSize.CapacityMl);
+        Assert.Equal(3000, publishedSecondVariantSize.ManufacturerStatedAbsorbencyMl);
         Assert.Equal(900, publishedSecondVariantSize.LengthMm);
         Assert.Equal(750, publishedSecondVariantSize.WidthMm);
         Assert.Equal(135, publishedSecondVariantSize.WeightGrams);

@@ -213,3 +213,164 @@
         align-self: flex-start;
     }
 }
+
+
+/* Variant editor: actions belong to the input row, not the editor card. */
+.submission-card-editor {
+    display: block;
+}
+
+.submission-card-editor .submission-field-wide {
+    width: 100%;
+}
+
+.submission-variant-input-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: .75rem;
+}
+
+.submission-variant-input-row .submission-card-actions {
+    align-self: center;
+    flex: 0 0 auto;
+}
+
+@media (max-width: 640px) {
+    .submission-variant-input-row {
+        grid-template-columns: 1fr;
+    }
+
+    .submission-variant-input-row .submission-card-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+/* Reached wizard steps are clickable without changing the original tab layout. */
+.submission-steps li.submission-step-navigable {
+    cursor: pointer;
+}
+
+.submission-steps li.submission-step-navigable:hover {
+    background: color-mix(in srgb, var(--color-primary-light) 4%, transparent);
+}
+
+.submission-steps li.submission-step-navigable:focus-visible {
+    outline: 2px solid var(--color-primary-light);
+    outline-offset: -3px;
+}
+
+
+.submission-image-grid {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:1rem;
+}
+
+.submission-image-card {
+    display:flex;
+    flex-direction:column;
+    gap:.9rem;
+}
+
+.submission-image-card-heading {
+    display:flex;
+    justify-content:space-between;
+    gap:1rem;
+    align-items:flex-start;
+}
+
+.submission-image-card-heading strong,
+.submission-image-card-heading small {
+    display:block;
+}
+
+.submission-image-card-heading small {
+    margin-top:.25rem;
+    color:var(--color-muted);
+    line-height:1.4;
+}
+
+.submission-image-status {
+    font-size:.7rem;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--color-muted);
+    white-space:nowrap;
+}
+
+.submission-image-item {
+    display:grid;
+    grid-template-columns:96px minmax(0,1fr);
+    gap:.85rem;
+    align-items:center;
+    padding:.75rem;
+    border:1px solid var(--color-border);
+    border-radius:12px;
+}
+
+.submission-image-preview {
+    width:96px;
+    height:96px;
+    object-fit:cover;
+    border-radius:8px;
+    border:1px solid var(--color-border);
+    background:var(--color-background);
+}
+
+.submission-image-meta {
+    min-width:0;
+}
+
+.submission-image-meta strong,
+.submission-image-meta small {
+    display:block;
+}
+
+.submission-image-meta strong {
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.submission-image-meta small {
+    margin-top:.2rem;
+    color:var(--color-muted);
+}
+
+.submission-image-warning {
+    color:#9a5b00 !important;
+}
+
+.submission-image-actions {
+    grid-column:1 / -1;
+    display:flex;
+    justify-content:flex-end;
+    gap:.6rem;
+}
+
+.submission-image-editor {
+    padding:1rem;
+    border:1px dashed var(--color-border);
+    border-radius:12px;
+    background:color-mix(in srgb, var(--color-primary-light) 4%, transparent);
+}
+
+@media (max-width:900px) {
+    .submission-image-grid {
+        grid-template-columns:1fr;
+    }
+}
+
+@media (max-width:620px) {
+    .submission-image-item {
+        grid-template-columns:1fr;
+    }
+
+    .submission-image-preview {
+        width:100%;
+        height:auto;
+        max-height:260px;
+    }
+}

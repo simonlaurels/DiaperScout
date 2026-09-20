@@ -1,141 +1,217 @@
-# Product Attributes
+# DiaperScout Product Attributes
 
-## Overview
+## Purpose
 
-This document defines the canonical Product Specification used throughout DiaperScout.
+This document is the authoritative reference for the Product Specification.
 
-Every approved attribute belongs to one level of the Product Model.
+It defines which attributes are stored, which level they belong to, and how they should be recorded.
 
-```text
-Product
-└── Product Variant
-    └── Size Variant
-```
+The Product Specification is intentionally conservative.
 
-Each attribute has one authoritative home and should only be recorded once.
+An attribute should provide meaningful product discovery, comparison or reference value, be objective enough to record consistently, and have a clear home in the Product Model.
 
-For catalogue entry, shared details are entered once at the highest applicable level. Variants inherit shared values by default and store an explicit override only when a characteristic genuinely differs for that variant. Size-specific information belongs at Size Variant level where it can legitimately differ between sizes.
-
-Retail selling arrangements are separate from the core Product Specification.
-
-Where subjective information is required, it belongs in Community Observations rather than the Product Specification.
+Unknown is preferable to invented information.
 
 ---
 
 # Product Attributes
 
-These attributes describe the identity of a product.
-
-They remain constant regardless of variant or size.
-
 | Attribute | Type | Notes |
-|-----------|------|------|
-| Manufacturer | Reference | Company responsible for manufacture |
-| Brand | Text | Consumer-facing brand |
-| Product Name | Text | Official product name |
-| Product Family | Text | Optional product range |
-| Product Type | Enum | Tape, Pull-up, Pad, Booster, etc. |
-| Description | Markdown | Neutral factual description |
-| Product Status | Enum | Current, Discontinued, Prototype |
-| Official Website | URL | Manufacturer product page |
-| Primary Product Image | Image | Representative product image |
+|---|---|---|
+| Manufacturer | Reference | Organisation responsible for the product |
+| Brand | Reference | Consumer-facing brand |
+| Product Name | Text | Manufacturer's product name |
+| Product Family | Text / Reference | Manufacturer-defined broader range where applicable |
+| Product Type | Enum | Fundamental product classification |
+| Description | Markdown | Neutral, factual product description |
+| Product Status | Enum | Current, discontinued, prototype, etc. |
+| Official Website | URL | Official manufacturer/product information destination |
 
 ---
 
 # Product Variant Attributes
 
-These attributes describe meaningful variations within a Product.
-
-Variants exist only where the manufacturer intentionally produces different versions.
-
 | Attribute | Type | Notes |
-|-----------|------|------|
-| Variant Name | Text | Plain, Printed, Night, etc. |
-| Backing Type | Enum | Plastic, Cloth, Hybrid |
-| Fastener Type | Enum | Tape, Hook & Loop, Pull-up |
-| Print Design | Text | Description of artwork |
-| Primary Colour | Text | Dominant colour |
-| Secondary Colours | List | Optional |
-| Wetness Indicator | Boolean |
-| Standing Leak Guards | Boolean |
-| Inner Leak Guards | Boolean |
-| Elastic Waistband Front | Boolean |
-| Elastic Waistband Rear | Boolean |
-| Waistband Style | Enum |
-| Fragrance | Enum |
-| Latex Free | Boolean |
-| Chlorine Free | Boolean |
-| Number of Fasteners | Integer |
-| Construction Notes | Markdown | Objective only |
+|---|---|---|
+| Variant Name | Text | Manufacturer-defined variant name where applicable |
+| Backing Type | Enum | Plastic, cloth-like/textile, hybrid, other, unknown |
+| Fastener Type | Enum | Adhesive Tape, Hook & Loop, Other, Unknown |
+| Fastener Count | Integer | Number of fastening points where clearly defined |
+| Print Design | Text | Objective description of manufacturer-defined artwork |
+| Primary Colour | Text / Enum | Dominant product colour |
+| Wetness Indicator | Boolean / Unknown | Manufacturer-provided visual indicator |
+| Standing Leak Guards | Boolean / Unknown | Raised standing barriers around leg openings |
+| Waistband Style | Enum | No Elastic, Front, Rear, Front + Rear, All-Around, Other, Unknown |
+| Fragrance | Enum | Fragranced, Fragrance-Free, Unknown |
+| Latex Free | Boolean / Unknown | Manufacturer-stated latex-free status |
+| Designed For | Enum / Text | Manufacturer-stated intended audience |
+| Construction Notes | Markdown | Objective construction information |
 
-Only attributes that genuinely differ between variants should be stored as variant overrides. A variant does not duplicate shared values simply because the field is also relevant to variants.
+Only values that genuinely differ between variants should be stored as variant-specific information.
+
+## Fastener Type
+
+Fastener Type describes the mechanism used to secure the product.
+
+Initial controlled values:
+
+- Adhesive Tape
+- Hook & Loop
+- Other
+- Unknown
+
+Landing Strip / Landing Zone is not a separate attribute. Its useful information is represented through Fastener Type and factual product description.
+
+## Fastener Count
+
+Fastener Count replaces the older "Tape Count" and "Number of Fasteners" terminology.
+
+The term is deliberately broader because not all closure systems are accurately described as tape.
+
+## Standing Leak Guards
+
+Standing Leak Guards record whether raised barriers around the leg openings are present.
+
+"Inner Leak Guards", "inner cuffs" and similar terminology do not create a second structured field.
+
+## Waistband Style
+
+Waistband Style replaces the separate Front Elastic Waistband and Rear Elastic Waistband fields.
+
+Initial values:
+
+- No Elastic Waistband
+- Front Elastic
+- Rear Elastic
+- Front + Rear Elastic
+- All-Around Elastic
+- Other
+- Unknown
+
+## Designed For
+
+Designed For replaces the older Target Gender terminology.
+
+Record the manufacturer's explicit intended audience only.
+
+Initial values may include:
+
+- Men
+- Women
+- Unisex
+- Manufacturer-defined
+- Unknown
+
+Do not infer this from colour, artwork, styling, anatomy assumptions or marketing imagery.
+
+## Construction Notes
+
+Construction Notes are factual only.
+
+They may contain useful construction information that does not justify another structured field.
+
+They must not become a place for comfort opinions, recommendations, reviews or subjective performance judgements.
 
 ---
 
 # Size Variant Attributes
 
-These attributes describe information that may legitimately differ between physical sizes.
-
-| Attribute | Type | Unit |
-|-----------|------|------|
-| Manufacturer Size | Text | — |
-| Waist Range Minimum | Integer | cm |
-| Waist Range Maximum | Integer | cm |
-| Hip Range Minimum | Integer | cm |
-| Hip Range Maximum | Integer | cm |
-| Capacity | Integer | ml |
+| Attribute | Type | Unit / Notes |
+|---|---|---|
+| Manufacturer Size | Text | Manufacturer's size label/code |
+| Waist Minimum | Integer | cm; only when explicitly stated |
+| Waist Maximum | Integer | cm; only when explicitly stated |
+| Hip Minimum | Integer | cm; only when explicitly stated |
+| Hip Maximum | Integer | cm; only when explicitly stated |
+| Fit Measurement Basis | Enum / Text | Manufacturer's stated sizing method |
+| Manufacturer-Stated Absorbency | Integer / Decimal | ml where a numerical figure is published |
+| Absorbency Basis / Method | Text / Enum | Test method or stated basis where available |
 | Product Length | Integer | mm |
 | Product Width | Integer | mm |
 | Product Weight | Integer | g |
-| Manufacturer Pack Quantity | Integer | Individual products in manufacturer's stated standard pack |
-| GTIN / Barcode | Text | Global Trade Item Number |
+| GTIN / Barcode | Text | Global Trade Item Number where reliably established |
+| Manufacturer Pack Quantity | Integer | Number of individual products the manufacturer states are supplied in the standard pack for this size |
 
-Manufacturers occasionally publish only some measurements.
+## Manufacturer Fit Measurements
 
-Unknown values should remain unknown.
+Manufacturers may publish:
 
-### Manufacturer Pack Quantity
+- waist range
+- hip range
+- both waist and hip ranges
+- a combined waist-or-hip range
+- another explicitly defined measurement basis
 
-Manufacturer Pack Quantity records the number of individual products that the manufacturer states are supplied in the standard packaged product for that size, where published.
+Capture the manufacturer's stated information faithfully.
 
-The value may be the same across several sizes or may differ between sizes.
+Do not infer a waist range from a hip range or a hip range from a waist range.
 
-This is product information associated with the Size Variant. It is not a Pack Type and does not create a fourth level in the Product Model.
+If the manufacturer says to use the larger of waist or hip, record that basis explicitly.
 
-Manufacturer Pack Quantity must not be confused with a retailer's selling quantity.
+Retailer sizing information may support verification, but manufacturer information takes precedence where available.
+
+## Manufacturer-Stated Absorbency
+
+Manufacturer-Stated Absorbency replaces the older "Capacity" and "Manufacturer Rated Capacity" terminology.
+
+The catalogue records the manufacturer's published figure without implying that it is a universal real-world capacity.
+
+Where available, retain:
+
+- numerical value
+- unit
+- test method or methodology
+- stated basis
+- source/provenance
+
+Do not normalise different manufacturers' figures into a common performance score.
+
+Community reports of real-world performance belong in Community Observations.
+
+## GTIN / Barcode
+
+GTIN / Barcode normally belongs at Size Variant level because different sizes commonly have different identifiers.
+
+Only record a GTIN when its value and scope can be reliably established.
+
+Do not copy GTINs when propagating size data between variants.
 
 ---
 
-### GTIN / Barcode
+# Pack / Retail Attributes
 
-A GTIN / Barcode identifies a specific trade item.
+| Attribute | Type | Notes |
+|---|---|---|
+| Pack Type | Enum | Sample, Pack, Case, etc. |
+| Retail Quantity | Integer | Number of manufacturer packs or individual units offered in a specific retail arrangement |
+| Packaging Type | Enum | Bag, Box, Case, etc. |
+| Case Quantity | Integer | Number of retail packs in a case |
+| Retail Packaging Image | Image | Packaging image |
+| Packaging Notes | Markdown | Objective packaging information |
 
-Within the normal DiaperScout catalogue model, manufacturer-issued identifiers are associated with the relevant Size Variant where that is the appropriate representation.
+Retail information may additionally include retailer, retailer SKU, quantity offered, price, availability, retailer destination and affiliate destination.
 
-Different sizes commonly have different GTINs.
-
-A GTIN should not be assumed to exist where no reliable identifier is published.
+Retail quantity is not the same thing as Manufacturer Pack Quantity.
 
 ---
 
-# Retail Information
+# Explicitly Excluded Core Attributes
 
-Retail selling arrangements are not Product Specification attributes merely because they describe packaging or quantity.
-
-Retail information may include:
-
-- Quantity offered by a retailer
-- Selling presentation
-- Retailer SKU
-- Individual samples
-- Multiple manufacturer's packs sold together
-- Retailer-created bundles or cases
-- Retail availability
-- Retail price and other time-sensitive commercial information
-
-A retailer-created bundle or case does not create a new Product Variant or Size Variant.
-
-Manufacturer-stated pack quantity remains Product Specification information because it describes the manufacturer's packaged product.
+| Attribute | Treatment |
+|---|---|
+| ADL / Acquisition Distribution Layer | Exclude from core Product Specification |
+| Landing Strip / Landing Zone | No standalone field; represented through Fastener Type |
+| Inner Leak Guards | No separate field; Standing Leak Guards retained |
+| Appearance | No generic structured field |
+| Secondary Colours | No structured field |
+| Chlorine Free | Exclude from core Product Specification |
+| Target Gender | Replaced by Designed For |
+| Tape Count | Replaced by Fastener Count |
+| Number of Fasteners | Replaced by Fastener Count |
+| Elastic Waistband Front | Replaced by Waistband Style |
+| Elastic Waistband Rear | Replaced by Waistband Style |
+| Capacity | Replaced by Manufacturer-Stated Absorbency |
+| Manufacturer Rated Capacity | Replaced by Manufacturer-Stated Absorbency |
 
 ---
 
@@ -147,123 +223,47 @@ Every attribute belongs to one level of the Product Model.
 
 Do not duplicate information.
 
----
-
 ## Objective Only
 
 Product Specifications record facts.
 
 Subjective information belongs in Community Observations.
 
----
-
-## Stable Information
-
-Attributes should represent information that remains true for that Product Specification.
-
-Temporary promotions, retailer descriptions and marketing claims should not be recorded as Product Specification attributes unless they meet the applicable evidence and attribute rules.
-
----
-
 ## Manufacturer First
 
-Where manufacturer information is available, it should take precedence over retailer information for Product Specification facts.
-
-Retailers frequently rewrite product descriptions.
-
-The Product Specification should prefer primary sources.
-
-Retail-specific information should remain Retail information.
-
----
+Where manufacturer information is available, it should normally take precedence over retailer information.
 
 ## Unknown Is Acceptable
 
-If information cannot be verified, leave it blank.
+If information cannot be verified, leave it unknown.
 
-An incomplete Product Specification is preferable to an incorrect one.
+## Do Not Over-model
 
----
+A technically interesting fact is not automatically worth a dedicated field.
 
-# Standard Data Types
-
-| Type | Description |
-|------|-------------|
-| Text | Short free-form text |
-| Markdown | Longer formatted text |
-| Integer | Whole number |
-| Decimal | Numeric value |
-| Boolean | True / False |
-| Enum | Controlled vocabulary |
-| Reference | Link to another entity |
-| URL | External web address |
-| Image | Image asset |
-| List | Multiple values |
+A structured attribute should be useful, realistically obtainable, objective enough to record consistently, and worth the moderation and maintenance effort.
 
 ---
 
-# Controlled Vocabularies
+# Community Observations
 
-Where possible, Product Specifications should use controlled vocabularies rather than free text.
+The following remain outside the Product Specification:
 
-Examples include:
+- Comfort
+- Softness
+- Quietness
+- Discretion
+- Confidence
+- Value for Money
+- Best for Overnight
+- Good for Heavy Wetting
+- Popularity
+- Community Rating
+- Review Score
+- Favourite Product
+- Real-world fit experiences
+- Real-world leakage experiences
 
-- Product Type
-- Backing Type
-- Fastener Type
-- Product Status
-- Fragrance
+The Product Specification describes what the product is.
 
-Retail packaging terminology should not be used to create a core Product hierarchy level.
-
----
-
-# Units
-
-Unless otherwise stated:
-
-| Measurement | Unit |
-|------------|------|
-| Length | mm |
-| Width | mm |
-| Weight | g |
-| Capacity | ml |
-| Waist / Hip | cm |
-| Manufacturer Pack Quantity | Individual products |
-
-The Guide may display alternative units for Explorers, but Product Specifications should use a single canonical unit internally.
-
----
-
-# Adding New Attributes
-
-New attributes should only be added when they:
-
-- Improve product discovery.
-- Improve product comparison.
-- Provide important reference information.
-- Are objective.
-- Can be recorded consistently.
-- Have a clear home within the Product Model.
-
-Every accepted attribute should also be recorded in the Attribute Decision Log.
-
----
-
-# Relationship to Community Observations
-
-The Product Specification answers:
-
-> **"What is this product?"**
-
-Community Observations answer:
-
-> **"What is it like to use?"**
-
-This distinction should always be maintained.
-
-A Product Specification should never attempt to summarise community opinion.
-
-Likewise, Community Observations should never replace objective product information.
-
-Together they provide a complete picture of a product.
+Community Observations describe what it is like to use.

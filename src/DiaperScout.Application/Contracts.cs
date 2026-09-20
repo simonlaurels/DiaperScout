@@ -80,6 +80,34 @@ public sealed record CatalogueProductPack(
     PackagingType PackagingType,
     IReadOnlyList<string> Gtins);
 
+public sealed record CatalogueProductImage(
+    Guid Id,
+    CatalogueSubmissionImageRole Role,
+    string ContentUrl);
+
+public sealed record CatalogueModeratorProductImage(
+    Guid Id,
+    CatalogueSubmissionImageRole Role,
+    CatalogueContentVisibility Visibility,
+    CatalogueImageSourceType SourceType,
+    string? SourceUrl,
+    CatalogueImagePermissionStatus PermissionStatus,
+    string ContentUrl);
+
+public sealed record CatalogueModeratorProductDetails(
+    Guid Id,
+    string Name,
+    string Slug,
+    ProductType ProductType,
+    ProductStatus Status,
+    string ManufacturerName,
+    string? BrandName,
+    string? Description,
+    CatalogueContentVisibility DescriptionVisibility,
+    string? OfficialWebsiteUrl,
+    IReadOnlyList<CatalogueProductVariant> Variants,
+    IReadOnlyList<CatalogueModeratorProductImage> Images);
+
 public sealed record CatalogueProductDetails(
     Guid Id,
     string Name,
@@ -89,8 +117,10 @@ public sealed record CatalogueProductDetails(
     string ManufacturerName,
     string? BrandName,
     string? Description,
+    CatalogueContentVisibility DescriptionVisibility,
     string? OfficialWebsiteUrl,
-    IReadOnlyList<CatalogueProductVariant> Variants);
+    IReadOnlyList<CatalogueProductVariant> Variants,
+    IReadOnlyList<CatalogueProductImage> Images);
 
 public sealed record ExplorerIdentity(
     Guid UserId,
@@ -134,6 +164,11 @@ public sealed record ObservationReceipt(
     ObservationState State,
     DateTimeOffset SubmittedAtUtc);
 
+public sealed record CatalogueProductImageContent(
+    Stream Content,
+    string ContentType,
+    string FileName);
+
 public interface IAtlasQueries
 {
     Task<ProductSummary?> GetProductBySlugAsync(
@@ -159,6 +194,17 @@ public interface IAtlasQueries
     Task<CatalogueProductDetails?> GetProductDetailsBySlugAsync(
         string slug,
         CancellationToken cancellationToken = default);
+
+    Task<CatalogueModeratorProductDetails?> GetProductDetailsForModeratorAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        CancellationToken cancellationToken = default);
+
+    Task<CatalogueProductImageContent?> GetProductImageContentAsync(
+        Guid productId,
+        Guid imageId,
+        bool moderatorOnly,
+        CancellationToken cancellationToken = default);
 }
 
 public interface IObservationSubmissions
@@ -175,6 +221,7 @@ public sealed record CatalogueSubmissionQueueItem(
     string ProposedManufacturerName,
     string? ProposedBrandName,
     string ProposedProductName,
+    Guid? PublishedProductId,
     DateTimeOffset CreatedAtUtc,
     DateTimeOffset UpdatedAtUtc);
 
@@ -201,7 +248,10 @@ public sealed record CatalogueSubmissionSizeVariantReceipt(
     int? WaistMaximumCm,
     int? HipMinimumCm,
     int? HipMaximumCm,
-    int? CapacityMl,
+    int? ManufacturerStatedAbsorbencyMl,
+    string? FitMeasurementBasis,
+    string? AbsorbencyBasisMethod,
+    string? AbsorbencySource,
     int? LengthMm,
     int? WidthMm,
     int? WeightGrams,
@@ -216,7 +266,10 @@ public sealed record AddCatalogueSubmissionSizeVariantRequest(
     int? WaistMaximumCm,
     int? HipMinimumCm,
     int? HipMaximumCm,
-    int? CapacityMl,
+    int? ManufacturerStatedAbsorbencyMl,
+    string? FitMeasurementBasis,
+    string? AbsorbencyBasisMethod,
+    string? AbsorbencySource,
     int? LengthMm,
     int? WidthMm,
     int? WeightGrams,
@@ -229,7 +282,10 @@ public sealed record UpdateCatalogueSubmissionSizeVariantRequest(
     int? WaistMaximumCm,
     int? HipMinimumCm,
     int? HipMaximumCm,
-    int? CapacityMl,
+    int? ManufacturerStatedAbsorbencyMl,
+    string? FitMeasurementBasis,
+    string? AbsorbencyBasisMethod,
+    string? AbsorbencySource,
     int? LengthMm,
     int? WidthMm,
     int? WeightGrams,
@@ -242,7 +298,10 @@ public sealed record AddCatalogueSubmissionSizeVariant(
     int? WaistMaximumCm,
     int? HipMinimumCm,
     int? HipMaximumCm,
-    int? CapacityMl,
+    int? ManufacturerStatedAbsorbencyMl,
+    string? FitMeasurementBasis,
+    string? AbsorbencyBasisMethod,
+    string? AbsorbencySource,
     int? LengthMm,
     int? WidthMm,
     int? WeightGrams,
@@ -255,7 +314,10 @@ public sealed record UpdateCatalogueSubmissionSizeVariant(
     int? WaistMaximumCm,
     int? HipMinimumCm,
     int? HipMaximumCm,
-    int? CapacityMl,
+    int? ManufacturerStatedAbsorbencyMl,
+    string? FitMeasurementBasis,
+    string? AbsorbencyBasisMethod,
+    string? AbsorbencySource,
     int? LengthMm,
     int? WidthMm,
     int? WeightGrams,
@@ -331,18 +393,14 @@ public sealed record CatalogueSubmissionVariantOverrideReceipt(
     Guid VariantId,
     BackingType? BackingType,
     FastenerType? FastenerType,
-    string? PrintDesign,
-    string? PrimaryColour,
-    string? SecondaryColours,
+    CatalogueVariantAppearance? Appearance,
+    CatalogueVariantColour? PrimaryColour,
     bool? HasWetnessIndicator,
     bool? HasStandingLeakGuards,
-    bool? HasInnerLeakGuards,
-    bool? HasElasticWaistbandFront,
-    bool? HasElasticWaistbandRear,
     WaistbandStyle? WaistbandStyle,
     FragranceType? Fragrance,
     bool? IsLatexFree,
-    bool? IsChlorineFree,
+    CatalogueVariantDesignedFor? DesignedFor,
     int? FastenerCount,
     string? ConstructionNotes);
 
@@ -403,27 +461,18 @@ public sealed record CatalogueSubmissionReceipt(
     ProductType? ProposedProductType,
     string? ProposedProductFamily,
     string? ProposedDescription,
+    CatalogueContentVisibility ProposedDescriptionVisibility,
     ProductStatus? ProposedProductStatus,
     string? ProposedOfficialWebsiteUrl,
-    string? ProposedManufacturerSize,
-    int? ProposedWaistMinimumCm,
-    int? ProposedWaistMaximumCm,
-    BackingType? ProposedBackingType,
-    FastenerType? ProposedFastenerType,
-    WaistbandStyle? ProposedWaistbandStyle,
-    FragranceType? ProposedFragranceType,
-    int? ProposedQuantityPerPack,
     PackagingType? ProposedPackagingType,
-    string? SharedPrintDesign,
+    CatalogueVariantAppearance? SharedAppearance,
     string? SharedPrimaryColour,
-    string? SharedSecondaryColours,
     bool? SharedWetnessIndicator,
     bool? SharedStandingLeakGuards,
-    bool? SharedInnerLeakGuards,
-    bool? SharedElasticWaistbandFront,
-    bool? SharedElasticWaistbandRear,
+    WaistbandStyle? SharedWaistbandStyle,
+    FragranceType? SharedFragrance,
     bool? SharedLatexFree,
-    bool? SharedChlorineFree,
+    string? SharedDesignedFor,
     int? SharedFastenerCount,
     string? SharedConstructionNotes,
     string? Notes,
@@ -529,6 +578,122 @@ public sealed record CatalogueSubmissionEditorialDecisionReceipt(
     string? Rationale,
     DateTimeOffset DecidedAtUtc);
 
+public sealed record AddCatalogueSubmissionImage(
+    CatalogueSubmissionImageRole Role,
+    string OriginalFileName,
+    string ContentType,
+    long FileSizeBytes,
+    Stream Content,
+    CatalogueImageSourceType SourceType,
+    string? SourceUrl,
+    string? SourceNotes,
+    CatalogueImagePermissionStatus PermissionStatus,
+    string? PermissionEvidence);
+
+public sealed record UpdateCatalogueSubmissionImageMetadata(
+    CatalogueImageSourceType SourceType,
+    string? SourceUrl,
+    string? SourceNotes,
+    CatalogueImagePermissionStatus PermissionStatus,
+    string? PermissionEvidence);
+
+public sealed record CatalogueSubmissionImageReceipt(
+    Guid Id,
+    Guid SubmissionId,
+    CatalogueSubmissionImageRole Role,
+    string OriginalFileName,
+    string ContentType,
+    long FileSizeBytes,
+    CatalogueImageSourceType SourceType,
+    string? SourceUrl,
+    string? SourceNotes,
+    CatalogueImagePermissionStatus PermissionStatus,
+    string? PermissionEvidence,
+    CatalogueContentVisibility Visibility,
+    string ContentUrl,
+    DateTimeOffset CreatedAtUtc,
+    DateTimeOffset UpdatedAtUtc);
+
+public sealed record CatalogueSubmissionImagesWorkspace(
+    Guid SubmissionId,
+    IReadOnlyList<CatalogueSubmissionImageReceipt> Images);
+
+public sealed record CatalogueSubmissionImageContent(
+    Stream Content,
+    string ContentType,
+    string FileName);
+
+public enum CatalogueSubmissionImagesResultStatus
+{
+    Found,
+    AccessDenied,
+    NotFound,
+    Failed
+}
+
+public sealed record CatalogueSubmissionImagesResult(
+    CatalogueSubmissionImagesResultStatus Status,
+    IReadOnlyList<CatalogueSubmissionImageReceipt>? Images = null)
+{
+    public static CatalogueSubmissionImagesResult Found(IReadOnlyList<CatalogueSubmissionImageReceipt> images) =>
+        new(CatalogueSubmissionImagesResultStatus.Found, images);
+
+    public static CatalogueSubmissionImagesResult AccessDenied() =>
+        new(CatalogueSubmissionImagesResultStatus.AccessDenied);
+
+    public static CatalogueSubmissionImagesResult NotFound() =>
+        new(CatalogueSubmissionImagesResultStatus.NotFound);
+
+    public static CatalogueSubmissionImagesResult Failed() =>
+        new(CatalogueSubmissionImagesResultStatus.Failed);
+}
+
+public enum CatalogueSubmissionImageResultStatus
+{
+    Saved,
+    Invalid,
+    AccessDenied,
+    NotFound,
+    Failed
+}
+
+public sealed record CatalogueSubmissionImageResult(
+    CatalogueSubmissionImageResultStatus Status,
+    CatalogueSubmissionImageReceipt? Image = null,
+    IReadOnlyDictionary<string, string[]>? Errors = null)
+{
+    public static CatalogueSubmissionImageResult Saved(CatalogueSubmissionImageReceipt image) =>
+        new(CatalogueSubmissionImageResultStatus.Saved, image);
+
+    public static CatalogueSubmissionImageResult Invalid(IReadOnlyDictionary<string, string[]> errors) =>
+        new(CatalogueSubmissionImageResultStatus.Invalid, Errors: errors);
+
+    public static CatalogueSubmissionImageResult AccessDenied() =>
+        new(CatalogueSubmissionImageResultStatus.AccessDenied);
+
+    public static CatalogueSubmissionImageResult NotFound() =>
+        new(CatalogueSubmissionImageResultStatus.NotFound);
+
+    public static CatalogueSubmissionImageResult Failed() =>
+        new(CatalogueSubmissionImageResultStatus.Failed);
+}
+
+public interface ICatalogueSubmissionImageStorage
+{
+    Task SaveAsync(
+        string storageKey,
+        Stream content,
+        CancellationToken cancellationToken = default);
+
+    Task<Stream?> OpenReadAsync(
+        string storageKey,
+        CancellationToken cancellationToken = default);
+
+    Task DeleteAsync(
+        string storageKey,
+        CancellationToken cancellationToken = default);
+}
+
 public sealed record CatalogueSubmissionVerificationReceipt(
     Guid Id,
     Guid SubmissionId,
@@ -544,36 +709,43 @@ public sealed record CatalogueSubmissionVerificationReceipt(
 
 public sealed record UpdateCatalogueSubmissionSpecifications(
     ProductType? ProposedProductType,
-    string? ProposedManufacturerSize,
-    int? ProposedWaistMinimumCm,
-    int? ProposedWaistMaximumCm,
-    BackingType? ProposedBackingType,
-    FastenerType? ProposedFastenerType,
-    WaistbandStyle? ProposedWaistbandStyle,
-    FragranceType? ProposedFragranceType,
-    int? ProposedQuantityPerPack,
     PackagingType? ProposedPackagingType,
     string? ProposedProductFamily,
     string? ProposedDescription,
+    CatalogueContentVisibility ProposedDescriptionVisibility,
     ProductStatus? ProposedProductStatus,
     string? ProposedOfficialWebsiteUrl,
-    string? SharedPrintDesign,
+    CatalogueVariantAppearance? SharedAppearance,
     string? SharedPrimaryColour,
-    string? SharedSecondaryColours,
     bool? SharedWetnessIndicator,
     bool? SharedStandingLeakGuards,
-    bool? SharedInnerLeakGuards,
-    bool? SharedElasticWaistbandFront,
-    bool? SharedElasticWaistbandRear,
+    WaistbandStyle? SharedWaistbandStyle,
+    FragranceType? SharedFragrance,
     bool? SharedLatexFree,
-    bool? SharedChlorineFree,
+    string? SharedDesignedFor,
     int? SharedFastenerCount,
     string? SharedConstructionNotes);
+
+public sealed record CatalogueSubmissionImportResult(
+    int RowsRead,
+    int SubmissionsCreated,
+    int RowsImported,
+    int RowsSkipped,
+    IReadOnlyList<string> Warnings);
+
+public sealed record CatalogueSubmissionImportOptions(
+    bool TreatImportedDescriptionsAsModeratorOnly = true);
 
 public interface ICatalogueSubmissions
 {
     Task<IReadOnlyList<CatalogueSubmissionQueueItem>> GetSubmissionsAsync(
         AuthenticatedUser actor,
+        CancellationToken cancellationToken = default);
+
+    Task<CatalogueSubmissionImportResult> ImportCsvAsync(
+        AuthenticatedUser actor,
+        Stream csvContent,
+        CatalogueSubmissionImportOptions options,
         CancellationToken cancellationToken = default);
 
     Task<CatalogueSubmissionReceipt> CreateAsync(
@@ -685,6 +857,36 @@ public interface ICatalogueSubmissions
         Guid submissionId,
         CancellationToken cancellationToken = default);
 
+    Task<CatalogueSubmissionImagesWorkspace> GetImagesAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        CancellationToken cancellationToken = default);
+
+    Task<CatalogueSubmissionImageReceipt> AddImageAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        AddCatalogueSubmissionImage command,
+        CancellationToken cancellationToken = default);
+
+    Task<CatalogueSubmissionImageReceipt> UpdateImageMetadataAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        Guid imageId,
+        UpdateCatalogueSubmissionImageMetadata command,
+        CancellationToken cancellationToken = default);
+
+    Task RemoveImageAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        Guid imageId,
+        CancellationToken cancellationToken = default);
+
+    Task<CatalogueSubmissionImageContent?> GetImageContentAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        Guid imageId,
+        CancellationToken cancellationToken = default);
+
     Task<CatalogueSubmissionVerificationWorkspace> GetVerificationWorkspaceAsync(
         AuthenticatedUser actor,
         Guid submissionId,
@@ -733,7 +935,10 @@ public sealed record CreateCanonicalProductSizeVariant(
     int? WaistMaximumCm,
     int? HipMinimumCm,
     int? HipMaximumCm,
-    int? CapacityMl,
+    int? ManufacturerStatedAbsorbencyMl,
+    string? FitMeasurementBasis,
+    string? AbsorbencyBasisMethod,
+    string? AbsorbencySource,
     int? LengthMm,
     int? WidthMm,
     int? WeightGrams,
@@ -745,18 +950,14 @@ public sealed record CreateCanonicalProductVariant(
     string Name,
     BackingType BackingType,
     FastenerType FastenerType = FastenerType.Unknown,
-    string? PrintDesign = null,
+    CatalogueVariantAppearance? Appearance = null,
     string? PrimaryColour = null,
-    string? SecondaryColours = null,
     bool? HasWetnessIndicator = null,
     bool? HasStandingLeakGuards = null,
-    bool? HasInnerLeakGuards = null,
-    bool? HasElasticWaistbandFront = null,
-    bool? HasElasticWaistbandRear = null,
     WaistbandStyle WaistbandStyle = WaistbandStyle.Unknown,
     FragranceType Fragrance = FragranceType.Unknown,
     bool? IsLatexFree = null,
-    bool? IsChlorineFree = null,
+    string? DesignedFor = null,
     int? FastenerCount = null,
     string? ConstructionNotes = null,
     IReadOnlyList<CreateCanonicalProductSizeVariant>? Sizes = null);
@@ -775,7 +976,8 @@ public sealed record CreateCanonicalProduct(
     string? CorrelationId,
     string? ProductFamily = null,
     string? Description = null,
-    string? OfficialWebsiteUrl = null);
+    string? OfficialWebsiteUrl = null,
+    CatalogueContentVisibility DescriptionVisibility = CatalogueContentVisibility.Public);
 
 public sealed record CanonicalProductReceipt(
     Guid ProductId,
@@ -787,6 +989,12 @@ public sealed record CanonicalProductReceipt(
 
 public interface ICanonicalCatalogue
 {
+    Task SetDescriptionVisibilityAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        CatalogueContentVisibility visibility,
+        CancellationToken cancellationToken = default);
+
     Task<CanonicalProductReceipt> CreateProductAsync(
         AuthenticatedUser actor,
         CreateCanonicalProduct command,

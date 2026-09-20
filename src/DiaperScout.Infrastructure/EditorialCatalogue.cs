@@ -67,10 +67,29 @@ internal sealed class PrivilegedRoleAssignments(DiaperScoutDbContext db) : IPriv
     }
 }
 
-internal sealed class CanonicalCatalogue(DiaperScoutDbContext db) : ICanonicalCatalogue
+internal sealed class CanonicalCatalogue(DiaperScoutDbContext db, IEditorialAuthorisation editorialAuthorisation) : ICanonicalCatalogue
 {
     private static readonly Regex SlugPattern = new("^[a-z0-9]+(?:-[a-z0-9]+)*$", RegexOptions.Compiled);
     private static readonly Regex GtinPattern = new("^[0-9]{8,14}$", RegexOptions.Compiled);
+
+    public async Task SetDescriptionVisibilityAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        CatalogueContentVisibility visibility,
+        CancellationToken cancellationToken = default)
+    {
+        if (!await editorialAuthorisation.CanPublishAtlasAsync(actor, cancellationToken))
+            throw new UnauthorizedAccessException();
+
+        var product = await db.Products.SingleOrDefaultAsync(value => value.Id == productId, cancellationToken)
+            ?? throw new KeyNotFoundException("The catalogue product was not found.");
+
+        if (!Enum.IsDefined(visibility))
+            throw new ArgumentException("The description visibility is invalid.", nameof(visibility));
+
+        product.SetDescriptionVisibility(visibility);
+        await db.SaveChangesAsync(cancellationToken);
+    }
 
     public async Task<CanonicalProductReceipt> CreateProductAsync(
         AuthenticatedUser actor,
@@ -116,7 +135,8 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db) : ICanonicalCa
             command.Status,
             command.ProductFamily,
             command.Description,
-            command.OfficialWebsiteUrl);
+            command.OfficialWebsiteUrl,
+            command.DescriptionVisibility);
 
         db.Products.Add(product);
 
@@ -131,18 +151,14 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db) : ICanonicalCa
                 variantCommand.Name.Trim(),
                 variantCommand.BackingType,
                 variantCommand.FastenerType,
-                variantCommand.PrintDesign,
+                variantCommand.Appearance,
                 variantCommand.PrimaryColour,
-                variantCommand.SecondaryColours,
                 variantCommand.HasWetnessIndicator,
                 variantCommand.HasStandingLeakGuards,
-                variantCommand.HasInnerLeakGuards,
-                variantCommand.HasElasticWaistbandFront,
-                variantCommand.HasElasticWaistbandRear,
                 variantCommand.WaistbandStyle,
                 variantCommand.Fragrance,
                 variantCommand.IsLatexFree,
-                variantCommand.IsChlorineFree,
+                variantCommand.DesignedFor,
                 variantCommand.FastenerCount,
                 variantCommand.ConstructionNotes);
 
@@ -159,7 +175,10 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db) : ICanonicalCa
                     sizeCommand.WaistMaximumCm,
                     sizeCommand.HipMinimumCm,
                     sizeCommand.HipMaximumCm,
-                    sizeCommand.CapacityMl,
+                    sizeCommand.ManufacturerStatedAbsorbencyMl,
+                    sizeCommand.FitMeasurementBasis,
+                    sizeCommand.AbsorbencyBasisMethod,
+                    sizeCommand.AbsorbencySource,
                     sizeCommand.LengthMm,
                     sizeCommand.WidthMm,
                     sizeCommand.WeightGrams);
@@ -310,7 +329,7 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db) : ICanonicalCa
 
                 ValidateRange(size.WaistMinimumCm, size.WaistMaximumCm, "waist");
                 ValidateRange(size.HipMinimumCm, size.HipMaximumCm, "hip");
-                ValidateNonNegative(size.CapacityMl, "capacityMl");
+                ValidateNonNegative(size.ManufacturerStatedAbsorbencyMl, "manufacturerStatedAbsorbencyMl");
                 ValidateNonNegative(size.LengthMm, "lengthMm");
                 ValidateNonNegative(size.WidthMm, "widthMm");
                 ValidateNonNegative(size.WeightGrams, "weightGrams");

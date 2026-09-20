@@ -1,0 +1,326 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{4000C9F7-45DA-7976-BC9E-5A0E7CEB813A}|src\\DiaperScout.Infrastructure\\DiaperScout.Infrastructure.csproj|c:\\users\\hails\\onedrive\\documents\\projects\\diaperscout\\src\\diaperscout.infrastructure\\cataloguesubmissions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4000C9F7-45DA-7976-BC9E-5A0E7CEB813A}|src\\DiaperScout.Infrastructure\\DiaperScout.Infrastructure.csproj|solutionrelative:src\\diaperscout.infrastructure\\cataloguesubmissions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B6A5BB60-763A-D5AA-4C6E-47309A1A1BB9}|src\\DiaperScout.Web\\DiaperScout.Web.csproj|c:\\users\\hails\\onedrive\\documents\\projects\\diaperscout\\src\\diaperscout.web\\components\\pages\\catalogueadd.razor||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{B6A5BB60-763A-D5AA-4C6E-47309A1A1BB9}|src\\DiaperScout.Web\\DiaperScout.Web.csproj|solutionrelative:src\\diaperscout.web\\components\\pages\\catalogueadd.razor||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4000C9F7-45DA-7976-BC9E-5A0E7CEB813A}|src\\DiaperScout.Infrastructure\\DiaperScout.Infrastructure.csproj|c:\\users\\hails\\onedrive\\documents\\projects\\diaperscout\\src\\diaperscout.infrastructure\\persistence\\migrations\\20260914220000_cataloguesubmissionvariantsfoundation.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4000C9F7-45DA-7976-BC9E-5A0E7CEB813A}|src\\DiaperScout.Infrastructure\\DiaperScout.Infrastructure.csproj|solutionrelative:src\\diaperscout.infrastructure\\persistence\\migrations\\20260914220000_cataloguesubmissionvariantsfoundation.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4000C9F7-45DA-7976-BC9E-5A0E7CEB813A}|src\\DiaperScout.Infrastructure\\DiaperScout.Infrastructure.csproj|c:\\users\\hails\\onedrive\\documents\\projects\\diaperscout\\src\\diaperscout.infrastructure\\persistence\\migrations\\20260914223341_diagnosecataloguemodelmismatch2.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4000C9F7-45DA-7976-BC9E-5A0E7CEB813A}|src\\DiaperScout.Infrastructure\\DiaperScout.Infrastructure.csproj|solutionrelative:src\\diaperscout.infrastructure\\persistence\\migrations\\20260914223341_diagnosecataloguemodelmismatch2.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B6A5BB60-763A-D5AA-4C6E-47309A1A1BB9}|src\\DiaperScout.Web\\DiaperScout.Web.csproj|c:\\users\\hails\\onedrive\\documents\\projects\\diaperscout\\src\\diaperscout.web\\components\\layout\\navmenu.razor||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{B6A5BB60-763A-D5AA-4C6E-47309A1A1BB9}|src\\DiaperScout.Web\\DiaperScout.Web.csproj|solutionrelative:src\\diaperscout.web\\components\\layout\\navmenu.razor||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8AAC243A-39F6-D40B-7552-DCC78D3D33F7}|src\\DiaperScout.Api\\DiaperScout.Api.csproj|c:\\users\\hails\\onedrive\\documents\\projects\\diaperscout\\src\\diaperscout.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8AAC243A-39F6-D40B-7552-DCC78D3D33F7}|src\\DiaperScout.Api\\DiaperScout.Api.csproj|solutionrelative:src\\diaperscout.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B6A5BB60-763A-D5AA-4C6E-47309A1A1BB9}|src\\DiaperScout.Web\\DiaperScout.Web.csproj|c:\\users\\hails\\onedrive\\documents\\projects\\diaperscout\\src\\diaperscout.web\\components\\pages\\catalogueverify.razor||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{B6A5BB60-763A-D5AA-4C6E-47309A1A1BB9}|src\\DiaperScout.Web\\DiaperScout.Web.csproj|solutionrelative:src\\diaperscout.web\\components\\pages\\catalogueverify.razor||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B6A5BB60-763A-D5AA-4C6E-47309A1A1BB9}|src\\DiaperScout.Web\\DiaperScout.Web.csproj|c:\\users\\hails\\onedrive\\documents\\projects\\diaperscout\\src\\diaperscout.web\\services\\productcatalogueclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B6A5BB60-763A-D5AA-4C6E-47309A1A1BB9}|src\\DiaperScout.Web\\DiaperScout.Web.csproj|solutionrelative:src\\diaperscout.web\\services\\productcatalogueclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B47D2AC-199B-9B01-FDE4-48A7F411B2AE}|src\\DiaperScout.Application\\DiaperScout.Application.csproj|c:\\users\\hails\\onedrive\\documents\\projects\\diaperscout\\src\\diaperscout.application\\contracts.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B47D2AC-199B-9B01-FDE4-48A7F411B2AE}|src\\DiaperScout.Application\\DiaperScout.Application.csproj|solutionrelative:src\\diaperscout.application\\contracts.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4000C9F7-45DA-7976-BC9E-5A0E7CEB813A}|src\\DiaperScout.Infrastructure\\DiaperScout.Infrastructure.csproj|c:\\users\\hails\\onedrive\\documents\\projects\\diaperscout\\src\\diaperscout.infrastructure\\servicecollectionextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4000C9F7-45DA-7976-BC9E-5A0E7CEB813A}|src\\DiaperScout.Infrastructure\\DiaperScout.Infrastructure.csproj|solutionrelative:src\\diaperscout.infrastructure\\servicecollectionextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\apphost\\apphost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:apphost\\apphost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4000C9F7-45DA-7976-BC9E-5A0E7CEB813A}|src\\DiaperScout.Infrastructure\\DiaperScout.Infrastructure.csproj|c:\\users\\hails\\onedrive\\documents\\projects\\diaperscout\\src\\diaperscout.infrastructure\\persistence\\diaperscoutdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4000C9F7-45DA-7976-BC9E-5A0E7CEB813A}|src\\DiaperScout.Infrastructure\\DiaperScout.Infrastructure.csproj|solutionrelative:src\\diaperscout.infrastructure\\persistence\\diaperscoutdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1D73AFC0-9D67-9E66-C9C3-57E9BDF55C5B}|src\\DiaperScout.Domain\\DiaperScout.Domain.csproj|c:\\users\\hails\\onedrive\\documents\\projects\\diaperscout\\src\\diaperscout.domain\\model.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1D73AFC0-9D67-9E66-C9C3-57E9BDF55C5B}|src\\DiaperScout.Domain\\DiaperScout.Domain.csproj|solutionrelative:src\\diaperscout.domain\\model.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B6A5BB60-763A-D5AA-4C6E-47309A1A1BB9}|src\\DiaperScout.Web\\DiaperScout.Web.csproj|c:\\users\\hails\\onedrive\\documents\\projects\\diaperscout\\src\\diaperscout.web\\components\\pages\\home.razor.css||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{B6A5BB60-763A-D5AA-4C6E-47309A1A1BB9}|src\\DiaperScout.Web\\DiaperScout.Web.csproj|solutionrelative:src\\diaperscout.web\\components\\pages\\home.razor.css||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B6A5BB60-763A-D5AA-4C6E-47309A1A1BB9}|src\\DiaperScout.Web\\DiaperScout.Web.csproj|c:\\users\\hails\\onedrive\\documents\\projects\\diaperscout\\src\\diaperscout.web\\components\\pages\\home.razor||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{B6A5BB60-763A-D5AA-4C6E-47309A1A1BB9}|src\\DiaperScout.Web\\DiaperScout.Web.csproj|solutionrelative:src\\diaperscout.web\\components\\pages\\home.razor||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B6A5BB60-763A-D5AA-4C6E-47309A1A1BB9}|src\\DiaperScout.Web\\DiaperScout.Web.csproj|c:\\users\\hails\\onedrive\\documents\\projects\\diaperscout\\src\\diaperscout.web\\components\\layout\\mainlayout.razor.css||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{B6A5BB60-763A-D5AA-4C6E-47309A1A1BB9}|src\\DiaperScout.Web\\DiaperScout.Web.csproj|solutionrelative:src\\diaperscout.web\\components\\layout\\mainlayout.razor.css||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B6A5BB60-763A-D5AA-4C6E-47309A1A1BB9}|src\\DiaperScout.Web\\DiaperScout.Web.csproj|c:\\users\\hails\\onedrive\\documents\\projects\\diaperscout\\src\\diaperscout.web\\components\\layout\\navmenu.razor.css||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{B6A5BB60-763A-D5AA-4C6E-47309A1A1BB9}|src\\DiaperScout.Web\\DiaperScout.Web.csproj|solutionrelative:src\\diaperscout.web\\components\\layout\\navmenu.razor.css||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B6A5BB60-763A-D5AA-4C6E-47309A1A1BB9}|src\\DiaperScout.Web\\DiaperScout.Web.csproj|c:\\users\\hails\\onedrive\\documents\\projects\\diaperscout\\src\\diaperscout.web\\components\\layout\\mainlayout.razor||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{B6A5BB60-763A-D5AA-4C6E-47309A1A1BB9}|src\\DiaperScout.Web\\DiaperScout.Web.csproj|solutionrelative:src\\diaperscout.web\\components\\layout\\mainlayout.razor||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B6A5BB60-763A-D5AA-4C6E-47309A1A1BB9}|src\\DiaperScout.Web\\DiaperScout.Web.csproj|c:\\users\\hails\\onedrive\\documents\\projects\\diaperscout\\src\\diaperscout.web\\wwwroot\\css\\base.css||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{B6A5BB60-763A-D5AA-4C6E-47309A1A1BB9}|src\\DiaperScout.Web\\DiaperScout.Web.csproj|solutionrelative:src\\diaperscout.web\\wwwroot\\css\\base.css||{8B382828-6202-11D1-8870-0000F87579D2}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 4,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "CatalogueAdd.razor",
+              "DocumentMoniker": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Web\\Components\\Pages\\CatalogueAdd.razor",
+              "RelativeDocumentMoniker": "src\\DiaperScout.Web\\Components\\Pages\\CatalogueAdd.razor",
+              "ToolTip": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Web\\Components\\Pages\\CatalogueAdd.razor",
+              "RelativeToolTip": "src\\DiaperScout.Web\\Components\\Pages\\CatalogueAdd.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAANEBAAAPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-09-15T20:55:47.595Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "20260914220000_CatalogueSubmissionVariantsFoundation.Designer.cs",
+              "DocumentMoniker": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Infrastructure\\Persistence\\Migrations\\20260914220000_CatalogueSubmissionVariantsFoundation.Designer.cs",
+              "RelativeDocumentMoniker": "src\\DiaperScout.Infrastructure\\Persistence\\Migrations\\20260914220000_CatalogueSubmissionVariantsFoundation.Designer.cs",
+              "ToolTip": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Infrastructure\\Persistence\\Migrations\\20260914220000_CatalogueSubmissionVariantsFoundation.Designer.cs",
+              "RelativeToolTip": "src\\DiaperScout.Infrastructure\\Persistence\\Migrations\\20260914220000_CatalogueSubmissionVariantsFoundation.Designer.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-15T20:24:10.022Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "20260914223341_DiagnoseCatalogueModelMismatch2.cs",
+              "DocumentMoniker": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Infrastructure\\Persistence\\Migrations\\20260914223341_DiagnoseCatalogueModelMismatch2.cs",
+              "RelativeDocumentMoniker": "src\\DiaperScout.Infrastructure\\Persistence\\Migrations\\20260914223341_DiagnoseCatalogueModelMismatch2.cs",
+              "ToolTip": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Infrastructure\\Persistence\\Migrations\\20260914223341_DiagnoseCatalogueModelMismatch2.cs",
+              "RelativeToolTip": "src\\DiaperScout.Infrastructure\\Persistence\\Migrations\\20260914223341_DiagnoseCatalogueModelMismatch2.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-15T18:23:26.23Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Api\\Program.cs",
+              "RelativeDocumentMoniker": "src\\DiaperScout.Api\\Program.cs",
+              "ToolTip": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Api\\Program.cs",
+              "RelativeToolTip": "src\\DiaperScout.Api\\Program.cs",
+              "ViewState": "AgIAAFUEAAAAAAAAAAAIwHAEAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-12T21:31:25.868Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "CatalogueSubmissions.cs",
+              "DocumentMoniker": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Infrastructure\\CatalogueSubmissions.cs",
+              "RelativeDocumentMoniker": "src\\DiaperScout.Infrastructure\\CatalogueSubmissions.cs",
+              "ToolTip": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Infrastructure\\CatalogueSubmissions.cs",
+              "RelativeToolTip": "src\\DiaperScout.Infrastructure\\CatalogueSubmissions.cs",
+              "ViewState": "AgIAADkEAAAAAAAAAAAkwFYEAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-12T21:17:11.898Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Contracts.cs",
+              "DocumentMoniker": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Application\\Contracts.cs",
+              "RelativeDocumentMoniker": "src\\DiaperScout.Application\\Contracts.cs",
+              "ToolTip": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Application\\Contracts.cs",
+              "RelativeToolTip": "src\\DiaperScout.Application\\Contracts.cs",
+              "ViewState": "AgIAAMwBAAAAAAAAAAAIwOcBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-12T21:15:27.076Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "apphost.cs",
+              "DocumentMoniker": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\apphost\\apphost.cs",
+              "RelativeDocumentMoniker": "apphost\\apphost.cs",
+              "ToolTip": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\apphost\\apphost.cs",
+              "RelativeToolTip": "apphost\\apphost.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-12T20:17:23.965Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "DiaperScoutDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Infrastructure\\Persistence\\DiaperScoutDbContext.cs",
+              "RelativeDocumentMoniker": "src\\DiaperScout.Infrastructure\\Persistence\\DiaperScoutDbContext.cs",
+              "ToolTip": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Infrastructure\\Persistence\\DiaperScoutDbContext.cs",
+              "RelativeToolTip": "src\\DiaperScout.Infrastructure\\Persistence\\DiaperScoutDbContext.cs",
+              "ViewState": "AgIAAH8AAAAAAAAAAAAkwJMAAAALAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-12T19:30:47.738Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ProductCatalogueClient.cs",
+              "DocumentMoniker": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Web\\Services\\ProductCatalogueClient.cs",
+              "RelativeDocumentMoniker": "src\\DiaperScout.Web\\Services\\ProductCatalogueClient.cs",
+              "ToolTip": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Web\\Services\\ProductCatalogueClient.cs",
+              "RelativeToolTip": "src\\DiaperScout.Web\\Services\\ProductCatalogueClient.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGwDAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-12T19:07:19.892Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Model.cs",
+              "DocumentMoniker": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Domain\\Model.cs",
+              "RelativeDocumentMoniker": "src\\DiaperScout.Domain\\Model.cs",
+              "ToolTip": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Domain\\Model.cs",
+              "RelativeToolTip": "src\\DiaperScout.Domain\\Model.cs",
+              "ViewState": "AgIAAOMBAAAAAAAAAAAwwP4BAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-12T19:01:03.09Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "NavMenu.razor",
+              "DocumentMoniker": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Web\\Components\\Layout\\NavMenu.razor",
+              "RelativeDocumentMoniker": "src\\DiaperScout.Web\\Components\\Layout\\NavMenu.razor",
+              "ToolTip": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Web\\Components\\Layout\\NavMenu.razor",
+              "RelativeToolTip": "src\\DiaperScout.Web\\Components\\Layout\\NavMenu.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-14T20:48:37.684Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "CatalogueVerify.razor",
+              "DocumentMoniker": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Web\\Components\\Pages\\CatalogueVerify.razor",
+              "RelativeDocumentMoniker": "src\\DiaperScout.Web\\Components\\Pages\\CatalogueVerify.razor",
+              "ToolTip": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Web\\Components\\Pages\\CatalogueVerify.razor",
+              "RelativeToolTip": "src\\DiaperScout.Web\\Components\\Pages\\CatalogueVerify.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAP4BAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-09-13T21:25:17.276Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "ServiceCollectionExtensions.cs",
+              "DocumentMoniker": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Infrastructure\\ServiceCollectionExtensions.cs",
+              "RelativeDocumentMoniker": "src\\DiaperScout.Infrastructure\\ServiceCollectionExtensions.cs",
+              "ToolTip": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Infrastructure\\ServiceCollectionExtensions.cs",
+              "RelativeToolTip": "src\\DiaperScout.Infrastructure\\ServiceCollectionExtensions.cs",
+              "ViewState": "AgIAADQAAAAAAAAAAAAQwDsAAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-12T21:21:16.742Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "MainLayout.razor.css",
+              "DocumentMoniker": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Web\\Components\\Layout\\MainLayout.razor.css",
+              "RelativeDocumentMoniker": "src\\DiaperScout.Web\\Components\\Layout\\MainLayout.razor.css",
+              "ToolTip": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Web\\Components\\Layout\\MainLayout.razor.css",
+              "RelativeToolTip": "src\\DiaperScout.Web\\Components\\Layout\\MainLayout.razor.css",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAB0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-08-14T23:33:06.993Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "NavMenu.razor.css",
+              "DocumentMoniker": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Web\\Components\\Layout\\NavMenu.razor.css",
+              "RelativeDocumentMoniker": "src\\DiaperScout.Web\\Components\\Layout\\NavMenu.razor.css",
+              "ToolTip": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Web\\Components\\Layout\\NavMenu.razor.css",
+              "RelativeToolTip": "src\\DiaperScout.Web\\Components\\Layout\\NavMenu.razor.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-08-14T21:30:17.804Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "MainLayout.razor",
+              "DocumentMoniker": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Web\\Components\\Layout\\MainLayout.razor",
+              "RelativeDocumentMoniker": "src\\DiaperScout.Web\\Components\\Layout\\MainLayout.razor",
+              "ToolTip": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Web\\Components\\Layout\\MainLayout.razor",
+              "RelativeToolTip": "src\\DiaperScout.Web\\Components\\Layout\\MainLayout.razor",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAmwBMAAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-14T20:48:18.045Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "base.css",
+              "DocumentMoniker": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Web\\wwwroot\\css\\base.css",
+              "RelativeDocumentMoniker": "src\\DiaperScout.Web\\wwwroot\\css\\base.css",
+              "ToolTip": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Web\\wwwroot\\css\\base.css",
+              "RelativeToolTip": "src\\DiaperScout.Web\\wwwroot\\css\\base.css",
+              "ViewState": "AgIAAEUAAAAAAAAAAAAmwFgAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-08-14T18:46:11.02Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Home.razor.css",
+              "DocumentMoniker": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Web\\Components\\Pages\\Home.razor.css",
+              "RelativeDocumentMoniker": "src\\DiaperScout.Web\\Components\\Pages\\Home.razor.css",
+              "ToolTip": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Web\\Components\\Pages\\Home.razor.css",
+              "RelativeToolTip": "src\\DiaperScout.Web\\Components\\Pages\\Home.razor.css",
+              "ViewState": "AgIAAGsAAAAAAAAAAAAIwIIAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-08-14T15:43:22.158Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "Home.razor",
+              "DocumentMoniker": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Web\\Components\\Pages\\Home.razor",
+              "RelativeDocumentMoniker": "src\\DiaperScout.Web\\Components\\Pages\\Home.razor",
+              "ToolTip": "C:\\Users\\hails\\OneDrive\\Documents\\Projects\\DiaperScout\\src\\DiaperScout.Web\\Components\\Pages\\Home.razor",
+              "RelativeToolTip": "src\\DiaperScout.Web\\Components\\Pages\\Home.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACUAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-14T13:52:58.26Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

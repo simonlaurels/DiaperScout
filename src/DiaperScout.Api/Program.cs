@@ -4,6 +4,7 @@ using DiaperScout.Domain;
 using DiaperScout.Api;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -202,6 +203,7 @@ app.MapGet(
         string? packaging,
         string? sort,
         int? limit,
+        int? offset,
         IAtlasQueries atlasQueries,
         CancellationToken cancellationToken) =>
     {
@@ -248,12 +250,53 @@ app.MapGet(
                     ? "relevance"
                     : sort,
                 limit ?? 24,
+                offset ?? 0,
                 cancellationToken);
 
         return Results.Ok(catalogue);
     })
     .WithName("SearchCatalogueProducts")
     .WithTags("Products")
+    .Produces<CatalogueProductSearch>()
+    .ProducesValidationProblem();
+
+app.MapGet(
+    "/api/v1/catalogue-management/products",
+    async (
+        string? q,
+        string? manufacturer,
+        string? productType,
+        string? status,
+        string? sort,
+        int? limit,
+        int? offset,
+        IAtlasQueries atlasQueries,
+        CancellationToken cancellationToken) =>
+    {
+        if (!TryParseGuidList(manufacturer, out var manufacturerIds) ||
+            !TryParseEnumList(productType, out IReadOnlyList<ProductType> productTypes) ||
+            !TryParseEnumList(status, out IReadOnlyList<ProductStatus> statuses))
+        {
+            return Results.ValidationProblem(
+                new Dictionary<string, string[]>
+                {
+                    ["filters"] = ["One or more product management filter values are invalid."]
+                });
+        }
+
+        var catalogue = await atlasQueries.SearchCatalogueManagementAsync(
+            q,
+            new CatalogueProductManagementFilters(manufacturerIds, productTypes, statuses),
+            string.IsNullOrWhiteSpace(sort) ? "name" : sort,
+            limit ?? 25,
+            offset ?? 0,
+            cancellationToken);
+
+        return Results.Ok(catalogue);
+    })
+    .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+    .WithName("SearchCatalogueManagementProducts")
+    .WithTags("Catalogue Management")
     .Produces<CatalogueProductSearch>()
     .ProducesValidationProblem();
 
@@ -2097,6 +2140,302 @@ if (builder.Configuration.GetValue<bool>(
         .WithName("GetCanonicalProductEntryOptions")
         .WithTags("Products")
         .Produces<CatalogueEntryOptions>();
+
+    app.MapGet(
+        "/api/v1/catalogue-management/entry-options",
+        async (
+            ICanonicalCatalogueQueries catalogueQueries,
+            CancellationToken cancellationToken) =>
+            Results.Ok(await catalogueQueries.GetEntryOptionsAsync(cancellationToken)))
+        .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+        .WithName("GetCatalogueManagementEntryOptions")
+        .WithTags("Catalogue Management")
+        .Produces<CatalogueEntryOptions>();
+
+    app.MapGet(
+        "/api/v1/catalogue-management/products/{productId:guid}",
+        async (
+            Guid productId,
+            ICurrentUser currentUser,
+            IAtlasQueries atlasQueries,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null)
+                return Results.Forbid();
+
+            try
+            {
+                var product = await atlasQueries.GetProductManagementDetailsAsync(actor, productId, cancellationToken);
+                return product is null ? Results.NotFound() : Results.Ok(product);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+        .WithName("GetCatalogueManagementProduct")
+        .WithTags("Catalogue Management")
+        .Produces<CatalogueProductManagementDetails>()
+        .Produces(StatusCodes.Status404NotFound);
+
+    app.MapPut(
+        "/api/v1/catalogue-management/products/{productId:guid}/identity",
+        async (
+            Guid productId,
+            UpdateCanonicalProductIdentity request,
+            HttpContext httpContext,
+            ICurrentUser currentUser,
+            ICanonicalCatalogue catalogue,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null)
+                return Results.Forbid();
+
+            try
+            {
+                await catalogue.UpdateProductIdentityAsync(
+                    actor,
+                    productId,
+                    request with
+                    {
+                        CorrelationId = httpContext.Request.Headers["X-Correlation-ID"].FirstOrDefault()
+                            ?? httpContext.TraceIdentifier
+                    },
+                    cancellationToken);
+
+                return Results.NoContent();
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(new Dictionary<string, string[]>
+                {
+                    [exception.Field] = [exception.Message]
+                });
+            }
+            catch (KeyNotFoundException)
+            {
+                return Results.NotFound();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+        .WithName("UpdateCatalogueManagementProductIdentity")
+        .WithTags("Catalogue Management")
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesValidationProblem();
+
+    app.MapPost(
+        "/api/v1/catalogue-management/products/{productId:guid}/variants",
+        async (
+            Guid productId,
+            CreateCanonicalProductVariantManagement request,
+            HttpContext httpContext,
+            ICurrentUser currentUser,
+            ICanonicalCatalogue catalogue,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null) return Results.Forbid();
+            try
+            {
+                await catalogue.AddProductVariantAsync(
+                    actor,
+                    productId,
+                    request with { CorrelationId = httpContext.Request.Headers["X-Correlation-ID"].FirstOrDefault() ?? httpContext.TraceIdentifier },
+                    cancellationToken);
+                return Results.NoContent();
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(new Dictionary<string, string[]> { [exception.Field] = [exception.Message] });
+            }
+            catch (KeyNotFoundException) { return Results.NotFound(); }
+            catch (UnauthorizedAccessException) { return Results.Forbid(); }
+        })
+        .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+        .WithName("AddCatalogueManagementProductVariant")
+        .WithTags("Catalogue Management")
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesValidationProblem();
+
+    app.MapPut(
+        "/api/v1/catalogue-management/products/{productId:guid}/variants/{variantId:guid}",
+        async (
+            Guid productId,
+            Guid variantId,
+            UpdateCanonicalProductVariantManagement request,
+            HttpContext httpContext,
+            ICurrentUser currentUser,
+            ICanonicalCatalogue catalogue,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null) return Results.Forbid();
+            try
+            {
+                await catalogue.UpdateProductVariantAsync(
+                    actor,
+                    productId,
+                    variantId,
+                    request with { CorrelationId = httpContext.Request.Headers["X-Correlation-ID"].FirstOrDefault() ?? httpContext.TraceIdentifier },
+                    cancellationToken);
+                return Results.NoContent();
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(new Dictionary<string, string[]> { [exception.Field] = [exception.Message] });
+            }
+            catch (KeyNotFoundException) { return Results.NotFound(); }
+            catch (UnauthorizedAccessException) { return Results.Forbid(); }
+        })
+        .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+        .WithName("UpdateCatalogueManagementProductVariant")
+        .WithTags("Catalogue Management")
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesValidationProblem();
+
+    app.MapDelete(
+        "/api/v1/catalogue-management/products/{productId:guid}/variants/{variantId:guid}",
+        async (
+            Guid productId,
+            Guid variantId,
+            [FromBody] RemoveCanonicalProductElement request,
+            ICurrentUser currentUser,
+            ICanonicalCatalogue catalogue,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null) return Results.Forbid();
+            try
+            {
+                await catalogue.RemoveProductVariantAsync(actor, productId, variantId, request.SourceSummary, request.SourceReferences, request.EditorialRationale, request.CorrelationId, cancellationToken);
+                return Results.NoContent();
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(new Dictionary<string, string[]> { [exception.Field] = [exception.Message] });
+            }
+            catch (KeyNotFoundException) { return Results.NotFound(); }
+            catch (UnauthorizedAccessException) { return Results.Forbid(); }
+        })
+        .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+        .WithName("RemoveCatalogueManagementProductVariant")
+        .WithTags("Catalogue Management")
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesValidationProblem();
+
+    app.MapPost(
+        "/api/v1/catalogue-management/products/{productId:guid}/variants/{variantId:guid}/sizes",
+        async (
+            Guid productId,
+            Guid variantId,
+            CreateCanonicalProductSizeManagement request,
+            HttpContext httpContext,
+            ICurrentUser currentUser,
+            ICanonicalCatalogue catalogue,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null) return Results.Forbid();
+            try
+            {
+                await catalogue.AddProductSizeAsync(
+                    actor,
+                    productId,
+                    variantId,
+                    request with { CorrelationId = httpContext.Request.Headers["X-Correlation-ID"].FirstOrDefault() ?? httpContext.TraceIdentifier },
+                    cancellationToken);
+                return Results.NoContent();
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(new Dictionary<string, string[]> { [exception.Field] = [exception.Message] });
+            }
+            catch (KeyNotFoundException) { return Results.NotFound(); }
+            catch (ArgumentException exception) { return Results.ValidationProblem(new Dictionary<string, string[]> { ["size"] = [exception.Message] }); }
+            catch (UnauthorizedAccessException) { return Results.Forbid(); }
+        })
+        .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+        .WithName("AddCatalogueManagementProductSize")
+        .WithTags("Catalogue Management")
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesValidationProblem();
+
+    app.MapPut(
+        "/api/v1/catalogue-management/products/{productId:guid}/variants/{variantId:guid}/sizes/{sizeId:guid}",
+        async (
+            Guid productId,
+            Guid variantId,
+            Guid sizeId,
+            UpdateCanonicalProductSizeManagement request,
+            HttpContext httpContext,
+            ICurrentUser currentUser,
+            ICanonicalCatalogue catalogue,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null) return Results.Forbid();
+            try
+            {
+                await catalogue.UpdateProductSizeAsync(
+                    actor,
+                    productId,
+                    variantId,
+                    sizeId,
+                    request with { CorrelationId = httpContext.Request.Headers["X-Correlation-ID"].FirstOrDefault() ?? httpContext.TraceIdentifier },
+                    cancellationToken);
+                return Results.NoContent();
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(new Dictionary<string, string[]> { [exception.Field] = [exception.Message] });
+            }
+            catch (KeyNotFoundException) { return Results.NotFound(); }
+            catch (ArgumentException exception) { return Results.ValidationProblem(new Dictionary<string, string[]> { ["size"] = [exception.Message] }); }
+            catch (UnauthorizedAccessException) { return Results.Forbid(); }
+        })
+        .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+        .WithName("UpdateCatalogueManagementProductSize")
+        .WithTags("Catalogue Management")
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesValidationProblem();
+
+    app.MapDelete(
+        "/api/v1/catalogue-management/products/{productId:guid}/variants/{variantId:guid}/sizes/{sizeId:guid}",
+        async (
+            Guid productId,
+            Guid variantId,
+            Guid sizeId,
+            [FromBody] RemoveCanonicalProductElement request,
+            ICurrentUser currentUser,
+            ICanonicalCatalogue catalogue,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null) return Results.Forbid();
+            try
+            {
+                await catalogue.RemoveProductSizeAsync(actor, productId, variantId, sizeId, request.SourceSummary, request.SourceReferences, request.EditorialRationale, request.CorrelationId, cancellationToken);
+                return Results.NoContent();
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(new Dictionary<string, string[]> { [exception.Field] = [exception.Message] });
+            }
+            catch (KeyNotFoundException) { return Results.NotFound(); }
+            catch (UnauthorizedAccessException) { return Results.Forbid(); }
+        })
+        .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+        .WithName("RemoveCatalogueManagementProductSize")
+        .WithTags("Catalogue Management")
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesValidationProblem();
 
     app.MapPost(
         "/api/v1/products",

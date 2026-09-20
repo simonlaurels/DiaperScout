@@ -13,6 +13,8 @@ public sealed class ProductCatalogueClient(HttpClient client)
         string? query,
         CatalogueProductFilters? filters = null,
         string sort = "relevance",
+        int limit = 24,
+        int offset = 0,
         CancellationToken cancellationToken = default)
     {
         filters ??= new CatalogueProductFilters([], [], [], [], [], []);
@@ -58,6 +60,9 @@ public sealed class ProductCatalogueClient(HttpClient client)
             parameters.Add($"sort={Uri.EscapeDataString(sort)}");
         }
 
+        parameters.Add($"limit={Math.Clamp(limit, 1, 50)}");
+        parameters.Add($"offset={Math.Max(offset, 0)}");
+
         var path =
             "api/v1/products" +
             (parameters.Count > 0
@@ -73,6 +78,43 @@ public sealed class ProductCatalogueClient(HttpClient client)
             await response.Content.ReadFromJsonAsync<CatalogueProductSearch>(
                 cancellationToken);
 
+        return catalogue is null
+            ? ProductCatalogueSearchResult.Failed()
+            : ProductCatalogueSearchResult.Found(catalogue);
+    }
+
+    public async Task<ProductCatalogueSearchResult> SearchManagementAsync(
+        string? query,
+        CatalogueProductManagementFilters? filters = null,
+        string sort = "name",
+        int limit = 25,
+        int offset = 0,
+        CancellationToken cancellationToken = default)
+    {
+        filters ??= new CatalogueProductManagementFilters([], [], []);
+        var parameters = new List<string>();
+
+        if (!string.IsNullOrWhiteSpace(query))
+            parameters.Add($"q={Uri.EscapeDataString(query.Trim())}");
+
+        AddParameter(parameters, "manufacturer", filters.ManufacturerIds.Select(id => id.ToString()));
+        AddParameter(parameters, "productType", filters.ProductTypes.Select(value => value.ToString()));
+        AddParameter(parameters, "status", filters.Statuses.Select(value => value.ToString()));
+
+        if (!string.IsNullOrWhiteSpace(sort))
+            parameters.Add($"sort={Uri.EscapeDataString(sort)}");
+
+        parameters.Add($"limit={Math.Clamp(limit, 1, 50)}");
+        parameters.Add($"offset={Math.Max(offset, 0)}");
+
+        using var response = await client.GetAsync(
+            "api/v1/catalogue-management/products?" + string.Join("&", parameters),
+            cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+            return ProductCatalogueSearchResult.Failed();
+
+        var catalogue = await response.Content.ReadFromJsonAsync<CatalogueProductSearch>(cancellationToken);
         return catalogue is null
             ? ProductCatalogueSearchResult.Failed()
             : ProductCatalogueSearchResult.Found(catalogue);
@@ -99,6 +141,160 @@ public sealed class ProductCatalogueClient(HttpClient client)
             new { visibility },
             cancellationToken);
         return response.IsSuccessStatusCode;
+    }
+
+    public async Task<CatalogueProductManagementResult> GetProductManagementAsync(
+        Guid productId,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.GetAsync(
+            $"api/v1/catalogue-management/products/{productId}",
+            cancellationToken);
+
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            return CatalogueProductManagementResult.AccessDenied();
+        if (response.StatusCode == HttpStatusCode.NotFound)
+            return CatalogueProductManagementResult.NotFound();
+        if (!response.IsSuccessStatusCode)
+            return CatalogueProductManagementResult.Failed();
+
+        var product = await response.Content.ReadFromJsonAsync<CatalogueProductManagementDetails>(cancellationToken);
+        return product is null ? CatalogueProductManagementResult.Failed() : CatalogueProductManagementResult.Found(product);
+    }
+
+    public async Task<CatalogueProductManagementUpdateResult> UpdateProductIdentityAsync(
+        Guid productId,
+        UpdateCanonicalProductIdentity request,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.PutAsJsonAsync(
+            $"api/v1/catalogue-management/products/{productId}/identity",
+            request,
+            cancellationToken);
+
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            return CatalogueProductManagementUpdateResult.AccessDenied();
+        if (response.StatusCode == HttpStatusCode.NotFound)
+            return CatalogueProductManagementUpdateResult.NotFound();
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>(cancellationToken);
+            return CatalogueProductManagementUpdateResult.Invalid(
+                problem?.Errors is null
+                    ? new Dictionary<string, string[]> { ["product"] = ["The product could not be saved."] }
+                    : new Dictionary<string, string[]>(problem.Errors));
+        }
+
+        return response.IsSuccessStatusCode
+            ? CatalogueProductManagementUpdateResult.Saved()
+            : CatalogueProductManagementUpdateResult.Failed();
+    }
+
+    public async Task<CatalogueProductManagementUpdateResult> AddProductVariantAsync(
+        Guid productId,
+        CreateCanonicalProductVariantManagement request,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.PostAsJsonAsync(
+            $"api/v1/catalogue-management/products/{productId}/variants",
+            request,
+            cancellationToken);
+        return await ReadManagementMutationResponseAsync(response, cancellationToken);
+    }
+
+    public async Task<CatalogueProductManagementUpdateResult> UpdateProductVariantAsync(
+        Guid productId,
+        Guid variantId,
+        UpdateCanonicalProductVariantManagement request,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.PutAsJsonAsync(
+            $"api/v1/catalogue-management/products/{productId}/variants/{variantId}",
+            request,
+            cancellationToken);
+        return await ReadManagementMutationResponseAsync(response, cancellationToken);
+    }
+
+    public async Task<CatalogueProductManagementUpdateResult> RemoveProductVariantAsync(
+        Guid productId,
+        Guid variantId,
+        RemoveCanonicalProductElement request,
+        CancellationToken cancellationToken = default)
+    {
+        using var message = new HttpRequestMessage(
+            HttpMethod.Delete,
+            $"api/v1/catalogue-management/products/{productId}/variants/{variantId}")
+        {
+            Content = JsonContent.Create(request)
+        };
+        using var response = await client.SendAsync(message, cancellationToken);
+        return await ReadManagementMutationResponseAsync(response, cancellationToken);
+    }
+
+    public async Task<CatalogueProductManagementUpdateResult> AddProductSizeAsync(
+        Guid productId,
+        Guid variantId,
+        CreateCanonicalProductSizeManagement request,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.PostAsJsonAsync(
+            $"api/v1/catalogue-management/products/{productId}/variants/{variantId}/sizes",
+            request,
+            cancellationToken);
+        return await ReadManagementMutationResponseAsync(response, cancellationToken);
+    }
+
+    public async Task<CatalogueProductManagementUpdateResult> UpdateProductSizeAsync(
+        Guid productId,
+        Guid variantId,
+        Guid sizeId,
+        UpdateCanonicalProductSizeManagement request,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.PutAsJsonAsync(
+            $"api/v1/catalogue-management/products/{productId}/variants/{variantId}/sizes/{sizeId}",
+            request,
+            cancellationToken);
+        return await ReadManagementMutationResponseAsync(response, cancellationToken);
+    }
+
+    public async Task<CatalogueProductManagementUpdateResult> RemoveProductSizeAsync(
+        Guid productId,
+        Guid variantId,
+        Guid sizeId,
+        RemoveCanonicalProductElement request,
+        CancellationToken cancellationToken = default)
+    {
+        using var message = new HttpRequestMessage(
+            HttpMethod.Delete,
+            $"api/v1/catalogue-management/products/{productId}/variants/{variantId}/sizes/{sizeId}")
+        {
+            Content = JsonContent.Create(request)
+        };
+        using var response = await client.SendAsync(message, cancellationToken);
+        return await ReadManagementMutationResponseAsync(response, cancellationToken);
+    }
+
+    private static async Task<CatalogueProductManagementUpdateResult> ReadManagementMutationResponseAsync(
+        HttpResponseMessage response,
+        CancellationToken cancellationToken)
+    {
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            return CatalogueProductManagementUpdateResult.AccessDenied();
+        if (response.StatusCode == HttpStatusCode.NotFound)
+            return CatalogueProductManagementUpdateResult.NotFound();
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>(cancellationToken);
+            return CatalogueProductManagementUpdateResult.Invalid(
+                problem?.Errors is null
+                    ? new Dictionary<string, string[]> { ["product"] = ["The catalogue change could not be saved."] }
+                    : new Dictionary<string, string[]>(problem.Errors));
+        }
+
+        return response.IsSuccessStatusCode
+            ? CatalogueProductManagementUpdateResult.Saved()
+            : CatalogueProductManagementUpdateResult.Failed();
     }
 
     public async Task<CatalogueModeratorProductPreviewResult> GetModeratorProductPreviewAsync(
@@ -185,6 +381,20 @@ public sealed class ProductCatalogueClient(HttpClient client)
         return result is null
             ? CatalogueSubmissionImportClientResult.Failed("The import completed without a result.")
             : CatalogueSubmissionImportClientResult.Succeeded(result);
+    }
+
+    public async Task<CatalogueEntryOptions> GetCatalogueEntryOptionsAsync(
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.GetAsync(
+            "api/v1/catalogue-management/entry-options",
+            cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+            return new CatalogueEntryOptions([], []);
+
+        return await response.Content.ReadFromJsonAsync<CatalogueEntryOptions>(cancellationToken)
+            ?? new CatalogueEntryOptions([], []);
     }
 
     public string GetSubmissionImportTemplateUrl() =>
@@ -1809,6 +2019,31 @@ public sealed record CatalogueSubmissionImportClientResult(CatalogueSubmissionIm
 public enum CatalogueSubmissionImportClientStatus { Succeeded, AccessDenied, Failed }
 
 internal sealed record ImportErrorResponse(string? Message);
+
+public enum CatalogueProductManagementStatus { Found, AccessDenied, NotFound, Failed }
+
+public sealed record CatalogueProductManagementResult(
+    CatalogueProductManagementStatus Status,
+    CatalogueProductManagementDetails? Product = null)
+{
+    public static CatalogueProductManagementResult Found(CatalogueProductManagementDetails product) => new(CatalogueProductManagementStatus.Found, product);
+    public static CatalogueProductManagementResult AccessDenied() => new(CatalogueProductManagementStatus.AccessDenied);
+    public static CatalogueProductManagementResult NotFound() => new(CatalogueProductManagementStatus.NotFound);
+    public static CatalogueProductManagementResult Failed() => new(CatalogueProductManagementStatus.Failed);
+}
+
+public enum CatalogueProductManagementUpdateStatus { Saved, AccessDenied, NotFound, Invalid, Failed }
+
+public sealed record CatalogueProductManagementUpdateResult(
+    CatalogueProductManagementUpdateStatus Status,
+    IReadOnlyDictionary<string, string[]>? Errors = null)
+{
+    public static CatalogueProductManagementUpdateResult Saved() => new(CatalogueProductManagementUpdateStatus.Saved);
+    public static CatalogueProductManagementUpdateResult AccessDenied() => new(CatalogueProductManagementUpdateStatus.AccessDenied);
+    public static CatalogueProductManagementUpdateResult NotFound() => new(CatalogueProductManagementUpdateStatus.NotFound);
+    public static CatalogueProductManagementUpdateResult Invalid(IReadOnlyDictionary<string, string[]> errors) => new(CatalogueProductManagementUpdateStatus.Invalid, errors);
+    public static CatalogueProductManagementUpdateResult Failed() => new(CatalogueProductManagementUpdateStatus.Failed);
+}
 
 public enum CatalogueModeratorProductPreviewStatus { Found, AccessDenied, NotFound, Failed }
 

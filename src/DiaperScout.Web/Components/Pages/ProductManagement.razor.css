@@ -269,3 +269,265 @@
         width: 100%;
     }
 }
+
+.product-management-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    margin-bottom: 1.5rem;
+}
+
+.product-management-tab {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    min-width: 0;
+    padding: 1rem 1.25rem;
+    color: inherit;
+    text-decoration: none;
+    border: 1px solid rgba(20, 58, 75, .14);
+    background: rgba(255, 255, 255, .68);
+}
+
+.product-management-tab:first-child { border-radius: 16px 0 0 16px; }
+.product-management-tab:last-child { border-radius: 0 16px 16px 0; border-left: 0; }
+
+.product-management-tab.is-active {
+    border-color: rgba(74, 55, 205, .42);
+    box-shadow: inset 0 -2px 0 #4a37cd;
+    background: rgba(255, 255, 255, .94);
+}
+
+.product-management-tab-icon {
+    display: grid;
+    place-items: center;
+    width: 2.35rem;
+    height: 2.35rem;
+    flex: 0 0 auto;
+    border-radius: .7rem;
+    background: rgba(74, 55, 205, .1);
+    color: #4a37cd;
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.product-management-tab > span:nth-child(2) {
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
+}
+
+.product-management-tab small { opacity: .68; }
+.product-management-tab-count {
+    margin-left: auto;
+    padding: .2rem .5rem;
+    border-radius: 999px;
+    background: rgba(20, 58, 75, .08);
+    font-size: .78rem;
+    font-weight: 800;
+}
+
+.products-management-panel { padding-bottom: 1.25rem; }
+.products-panel-heading { align-items: flex-end; }
+.products-panel-heading h2 { margin-bottom: .1rem; }
+.products-panel-heading .product-management-help { margin-bottom: 0; }
+
+.products-management-toolbar {
+    display: grid;
+    grid-template-columns: minmax(260px, 1.8fr) repeat(3, minmax(150px, 1fr)) auto;
+    gap: .65rem;
+    margin: 1.25rem 0 1rem;
+}
+
+.products-management-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.products-management-search > span {
+    position: absolute;
+    left: .9rem;
+    opacity: .55;
+    pointer-events: none;
+    font-size: 1.15rem;
+}
+
+.products-management-search .ds-input { width: 100%; padding-left: 2.25rem; }
+.products-management-select .ds-select { width: 100%; }
+
+.products-management-results-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: .5rem 0 .8rem;
+    font-size: .9rem;
+}
+
+.products-management-sort {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.products-management-table-wrap {
+    overflow-x: auto;
+    border: 1px solid rgba(20, 58, 75, .12);
+    border-radius: 14px;
+}
+
+.products-management-table {
+    width: 100%;
+    min-width: 930px;
+    border-collapse: collapse;
+}
+
+.products-management-table th,
+.products-management-table td {
+    padding: .8rem .75rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(20, 58, 75, .09);
+    vertical-align: middle;
+}
+
+.products-management-table th {
+    background: rgba(242, 246, 248, .78);
+    color: rgba(20, 58, 75, .78);
+    font-size: .75rem;
+    font-weight: 800;
+    letter-spacing: .03em;
+}
+
+.products-management-table tbody tr:last-child td { border-bottom: 0; }
+.products-management-table tbody tr:hover { background: rgba(248, 251, 251, .9); }
+
+.managed-product-identity {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    min-width: 250px;
+}
+
+.managed-product-identity img,
+.managed-product-placeholder {
+    width: 3.1rem;
+    height: 3.1rem;
+    flex: 0 0 auto;
+    border-radius: .55rem;
+    object-fit: contain;
+    border: 1px solid rgba(20, 58, 75, .12);
+    background: #fff;
+}
+
+.managed-product-placeholder {
+    display: grid;
+    place-items: center;
+    color: #4a37cd;
+    font-size: 1.25rem;
+    font-weight: 800;
+    background: rgba(74, 55, 205, .08);
+}
+
+.managed-product-identity > div {
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
+}
+
+.managed-product-identity strong { font-size: .92rem; }
+.managed-product-identity span { font-size: .78rem; opacity: .62; }
+
+.managed-product-status {
+    display: inline-flex;
+    align-items: center;
+    padding: .28rem .55rem;
+    border-radius: 999px;
+    font-size: .74rem;
+    font-weight: 800;
+    background: rgba(20, 58, 75, .08);
+}
+
+.managed-product-status.status-current {
+    background: rgba(45, 164, 104, .13);
+    color: #197044;
+}
+
+.managed-product-status.status-discontinued {
+    background: rgba(190, 70, 70, .12);
+    color: #963838;
+}
+
+.managed-product-status.status-prototype {
+    background: rgba(210, 150, 40, .14);
+    color: #875e10;
+}
+
+.managed-product-actions { display: flex; align-items: center; gap: .4rem; }
+.managed-product-more {
+    display: grid;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    color: inherit;
+    text-decoration: none;
+    border: 1px solid rgba(20, 58, 75, .13);
+    border-radius: .55rem;
+    font-size: 1.1rem;
+}
+
+.products-management-pagination {
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+    margin-top: 1rem;
+}
+
+.pagination-button {
+    min-width: 2.25rem;
+    height: 2.25rem;
+    padding: 0 .55rem;
+    border: 1px solid rgba(20, 58, 75, .13);
+    border-radius: .55rem;
+    background: #fff;
+    cursor: pointer;
+}
+
+.pagination-button.is-active {
+    border-color: #4a37cd;
+    background: #4a37cd;
+    color: #fff;
+}
+
+.pagination-button:disabled { opacity: .38; cursor: default; }
+
+.products-management-page-size {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    margin-left: auto;
+    font-size: .86rem;
+}
+
+.products-management-page-size .ds-select { min-width: 4.2rem; }
+
+@media (max-width: 980px) {
+    .products-management-toolbar {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .products-management-search { grid-column: 1 / -1; }
+}
+
+@media (max-width: 700px) {
+    .product-management-tabs { grid-template-columns: 1fr; }
+    .product-management-tab:first-child,
+    .product-management-tab:last-child { border-radius: 14px; border-left: 1px solid rgba(20, 58, 75, .14); }
+    .product-management-tab:last-child { border-top: 0; }
+
+    .products-management-toolbar { grid-template-columns: 1fr; }
+    .products-management-results-toolbar { align-items: stretch; flex-direction: column; }
+    .products-management-sort { justify-content: space-between; }
+    .products-management-pagination { flex-wrap: wrap; }
+    .products-management-page-size { width: 100%; margin-left: 0; }
+}

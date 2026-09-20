@@ -1,0 +1,833 @@
+@page "/catalogue/products/manage/{ProductId:guid}"
+@rendermode InteractiveServer
+@using DiaperScout.Application
+@using DiaperScout.Domain
+@using DiaperScout.Web.Services
+@inject ProductCatalogueClient Catalogue
+
+<PageTitle>Manage Product · DiaperScout</PageTitle>
+
+<section class="product-editor-page">
+    <div class="product-editor-container">
+        <header class="product-editor-header">
+            <a class="product-editor-back" href="/catalogue/products">← Back to Products</a>
+            @if (product is not null)
+            {
+                <p class="catalogue-kicker">PRODUCT MANAGEMENT</p>
+                <h1>Manage @product.Name</h1>
+                <p class="product-editor-intro">Edit the canonical product record. Changes are saved directly to the catalogue.</p>
+            }
+            else
+            {
+                <p class="catalogue-kicker">PRODUCT MANAGEMENT</p>
+                <h1>Manage Product</h1>
+            }
+        </header>
+
+        @if (loading)
+        {
+            <section class="product-management-panel">
+                <div class="product-management-empty">
+                    <strong>Loading product…</strong>
+                    <span>Fetching the canonical product record.</span>
+                </div>
+            </section>
+        }
+        else if (accessDenied)
+        {
+            <div class="product-management-message product-management-message-error" role="alert">
+                <strong>Product management unavailable</strong>
+                <p>You need Moderator or Administrator editorial authority to manage canonical products.</p>
+            </div>
+        }
+        else if (notFound)
+        {
+            <div class="product-management-message product-management-message-error" role="alert">
+                <strong>Product not found</strong>
+                <p>The canonical product could not be found.</p>
+                <a class="ds-button ds-button-secondary" href="/catalogue/products">Back to Products</a>
+            </div>
+        }
+        else if (loadError is not null || product is null)
+        {
+            <div class="product-management-message product-management-message-error" role="alert">
+                <strong>Couldn't load product</strong>
+                <p>@(loadError ?? "The canonical product could not be loaded just now.")</p>
+                <button class="ds-button ds-button-secondary" type="button" @onclick="LoadAsync">Try again</button>
+            </div>
+        }
+        else
+        {
+            @if (saveMessage is not null)
+            {
+                <div class="product-management-message product-management-message-success" role="status">
+                    @saveMessage
+                </div>
+            }
+            @if (saveError is not null)
+            {
+                <div class="product-management-message product-management-message-error" role="alert">
+                    <strong>Couldn't save product</strong>
+                    <p>@saveError</p>
+                </div>
+            }
+
+            <EditForm Model="editModel" OnValidSubmit="SaveAsync" FormName="canonical-product-edit">
+                <div class="product-editor-panel">
+                    <div class="product-editor-panel-heading">
+                        <div>
+                            <p class="catalogue-kicker">IDENTITY</p>
+                            <h2>Product Identity</h2>
+                        </div>
+                        <span class="product-editor-status">@FormatEnum(product.Status)</span>
+                    </div>
+                    <p class="product-editor-help">Maintain the canonical identity of this product. Product name changes do not automatically change its public URL.</p>
+
+                    <div class="product-editor-grid">
+                        <div class="submission-field submission-field-wide">
+                            <label for="product-name">Product name <span>*</span></label>
+                            <InputText id="product-name" class="ds-input" @bind-Value="editModel.ProductName" />
+                        </div>
+
+                        <div class="submission-field">
+                            <label for="manufacturer">Manufacturer <span>*</span></label>
+                            <InputSelect id="manufacturer" class="ds-select" @bind-Value="editModel.ManufacturerId" @bind-Value:after="ManufacturerChangedAsync">
+                                <option value="@Guid.Empty">Select manufacturer…</option>
+                                @foreach (var manufacturer in entryOptions.Manufacturers)
+                                {
+                                    <option value="@manufacturer.Id">@manufacturer.Name</option>
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <div class="submission-field">
+                            <label for="brand">Brand</label>
+                            <InputSelect id="brand" class="ds-select" @bind-Value="editModel.BrandId">
+                                <option value="@Guid.Empty">No brand</option>
+                                @foreach (var brand in AvailableBrands)
+                                {
+                                    <option value="@brand.Id">@brand.Name</option>
+                                }
+                            </InputSelect>
+                            <small>Only brands belonging to the selected manufacturer are shown.</small>
+                        </div>
+
+                        <div class="submission-field">
+                            <label for="family">Product family</label>
+                            <InputText id="family" class="ds-input" @bind-Value="editModel.ProductFamily" />
+                        </div>
+
+                        <div class="submission-field">
+                            <label for="product-type">Product type <span>*</span></label>
+                            <InputSelect id="product-type" class="ds-select" @bind-Value="editModel.ProductType">
+                                @foreach (var value in Enum.GetValues<ProductType>())
+                                {
+                                    <option value="@value">@FormatProductType(value)</option>
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <div class="submission-field submission-field-wide">
+                            <label for="official-website">Official website</label>
+                            <InputText id="official-website" class="ds-input" @bind-Value="editModel.OfficialWebsiteUrl" placeholder="https://…" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-editor-panel">
+                    <div class="product-editor-panel-heading">
+                        <div>
+                            <p class="catalogue-kicker">CANONICAL STRUCTURE</p>
+                            <h2>Variants &amp; Sizes</h2>
+                        </div>
+                        <span class="product-editor-summary">@product.Variants.Count variants · @product.Variants.Sum(value => value.Sizes.Count) sizes</span>
+                    </div>
+                    <p class="product-editor-help">Manage manufacturer-defined variants and their sizes directly on the canonical product.</p>
+
+                    <div class="product-editor-inline-create">
+                        <div>
+                            <strong>Add variant</strong>
+                            <span>Create another canonical manufacturer-defined variant.</span>
+                        </div>
+                        <div class="product-editor-inline-fields">
+                            <input class="ds-input" placeholder="Variant name" @bind="newVariantName" />
+                            <select class="ds-select" @bind="newVariantBacking">
+                                @foreach (var value in Enum.GetValues<BackingType>())
+                                {
+                                    <option value="@value">@FormatEnum(value)</option>
+                                }
+                            </select>
+                            <button class="ds-button ds-button-primary" type="button" @onclick="AddVariantAsync" disabled="@variantSaving">@(variantSaving ? "Adding…" : "Add variant")</button>
+                        </div>
+                    </div>
+
+                    <div class="product-editor-variants">
+                        @foreach (var variant in product.Variants)
+                        {
+                            <article class="product-editor-variant-card">
+                                <div class="product-editor-variant-header">
+                                    <div>
+                                        <p class="catalogue-kicker">VARIANT</p>
+                                        @if (editingVariantId == variant.Id)
+                                        {
+                                            <div class="product-editor-inline-fields product-editor-variant-edit-fields">
+                                                <input class="ds-input" @bind="editingVariantName" />
+                                                <select class="ds-select" @bind="editingVariantBacking">
+                                                    @foreach (var value in Enum.GetValues<BackingType>())
+                                                    {
+                                                        <option value="@value">@FormatEnum(value)</option>
+                                                    }
+                                                </select>
+                                                <button class="ds-button ds-button-primary" type="button" @onclick="() => SaveVariantAsync(variant.Id)" disabled="@variantSaving">Save</button>
+                                                <button class="ds-button ds-button-secondary" type="button" @onclick="CancelVariantEdit">Cancel</button>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <h3>@variant.Name</h3>
+                                            <span>@FormatEnum(variant.BackingType) · @variant.Sizes.Count @(variant.Sizes.Count == 1 ? "size" : "sizes")</span>
+                                        }
+                                    </div>
+                                    @if (editingVariantId != variant.Id)
+                                    {
+                                        <div class="product-editor-variant-actions">
+                                            <button class="ds-button ds-button-secondary" type="button" @onclick="() => BeginVariantEdit(variant)">Edit</button>
+                                            <button class="product-editor-remove-button" type="button" title="Remove variant" @onclick="() => RemoveVariantAsync(variant.Id)" disabled="@(variantSaving || product.Variants.Count <= 1)">@(confirmRemoveVariantId == variant.Id ? "Confirm remove" : "×")</button>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="product-editor-sizes">
+                                    <div class="product-editor-subheading">
+                                        <div>
+                                            <strong>Sizes</strong>
+                                            <span>Manufacturer size and fit measurements</span>
+                                        </div>
+                                        <button class="ds-button ds-button-secondary" type="button" @onclick="() => BeginAddSize(variant.Id)">+ Add size</button>
+                                    </div>
+
+                                    @if (addingSizeVariantId == variant.Id)
+                                    {
+                                        <div class="product-editor-size-editor">
+                                            <div class="product-editor-size-grid">
+                                                <div class="submission-field">
+                                                    <label>Manufacturer size <span>*</span></label>
+                                                    <input class="ds-input" @bind="newSize.ManufacturerSize" />
+                                                </div>
+                                                <div class="submission-field">
+                                                    <label>Pack quantity <span>*</span></label>
+                                                    <input class="ds-input" type="number" min="1" @bind="newSize.ManufacturerPackQuantity" />
+                                                </div>
+                                                <div class="submission-field">
+                                                    <label>Packaging <span>*</span></label>
+                                                    <select class="ds-select" @bind="newSize.PackagingType">
+                                                        @foreach (var value in Enum.GetValues<PackagingType>())
+                                                        {
+                                                            <option value="@value">@FormatEnum(value)</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                                <div class="submission-field">
+                                                    <label>GTIN</label>
+                                                    <input class="ds-input" @bind="newSize.Gtin" />
+                                                </div>
+                                                <div class="submission-field">
+                                                    <label>Waist minimum (cm)</label>
+                                                    <input class="ds-input" type="number" min="0" @bind="newSize.WaistMinimumCm" />
+                                                </div>
+                                                <div class="submission-field">
+                                                    <label>Waist maximum (cm)</label>
+                                                    <input class="ds-input" type="number" min="0" @bind="newSize.WaistMaximumCm" />
+                                                </div>
+                                                <div class="submission-field">
+                                                    <label>Hip minimum (cm)</label>
+                                                    <input class="ds-input" type="number" min="0" @bind="newSize.HipMinimumCm" />
+                                                </div>
+                                                <div class="submission-field">
+                                                    <label>Hip maximum (cm)</label>
+                                                    <input class="ds-input" type="number" min="0" @bind="newSize.HipMaximumCm" />
+                                                </div>
+                                            </div>
+                                            <div class="product-editor-actions product-editor-inline-actions">
+                                                <button class="ds-button ds-button-secondary" type="button" @onclick="CancelAddSize">Cancel</button>
+                                                <button class="ds-button ds-button-primary" type="button" @onclick="() => AddSizeAsync(variant.Id)" disabled="@sizeSaving">@(sizeSaving ? "Adding…" : "Add size")</button>
+                                            </div>
+                                        </div>
+                                    }
+
+                                    @foreach (var size in variant.Sizes)
+                                    {
+                                        <div class="product-editor-size-row">
+                                            @if (editingSizeId == size.Id)
+                                            {
+                                                <div class="product-editor-size-editor product-editor-size-editor-compact">
+                                                    <div class="product-editor-size-grid">
+                                                        <div class="submission-field">
+                                                            <label>Manufacturer size <span>*</span></label>
+                                                            <input class="ds-input" @bind="editingSize.ManufacturerSize" />
+                                                        </div>
+                                                        <div class="submission-field">
+                                                            <label>Waist minimum (cm)</label>
+                                                            <input class="ds-input" type="number" min="0" @bind="editingSize.WaistMinimumCm" />
+                                                        </div>
+                                                        <div class="submission-field">
+                                                            <label>Waist maximum (cm)</label>
+                                                            <input class="ds-input" type="number" min="0" @bind="editingSize.WaistMaximumCm" />
+                                                        </div>
+                                                        <div class="submission-field">
+                                                            <label>Hip minimum (cm)</label>
+                                                            <input class="ds-input" type="number" min="0" @bind="editingSize.HipMinimumCm" />
+                                                        </div>
+                                                        <div class="submission-field">
+                                                            <label>Hip maximum (cm)</label>
+                                                            <input class="ds-input" type="number" min="0" @bind="editingSize.HipMaximumCm" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="product-editor-actions product-editor-inline-actions">
+                                                        <button class="ds-button ds-button-secondary" type="button" @onclick="CancelSizeEdit">Cancel</button>
+                                                        <button class="ds-button ds-button-primary" type="button" @onclick="() => SaveSizeAsync(variant.Id, size.Id)" disabled="@sizeSaving">@(sizeSaving ? "Saving…" : "Save size")</button>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="product-editor-size-summary">
+                                                    <strong>@size.ManufacturerSize</strong>
+                                                    <span>@FormatRange(size.WaistMinimumCm, size.WaistMaximumCm, "waist") · @size.Packs.Count @(size.Packs.Count == 1 ? "pack" : "packs")</span>
+                                                </div>
+                                                <div class="product-editor-size-actions">
+                                                    <button class="ds-button ds-button-secondary" type="button" @onclick="() => BeginSizeEdit(size)">Edit</button>
+                                                    <button class="product-editor-remove-button" type="button" title="Remove size" @onclick="() => RemoveSizeAsync(variant.Id, size.Id)" disabled="@(sizeSaving || variant.Sizes.Count <= 1)">@(confirmRemoveSizeId == size.Id ? "Confirm remove" : "×")</button>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </article>
+                        }
+                    </div>
+                </div>
+
+                <div class="product-editor-panel product-editor-provenance">
+                    <div class="product-editor-panel-heading">
+                        <div>
+                            <p class="catalogue-kicker">CHANGE RECORD</p>
+                            <h2>Provenance &amp; rationale</h2>
+                        </div>
+                    </div>
+                    <p class="product-editor-help">Every canonical edit records where the change came from and why it was made.</p>
+                    <div class="product-editor-grid">
+                        <div class="submission-field submission-field-wide">
+                            <label for="source-summary">Source summary <span>*</span></label>
+                            <InputText id="source-summary" class="ds-input" @bind-Value="editModel.SourceSummary" />
+                        </div>
+                        <div class="submission-field submission-field-wide">
+                            <label for="source-references">Source references</label>
+                            <InputTextArea id="source-references" class="ds-input ds-textarea" @bind-Value="editModel.SourceReferencesText" rows="3" placeholder="One URL or source reference per line" />
+                        </div>
+                        <div class="submission-field submission-field-wide">
+                            <label for="editorial-rationale">Editorial rationale <span>*</span></label>
+                            <InputTextArea id="editorial-rationale" class="ds-input ds-textarea" @bind-Value="editModel.EditorialRationale" rows="3" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-editor-actions">
+                    <a class="ds-button ds-button-secondary" href="/catalogue/products">Cancel</a>
+                    <button class="ds-button ds-button-primary" type="submit" disabled="@saving">@(saving ? "Saving…" : "Save changes")</button>
+                </div>
+            </EditForm>
+        }
+    </div>
+</section>
+
+@code {
+    [Parameter] public Guid ProductId { get; set; }
+
+    private CatalogueProductManagementDetails? product;
+    private CatalogueEntryOptions entryOptions = new([], []);
+    private ProductIdentityEditModel editModel = new();
+    private bool loading = true;
+    private bool accessDenied;
+    private bool notFound;
+    private bool saving;
+    private string? loadError;
+    private string? saveError;
+    private string? saveMessage;
+
+    private IEnumerable<CatalogueBrandOption> AvailableBrands =>
+        editModel.ManufacturerId == Guid.Empty
+            ? []
+            : entryOptions.Brands.Where(value => value.ManufacturerId == editModel.ManufacturerId);
+
+    protected override async Task OnParametersSetAsync() => await LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        loading = true;
+        accessDenied = false;
+        notFound = false;
+        loadError = null;
+        saveError = null;
+        saveMessage = null;
+
+        var result = await Catalogue.GetProductManagementAsync(ProductId);
+        if (result.Status == CatalogueProductManagementStatus.AccessDenied)
+        {
+            accessDenied = true;
+            loading = false;
+            return;
+        }
+
+        if (result.Status == CatalogueProductManagementStatus.NotFound)
+        {
+            notFound = true;
+            loading = false;
+            return;
+        }
+
+        if (result.Status != CatalogueProductManagementStatus.Found || result.Product is null)
+        {
+            loadError = "The canonical product could not be loaded just now.";
+            loading = false;
+            return;
+        }
+
+        product = result.Product;
+        entryOptions = await Catalogue.GetCatalogueEntryOptionsAsync();
+        editModel = ProductIdentityEditModel.From(product);
+        loading = false;
+    }
+
+    private Task ManufacturerChangedAsync()
+    {
+        if (editModel.BrandId != Guid.Empty &&
+            !entryOptions.Brands.Any(value => value.Id == editModel.BrandId && value.ManufacturerId == editModel.ManufacturerId))
+        {
+            editModel.BrandId = Guid.Empty;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private async Task SaveAsync()
+    {
+        saveError = null;
+        saveMessage = null;
+        saving = true;
+
+        try
+        {
+            if (editModel.ManufacturerId == Guid.Empty)
+            {
+                saveError = "Select a manufacturer.";
+                return;
+            }
+
+            var request = new UpdateCanonicalProductIdentity(
+                editModel.ManufacturerId,
+                editModel.BrandId == Guid.Empty ? null : editModel.BrandId,
+                editModel.ProductName,
+                editModel.ProductType,
+                editModel.ProductFamily,
+                editModel.OfficialWebsiteUrl,
+                editModel.SourceSummary,
+                editModel.SourceReferencesText.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries),
+                editModel.EditorialRationale,
+                null);
+
+            var result = await Catalogue.UpdateProductIdentityAsync(ProductId, request);
+            switch (result.Status)
+            {
+                case CatalogueProductManagementUpdateStatus.Saved:
+                    saveMessage = "Product identity saved.";
+                    await ReloadAfterSaveAsync();
+                    break;
+                case CatalogueProductManagementUpdateStatus.AccessDenied:
+                    saveError = "You need Moderator or Administrator editorial authority to save canonical products.";
+                    break;
+                case CatalogueProductManagementUpdateStatus.NotFound:
+                    saveError = "The canonical product could not be found.";
+                    break;
+                case CatalogueProductManagementUpdateStatus.Invalid:
+                    saveError = FormatValidationErrors(result.Errors);
+                    break;
+                default:
+                    saveError = "The product could not be saved just now.";
+                    break;
+            }
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    private Guid? editingVariantId;
+    private string editingVariantName = string.Empty;
+    private BackingType editingVariantBacking = BackingType.Unknown;
+    private string newVariantName = string.Empty;
+    private BackingType newVariantBacking = BackingType.Unknown;
+    private bool variantSaving;
+    private Guid? confirmRemoveVariantId;
+
+    private Guid? addingSizeVariantId;
+    private Guid? editingSizeId;
+    private CanonicalSizeEditModel newSize = new();
+    private CanonicalSizeEditModel editingSize = new();
+    private bool sizeSaving;
+    private Guid? confirmRemoveSizeId;
+
+    private void BeginVariantEdit(CatalogueProductVariant variant)
+    {
+        editingVariantId = variant.Id;
+        editingVariantName = variant.Name;
+        editingVariantBacking = variant.BackingType;
+    }
+
+    private void CancelVariantEdit() => editingVariantId = null;
+
+    private async Task AddVariantAsync()
+    {
+        if (string.IsNullOrWhiteSpace(newVariantName))
+        {
+            saveError = "Enter a variant name.";
+            return;
+        }
+
+        variantSaving = true;
+        saveError = null;
+        try
+        {
+            var result = await Catalogue.AddProductVariantAsync(ProductId, new CreateCanonicalProductVariantManagement(
+                newVariantName,
+                newVariantBacking,
+                editModel.SourceSummary,
+                SourceReferences(),
+                editModel.EditorialRationale,
+                null));
+            HandleManagementMutationResult(result, "Variant added.");
+            if (result.Status == CatalogueProductManagementUpdateStatus.Saved)
+            {
+                newVariantName = string.Empty;
+                newVariantBacking = BackingType.Unknown;
+                await ReloadAfterSaveAsync();
+            }
+        }
+        finally
+        {
+            variantSaving = false;
+        }
+    }
+
+    private async Task SaveVariantAsync(Guid variantId)
+    {
+        if (string.IsNullOrWhiteSpace(editingVariantName))
+        {
+            saveError = "Enter a variant name.";
+            return;
+        }
+
+        variantSaving = true;
+        saveError = null;
+        try
+        {
+            var result = await Catalogue.UpdateProductVariantAsync(ProductId, variantId, new UpdateCanonicalProductVariantManagement(
+                editingVariantName,
+                editingVariantBacking,
+                editModel.SourceSummary,
+                SourceReferences(),
+                editModel.EditorialRationale,
+                null));
+            HandleManagementMutationResult(result, "Variant saved.");
+            if (result.Status == CatalogueProductManagementUpdateStatus.Saved)
+            {
+                editingVariantId = null;
+                await ReloadAfterSaveAsync();
+            }
+        }
+        finally
+        {
+            variantSaving = false;
+        }
+    }
+
+    private async Task RemoveVariantAsync(Guid variantId)
+    {
+        if (product?.Variants.Count <= 1)
+            return;
+
+        if (confirmRemoveVariantId != variantId)
+        {
+            confirmRemoveVariantId = variantId;
+            return;
+        }
+
+        variantSaving = true;
+        saveError = null;
+        try
+        {
+            var result = await Catalogue.RemoveProductVariantAsync(ProductId, variantId, new RemoveCanonicalProductElement(
+                editModel.SourceSummary,
+                SourceReferences(),
+                editModel.EditorialRationale,
+                null));
+            HandleManagementMutationResult(result, "Variant removed.");
+            if (result.Status == CatalogueProductManagementUpdateStatus.Saved)
+            {
+                confirmRemoveVariantId = null;
+                await ReloadAfterSaveAsync();
+            }
+        }
+        finally
+        {
+            variantSaving = false;
+        }
+    }
+
+    private void BeginAddSize(Guid variantId)
+    {
+        addingSizeVariantId = variantId;
+        newSize = new CanonicalSizeEditModel { ManufacturerPackQuantity = 1, PackagingType = PackagingType.Bag };
+        editingSizeId = null;
+    }
+
+    private void CancelAddSize() => addingSizeVariantId = null;
+
+    private async Task AddSizeAsync(Guid variantId)
+    {
+        if (string.IsNullOrWhiteSpace(newSize.ManufacturerSize))
+        {
+            saveError = "Enter a manufacturer size.";
+            return;
+        }
+
+        sizeSaving = true;
+        saveError = null;
+        try
+        {
+            var result = await Catalogue.AddProductSizeAsync(ProductId, variantId, new CreateCanonicalProductSizeManagement(
+                newSize.ManufacturerSize,
+                newSize.WaistMinimumCm,
+                newSize.WaistMaximumCm,
+                newSize.HipMinimumCm,
+                newSize.HipMaximumCm,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                newSize.ManufacturerPackQuantity,
+                newSize.PackagingType,
+                newSize.Gtin,
+                editModel.SourceSummary,
+                SourceReferences(),
+                editModel.EditorialRationale,
+                null));
+            HandleManagementMutationResult(result, "Size added.");
+            if (result.Status == CatalogueProductManagementUpdateStatus.Saved)
+            {
+                addingSizeVariantId = null;
+                await ReloadAfterSaveAsync();
+            }
+        }
+        finally
+        {
+            sizeSaving = false;
+        }
+    }
+
+    private void BeginSizeEdit(CatalogueProductSize size)
+    {
+        editingSizeId = size.Id;
+        editingSize = new CanonicalSizeEditModel
+        {
+            ManufacturerSize = size.ManufacturerSize,
+            WaistMinimumCm = size.WaistMinimumCm,
+            WaistMaximumCm = size.WaistMaximumCm,
+            HipMinimumCm = size.HipMinimumCm,
+            HipMaximumCm = size.HipMaximumCm,
+            ManufacturerStatedAbsorbencyMl = size.ManufacturerStatedAbsorbencyMl,
+            FitMeasurementBasis = size.FitMeasurementBasis,
+            AbsorbencyBasisMethod = size.AbsorbencyBasisMethod,
+            AbsorbencySource = size.AbsorbencySource,
+            LengthMm = size.LengthMm,
+            WidthMm = size.WidthMm,
+            WeightGrams = size.WeightGrams
+        };
+    }
+
+    private void CancelSizeEdit() => editingSizeId = null;
+
+    private async Task SaveSizeAsync(Guid variantId, Guid sizeId)
+    {
+        if (string.IsNullOrWhiteSpace(editingSize.ManufacturerSize))
+        {
+            saveError = "Enter a manufacturer size.";
+            return;
+        }
+
+        sizeSaving = true;
+        saveError = null;
+        try
+        {
+            var result = await Catalogue.UpdateProductSizeAsync(ProductId, variantId, sizeId, new UpdateCanonicalProductSizeManagement(
+                editingSize.ManufacturerSize,
+                editingSize.WaistMinimumCm,
+                editingSize.WaistMaximumCm,
+                editingSize.HipMinimumCm,
+                editingSize.HipMaximumCm,
+                editingSize.ManufacturerStatedAbsorbencyMl,
+                editingSize.FitMeasurementBasis,
+                editingSize.AbsorbencyBasisMethod,
+                editingSize.AbsorbencySource,
+                editingSize.LengthMm,
+                editingSize.WidthMm,
+                editingSize.WeightGrams,
+                editModel.SourceSummary,
+                SourceReferences(),
+                editModel.EditorialRationale,
+                null));
+            HandleManagementMutationResult(result, "Size saved.");
+            if (result.Status == CatalogueProductManagementUpdateStatus.Saved)
+            {
+                editingSizeId = null;
+                await ReloadAfterSaveAsync();
+            }
+        }
+        finally
+        {
+            sizeSaving = false;
+        }
+    }
+
+    private async Task RemoveSizeAsync(Guid variantId, Guid sizeId)
+    {
+        var variant = product?.Variants.SingleOrDefault(value => value.Id == variantId);
+        if (variant is null || variant.Sizes.Count <= 1)
+            return;
+
+        if (confirmRemoveSizeId != sizeId)
+        {
+            confirmRemoveSizeId = sizeId;
+            return;
+        }
+
+        sizeSaving = true;
+        saveError = null;
+        try
+        {
+            var result = await Catalogue.RemoveProductSizeAsync(ProductId, variantId, sizeId, new RemoveCanonicalProductElement(
+                editModel.SourceSummary,
+                SourceReferences(),
+                editModel.EditorialRationale,
+                null));
+            HandleManagementMutationResult(result, "Size removed.");
+            if (result.Status == CatalogueProductManagementUpdateStatus.Saved)
+            {
+                confirmRemoveSizeId = null;
+                await ReloadAfterSaveAsync();
+            }
+        }
+        finally
+        {
+            sizeSaving = false;
+        }
+    }
+
+    private IReadOnlyList<string> SourceReferences() =>
+        editModel.SourceReferencesText.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+    private void HandleManagementMutationResult(CatalogueProductManagementUpdateResult result, string successMessage)
+    {
+        saveMessage = null;
+        saveError = result.Status switch
+        {
+            CatalogueProductManagementUpdateStatus.AccessDenied => "You need Moderator or Administrator editorial authority to change canonical products.",
+            CatalogueProductManagementUpdateStatus.NotFound => "The canonical product or requested record could not be found.",
+            CatalogueProductManagementUpdateStatus.Invalid => FormatValidationErrors(result.Errors),
+            CatalogueProductManagementUpdateStatus.Failed => "The catalogue change could not be saved just now.",
+            _ => null
+        };
+        if (result.Status == CatalogueProductManagementUpdateStatus.Saved)
+            saveMessage = successMessage;
+    }
+
+    private static string FormatRange(int? minimum, int? maximum, string label) =>
+        minimum is null && maximum is null
+            ? $"{label}: not recorded"
+            : $"{label}: {(minimum?.ToString() ?? "?")}–{(maximum?.ToString() ?? "?")} cm";
+
+
+    private sealed class CanonicalSizeEditModel
+    {
+        public string ManufacturerSize { get; set; } = string.Empty;
+        public int? WaistMinimumCm { get; set; }
+        public int? WaistMaximumCm { get; set; }
+        public int? HipMinimumCm { get; set; }
+        public int? HipMaximumCm { get; set; }
+        public int? ManufacturerStatedAbsorbencyMl { get; set; }
+        public string? FitMeasurementBasis { get; set; }
+        public string? AbsorbencyBasisMethod { get; set; }
+        public string? AbsorbencySource { get; set; }
+        public int? LengthMm { get; set; }
+        public int? WidthMm { get; set; }
+        public int? WeightGrams { get; set; }
+        public int ManufacturerPackQuantity { get; set; } = 1;
+        public PackagingType PackagingType { get; set; } = PackagingType.Bag;
+        public string? Gtin { get; set; }
+    }
+
+    private async Task ReloadAfterSaveAsync()
+    {
+        var result = await Catalogue.GetProductManagementAsync(ProductId);
+        if (result.Status == CatalogueProductManagementStatus.Found && result.Product is not null)
+        {
+            product = result.Product;
+            editModel = ProductIdentityEditModel.From(product, editModel.SourceSummary, editModel.SourceReferencesText, editModel.EditorialRationale);
+        }
+    }
+
+    private static string FormatValidationErrors(IReadOnlyDictionary<string, string[]>? errors) =>
+        errors is null || errors.Count == 0
+            ? "The product details are not valid."
+            : string.Join(" ", errors.SelectMany(value => value.Value));
+
+    private static string FormatEnum<T>(T value) =>
+        System.Text.RegularExpressions.Regex.Replace(value?.ToString() ?? string.Empty, "(?<!^)([A-Z])", " $1");
+
+    private static string FormatProductType(ProductType value) =>
+        value == ProductType.Tape ? "Diaper" : FormatEnum(value);
+
+    private sealed class ProductIdentityEditModel
+    {
+        public Guid ManufacturerId { get; set; }
+        public Guid BrandId { get; set; }
+        public string ProductName { get; set; } = string.Empty;
+        public ProductType ProductType { get; set; }
+        public string? ProductFamily { get; set; }
+        public string? OfficialWebsiteUrl { get; set; }
+        public string SourceSummary { get; set; } = string.Empty;
+        public string SourceReferencesText { get; set; } = string.Empty;
+        public string EditorialRationale { get; set; } = string.Empty;
+
+        public static ProductIdentityEditModel From(
+            CatalogueProductManagementDetails product,
+            string? sourceSummary = null,
+            string? sourceReferences = null,
+            string? editorialRationale = null) => new()
+            {
+                ManufacturerId = product.ManufacturerId,
+                BrandId = product.BrandId ?? Guid.Empty,
+                ProductName = product.Name,
+                ProductType = product.ProductType,
+                ProductFamily = product.ProductFamily,
+                OfficialWebsiteUrl = product.OfficialWebsiteUrl,
+                SourceSummary = sourceSummary ?? "Canonical product management edit",
+                SourceReferencesText = sourceReferences ?? string.Empty,
+                EditorialRationale = editorialRationale ?? "Updated the canonical product identity from verified catalogue information."
+            };
+    }
+}

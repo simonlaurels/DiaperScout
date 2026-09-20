@@ -1,0 +1,356 @@
+.product-editor-page {
+    padding: 28px 20px 72px;
+}
+
+.product-editor-container {
+    width: min(1080px, 100%);
+    margin: 0 auto;
+}
+
+.product-editor-header {
+    margin-bottom: 24px;
+}
+
+.product-editor-back {
+    display: inline-flex;
+    margin-bottom: 18px;
+    color: #145a55;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.product-editor-back:hover {
+    text-decoration: underline;
+}
+
+.product-editor-header h1 {
+    margin: 0;
+    color: #143a4b;
+    font-family: Georgia, serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.product-editor-intro,
+.product-editor-help {
+    color: #4f626b;
+}
+
+.product-editor-panel {
+    margin-bottom: 20px;
+    padding: 26px;
+    border: 1px solid rgba(20, 58, 75, .12);
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 10px 30px rgba(20, 58, 75, .06);
+}
+
+.product-editor-panel-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.product-editor-panel-heading h2 {
+    margin: 2px 0 0;
+    color: #143a4b;
+    font-family: Georgia, serif;
+    font-size: 1.65rem;
+}
+
+.product-editor-status,
+.product-editor-summary,
+.product-editor-coming-soon {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 7px 12px;
+    background: #e8f5ed;
+    color: #21643f;
+    font-size: .82rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.product-editor-summary {
+    background: #f2f4f5;
+    color: #50616a;
+}
+
+.product-editor-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 22px;
+}
+
+.product-editor-grid .submission-field-wide {
+    grid-column: 1 / -1;
+}
+
+.product-editor-structure {
+    display: grid;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.product-editor-structure-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 16px;
+    border: 1px solid rgba(20, 58, 75, .1);
+    border-radius: 12px;
+    background: #fafbfb;
+}
+
+.product-editor-structure-item div {
+    display: grid;
+    gap: 4px;
+}
+
+.product-editor-structure-item span {
+    color: #63737b;
+    font-size: .88rem;
+}
+
+.product-editor-coming-soon {
+    background: #f0edff;
+    color: #4b3fd2;
+}
+
+.product-editor-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.product-editor-provenance {
+    background: #fcfdfd;
+}
+
+.product-management-message-success {
+    margin-bottom: 20px;
+    border-color: rgba(33, 100, 63, .2);
+    background: #f0faf3;
+    color: #215b39;
+}
+
+@media (max-width: 720px) {
+    .product-editor-page {
+        padding-inline: 14px;
+    }
+
+    .product-editor-panel {
+        padding: 20px;
+    }
+
+    .product-editor-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .product-editor-grid .submission-field-wide {
+        grid-column: auto;
+    }
+
+    .product-editor-panel-heading {
+        flex-direction: column;
+    }
+
+    .product-editor-actions {
+        flex-direction: column-reverse;
+    }
+
+    .product-editor-actions .ds-button {
+        width: 100%;
+    }
+}
+
+.product-editor-inline-create {
+    display: grid;
+    grid-template-columns: minmax(180px, .7fr) minmax(0, 1.3fr);
+    gap: 18px;
+    align-items: center;
+    margin-top: 22px;
+    padding: 16px;
+    border: 1px dashed rgba(75, 63, 210, .25);
+    border-radius: 14px;
+    background: #faf9ff;
+}
+
+.product-editor-inline-create > div:first-child,
+.product-editor-subheading > div {
+    display: grid;
+    gap: 4px;
+}
+
+.product-editor-inline-create span,
+.product-editor-subheading span,
+.product-editor-size-summary span,
+.product-editor-variant-header span {
+    color: #63737b;
+    font-size: .86rem;
+}
+
+.product-editor-inline-fields {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(150px, .8fr) auto;
+    gap: 10px;
+    align-items: center;
+}
+
+.product-editor-variants {
+    display: grid;
+    gap: 16px;
+    margin-top: 18px;
+}
+
+.product-editor-variant-card {
+    padding: 18px;
+    border: 1px solid rgba(20, 58, 75, .1);
+    border-radius: 14px;
+    background: #fcfdfd;
+}
+
+.product-editor-variant-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.product-editor-variant-header h3 {
+    margin: 2px 0 4px;
+    color: #143a4b;
+    font-family: Georgia, serif;
+    font-size: 1.35rem;
+}
+
+.product-editor-variant-actions,
+.product-editor-size-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.product-editor-variant-edit-fields {
+    margin-top: 8px;
+}
+
+.product-editor-subheading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 10px;
+}
+
+.product-editor-sizes {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(20, 58, 75, .08);
+}
+
+.product-editor-size-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 0;
+    border-top: 1px solid rgba(20, 58, 75, .06);
+}
+
+.product-editor-size-summary {
+    display: grid;
+    gap: 4px;
+}
+
+.product-editor-size-editor {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    background: #f8fafb;
+    border: 1px solid rgba(20, 58, 75, .08);
+}
+
+.product-editor-size-editor-compact {
+    margin-top: 2px;
+}
+
+.product-editor-size-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.product-editor-inline-actions {
+    margin-top: 14px;
+}
+
+.product-editor-remove-button {
+    min-height: 38px;
+    padding: 0 10px;
+    border: 1px solid rgba(160, 65, 65, .2);
+    border-radius: 9px;
+    background: #fff;
+    color: #9a4141;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.product-editor-remove-button:hover:not(:disabled) {
+    background: #fff4f4;
+}
+
+.product-editor-remove-button:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+.product-editor-icon-button {
+    width: 38px;
+    height: 38px;
+    border: 1px solid rgba(20, 58, 75, .12);
+    border-radius: 9px;
+    background: #fff;
+    color: #9a4141;
+    font-size: 1.15rem;
+    cursor: pointer;
+}
+
+.product-editor-icon-button:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+    .product-editor-inline-create {
+        grid-template-columns: 1fr;
+    }
+
+    .product-editor-inline-fields,
+    .product-editor-size-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 620px) {
+    .product-editor-inline-fields,
+    .product-editor-size-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .product-editor-variant-header,
+    .product-editor-subheading,
+    .product-editor-size-row {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .product-editor-variant-actions,
+    .product-editor-size-actions {
+        justify-content: flex-start;
+    }
+}

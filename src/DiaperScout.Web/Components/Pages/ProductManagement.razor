@@ -16,21 +16,46 @@
                 <p class="catalogue-kicker">CATALOGUE WORKSPACE</p>
                 <h1>Product Management</h1>
                 <p class="product-management-intro">
-                    Manage catalogue submissions and continue products that are still being prepared.
-                    Published products will have their own management view later.
+                    Search, view and manage existing catalogue products, or review new submissions waiting for editorial work.
                 </p>
             </div>
 
             <div class="product-management-header-actions">
-                <a class="ds-button ds-button-secondary" href="@Catalogue.GetSubmissionImportTemplateUrl()">Download CSV template</a>
-                <label class="ds-button ds-button-secondary import-file-button">
-                    Import CSV
-                    <InputFile OnChange="HandleCsvSelected" accept=".csv,text/csv" />
-                </label>
+                @if (IsSubmissionTab)
+                {
+                    <a class="ds-button ds-button-secondary" href="@Catalogue.GetSubmissionImportTemplateUrl()">Download CSV template</a>
+                    <label class="ds-button ds-button-secondary import-file-button">
+                        Import CSV
+                        <InputFile OnChange="HandleCsvSelected" accept=".csv,text/csv" />
+                    </label>
+                }
                 <a class="ds-button ds-button-primary" href="/catalogue/add">＋ Add Product</a>
             </div>
         </header>
 
+        <nav class="product-management-tabs" aria-label="Catalogue management">
+            <a class="product-management-tab @(IsSubmissionTab ? "" : "is-active")" href="/catalogue/products">
+                <span class="product-management-tab-icon" aria-hidden="true">◇</span>
+                <span>
+                    <strong>Product Management</strong>
+                    <small>Manage existing catalogue products</small>
+                </span>
+            </a>
+            <a class="product-management-tab @(IsSubmissionTab ? "is-active" : "")" href="/catalogue/products?tab=submissions">
+                <span class="product-management-tab-icon" aria-hidden="true">▣</span>
+                <span>
+                    <strong>Submission Queue</strong>
+                    <small>Review and approve new submissions</small>
+                </span>
+                @if (submissions.Count > 0)
+                {
+                    <span class="product-management-tab-count">@submissions.Count</span>
+                }
+            </a>
+        </nav>
+
+        @if (IsSubmissionTab)
+        {
         @if (loading)
         {
             <section class="product-management-panel">
@@ -204,6 +229,175 @@
                 }
             </section>
         }
+        }
+        else
+        {
+            <section class="product-management-panel products-management-panel">
+                <div class="product-management-panel-heading products-panel-heading">
+                    <div>
+                        <p class="catalogue-kicker">PRODUCTS</p>
+                        <h2>Products</h2>
+                        <p class="product-management-help">Search and manage existing catalogue products.</p>
+                    </div>
+                    @if (productsCatalogue is not null)
+                    {
+                        <span class="product-management-count">
+                            @productsCatalogue.TotalCount @(productsCatalogue.TotalCount == 1 ? "product" : "products")
+                        </span>
+                    }
+                </div>
+
+                <div class="products-management-toolbar">
+                    <form class="products-management-search" @onsubmit="SearchProductsAsync">
+                        <span aria-hidden="true">⌕</span>
+                        <input class="ds-input" @bind="productQuery" placeholder="Search products, brands, manufacturers or GTIN…" autocomplete="off" />
+                    </form>
+                    <label class="products-management-select">
+                        <span class="visually-hidden">Manufacturer</span>
+                        <select class="ds-select" value="@selectedManufacturer" @onchange="ManufacturerChanged">
+                            <option value="">All manufacturers</option>
+                            @foreach (var option in ManufacturerOptions)
+                            {
+                                <option value="@option.Value">@option.Label</option>
+                            }
+                        </select>
+                    </label>
+                    <label class="products-management-select">
+                        <span class="visually-hidden">Product type</span>
+                        <select class="ds-select" value="@selectedProductType" @onchange="ProductTypeChanged">
+                            <option value="">All product types</option>
+                            @foreach (var value in Enum.GetValues<ProductType>())
+                            {
+                                <option value="@value">@FormatEnum(value)</option>
+                            }
+                        </select>
+                    </label>
+                    <label class="products-management-select">
+                        <span class="visually-hidden">Status</span>
+                        <select class="ds-select" value="@selectedStatus" @onchange="StatusChanged">
+                            <option value="">All statuses</option>
+                            @foreach (var value in Enum.GetValues<ProductStatus>())
+                            {
+                                <option value="@value">@FormatEnum(value)</option>
+                            }
+                        </select>
+                    </label>
+                    @if (HasProductFilters)
+                    {
+                        <button class="ds-button ds-button-secondary" type="button" @onclick="ClearProductFilters">Clear filters</button>
+                    }
+                </div>
+
+                @if (productsLoading)
+                {
+                    <div class="product-management-empty"><strong>Loading products…</strong><span>Fetching the canonical catalogue.</span></div>
+                }
+                else if (productsError is not null)
+                {
+                    <div class="product-management-message product-management-message-error" role="alert">
+                        <strong>Couldn't load products</strong>
+                        <p>@productsError</p>
+                    </div>
+                }
+                else if (productsCatalogue is null || productsCatalogue.Products.Count == 0)
+                {
+                    <div class="product-management-empty">
+                        <strong>No products found</strong>
+                        <span>Try changing the search or filters.</span>
+                        @if (HasProductFilters)
+                        {
+                            <button class="ds-button ds-button-secondary" type="button" @onclick="ClearProductFilters">Clear filters</button>
+                        }
+                    </div>
+                }
+                else
+                {
+                    var firstItem = ProductPageStart + 1;
+                    var lastItem = Math.Min(ProductPageStart + productsCatalogue.Products.Count, productsCatalogue.TotalCount);
+                    <div class="products-management-results-toolbar">
+                        <span>Showing <strong>@firstItem–@lastItem</strong> of <strong>@productsCatalogue.TotalCount</strong> products</span>
+                        <label class="products-management-sort">
+                            <span>Sort by</span>
+                            <select class="ds-select" value="@productSort" @onchange="ProductSortChanged">
+                                <option value="name">Product name (A–Z)</option>
+                                <option value="manufacturer">Manufacturer</option>
+                                <option value="newest">Newest</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div class="products-management-table-wrap">
+                        <table class="products-management-table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Manufacturer</th>
+                                    <th>Product type</th>
+                                    <th>Variants</th>
+                                    <th>Sizes</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var product in productsCatalogue.Products)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="managed-product-identity">
+                                                @if (!string.IsNullOrWhiteSpace(product.ImageUrl))
+                                                {
+                                                    <img src="@product.ImageUrl" alt="" loading="lazy" />
+                                                }
+                                                else
+                                                {
+                                                    <span class="managed-product-placeholder" aria-hidden="true">@GetProductInitial(product.Name)</span>
+                                                }
+                                                <div>
+                                                    <strong>@product.Name</strong>
+                                                    @if (!string.IsNullOrWhiteSpace(product.BrandName))
+                                                    {
+                                                        <span>@product.BrandName</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>@product.ManufacturerName</td>
+                                        <td>@FormatProductType(product.ProductType)</td>
+                                        <td>@product.VariantCount</td>
+                                        <td>@product.Sizes.Count</td>
+                                        <td><span class="managed-product-status status-@product.Status.ToString().ToLowerInvariant()">@FormatEnum(product.Status)</span></td>
+                                        <td>
+                                            <div class="managed-product-actions">
+                                                <a class="ds-button ds-button-secondary" href="/catalogue/products/manage/@product.Id">✎ Manage</a>
+                                                <a class="managed-product-more" href="@($"/products/{product.Slug}")" target="_blank" rel="noopener noreferrer" aria-label="View @product.Name">⋮</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="products-management-pagination">
+                        <button class="pagination-button" type="button" @onclick="PreviousProductPage" disabled="@(productPage == 1)">‹</button>
+                        @foreach (var pageNumber in ProductPages())
+                        {
+                            <button class="pagination-button @(pageNumber == productPage ? "is-active" : "")" type="button" @onclick="() => GoToProductPage(pageNumber)">@pageNumber</button>
+                        }
+                        <button class="pagination-button" type="button" @onclick="NextProductPage" disabled="@(productPage >= ProductPageCount)">›</button>
+                        <label class="products-management-page-size">
+                            <span>Show</span>
+                            <select class="ds-select" value="@ProductPageSize" @onchange="PageSizeChanged">
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                            </select>
+                            <span>per page</span>
+                        </label>
+                    </div>
+                }
+            </section>
+        }
     </div>
 </section>
 
@@ -218,6 +412,39 @@
     private bool importing;
     private string? importError;
     private CatalogueSubmissionImportResult? importResult;
+
+    [SupplyParameterFromQuery(Name = "tab")]
+    private string? Tab { get; set; }
+
+    private bool IsSubmissionTab => string.Equals(Tab, "submissions", StringComparison.OrdinalIgnoreCase);
+    private CatalogueProductSearch? productsCatalogue;
+    private bool productsLoading;
+    private string? productsError;
+    private string productQuery = string.Empty;
+    private string selectedManufacturer = string.Empty;
+    private string selectedProductType = string.Empty;
+    private string selectedStatus = string.Empty;
+    private string productSort = "name";
+    private int productPage = 1;
+    private int ProductPageSize = 25;
+
+    private int ProductPageStart =>
+        (productPage - 1) * ProductPageSize;
+
+    private bool HasProductFilters =>
+        !string.IsNullOrWhiteSpace(productQuery) ||
+        !string.IsNullOrWhiteSpace(selectedManufacturer) ||
+        !string.IsNullOrWhiteSpace(selectedProductType) ||
+        !string.IsNullOrWhiteSpace(selectedStatus);
+
+    private IEnumerable<CatalogueFacetOption> ManufacturerOptions =>
+        productsCatalogue?.Facets.FirstOrDefault(f => f.Key == "manufacturer")?.Options
+        ?? [];
+
+    private int ProductPageCount =>
+        productsCatalogue is null || productsCatalogue.TotalCount == 0
+            ? 1
+            : (int)Math.Ceiling(productsCatalogue.TotalCount / (double)ProductPageSize);
 
     private void HandleCsvSelected(InputFileChangeEventArgs args)
     {
@@ -262,9 +489,17 @@
         }
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        await LoadAsync();
+        if (IsSubmissionTab)
+        {
+            await LoadAsync();
+        }
+        else
+        {
+            await LoadAsync();
+            await LoadProductsAsync();
+        }
     }
 
     private async Task LoadAsync()
@@ -302,6 +537,135 @@
             loading = false;
         }
     }
+
+    private async Task SearchProductsAsync()
+    {
+        productPage = 1;
+        await LoadProductsAsync();
+    }
+
+    private async Task LoadProductsAsync()
+    {
+        productsLoading = true;
+        productsError = null;
+
+        try
+        {
+            var manufacturerIds = Guid.TryParse(selectedManufacturer, out var manufacturerId)
+                ? [manufacturerId]
+                : (IReadOnlyList<Guid>)[];
+            var productTypes = Enum.TryParse<ProductType>(selectedProductType, true, out var productType)
+                ? [productType]
+                : (IReadOnlyList<ProductType>)[];
+            var statuses = Enum.TryParse<ProductStatus>(selectedStatus, true, out var status)
+                ? [status]
+                : (IReadOnlyList<ProductStatus>)[];
+
+            var result = await Catalogue.SearchManagementAsync(
+                productQuery,
+                new CatalogueProductManagementFilters(manufacturerIds, productTypes, statuses),
+                productSort,
+                ProductPageSize,
+                (productPage - 1) * ProductPageSize);
+
+            if (result.Status == ProductCatalogueSearchStatus.Found)
+                productsCatalogue = result.Catalogue;
+            else
+                productsError = result.Message ?? "The product catalogue could not be loaded just now.";
+        }
+        catch (HttpRequestException)
+        {
+            productsError = "The product catalogue could not be reached just now.";
+        }
+        finally
+        {
+            productsLoading = false;
+        }
+    }
+
+    private async Task ManufacturerChanged(ChangeEventArgs args)
+    {
+        selectedManufacturer = args.Value?.ToString() ?? string.Empty;
+        productPage = 1;
+        await LoadProductsAsync();
+    }
+
+    private async Task ProductTypeChanged(ChangeEventArgs args)
+    {
+        selectedProductType = args.Value?.ToString() ?? string.Empty;
+        productPage = 1;
+        await LoadProductsAsync();
+    }
+
+    private async Task StatusChanged(ChangeEventArgs args)
+    {
+        selectedStatus = args.Value?.ToString() ?? string.Empty;
+        productPage = 1;
+        await LoadProductsAsync();
+    }
+
+    private async Task ProductSortChanged(ChangeEventArgs args)
+    {
+        productSort = args.Value?.ToString() ?? "name";
+        productPage = 1;
+        await LoadProductsAsync();
+    }
+
+    private async Task PageSizeChanged(ChangeEventArgs args)
+    {
+        if (int.TryParse(args.Value?.ToString(), out var size) && size is 25 or 50)
+            ProductPageSize = size;
+        productPage = 1;
+        await LoadProductsAsync();
+    }
+
+    private async Task PreviousProductPage()
+    {
+        if (productPage <= 1) return;
+        productPage--;
+        await LoadProductsAsync();
+    }
+
+    private async Task NextProductPage()
+    {
+        if (productPage >= ProductPageCount) return;
+        productPage++;
+        await LoadProductsAsync();
+    }
+
+    private async Task GoToProductPage(int page)
+    {
+        if (page < 1 || page > ProductPageCount || page == productPage) return;
+        productPage = page;
+        await LoadProductsAsync();
+    }
+
+    private IEnumerable<int> ProductPages()
+    {
+        var max = ProductPageCount;
+        if (max <= 7)
+            return Enumerable.Range(1, max);
+
+        var start = Math.Max(1, Math.Min(productPage - 2, max - 4));
+        return Enumerable.Range(start, Math.Min(5, max - start + 1));
+    }
+
+    private async Task ClearProductFilters()
+    {
+        productQuery = string.Empty;
+        selectedManufacturer = string.Empty;
+        selectedProductType = string.Empty;
+        selectedStatus = string.Empty;
+        productSort = "name";
+        productPage = 1;
+        await LoadProductsAsync();
+    }
+
+    private static string GetProductInitial(string name) =>
+        string.IsNullOrWhiteSpace(name) ? "?" : name.Trim()[0].ToString().ToUpperInvariant();
+
+    private static string FormatProductType(ProductType type) =>
+        type == ProductType.Tape ? "Diaper" : FormatEnum(type);
 
     private static bool CanDelete(CatalogueSubmissionStatus status) =>
         status is CatalogueSubmissionStatus.Draft or CatalogueSubmissionStatus.NeedsChanges;

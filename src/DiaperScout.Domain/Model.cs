@@ -173,6 +173,22 @@ public sealed class Product : Entity
 
     public void SetDescriptionVisibility(CatalogueContentVisibility visibility) =>
         DescriptionVisibility = visibility;
+
+    public void UpdateIdentity(
+        Guid manufacturerId,
+        Guid? brandId,
+        string name,
+        ProductType productType,
+        string? family,
+        string? officialWebsiteUrl)
+    {
+        ManufacturerId = manufacturerId;
+        BrandId = brandId;
+        Name = name.Trim();
+        ProductType = productType;
+        Family = string.IsNullOrWhiteSpace(family) ? null : family.Trim();
+        OfficialWebsiteUrl = string.IsNullOrWhiteSpace(officialWebsiteUrl) ? null : officialWebsiteUrl.Trim();
+    }
 }
 
 public sealed class ProductVariant : Entity
@@ -224,6 +240,21 @@ public sealed class ProductVariant : Entity
     public int? FastenerCount { get; private set; }
     public string? ConstructionNotes { get; private set; }
     public ICollection<SizeVariant> Sizes { get; } = new List<SizeVariant>();
+
+    public void UpdateDetails(string name, BackingType backingType)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("A variant name is required.", nameof(name));
+
+        if (name.Trim().Length > 200)
+            throw new ArgumentException("Variant name must be 200 characters or fewer.", nameof(name));
+
+        if (!Enum.IsDefined(backingType))
+            throw new ArgumentException("The backing type is invalid.", nameof(backingType));
+
+        Name = name.Trim();
+        BackingType = backingType;
+    }
 }
 
 public sealed class SizeVariant : Entity
@@ -290,6 +321,47 @@ public sealed class SizeVariant : Entity
     public int? WidthMm { get; private set; }
     public int? WeightGrams { get; private set; }
     public ICollection<PackType> PackTypes { get; } = new List<PackType>();
+
+    public void UpdateMeasurements(
+        string manufacturerSize,
+        int? waistMinimumCm,
+        int? waistMaximumCm,
+        int? hipMinimumCm,
+        int? hipMaximumCm,
+        int? manufacturerStatedAbsorbencyMl,
+        string? fitMeasurementBasis,
+        string? absorbencyBasisMethod,
+        string? absorbencySource,
+        int? lengthMm,
+        int? widthMm,
+        int? weightGrams)
+    {
+        if (string.IsNullOrWhiteSpace(manufacturerSize))
+            throw new ArgumentException("A manufacturer size is required.", nameof(manufacturerSize));
+
+        if (manufacturerSize.Trim().Length > 100)
+            throw new ArgumentException("Manufacturer size must be 100 characters or fewer.", nameof(manufacturerSize));
+
+        ValidateRange(waistMinimumCm, waistMaximumCm, "waist");
+        ValidateRange(hipMinimumCm, hipMaximumCm, "hip");
+        ValidateNonNegative(manufacturerStatedAbsorbencyMl, nameof(manufacturerStatedAbsorbencyMl));
+        ValidateNonNegative(lengthMm, nameof(lengthMm));
+        ValidateNonNegative(widthMm, nameof(widthMm));
+        ValidateNonNegative(weightGrams, nameof(weightGrams));
+
+        ManufacturerSize = manufacturerSize.Trim();
+        WaistMinimumCm = waistMinimumCm;
+        WaistMaximumCm = waistMaximumCm;
+        HipMinimumCm = hipMinimumCm;
+        HipMaximumCm = hipMaximumCm;
+        FitMeasurementBasis = NormaliseText(fitMeasurementBasis);
+        AbsorbencyBasisMethod = NormaliseText(absorbencyBasisMethod);
+        AbsorbencySource = NormaliseText(absorbencySource);
+        ManufacturerStatedAbsorbencyMl = manufacturerStatedAbsorbencyMl;
+        LengthMm = lengthMm;
+        WidthMm = widthMm;
+        WeightGrams = weightGrams;
+    }
 
     private static string? NormaliseText(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 

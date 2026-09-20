@@ -30,6 +30,11 @@ internal sealed class EditorialAuthorisation(DiaperScoutDbContext db) : IEditori
         db.PrivilegedRoleAssignments.AnyAsync(assignment => assignment.UserId == user.UserId
             && assignment.Role == PrivilegedRole.Moderator
             && assignment.RevokedAtUtc == null, cancellationToken);
+
+    public Task<bool> CanManageCatalogueAsync(AuthenticatedUser user, CancellationToken cancellationToken = default) =>
+        db.PrivilegedRoleAssignments.AnyAsync(assignment => assignment.UserId == user.UserId
+            && (assignment.Role == PrivilegedRole.Moderator || assignment.Role == PrivilegedRole.Administrator)
+            && assignment.RevokedAtUtc == null, cancellationToken);
 }
 
 internal sealed class PrivilegedRoleAssignments(DiaperScoutDbContext db) : IPrivilegedRoleAssignments
@@ -88,6 +93,392 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db, IEditorialAuth
             throw new ArgumentException("The description visibility is invalid.", nameof(visibility));
 
         product.SetDescriptionVisibility(visibility);
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task UpdateProductIdentityAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        UpdateCanonicalProductIdentity command,
+        CancellationToken cancellationToken = default)
+    {
+        if (!await editorialAuthorisation.CanManageCatalogueAsync(actor, cancellationToken))
+            throw new UnauthorizedAccessException();
+
+        Validate(command);
+
+        var product = await db.Products.SingleOrDefaultAsync(value => value.Id == productId, cancellationToken)
+            ?? throw new KeyNotFoundException("The catalogue product was not found.");
+
+        if (!await db.Manufacturers.AnyAsync(value => value.Id == command.ManufacturerId, cancellationToken))
+            throw new CatalogueValidationException("manufacturerId", "The manufacturer was not found.");
+
+        if (command.BrandId is { } brandId &&
+            !await db.Brands.AnyAsync(value => value.Id == brandId && value.ManufacturerId == command.ManufacturerId, cancellationToken))
+            throw new CatalogueValidationException("brandId", "The brand was not found for the selected manufacturer.");
+
+        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+
+        product.UpdateIdentity(command.ManufacturerId, command.BrandId, command.ProductName, command.ProductType, command.ProductFamily, command.OfficialWebsiteUrl);
+        await db.SaveChangesAsync(cancellationToken);
+
+        db.CatalogueAuditRecords.Add(new CatalogueAuditRecord(
+            CatalogueAuditAction.ProductChanged,
+            product.Id,
+            actor.UserId,
+            DateTimeOffset.UtcNow,
+            JsonSerializer.Serialize(command),
+            JsonSerializer.Serialize(new[] { product.Id }),
+            command.SourceSummary.Trim(),
+            JsonSerializer.Serialize(command.SourceReferences.Select(value => value.Trim()).Where(value => value.Length > 0)),
+            command.EditorialRationale.Trim(),
+            command.CorrelationId?.Trim()));
+
+        await db.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+    }
+
+    public async Task AddProductVariantAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        CreateCanonicalProductVariantManagement command,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireCatalogueManagerAsync(actor, cancellationToken);
+        ValidateVariantCommand(command.Name, command.BackingType, command.SourceSummary, command.EditorialRationale);
+
+        var product = await db.Products.SingleOrDefaultAsync(value => value.Id == productId, cancellationToken)
+            ?? throw new KeyNotFoundException("The catalogue product was not found.");
+
+        var duplicate = await db.ProductVariants.AnyAsync(
+            value => value.ProductId == productId && value.Name.ToLower() == command.Name.Trim().ToLower(),
+            cancellationToken);
+        if (duplicate)
+            throw new CatalogueValidationException("name", "A product variant with this name already exists.");
+
+        var variant = new ProductVariant(product.Id, command.Name.Trim(), command.BackingType);
+        db.ProductVariants.Add(variant);
+        await db.SaveChangesAsync(cancellationToken);
+
+        await AddAuditAsync(
+            CatalogueAuditAction.ProductChanged,
+            product.Id,
+            actor,
+            command,
+            new[] { product.Id, variant.Id },
+            cancellationToken);
+    }
+
+    public async Task UpdateProductVariantAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        Guid variantId,
+        UpdateCanonicalProductVariantManagement command,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireCatalogueManagerAsync(actor, cancellationToken);
+        ValidateVariantCommand(command.Name, command.BackingType, command.SourceSummary, command.EditorialRationale);
+
+        var variant = await db.ProductVariants.SingleOrDefaultAsync(
+            value => value.Id == variantId && value.ProductId == productId,
+            cancellationToken)
+            ?? throw new KeyNotFoundException("The product variant was not found.");
+
+        var duplicate = await db.ProductVariants.AnyAsync(
+            value => value.ProductId == productId && value.Id != variantId && value.Name.ToLower() == command.Name.Trim().ToLower(),
+            cancellationToken);
+        if (duplicate)
+            throw new CatalogueValidationException("name", "A product variant with this name already exists.");
+
+        variant.UpdateDetails(command.Name, command.BackingType);
+        await db.SaveChangesAsync(cancellationToken);
+
+        await AddAuditAsync(
+            CatalogueAuditAction.ProductChanged,
+            productId,
+            actor,
+            command,
+            new[] { productId, variantId },
+            cancellationToken);
+    }
+
+    public async Task RemoveProductVariantAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        Guid variantId,
+        string sourceSummary,
+        IReadOnlyList<string> sourceReferences,
+        string editorialRationale,
+        string? correlationId,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireCatalogueManagerAsync(actor, cancellationToken);
+        ValidateAudit(sourceSummary, editorialRationale);
+
+        var variants = await db.ProductVariants
+            .Where(value => value.ProductId == productId)
+            .OrderBy(value => value.Name)
+            .ToListAsync(cancellationToken);
+
+        var variant = variants.SingleOrDefault(value => value.Id == variantId)
+            ?? throw new KeyNotFoundException("The product variant was not found.");
+
+        if (variants.Count <= 1)
+            throw new CatalogueValidationException("variantId", "A product must have at least one variant.");
+
+        db.ProductVariants.Remove(variant);
+        await db.SaveChangesAsync(cancellationToken);
+
+        await AddAuditAsync(
+            CatalogueAuditAction.ProductChanged,
+            productId,
+            actor,
+            new { Action = "RemoveVariant", VariantId = variantId, SourceSummary = sourceSummary, SourceReferences = sourceReferences, EditorialRationale = editorialRationale, CorrelationId = correlationId },
+            new[] { productId, variantId },
+            cancellationToken,
+            sourceSummary,
+            sourceReferences,
+            editorialRationale,
+            correlationId);
+    }
+
+    public async Task AddProductSizeAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        Guid variantId,
+        CreateCanonicalProductSizeManagement command,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireCatalogueManagerAsync(actor, cancellationToken);
+        ValidateSizeCommand(command.ManufacturerSize, command.ManufacturerPackQuantity, command.PackagingType, command.Gtin, command.SourceSummary, command.EditorialRationale);
+
+        var variantExists = await db.ProductVariants.AnyAsync(
+            value => value.Id == variantId && value.ProductId == productId,
+            cancellationToken);
+        if (!variantExists)
+            throw new KeyNotFoundException("The product variant was not found.");
+
+        var duplicate = await db.SizeVariants.AnyAsync(
+            value => value.ProductVariantId == variantId && value.ManufacturerSize.ToLower() == command.ManufacturerSize.Trim().ToLower(),
+            cancellationToken);
+        if (duplicate)
+            throw new CatalogueValidationException("manufacturerSize", "A size with this manufacturer size already exists for this product variant.");
+
+        var gtin = NormaliseOptionalGtin(command.Gtin);
+        if (gtin is not null && await db.ProductIdentifiers.AnyAsync(value => value.Type == IdentifierType.Gtin && value.Value == gtin, cancellationToken))
+            throw new CatalogueValidationException("gtin", $"GTIN {gtin} is already assigned to a published catalogue product.");
+
+        var size = new SizeVariant(
+            variantId,
+            command.ManufacturerSize,
+            command.WaistMinimumCm,
+            command.WaistMaximumCm,
+            command.HipMinimumCm,
+            command.HipMaximumCm,
+            command.ManufacturerStatedAbsorbencyMl,
+            command.FitMeasurementBasis,
+            command.AbsorbencyBasisMethod,
+            command.AbsorbencySource,
+            command.LengthMm,
+            command.WidthMm,
+            command.WeightGrams);
+        var pack = new PackType(size.Id, command.ManufacturerPackQuantity, command.PackagingType);
+        db.AddRange(size, pack);
+
+        if (gtin is not null)
+            db.ProductIdentifiers.Add(new ProductIdentifier(pack.Id, IdentifierType.Gtin, gtin));
+
+        await db.SaveChangesAsync(cancellationToken);
+        await AddAuditAsync(
+            CatalogueAuditAction.ProductChanged,
+            productId,
+            actor,
+            command,
+            new[] { productId, variantId, size.Id, pack.Id },
+            cancellationToken);
+    }
+
+    public async Task UpdateProductSizeAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        Guid variantId,
+        Guid sizeId,
+        UpdateCanonicalProductSizeManagement command,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireCatalogueManagerAsync(actor, cancellationToken);
+        ValidateAudit(command.SourceSummary, command.EditorialRationale);
+
+        var size = await db.SizeVariants.SingleOrDefaultAsync(
+            value => value.Id == sizeId && value.ProductVariantId == variantId,
+            cancellationToken)
+            ?? throw new KeyNotFoundException("The size variant was not found.");
+
+        if (!await db.ProductVariants.AnyAsync(value => value.Id == variantId && value.ProductId == productId, cancellationToken))
+            throw new KeyNotFoundException("The product variant was not found.");
+
+        var duplicate = await db.SizeVariants.AnyAsync(
+            value => value.ProductVariantId == variantId && value.Id != sizeId && value.ManufacturerSize.ToLower() == command.ManufacturerSize.Trim().ToLower(),
+            cancellationToken);
+        if (duplicate)
+            throw new CatalogueValidationException("manufacturerSize", "A size with this manufacturer size already exists for this product variant.");
+
+        size.UpdateMeasurements(
+            command.ManufacturerSize,
+            command.WaistMinimumCm,
+            command.WaistMaximumCm,
+            command.HipMinimumCm,
+            command.HipMaximumCm,
+            command.ManufacturerStatedAbsorbencyMl,
+            command.FitMeasurementBasis,
+            command.AbsorbencyBasisMethod,
+            command.AbsorbencySource,
+            command.LengthMm,
+            command.WidthMm,
+            command.WeightGrams);
+
+        await db.SaveChangesAsync(cancellationToken);
+        await AddAuditAsync(
+            CatalogueAuditAction.ProductChanged,
+            productId,
+            actor,
+            command,
+            new[] { productId, variantId, sizeId },
+            cancellationToken);
+    }
+
+    public async Task RemoveProductSizeAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        Guid variantId,
+        Guid sizeId,
+        string sourceSummary,
+        IReadOnlyList<string> sourceReferences,
+        string editorialRationale,
+        string? correlationId,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireCatalogueManagerAsync(actor, cancellationToken);
+        ValidateAudit(sourceSummary, editorialRationale);
+
+        var sizes = await db.SizeVariants
+            .Where(value => value.ProductVariantId == variantId)
+            .OrderBy(value => value.ManufacturerSize)
+            .ToListAsync(cancellationToken);
+        var size = sizes.SingleOrDefault(value => value.Id == sizeId)
+            ?? throw new KeyNotFoundException("The size variant was not found.");
+
+        if (!await db.ProductVariants.AnyAsync(value => value.Id == variantId && value.ProductId == productId, cancellationToken))
+            throw new KeyNotFoundException("The product variant was not found.");
+
+        if (sizes.Count <= 1)
+            throw new CatalogueValidationException("sizeId", "A product variant must have at least one size.");
+
+        db.SizeVariants.Remove(size);
+        await db.SaveChangesAsync(cancellationToken);
+        await AddAuditAsync(
+            CatalogueAuditAction.ProductChanged,
+            productId,
+            actor,
+            new { Action = "RemoveSize", VariantId = variantId, SizeId = sizeId },
+            new[] { productId, variantId, sizeId },
+            cancellationToken,
+            sourceSummary,
+            sourceReferences,
+            editorialRationale,
+            correlationId);
+    }
+
+    private async Task RequireCatalogueManagerAsync(AuthenticatedUser actor, CancellationToken cancellationToken)
+    {
+        if (!await editorialAuthorisation.CanManageCatalogueAsync(actor, cancellationToken))
+            throw new UnauthorizedAccessException();
+    }
+
+    private static void ValidateVariantCommand(string name, BackingType backingType, string sourceSummary, string editorialRationale)
+    {
+        Required(name, "name");
+        ValidateAudit(sourceSummary, editorialRationale);
+        if (!Enum.IsDefined(backingType))
+            throw new CatalogueValidationException("backingType", "The backing type is invalid.");
+    }
+
+    private static void ValidateSizeCommand(string manufacturerSize, int manufacturerPackQuantity, PackagingType packagingType, string? gtin, string sourceSummary, string editorialRationale)
+    {
+        Required(manufacturerSize, "manufacturerSize");
+        ValidateAudit(sourceSummary, editorialRationale);
+        if (manufacturerPackQuantity <= 0)
+            throw new CatalogueValidationException("manufacturerPackQuantity", "Pack quantity must be greater than zero.");
+        if (!Enum.IsDefined(packagingType))
+            throw new CatalogueValidationException("packagingType", "The packaging type is invalid.");
+        if (NormaliseOptionalGtin(gtin) is { Length: > 0 } value && !GtinPattern.IsMatch(value))
+            throw new CatalogueValidationException("gtin", "GTIN must contain 8 to 14 digits.");
+    }
+
+    private static void ValidateAudit(string sourceSummary, string editorialRationale)
+    {
+        Required(sourceSummary, "sourceSummary");
+        Required(editorialRationale, "editorialRationale");
+    }
+
+    private static string? NormaliseOptionalGtin(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return null;
+        return NormaliseGtin(value);
+    }
+
+    private async Task AddAuditAsync(
+        CatalogueAuditAction action,
+        Guid productId,
+        AuthenticatedUser actor,
+        object command,
+        IReadOnlyList<Guid> entityIds,
+        CancellationToken cancellationToken,
+        string? sourceSummary = null,
+        IReadOnlyList<string>? sourceReferences = null,
+        string? editorialRationale = null,
+        string? correlationId = null)
+    {
+        if (command is UpdateCanonicalProductVariantManagement variantUpdate)
+        {
+            sourceSummary = variantUpdate.SourceSummary;
+            sourceReferences = variantUpdate.SourceReferences;
+            editorialRationale = variantUpdate.EditorialRationale;
+            correlationId = variantUpdate.CorrelationId;
+        }
+        else if (command is CreateCanonicalProductVariantManagement variantCreate)
+        {
+            sourceSummary = variantCreate.SourceSummary;
+            sourceReferences = variantCreate.SourceReferences;
+            editorialRationale = variantCreate.EditorialRationale;
+            correlationId = variantCreate.CorrelationId;
+        }
+        else if (command is CreateCanonicalProductSizeManagement sizeCreate)
+        {
+            sourceSummary = sizeCreate.SourceSummary;
+            sourceReferences = sizeCreate.SourceReferences;
+            editorialRationale = sizeCreate.EditorialRationale;
+            correlationId = sizeCreate.CorrelationId;
+        }
+        else if (command is UpdateCanonicalProductSizeManagement sizeUpdate)
+        {
+            sourceSummary = sizeUpdate.SourceSummary;
+            sourceReferences = sizeUpdate.SourceReferences;
+            editorialRationale = sizeUpdate.EditorialRationale;
+            correlationId = sizeUpdate.CorrelationId;
+        }
+
+        db.CatalogueAuditRecords.Add(new CatalogueAuditRecord(
+            action,
+            productId,
+            actor.UserId,
+            DateTimeOffset.UtcNow,
+            JsonSerializer.Serialize(command),
+            JsonSerializer.Serialize(entityIds),
+            sourceSummary!.Trim(),
+            JsonSerializer.Serialize((sourceReferences ?? []).Select(value => value.Trim()).Where(value => value.Length > 0)),
+            editorialRationale!.Trim(),
+            correlationId?.Trim()));
         await db.SaveChangesAsync(cancellationToken);
     }
 
@@ -265,6 +656,16 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db, IEditorialAuth
 
     private static string NormaliseGtin(string value) =>
         value.Replace(" ", string.Empty).Replace("-", string.Empty);
+
+    private static void Validate(UpdateCanonicalProductIdentity command)
+    {
+        Required(command.ProductName, "productName");
+        Required(command.SourceSummary, "sourceSummary");
+        Required(command.EditorialRationale, "editorialRationale");
+
+        if (!Enum.IsDefined(command.ProductType))
+            throw new CatalogueValidationException("productType", "The product type is invalid.");
+    }
 
     private static void Validate(CreateCanonicalProduct command)
     {

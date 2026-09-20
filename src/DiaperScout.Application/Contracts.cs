@@ -43,6 +43,11 @@ public sealed record CatalogueProductFilters(
     IReadOnlyList<BackingType> Backings,
     IReadOnlyList<PackagingType> PackagingTypes);
 
+public sealed record CatalogueProductManagementFilters(
+    IReadOnlyList<Guid> ManufacturerIds,
+    IReadOnlyList<ProductType> ProductTypes,
+    IReadOnlyList<ProductStatus> Statuses);
+
 public sealed record CatalogueProductListItem(
     Guid Id,
     string Name,
@@ -51,6 +56,8 @@ public sealed record CatalogueProductListItem(
     ProductStatus Status,
     string ManufacturerName,
     string? BrandName,
+    int VariantCount,
+    string? ImageUrl,
     IReadOnlyList<string> Sizes,
     IReadOnlyList<BackingType> Backings,
     IReadOnlyList<PackagingType> PackagingTypes,
@@ -72,6 +79,15 @@ public sealed record CatalogueProductSize(
     string ManufacturerSize,
     int? WaistMinimumCm,
     int? WaistMaximumCm,
+    int? HipMinimumCm,
+    int? HipMaximumCm,
+    int? ManufacturerStatedAbsorbencyMl,
+    string? FitMeasurementBasis,
+    string? AbsorbencyBasisMethod,
+    string? AbsorbencySource,
+    int? LengthMm,
+    int? WidthMm,
+    int? WeightGrams,
     IReadOnlyList<CatalogueProductPack> Packs);
 
 public sealed record CatalogueProductPack(
@@ -107,6 +123,93 @@ public sealed record CatalogueModeratorProductDetails(
     string? OfficialWebsiteUrl,
     IReadOnlyList<CatalogueProductVariant> Variants,
     IReadOnlyList<CatalogueModeratorProductImage> Images);
+
+public sealed record CatalogueProductManagementDetails(
+    Guid Id,
+    string Name,
+    string Slug,
+    Guid ManufacturerId,
+    Guid? BrandId,
+    string ManufacturerName,
+    string? BrandName,
+    string? ProductFamily,
+    ProductType ProductType,
+    ProductStatus Status,
+    string? OfficialWebsiteUrl,
+    IReadOnlyList<CatalogueProductVariant> Variants);
+
+public sealed record UpdateCanonicalProductIdentity(
+    Guid ManufacturerId,
+    Guid? BrandId,
+    string ProductName,
+    ProductType ProductType,
+    string? ProductFamily,
+    string? OfficialWebsiteUrl,
+    string SourceSummary,
+    IReadOnlyList<string> SourceReferences,
+    string EditorialRationale,
+    string? CorrelationId);
+
+public sealed record CreateCanonicalProductVariantManagement(
+    string Name,
+    BackingType BackingType,
+    string SourceSummary,
+    IReadOnlyList<string> SourceReferences,
+    string EditorialRationale,
+    string? CorrelationId);
+
+public sealed record UpdateCanonicalProductVariantManagement(
+    string Name,
+    BackingType BackingType,
+    string SourceSummary,
+    IReadOnlyList<string> SourceReferences,
+    string EditorialRationale,
+    string? CorrelationId);
+
+public sealed record CreateCanonicalProductSizeManagement(
+    string ManufacturerSize,
+    int? WaistMinimumCm,
+    int? WaistMaximumCm,
+    int? HipMinimumCm,
+    int? HipMaximumCm,
+    int? ManufacturerStatedAbsorbencyMl,
+    string? FitMeasurementBasis,
+    string? AbsorbencyBasisMethod,
+    string? AbsorbencySource,
+    int? LengthMm,
+    int? WidthMm,
+    int? WeightGrams,
+    int ManufacturerPackQuantity,
+    PackagingType PackagingType,
+    string? Gtin,
+    string SourceSummary,
+    IReadOnlyList<string> SourceReferences,
+    string EditorialRationale,
+    string? CorrelationId);
+
+public sealed record UpdateCanonicalProductSizeManagement(
+    string ManufacturerSize,
+    int? WaistMinimumCm,
+    int? WaistMaximumCm,
+    int? HipMinimumCm,
+    int? HipMaximumCm,
+    int? ManufacturerStatedAbsorbencyMl,
+    string? FitMeasurementBasis,
+    string? AbsorbencyBasisMethod,
+    string? AbsorbencySource,
+    int? LengthMm,
+    int? WidthMm,
+    int? WeightGrams,
+    string SourceSummary,
+    IReadOnlyList<string> SourceReferences,
+    string EditorialRationale,
+    string? CorrelationId);
+
+public sealed record RemoveCanonicalProductElement(
+    string SourceSummary,
+    IReadOnlyList<string> SourceReferences,
+    string EditorialRationale,
+    string? CorrelationId);
 
 public sealed record CatalogueProductDetails(
     Guid Id,
@@ -149,6 +252,10 @@ public interface IEditorialAuthorisation
     Task<bool> CanPublishAtlasAsync(
         AuthenticatedUser user,
         CancellationToken cancellationToken = default);
+
+    Task<bool> CanManageCatalogueAsync(
+        AuthenticatedUser user,
+        CancellationToken cancellationToken = default);
 }
 
 public sealed record ObservationSubmission(
@@ -189,6 +296,15 @@ public interface IAtlasQueries
         CatalogueProductFilters filters,
         string sort,
         int limit,
+        int offset = 0,
+        CancellationToken cancellationToken = default);
+
+    Task<CatalogueProductSearch> SearchCatalogueManagementAsync(
+        string? query,
+        CatalogueProductManagementFilters filters,
+        string sort,
+        int limit,
+        int offset = 0,
         CancellationToken cancellationToken = default);
 
     Task<CatalogueProductDetails?> GetProductDetailsBySlugAsync(
@@ -196,6 +312,11 @@ public interface IAtlasQueries
         CancellationToken cancellationToken = default);
 
     Task<CatalogueModeratorProductDetails?> GetProductDetailsForModeratorAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        CancellationToken cancellationToken = default);
+
+    Task<CatalogueProductManagementDetails?> GetProductManagementDetailsAsync(
         AuthenticatedUser actor,
         Guid productId,
         CancellationToken cancellationToken = default);
@@ -1016,6 +1137,61 @@ public interface ICanonicalCatalogue
         AuthenticatedUser actor,
         Guid productId,
         CatalogueContentVisibility visibility,
+        CancellationToken cancellationToken = default);
+
+    Task UpdateProductIdentityAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        UpdateCanonicalProductIdentity command,
+        CancellationToken cancellationToken = default);
+
+    Task AddProductVariantAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        CreateCanonicalProductVariantManagement command,
+        CancellationToken cancellationToken = default);
+
+    Task UpdateProductVariantAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        Guid variantId,
+        UpdateCanonicalProductVariantManagement command,
+        CancellationToken cancellationToken = default);
+
+    Task RemoveProductVariantAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        Guid variantId,
+        string sourceSummary,
+        IReadOnlyList<string> sourceReferences,
+        string editorialRationale,
+        string? correlationId,
+        CancellationToken cancellationToken = default);
+
+    Task AddProductSizeAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        Guid variantId,
+        CreateCanonicalProductSizeManagement command,
+        CancellationToken cancellationToken = default);
+
+    Task UpdateProductSizeAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        Guid variantId,
+        Guid sizeId,
+        UpdateCanonicalProductSizeManagement command,
+        CancellationToken cancellationToken = default);
+
+    Task RemoveProductSizeAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        Guid variantId,
+        Guid sizeId,
+        string sourceSummary,
+        IReadOnlyList<string> sourceReferences,
+        string editorialRationale,
+        string? correlationId,
         CancellationToken cancellationToken = default);
 
     Task<CanonicalProductReceipt> CreateProductAsync(

@@ -70,17 +70,45 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmission
             .SingleOrDefaultAsync(cancellationToken);
 
     public async Task<IReadOnlyList<CatalogueProductListItem>> SearchProductsAsync(string? query, int limit, CancellationToken cancellationToken = default) =>
-        (await SearchCatalogueAsync(query, new CatalogueProductFilters([], [], [], [], [], []), "relevance", limit, cancellationToken)).Products;
+        (await SearchCatalogueAsync(query, new CatalogueProductFilters([], [], [], [], [], []), "relevance", limit, 0, cancellationToken)).Products;
 
-    public async Task<CatalogueProductSearch> SearchCatalogueAsync(
+    public Task<CatalogueProductSearch> SearchCatalogueAsync(
         string? query,
         CatalogueProductFilters filters,
         string sort,
         int limit,
-        CancellationToken cancellationToken = default)
+        int offset = 0,
+        CancellationToken cancellationToken = default) =>
+        SearchCatalogueCoreAsync(query, filters, [ProductStatus.Current], sort, limit, offset, cancellationToken);
+
+    public Task<CatalogueProductSearch> SearchCatalogueManagementAsync(
+        string? query,
+        CatalogueProductManagementFilters filters,
+        string sort,
+        int limit,
+        int offset = 0,
+        CancellationToken cancellationToken = default) =>
+        SearchCatalogueCoreAsync(
+            query,
+            new CatalogueProductFilters(filters.ManufacturerIds, [], filters.ProductTypes, [], [], []),
+            filters.Statuses.Count == 0 ? Enum.GetValues<ProductStatus>() : filters.Statuses,
+            sort,
+            limit,
+            offset,
+            cancellationToken);
+
+    private async Task<CatalogueProductSearch> SearchCatalogueCoreAsync(
+        string? query,
+        CatalogueProductFilters filters,
+        IReadOnlyList<ProductStatus> statuses,
+        string sort,
+        int limit,
+        int offset,
+        CancellationToken cancellationToken)
     {
         limit = Math.Clamp(limit, 1, 50);
-        var baseQuery = db.Products.AsNoTracking().Where(p => p.Status == ProductStatus.Current);
+        offset = Math.Max(offset, 0);
+        var baseQuery = db.Products.AsNoTracking().Where(p => statuses.Contains(p.Status));
 
         if (!string.IsNullOrWhiteSpace(query))
         {
@@ -102,7 +130,7 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmission
             _ => filteredQuery.OrderBy(p => p.Name)
         };
 
-        var products = await (from product in orderedQuery.Take(limit)
+        var products = await (from product in orderedQuery.Skip(offset).Take(limit)
                               join manufacturer in db.Manufacturers.AsNoTracking() on product.ManufacturerId equals manufacturer.Id
                               join brand in db.Brands.AsNoTracking() on product.BrandId equals brand.Id into brandJoin
                               from brand in brandJoin.DefaultIfEmpty()
@@ -113,6 +141,13 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmission
         var variants = await db.ProductVariants.AsNoTracking()
             .Where(v => productIds.Contains(v.ProductId))
             .Select(v => new { v.ProductId, v.BackingType, Sizes = v.Sizes.Select(s => new { s.ManufacturerSize, PackagingTypes = s.PackTypes.Select(p => p.PackagingType) }) })
+            .ToListAsync(cancellationToken);
+
+        var images = await db.CatalogueSubmissionImages.AsNoTracking()
+            .Where(image => image.ProductId.HasValue && productIds.Contains(image.ProductId.Value) && image.Visibility == CatalogueContentVisibility.Public)
+            .OrderBy(image => image.Role)
+            .ThenBy(image => image.CreatedAtUtc)
+            .Select(image => new { ProductId = image.ProductId!.Value, ImageId = image.Id })
             .ToListAsync(cancellationToken);
 
         var retailDestinations = await (from submission in db.CatalogueSubmissions.AsNoTracking()
@@ -127,6 +162,7 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmission
         var productResults = products.Select(product =>
         {
             var productVariants = variants.Where(v => v.ProductId == product.Id).ToList();
+            var image = images.FirstOrDefault(value => value.ProductId == product.Id);
             return new CatalogueProductListItem(
                 product.Id,
                 product.Name,
@@ -135,6 +171,8 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmission
                 product.Status,
                 product.ManufacturerName,
                 product.BrandName,
+                productVariants.Count,
+                image is null ? null : $"/api/v1/products/{product.Id}/images/{image.ImageId}",
                 productVariants.SelectMany(v => v.Sizes).Select(s => s.ManufacturerSize).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(s => s).ToArray(),
                 productVariants.Select(v => v.BackingType).Where(v => v != BackingType.Unknown).Distinct().OrderBy(v => v).ToArray(),
                 productVariants.SelectMany(v => v.Sizes).SelectMany(s => s.PackagingTypes).Distinct().OrderBy(v => v).ToArray(),
@@ -276,6 +314,75 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmission
         return (await GetProductDetailsCoreByIdAsync(productId, includeModeratorOnly: true, cancellationToken))?.ModeratorDetails;
     }
 
+    public async Task<CatalogueProductManagementDetails?> GetProductManagementDetailsAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        CancellationToken cancellationToken = default)
+    {
+        if (!await editorialAuthorisation.CanManageCatalogueAsync(actor, cancellationToken))
+            throw new UnauthorizedAccessException();
+
+        var product = await (from value in db.Products.AsNoTracking()
+                             join manufacturer in db.Manufacturers.AsNoTracking() on value.ManufacturerId equals manufacturer.Id
+                             join brand in db.Brands.AsNoTracking() on value.BrandId equals brand.Id into brandJoin
+                             from brand in brandJoin.DefaultIfEmpty()
+                             where value.Id == productId
+                             select new
+                             {
+                                 value.Id, value.Name, value.Slug, value.ManufacturerId, value.BrandId,
+                                 ManufacturerName = manufacturer.Name,
+                                 BrandName = brand == null ? null : brand.Name,
+                                 ProductFamily = value.Family, value.ProductType, value.Status, value.OfficialWebsiteUrl
+                             })
+            .SingleOrDefaultAsync(cancellationToken);
+
+        if (product is null)
+            return null;
+
+        var variants = await db.ProductVariants.AsNoTracking()
+            .Where(value => value.ProductId == product.Id)
+            .OrderBy(value => value.Name)
+            .ToListAsync(cancellationToken);
+
+        var variantResults = new List<CatalogueProductVariant>();
+        foreach (var variant in variants)
+        {
+            var sizes = await db.SizeVariants.AsNoTracking()
+                .Where(value => value.ProductVariantId == variant.Id)
+                .OrderBy(value => value.ManufacturerSize)
+                .ToListAsync(cancellationToken);
+
+            var sizeResults = new List<CatalogueProductSize>();
+            foreach (var size in sizes)
+            {
+                var packs = await db.PackTypes.AsNoTracking()
+                    .Where(value => value.SizeVariantId == size.Id)
+                    .OrderBy(value => value.QuantityPerPack)
+                    .ToListAsync(cancellationToken);
+
+                var packResults = new List<CatalogueProductPack>();
+                foreach (var pack in packs)
+                {
+                    var gtins = await db.ProductIdentifiers.AsNoTracking()
+                        .Where(value => value.PackTypeId == pack.Id && value.Type == IdentifierType.Gtin)
+                        .OrderBy(value => value.Value)
+                        .Select(value => value.Value)
+                        .ToListAsync(cancellationToken);
+                    packResults.Add(new CatalogueProductPack(pack.Id, pack.QuantityPerPack, pack.PackagingType, gtins));
+                }
+
+                sizeResults.Add(new CatalogueProductSize(size.Id, size.ManufacturerSize, size.WaistMinimumCm, size.WaistMaximumCm, size.HipMinimumCm, size.HipMaximumCm, size.ManufacturerStatedAbsorbencyMl, size.FitMeasurementBasis, size.AbsorbencyBasisMethod, size.AbsorbencySource, size.LengthMm, size.WidthMm, size.WeightGrams, packResults));
+            }
+
+            variantResults.Add(new CatalogueProductVariant(variant.Id, variant.Name, variant.BackingType, sizeResults));
+        }
+
+        return new CatalogueProductManagementDetails(
+            product.Id, product.Name, product.Slug, product.ManufacturerId, product.BrandId,
+            product.ManufacturerName, product.BrandName, product.ProductFamily, product.ProductType,
+            product.Status, product.OfficialWebsiteUrl, variantResults);
+    }
+
     public async Task<CatalogueProductImageContent?> GetProductImageContentAsync(
         Guid productId,
         Guid imageId,
@@ -361,7 +468,7 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmission
                     packResults.Add(new CatalogueProductPack(pack.Id, pack.QuantityPerPack, pack.PackagingType, gtins));
                 }
 
-                sizeResults.Add(new CatalogueProductSize(size.Id, size.ManufacturerSize, size.WaistMinimumCm, size.WaistMaximumCm, packResults));
+                sizeResults.Add(new CatalogueProductSize(size.Id, size.ManufacturerSize, size.WaistMinimumCm, size.WaistMaximumCm, size.HipMinimumCm, size.HipMaximumCm, size.ManufacturerStatedAbsorbencyMl, size.FitMeasurementBasis, size.AbsorbencyBasisMethod, size.AbsorbencySource, size.LengthMm, size.WidthMm, size.WeightGrams, packResults));
             }
 
             variantResults.Add(new CatalogueProductVariant(variant.Id, variant.Name, variant.BackingType, sizeResults));

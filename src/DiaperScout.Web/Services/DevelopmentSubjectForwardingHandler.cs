@@ -25,9 +25,19 @@ public sealed class DevelopmentSubjectForwardingHandler(
                     ?? configuration["Authentication:Development:Subject"];
 
                 if (!string.IsNullOrWhiteSpace(subject))
+                {
                     request.Headers.TryAddWithoutValidation(
                         "X-Development-Subject",
                         subject);
+
+                    var role = user.IsInRole("Administrator")
+                        ? "Administrator"
+                        : "Moderator";
+
+                    request.Headers.TryAddWithoutValidation(
+                        "X-Development-Role",
+                        role);
+                }
             }
         }
 

@@ -582,6 +582,100 @@
                             </div>
                         }
                     }
+                    <div class="submission-card submission-card-entities">
+                        <div>
+                            <strong>Catalogue entities</strong>
+                            <small>Resolve the proposed business and brand to canonical catalogue entities before publication. You can match an existing entity or explicitly create a new one.</small>
+                        </div>
+
+                        <div class="submission-grid">
+                            <div class="submission-field submission-field-wide">
+                                <label>Business / manufacturer</label>
+                                <div class="submission-choice-row" role="radiogroup" aria-label="Manufacturer resolution method">
+                                    <label class="submission-choice">
+                                        <input type="radio" name="entity-manufacturer-mode" value="existing"
+                                               checked="@(entityManufacturerMode == "existing")"
+                                               @onchange="SetEntityManufacturerExisting" />
+                                        <span>Match existing</span>
+                                    </label>
+                                    <label class="submission-choice">
+                                        <input type="radio" name="entity-manufacturer-mode" value="new"
+                                               checked="@(entityManufacturerMode == "new")"
+                                               @onchange="SetEntityManufacturerNew" />
+                                        <span>Create new</span>
+                                    </label>
+                                </div>
+
+                                @if (entityManufacturerMode == "existing")
+                                {
+                                    <InputSelect class="ds-select"
+                                                 @bind-Value="entityManufacturerId"
+                                                 @bind-Value:after="EntityManufacturerChangedAsync">
+                                        <option value="">Select a canonical business…</option>
+                                        @foreach (var manufacturer in entryOptions?.Manufacturers.OrderBy(value => value.Name).ToList() ?? [])
+                                        {
+                                            <option value="@manufacturer.Id">@manufacturer.Name</option>
+                                        }
+                                    </InputSelect>
+                                }
+                                else
+                                {
+                                    <InputText class="ds-input" @bind-Value="entityNewManufacturerName"
+                                               placeholder="New canonical business name…" />
+                                }
+
+                                <small>Proposed: <strong>@submission.ProposedManufacturerName</strong></small>
+                            </div>
+
+                            @if (!string.IsNullOrWhiteSpace(submission.ProposedBrandName))
+                            {
+                                <div class="submission-field submission-field-wide">
+                                    <label>Brand</label>
+                                    <div class="submission-choice-row" role="radiogroup" aria-label="Brand resolution method">
+                                        <label class="submission-choice">
+                                            <input type="radio" name="entity-brand-mode" value="existing"
+                                                   checked="@(entityBrandMode == "existing")"
+                                                   @onchange="SetEntityBrandExisting"
+                                                   disabled="@(entityManufacturerMode == "new")" />
+                                            <span>Match existing</span>
+                                        </label>
+                                        <label class="submission-choice">
+                                            <input type="radio" name="entity-brand-mode" value="new"
+                                                   checked="@(entityBrandMode == "new")"
+                                                   @onchange="SetEntityBrandNew" />
+                                            <span>Create new</span>
+                                        </label>
+                                    </div>
+
+                                    @if (entityManufacturerMode == "existing" && entityBrandMode == "existing")
+                                    {
+                                        <InputSelect class="ds-select" @bind-Value="entityBrandId">
+                                            <option value="">Select a canonical brand…</option>
+                                            @foreach (var brand in GetEntityBrands().OrderBy(value => value.Name))
+                                            {
+                                                <option value="@brand.Id">@brand.Name</option>
+                                            }
+                                        </InputSelect>
+                                    }
+                                    else
+                                    {
+                                        <InputText class="ds-input" @bind-Value="entityNewBrandName"
+                                                   placeholder="New canonical brand name…" />
+                                    }
+
+                                    <small>Proposed: <strong>@submission.ProposedBrandName</strong></small>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="submission-actions">
+                            <button class="ds-button ds-button-secondary" type="button"
+                                    @onclick="ResolveEntitiesAsync" disabled="@saving">
+                                Save catalogue entities
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="submission-card submission-card-rights">
                         <div>
                             <strong>Content publication rights</strong>
@@ -627,7 +721,7 @@
                                  <button class="ds-button ds-button-secondary" type="button" @onclick="ReturnToVerificationAsync" disabled="@saving">Return to verification</button>
                              }
                              <button class="ds-button ds-button-secondary" type="button">Save unpublished</button>
-                             <button class="ds-button ds-button-primary" type="button" @onclick="PublishNowAsync" disabled="@saving">@(saving ? "Publishing…" : "Approve & publish →")</button>
+                             <button class="ds-button ds-button-primary" type="button" @onclick="PublishNowAsync" disabled="@saving">@(saving ? "Publishing…" : submission.Status == CatalogueSubmissionStatus.Approved ? "Publish →" : "Approve & publish →")</button>
                          </div>
                      </div>
                 </section>
@@ -667,6 +761,14 @@
     private int maxReachedStep = 1;
     private string manufacturerMode = "existing";
     private string brandMode = "existing";
+
+    private CatalogueEntryOptions? entryOptions;
+    private Guid? entityManufacturerId;
+    private Guid? entityBrandId;
+    private string entityManufacturerMode = "existing";
+    private string entityBrandMode = "existing";
+    private string? entityNewManufacturerName;
+    private string? entityNewBrandName;
 
     private static readonly CatalogueSubmissionImageRole[] imageRoles =
     [
@@ -807,17 +909,204 @@
         var result = await Catalogue.GetVerificationWorkspaceAsync(submission.Id);
 
         if (result.Status == CatalogueSubmissionVerificationWorkspaceStatus.Found)
-        {
             verificationWorkspace = result.Workspace;
+        else
+            verificationWorkspace = null;
+
+        if (result.Status == CatalogueSubmissionVerificationWorkspaceStatus.AccessDenied)
+        {
+            accessDenied = true;
             return;
         }
 
-        verificationWorkspace = null;
-
-        if (result.Status == CatalogueSubmissionVerificationWorkspaceStatus.AccessDenied)
-            accessDenied = true;
-        else if (result.Status == CatalogueSubmissionVerificationWorkspaceStatus.Failed)
+        if (result.Status == CatalogueSubmissionVerificationWorkspaceStatus.Failed)
+        {
             saveError = result.Message ?? "The verification workspace could not be loaded.";
+            return;
+        }
+
+        await LoadEntityOptionsAsync();
+    }
+
+    private async Task LoadEntityOptionsAsync()
+    {
+        if (submission is null)
+            return;
+
+        var result = await Catalogue.GetEntryOptionsAsync();
+
+        if (result.Status == CatalogueEntryOptionsStatus.AccessDenied)
+        {
+            accessDenied = true;
+            return;
+        }
+
+        if (result.Status != CatalogueEntryOptionsStatus.Found || result.Options is null)
+        {
+            entryOptions = null;
+            saveError = result.Message ?? "The catalogue entity options could not be loaded.";
+            return;
+        }
+
+        entryOptions = result.Options;
+
+        var manufacturer = entryOptions.Manufacturers.FirstOrDefault(value =>
+            string.Equals(value.Name, submission.ProposedManufacturerName, StringComparison.OrdinalIgnoreCase));
+
+        entityManufacturerId = manufacturer?.Id;
+        entityManufacturerMode = manufacturer is not null ? "existing" : "new";
+        entityNewManufacturerName = manufacturer is null ? submission.ProposedManufacturerName : null;
+
+        entityBrandId = null;
+        entityBrandMode = "new";
+        entityNewBrandName = submission.ProposedBrandName;
+
+        if (manufacturer is not null && !string.IsNullOrWhiteSpace(submission.ProposedBrandName))
+        {
+            var brand = entryOptions.Brands.FirstOrDefault(value =>
+                value.ManufacturerId == manufacturer.Id &&
+                string.Equals(value.Name, submission.ProposedBrandName, StringComparison.OrdinalIgnoreCase));
+
+            if (brand is not null)
+            {
+                entityBrandId = brand.Id;
+                entityBrandMode = "existing";
+                entityNewBrandName = null;
+            }
+        }
+    }
+
+    private IEnumerable<CatalogueBrandOption> GetEntityBrands() =>
+        entryOptions is null || entityManufacturerId is null
+            ? []
+            : entryOptions.Brands.Where(value => value.ManufacturerId == entityManufacturerId.Value);
+
+    private void SetEntityManufacturerExisting(ChangeEventArgs _)
+    {
+        entityManufacturerMode = "existing";
+        entityNewManufacturerName = null;
+        entityManufacturerId = null;
+        entityBrandId = null;
+
+        var manufacturer = entryOptions?.Manufacturers.FirstOrDefault(value =>
+            string.Equals(value.Name, submission?.ProposedManufacturerName, StringComparison.OrdinalIgnoreCase));
+
+        if (manufacturer is not null)
+        {
+            entityManufacturerId = manufacturer.Id;
+            SyncEntityBrandForManufacturer(manufacturer.Id);
+        }
+        else
+        {
+            entityBrandMode = "new";
+            entityNewBrandName = submission?.ProposedBrandName;
+        }
+    }
+
+    private Task EntityManufacturerChangedAsync()
+    {
+        entityBrandId = null;
+
+        if (entityManufacturerId is Guid manufacturerId)
+            SyncEntityBrandForManufacturer(manufacturerId);
+        else
+        {
+            entityBrandMode = "new";
+            entityNewBrandName = submission?.ProposedBrandName;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private void SetEntityManufacturerNew(ChangeEventArgs _)
+    {
+        entityManufacturerMode = "new";
+        entityManufacturerId = null;
+        entityBrandId = null;
+        entityNewManufacturerName = submission?.ProposedManufacturerName;
+        entityBrandMode = "new";
+        entityNewBrandName = submission?.ProposedBrandName;
+    }
+
+    private void SetEntityBrandExisting(ChangeEventArgs _)
+    {
+        entityBrandMode = "existing";
+        entityNewBrandName = null;
+
+        if (entityManufacturerId is null)
+        {
+            entityBrandId = null;
+            return;
+        }
+
+        entityBrandId = GetEntityBrands()
+            .FirstOrDefault(value =>
+                string.Equals(value.Name, submission?.ProposedBrandName, StringComparison.OrdinalIgnoreCase))
+            ?.Id;
+    }
+
+    private void SetEntityBrandNew(ChangeEventArgs _)
+    {
+        entityBrandMode = "new";
+        entityBrandId = null;
+        entityNewBrandName = submission?.ProposedBrandName;
+    }
+
+    private void SyncEntityBrandForManufacturer(Guid manufacturerId)
+    {
+        if (string.IsNullOrWhiteSpace(submission?.ProposedBrandName))
+        {
+            entityBrandId = null;
+            entityBrandMode = "new";
+            entityNewBrandName = null;
+            return;
+        }
+
+        var brand = entryOptions?.Brands.FirstOrDefault(value =>
+            value.ManufacturerId == manufacturerId &&
+            string.Equals(value.Name, submission.ProposedBrandName, StringComparison.OrdinalIgnoreCase));
+
+        if (brand is not null)
+        {
+            entityBrandId = brand.Id;
+            entityBrandMode = "existing";
+            entityNewBrandName = null;
+        }
+        else
+        {
+            entityBrandId = null;
+            entityBrandMode = "new";
+            entityNewBrandName = submission.ProposedBrandName;
+        }
+    }
+
+    private async Task ResolveEntitiesAsync()
+    {
+        if (submission is null)
+            return;
+
+        saving = true;
+        saveError = null;
+        saveMessage = null;
+        accessDenied = false;
+
+        var result = await Catalogue.ResolveSubmissionEntitiesAsync(
+            submission.Id,
+            new ResolveCatalogueSubmissionEntitiesRequest(
+                entityManufacturerMode == "existing" ? entityManufacturerId : null,
+                entityManufacturerMode == "new" ? entityNewManufacturerName : null,
+                entityBrandMode == "existing" ? entityBrandId : null,
+                entityBrandMode == "new" ? entityNewBrandName : null));
+
+        Apply(result);
+
+        if (result.Status == CatalogueSubmissionResultStatus.Saved)
+        {
+            await LoadEntityOptionsAsync();
+            saveMessage = "Catalogue entities resolved.";
+        }
+
+        saving = false;
     }
 
     private CatalogueSubmissionVerificationReceipt? GetVerification(
@@ -1780,12 +2069,8 @@
 
         if (result.Status == CataloguePublicationResultStatus.Published)
         {
-            saveMessage =
-                $"Published successfully. Product ID: {result.Receipt!.ProductId}.";
-
-            var refreshed = await Catalogue.GetSubmissionAsync(submission.Id);
-            if (refreshed.Status == CatalogueSubmissionResultStatus.Saved)
-                submission = refreshed.Receipt ?? submission;
+            Navigation.NavigateTo("/catalogue/products");
+            return;
         }
         else if (result.Status == CataloguePublicationResultStatus.Invalid)
         {

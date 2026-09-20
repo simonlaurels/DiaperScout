@@ -1768,5 +1768,185 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
+
+    [Fact]
+    public async Task ImportCatalogueSubmissionsCsv_GroupsRowsIntoProductsVariantsAndSizes()
+    {
+        using var client = AuthenticatedClient(PostgreSqlFixture.ModeratorSubject);
+
+        var csv =
+            "ImportProductKey,Manufacturer,Brand,ProductName,ProductType,PackagingType,VariantName,ManufacturerSize,ManufacturerPackQuantity,GTIN\n" +
+            "CRINKLZ-001,CSV Test Manufacturer,CSV Test Brand,CSV Product,Diaper,Bag,Original,Small,10,7000000000101\n" +
+            "CRINKLZ-001,CSV Test Manufacturer,CSV Test Brand,CSV Product,Diaper,Bag,Original,Medium,10,7000000000102\n" +
+            "CRINKLZ-001,CSV Test Manufacturer,CSV Test Brand,CSV Product,Diaper,Bag,Astronaut,Medium,10,7000000000103\n" +
+            "CRINKLZ-001,CSV Test Manufacturer,CSV Test Brand,CSV Product,Diaper,Bag,Astronaut,Large,10,7000000000104\n" +
+            "BETTERDRY-001,CSV Test Manufacturer,CSV Test Brand,BetterDry 10,Diaper,Bag,,Small,10,7000000000105\n" +
+            "BETTERDRY-001,CSV Test Manufacturer,CSV Test Brand,BetterDry 10,Diaper,Bag,,Medium,10,7000000000106\n";
+
+        using var content = new MultipartFormDataContent();
+        content.Add(
+            new StringContent(csv, System.Text.Encoding.UTF8, "text/csv"),
+            "file",
+            "grouped-import.csv");
+
+        var response = await client.PostAsync(
+            "/api/v1/catalogue-submissions/import-csv",
+            content);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var result =
+            await response.Content.ReadFromJsonAsync<CatalogueSubmissionImportResult>();
+
+        Assert.NotNull(result);
+        Assert.Equal(6, result.RowsRead);
+        Assert.Equal(2, result.SubmissionsCreated);
+        Assert.Equal(6, result.RowsImported);
+        Assert.Equal(0, result.RowsSkipped);
+
+        await using var db = _fixture.CreateDbContext();
+
+        var csvProduct = await db.CatalogueSubmissions
+            .SingleAsync(value => value.ProposedProductName == "CSV Product");
+
+        var csvVariants = await db.CatalogueSubmissionVariants
+            .Where(value => value.SubmissionId == csvProduct.Id)
+            .ToListAsync();
+
+        Assert.Equal(2, csvVariants.Count);
+        Assert.Contains(csvVariants, value => value.Name == "Original");
+        Assert.Contains(csvVariants, value => value.Name == "Astronaut");
+
+        foreach (var variant in csvVariants)
+        {
+            var sizes = await db.CatalogueSubmissionSizeVariants
+                .Where(value => value.VariantId == variant.Id)
+                .ToListAsync();
+
+            Assert.Equal(2, sizes.Count);
+        }
+
+        var betterDry = await db.CatalogueSubmissions
+            .SingleAsync(value => value.ProposedProductName == "BetterDry 10");
+
+        var betterDryVariants = await db.CatalogueSubmissionVariants
+            .Where(value => value.SubmissionId == betterDry.Id)
+            .ToListAsync();
+
+        var betterDryVariant = Assert.Single(betterDryVariants);
+        Assert.Null(betterDryVariant.Name);
+
+        var betterDrySizes = await db.CatalogueSubmissionSizeVariants
+            .Where(value => value.VariantId == betterDryVariant.Id)
+            .ToListAsync();
+
+        Assert.Equal(2, betterDrySizes.Count);
+    }
+
+    [Fact]
+    public async Task ImportCatalogueSubmissionsCsv_AllowsUnknownBooleansAndDifferentIdentitySourceUrls()
+    {
+        using var client = AuthenticatedClient(PostgreSqlFixture.ModeratorSubject);
+
+        var csv =
+            "ImportProductKey,Manufacturer,Brand,ProductName,VariantName,ManufacturerSize,WetnessIndicator,StandingLeakGuards,LatexFree,IdentitySourceUrl\n" +
+            "SOURCE-001,CSV Test Manufacturer,CSV Test Brand,Source Product,Original,Medium,Unknown,Unknown,Unknown,https://example.com/source-medium\n" +
+            "SOURCE-001,CSV Test Manufacturer,CSV Test Brand,Source Product,Original,Large,Unknown,Unknown,Unknown,https://example.com/source-large\n";
+
+        using var content = new MultipartFormDataContent();
+        content.Add(
+            new StringContent(csv, System.Text.Encoding.UTF8, "text/csv"),
+            "file",
+            "source-and-unknown-import.csv");
+
+        var response = await client.PostAsync(
+            "/api/v1/catalogue-submissions/import-csv",
+            content);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var result =
+            await response.Content.ReadFromJsonAsync<CatalogueSubmissionImportResult>();
+
+        Assert.NotNull(result);
+        Assert.Equal(2, result.RowsRead);
+        Assert.Equal(1, result.SubmissionsCreated);
+        Assert.Equal(2, result.RowsImported);
+        Assert.Equal(0, result.RowsSkipped);
+        Assert.Empty(result.Warnings);
+
+        await using var db = _fixture.CreateDbContext();
+
+        var submission = await db.CatalogueSubmissions
+            .SingleAsync(value => value.ProposedProductName == "Source Product");
+
+        Assert.Equal("https://example.com/source-medium", submission.IdentitySourceUrl);
+
+        var variant = await db.CatalogueSubmissionVariants
+            .SingleAsync(value => value.SubmissionId == submission.Id);
+
+        Assert.Empty(
+            await db.CatalogueSubmissionVariantOverrides
+                .Where(value => value.VariantId == variant.Id)
+                .ToListAsync());
+    }
+
+    [Fact]
+    public async Task ImportCatalogueSubmissionsCsv_RequiresImportProductKey()
+    {
+        using var client = AuthenticatedClient(PostgreSqlFixture.ModeratorSubject);
+
+        var csv =
+            "Manufacturer,ProductName,ManufacturerSize,ManufacturerPackQuantity\n" +
+            "CSV Test Manufacturer,Missing Key Product,Medium,10\n";
+
+        using var content = new MultipartFormDataContent();
+        content.Add(
+            new StringContent(csv, System.Text.Encoding.UTF8, "text/csv"),
+            "file",
+            "missing-key.csv");
+
+        var response = await client.PostAsync(
+            "/api/v1/catalogue-submissions/import-csv",
+            content);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ImportCatalogueSubmissionsCsv_RejectsDuplicateSizeRowsWithinAVariant()
+    {
+        using var client = AuthenticatedClient(PostgreSqlFixture.ModeratorSubject);
+
+        var csv =
+            "ImportProductKey,Manufacturer,ProductName,VariantName,ManufacturerSize,ManufacturerPackQuantity,GTIN\n" +
+            "DUPLICATE-001,CSV Test Manufacturer,Duplicate Product,Original,Medium,10,7000000000201\n" +
+            "DUPLICATE-001,CSV Test Manufacturer,Duplicate Product,Original,Medium,10,7000000000202\n";
+
+        using var content = new MultipartFormDataContent();
+        content.Add(
+            new StringContent(csv, System.Text.Encoding.UTF8, "text/csv"),
+            "file",
+            "duplicate-size.csv");
+
+        var response = await client.PostAsync(
+            "/api/v1/catalogue-submissions/import-csv",
+            content);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var result =
+            await response.Content.ReadFromJsonAsync<CatalogueSubmissionImportResult>();
+
+        Assert.NotNull(result);
+        Assert.Equal(2, result.RowsRead);
+        Assert.Equal(0, result.SubmissionsCreated);
+        Assert.Equal(0, result.RowsImported);
+        Assert.Equal(2, result.RowsSkipped);
+        Assert.Contains(
+            result.Warnings,
+            warning => warning.Contains("duplicate size rows", StringComparison.OrdinalIgnoreCase));
+    }
+
     public void Dispose() => _factory.Dispose();
 }

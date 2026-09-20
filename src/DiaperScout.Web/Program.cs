@@ -70,6 +70,18 @@ app.UseAuthorization();
 
 app.UseAntiforgery();
 
+app.MapGet(
+    "/catalogue/import-template",
+    () => Results.File(
+        System.Text.Encoding.UTF8.GetBytes(
+            "ImportProductKey,Manufacturer,Brand,ProductName,ProductType,PackagingType,ProductFamily,Description,ProductStatus,OfficialWebsite,VariantName,BackingType,FastenerType,FastenerCount,Appearance,PrimaryColour,WetnessIndicator,StandingLeakGuards,WaistbandStyle,Fragrance,LatexFree,DesignedFor,ConstructionNotes,ManufacturerSize,WaistMinCm,WaistMaxCm,HipMinCm,HipMaxCm,FitMeasurementBasis,AbsorbencyMl,AbsorbencyBasisMethod,AbsorbencySource,LengthMm,WidthMm,WeightGrams,ManufacturerPackQuantity,GTIN,IdentitySourceUrl,Notes,DescriptionVisibility\n" +
+            "EXAMPLE-PRODUCT-001,Example Manufacturer,Example Brand,Example Product,Diaper,Bag,Example Family,,Current,https://example.com,Original,Plastic,AdhesiveTape,2,Plain,White,Yes,Yes,AllAroundElastic,None,No,Adult,,Medium,80,110,,,,Waist,7500,Manufacturer stated,Manufacturer,900,700,1800,10,1234567890123,https://example.com/product,,ModeratorOnly\n"),
+        "text/csv",
+        "DiaperScout-Catalogue-Import-Template.csv"))
+    .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+    .WithName("GetCatalogueImportTemplate")
+    .WithTags("Catalogue");
+
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

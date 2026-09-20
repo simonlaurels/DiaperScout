@@ -538,6 +538,19 @@ public sealed class ProductCatalogueClient(HttpClient client)
             : CatalogueSubmissionVariantResult.Saved(receipt);
     }
 
+    public async Task<CatalogueSubmissionResult> ResolveSubmissionEntitiesAsync(
+        Guid submissionId,
+        ResolveCatalogueSubmissionEntitiesRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.PutAsJsonAsync(
+            $"api/v1/catalogue-submissions/{submissionId}/entity-resolution",
+            request,
+            cancellationToken);
+
+        return await ReadSubmissionResponseAsync(response, cancellationToken);
+    }
+
     public async Task<CatalogueSubmissionResult> UpdateSubmissionIdentityAsync(
         Guid submissionId,
         UpdateCatalogueSubmissionIdentityRequest request,
@@ -1215,6 +1228,12 @@ public sealed record UpdateCatalogueSubmissionIdentityRequest(
     string? ProposedGtin,
     string? ProposedSku,
     string? IdentitySourceUrl);
+
+public sealed record ResolveCatalogueSubmissionEntitiesRequest(
+    Guid? ManufacturerId,
+    string? NewManufacturerName,
+    Guid? BrandId,
+    string? NewBrandName);
 
 public sealed record ReviewCatalogueSubmissionRequest(
     EditorialOutcome Outcome,

@@ -20,6 +20,7 @@ internal sealed class CatalogueSubmissions(
 
         return await db.CatalogueSubmissions
             .AsNoTracking()
+            .Where(value => value.Status != CatalogueSubmissionStatus.Published)
             .OrderByDescending(value => value.UpdatedAtUtc)
             .Select(value => new CatalogueSubmissionQueueItem(
                 value.Id,
@@ -41,115 +42,336 @@ internal sealed class CatalogueSubmissions(
     {
         await RequireModeratorAsync(actor, cancellationToken);
 
-        var rows = CatalogueSubmissionCsvParser.Parse(csvContent, options.TreatImportedDescriptionsAsModeratorOnly);
+        var rows = CatalogueSubmissionCsvParser.Parse(
+            csvContent,
+            options.TreatImportedDescriptionsAsModeratorOnly);
+
         var warnings = new List<string>();
         var created = 0;
         var imported = 0;
         var skipped = 0;
 
-        foreach (var row in rows)
+        foreach (var productGroup in rows.GroupBy(
+                     row => row.ImportProductKey.Trim(),
+                     StringComparer.OrdinalIgnoreCase))
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             try
             {
-                await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+                var groupRows = productGroup.ToList();
+                var groupRowsSkipped = 0;
+                ValidateProductGroup(groupRows);
 
-                if (!string.IsNullOrWhiteSpace(row.Gtin) && await db.ProductIdentifiers.AnyAsync(
-                        value => value.Type == IdentifierType.Gtin && value.Value == row.Gtin,
-                        cancellationToken))
+                await using var transaction =
+                    await db.Database.BeginTransactionAsync(cancellationToken);
+
+                var eligibleRows = new List<CatalogueSubmissionCsvRow>();
+
+                foreach (var row in groupRows)
                 {
-                    skipped++;
-                    warnings.Add($"Line {row.LineNumber}: GTIN {row.Gtin} already exists in the canonical catalogue.");
+                    if (!string.IsNullOrWhiteSpace(row.Gtin) &&
+                        await db.ProductIdentifiers.AnyAsync(
+                            value =>
+                                value.Type == IdentifierType.Gtin &&
+                                value.Value == row.Gtin,
+                            cancellationToken))
+                    {
+                        groupRowsSkipped++;
+                        warnings.Add(
+                            $"Line {row.LineNumber}: GTIN {row.Gtin} already exists in the canonical catalogue; the row was skipped.");
+                        continue;
+                    }
+
+                    eligibleRows.Add(row);
+                }
+
+                if (eligibleRows.Count == 0)
+                {
                     await transaction.RollbackAsync(cancellationToken);
+                    skipped += groupRowsSkipped;
                     continue;
                 }
+
+                ValidateProductGroup(eligibleRows);
+
+                var submissionTemplate = eligibleRows[0];
 
                 var submission = new CatalogueSubmission(
                     CatalogueSubmissionSource.BulkImport,
                     actor.UserId,
-                    row.Manufacturer,
-                    row.ProductName,
-                    row.VariantName,
-                    row.Brand,
-                    row.Notes);
-
-                submission.UpdateIdentity(row.Gtin, null, row.IdentitySourceUrl);
-                submission.UpdateSpecifications(
-                    row.ProductType,
-                    row.PackagingType,
-                    row.ProductFamily,
-                    row.Description,
-                    row.DescriptionVisibility,
-                    row.ProductStatus,
-                    row.OfficialWebsite,
+                    submissionTemplate.Manufacturer,
+                    submissionTemplate.ProductName,
                     null,
-                    row.PrimaryColour,
-                    row.WetnessIndicator,
-                    row.StandingLeakGuards,
-                    row.WaistbandStyle,
-                    row.Fragrance,
-                    row.LatexFree,
-                    row.DesignedFor,
-                    row.FastenerCount,
-                    row.ConstructionNotes);
+                    submissionTemplate.Brand,
+                    submissionTemplate.Notes);
+
+                // GTINs belong to size variants. Keep the submission-level identity
+                // GTIN empty for grouped imports so one size cannot masquerade as
+                // the product's sole identifier.
+                submission.UpdateIdentity(
+                    null,
+                    null,
+                    submissionTemplate.IdentitySourceUrl);
+
+                submission.UpdateSpecifications(
+                    submissionTemplate.ProductType,
+                    submissionTemplate.PackagingType,
+                    submissionTemplate.ProductFamily,
+                    submissionTemplate.Description,
+                    submissionTemplate.DescriptionVisibility,
+                    submissionTemplate.ProductStatus,
+                    submissionTemplate.OfficialWebsite,
+                    null,
+                    submissionTemplate.PrimaryColour,
+                    submissionTemplate.WetnessIndicator,
+                    submissionTemplate.StandingLeakGuards,
+                    submissionTemplate.WaistbandStyle,
+                    submissionTemplate.Fragrance,
+                    submissionTemplate.LatexFree,
+                    submissionTemplate.DesignedFor,
+                    submissionTemplate.FastenerCount,
+                    submissionTemplate.ConstructionNotes);
 
                 db.CatalogueSubmissions.Add(submission);
 
-                var variant = new CatalogueSubmissionVariant(submission.Id, string.IsNullOrWhiteSpace(row.VariantName) ? null : row.VariantName.Trim());
-                db.CatalogueSubmissionVariants.Add(variant);
-
-                var overrideValue = new CatalogueSubmissionVariantOverride(variant.Id);
-                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.BackingType, row.BackingType?.ToString());
-                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.FastenerType, row.FastenerType?.ToString());
-                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.Appearance, row.Appearance?.ToString());
-                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.PrimaryColour, row.PrimaryColour);
-                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.WetnessIndicator, row.WetnessIndicator?.ToString());
-                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.StandingLeakGuards, row.StandingLeakGuards?.ToString());
-                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.WaistbandStyle, row.WaistbandStyle?.ToString());
-                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.Fragrance, row.Fragrance?.ToString());
-                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.LatexFree, row.LatexFree?.ToString());
-                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.DesignedFor, row.DesignedFor);
-                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.FastenerCount, row.FastenerCount?.ToString(CultureInfo.InvariantCulture));
-                SetImportOverride(overrideValue, CatalogueVariantOverrideAttribute.ConstructionNotes, row.ConstructionNotes);
-                if (overrideValue.HasAnyOverride)
-                    db.CatalogueSubmissionVariantOverrides.Add(overrideValue);
-
-                if (!string.IsNullOrWhiteSpace(row.ManufacturerSize))
+                var variantsCreated = 0;
+                foreach (var variantGroup in eligibleRows.GroupBy(
+                             row => NormaliseVariantName(row.VariantName),
+                             StringComparer.OrdinalIgnoreCase))
                 {
-                    var size = new CatalogueSubmissionSizeVariant(
-                        variant.Id,
-                        row.ManufacturerSize,
-                        row.WaistMinCm,
-                        row.WaistMaxCm,
-                        row.HipMinCm,
-                        row.HipMaxCm,
-                        row.AbsorbencyMl,
-                        row.FitMeasurementBasis,
-                        row.AbsorbencyBasisMethod,
-                        row.AbsorbencySource,
-                        row.LengthMm,
-                        row.WidthMm,
-                        row.WeightGrams,
-                        row.ManufacturerPackQuantity,
-                        row.Gtin);
-                    db.CatalogueSubmissionSizeVariants.Add(size);
+                    var variantRows = variantGroup.ToList();
+                    ValidateVariantGroup(variantRows);
+
+                    var variant = new CatalogueSubmissionVariant(
+                        submission.Id,
+                        variantGroup.Key);
+
+                    db.CatalogueSubmissionVariants.Add(variant);
+
+                    var overrideValue =
+                        new CatalogueSubmissionVariantOverride(variant.Id);
+
+                    SetImportOverride(
+                        overrideValue,
+                        CatalogueVariantOverrideAttribute.BackingType,
+                        variantRows[0].BackingType?.ToString());
+                    SetImportOverride(
+                        overrideValue,
+                        CatalogueVariantOverrideAttribute.FastenerType,
+                        variantRows[0].FastenerType?.ToString());
+                    SetImportOverride(
+                        overrideValue,
+                        CatalogueVariantOverrideAttribute.Appearance,
+                        variantRows[0].Appearance?.ToString());
+                    SetImportOverride(
+                        overrideValue,
+                        CatalogueVariantOverrideAttribute.PrimaryColour,
+                        variantRows[0].PrimaryColour);
+                    SetImportOverride(
+                        overrideValue,
+                        CatalogueVariantOverrideAttribute.WetnessIndicator,
+                        variantRows[0].WetnessIndicator?.ToString());
+                    SetImportOverride(
+                        overrideValue,
+                        CatalogueVariantOverrideAttribute.StandingLeakGuards,
+                        variantRows[0].StandingLeakGuards?.ToString());
+                    SetImportOverride(
+                        overrideValue,
+                        CatalogueVariantOverrideAttribute.WaistbandStyle,
+                        variantRows[0].WaistbandStyle?.ToString());
+                    SetImportOverride(
+                        overrideValue,
+                        CatalogueVariantOverrideAttribute.Fragrance,
+                        variantRows[0].Fragrance?.ToString());
+                    SetImportOverride(
+                        overrideValue,
+                        CatalogueVariantOverrideAttribute.LatexFree,
+                        variantRows[0].LatexFree?.ToString());
+                    SetImportOverride(
+                        overrideValue,
+                        CatalogueVariantOverrideAttribute.DesignedFor,
+                        variantRows[0].DesignedFor);
+                    SetImportOverride(
+                        overrideValue,
+                        CatalogueVariantOverrideAttribute.FastenerCount,
+                        variantRows[0].FastenerCount?.ToString(
+                            CultureInfo.InvariantCulture));
+                    SetImportOverride(
+                        overrideValue,
+                        CatalogueVariantOverrideAttribute.ConstructionNotes,
+                        variantRows[0].ConstructionNotes);
+
+                    if (overrideValue.HasAnyOverride)
+                        db.CatalogueSubmissionVariantOverrides.Add(overrideValue);
+
+                    foreach (var row in variantRows)
+                    {
+                        if (string.IsNullOrWhiteSpace(row.ManufacturerSize))
+                        {
+                            warnings.Add(
+                                $"Line {row.LineNumber}: no manufacturer size was supplied for product '{row.ProductName}' variant '{variantGroup.Key ?? "Original"}'; the row was imported without a size.");
+                            continue;
+                        }
+
+                        var size = new CatalogueSubmissionSizeVariant(
+                            variant.Id,
+                            row.ManufacturerSize,
+                            row.WaistMinCm,
+                            row.WaistMaxCm,
+                            row.HipMinCm,
+                            row.HipMaxCm,
+                            row.AbsorbencyMl,
+                            row.FitMeasurementBasis,
+                            row.AbsorbencyBasisMethod,
+                            row.AbsorbencySource,
+                            row.LengthMm,
+                            row.WidthMm,
+                            row.WeightGrams,
+                            row.ManufacturerPackQuantity,
+                            row.Gtin);
+
+                        db.CatalogueSubmissionSizeVariants.Add(size);
+                    }
+
+                    variantsCreated++;
                 }
+
+                if (variantsCreated == 0)
+                    throw new CatalogueValidationException(
+                        "variants",
+                        "The import group did not contain any usable product variants.");
 
                 await db.SaveChangesAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
+
                 created++;
-                imported++;
+                imported += eligibleRows.Count;
+                skipped += groupRowsSkipped;
             }
-            catch (Exception exception) when (exception is ArgumentException or CatalogueValidationException or FormatException)
+            catch (Exception exception) when (
+                exception is ArgumentException or
+                CatalogueValidationException or
+                FormatException)
             {
-                skipped++;
-                warnings.Add($"Line {row.LineNumber}: {exception.Message}");
+                skipped += productGroup.Count();
+                warnings.Add(
+                    $"Import product key '{productGroup.Key}' was skipped: {exception.Message}");
             }
         }
 
-        return new CatalogueSubmissionImportResult(rows.Count, created, imported, skipped, warnings);
+        return new CatalogueSubmissionImportResult(
+            rows.Count,
+            created,
+            imported,
+            skipped,
+            warnings);
     }
+
+    private static void ValidateProductGroup(
+        IReadOnlyList<CatalogueSubmissionCsvRow> rows)
+    {
+        if (rows.Count == 0)
+            throw new CatalogueValidationException(
+                "importProductKey",
+                "An import product group cannot be empty.");
+
+        EnsureConsistent(rows, "Manufacturer", row => row.Manufacturer);
+        EnsureConsistent(rows, "Brand", row => row.Brand);
+        EnsureConsistent(rows, "ProductName", row => row.ProductName);
+        EnsureConsistent(rows, "ProductType", row => row.ProductType);
+        EnsureConsistent(rows, "PackagingType", row => row.PackagingType);
+        EnsureConsistent(rows, "ProductFamily", row => row.ProductFamily);
+        EnsureConsistent(rows, "Description", row => row.Description);
+        EnsureConsistent(rows, "ProductStatus", row => row.ProductStatus);
+        EnsureConsistent(rows, "OfficialWebsite", row => row.OfficialWebsite);
+        // IdentitySourceUrl is row-level provenance. A grouped product may legitimately
+        // use different manufacturer/retailer source pages for different variants or sizes.
+        // The submission keeps the first eligible source URL as its identity provenance.
+        // Notes are row/source metadata and may legitimately differ between sizes.
+        // Do not make them a product-level grouping constraint.
+        EnsureConsistent(
+            rows,
+            "DescriptionVisibility",
+            row => row.DescriptionVisibility);
+    }
+
+    private static void ValidateVariantGroup(
+        IReadOnlyList<CatalogueSubmissionCsvRow> rows)
+    {
+        EnsureConsistent(rows, "BackingType", row => row.BackingType);
+        EnsureConsistent(rows, "FastenerType", row => row.FastenerType);
+        EnsureConsistent(rows, "FastenerCount", row => row.FastenerCount);
+        EnsureConsistent(rows, "Appearance", row => row.Appearance);
+        EnsureConsistent(rows, "PrimaryColour", row => row.PrimaryColour);
+        EnsureConsistent(
+            rows,
+            "WetnessIndicator",
+            row => row.WetnessIndicator);
+        EnsureConsistent(
+            rows,
+            "StandingLeakGuards",
+            row => row.StandingLeakGuards);
+        EnsureConsistent(rows, "WaistbandStyle", row => row.WaistbandStyle);
+        EnsureConsistent(rows, "Fragrance", row => row.Fragrance);
+        EnsureConsistent(rows, "LatexFree", row => row.LatexFree);
+        EnsureConsistent(rows, "DesignedFor", row => row.DesignedFor);
+        EnsureConsistent(
+            rows,
+            "ConstructionNotes",
+            row => row.ConstructionNotes);
+
+        var duplicateSizes = rows
+            .Where(row => !string.IsNullOrWhiteSpace(row.ManufacturerSize))
+            .GroupBy(
+                row => row.ManufacturerSize!.Trim(),
+                StringComparer.OrdinalIgnoreCase)
+            .Where(group => group.Count() > 1)
+            .Select(group => group.Key)
+            .ToList();
+
+        if (duplicateSizes.Count > 0)
+        {
+            throw new CatalogueValidationException(
+                "ManufacturerSize",
+                $"The variant contains duplicate size rows: {string.Join(", ", duplicateSizes)}.");
+        }
+
+        var rowsWithoutSize = rows.Count(
+            row => string.IsNullOrWhiteSpace(row.ManufacturerSize));
+
+        if (rowsWithoutSize > 1)
+        {
+            throw new CatalogueValidationException(
+                "ManufacturerSize",
+                "A variant can contain at most one row without a manufacturer size.");
+        }
+    }
+
+    private static void EnsureConsistent(
+        IReadOnlyList<CatalogueSubmissionCsvRow> rows,
+        string fieldName,
+        Func<CatalogueSubmissionCsvRow, object?> selector)
+    {
+        var values = rows
+            .Select(selector)
+            .Select(value => value is string text ? text.Trim() : value)
+            .ToList();
+
+        var first = values[0];
+
+        if (values.Any(value => !Equals(value, first)))
+        {
+            throw new CatalogueValidationException(
+                fieldName,
+                $"Rows sharing the same import product key must have the same {fieldName} value.");
+        }
+    }
+
+    private static string? NormaliseVariantName(string? value) =>
+        string.IsNullOrWhiteSpace(value)
+            ? null
+            : value.Trim();
 
     private static void SetImportOverride(CatalogueSubmissionVariantOverride value, CatalogueVariantOverrideAttribute attribute, string? text)
     {

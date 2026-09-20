@@ -6,6 +6,7 @@ namespace DiaperScout.Infrastructure;
 
 internal sealed record CatalogueSubmissionCsvRow(
     int LineNumber,
+    string ImportProductKey,
     string Manufacturer,
     string? Brand,
     string ProductName,
@@ -48,7 +49,7 @@ internal sealed record CatalogueSubmissionCsvRow(
 
 internal static class CatalogueSubmissionCsvParser
 {
-    private static readonly string[] RequiredHeaders = ["Manufacturer", "ProductName"];
+    private static readonly string[] RequiredHeaders = ["ImportProductKey", "Manufacturer", "ProductName"];
 
     public static IReadOnlyList<CatalogueSubmissionCsvRow> Parse(Stream stream, bool importedDescriptionsAreModeratorOnly)
     {
@@ -81,6 +82,7 @@ internal static class CatalogueSubmissionCsvParser
 
             rows.Add(new CatalogueSubmissionCsvRow(
                 lineNumber,
+                Required(fields, "ImportProductKey", lineNumber),
                 manufacturer,
                 Optional(fields, "Brand"),
                 productName,
@@ -153,7 +155,8 @@ internal static class CatalogueSubmissionCsvParser
         if (value is null) return null;
         if (value.Equals("yes", StringComparison.OrdinalIgnoreCase) || value.Equals("true", StringComparison.OrdinalIgnoreCase)) return true;
         if (value.Equals("no", StringComparison.OrdinalIgnoreCase) || value.Equals("false", StringComparison.OrdinalIgnoreCase)) return false;
-        throw new FormatException($"Line {lineNumber}: '{name}' must be Yes/No or True/False.");
+        if (value.Equals("unknown", StringComparison.OrdinalIgnoreCase)) return null;
+        throw new FormatException($"Line {lineNumber}: '{name}' must be Yes/No/Unknown or True/False.");
     }
 
     private static T? ParseEnum<T>(IReadOnlyDictionary<string, string> fields, string name, int lineNumber) where T : struct, Enum

@@ -36,6 +36,10 @@
         {
             <div class="submission-message submission-message-error" role="alert">@saveError</div>
         }
+        else if (saveMessage is not null)
+        {
+            <div class="submission-message submission-message-success" role="status">@saveMessage</div>
+        }
 
         <ol class="submission-steps" aria-label="Product creation progress">
             <li class="@(StepClass(1)) @(IsStepNavigable(1) ? "submission-step-navigable" : "")"
@@ -527,10 +531,57 @@
                 <section class="submission-panel">
                     <div class="submission-panel-heading"><div><p class="catalogue-kicker">STEP 6 OF 6</p><h2>Verification</h2></div></div>
                     <p class="submission-help">Review the product before it becomes catalogue-ready. Verification confirms that the product and its information are supported by sufficient trustworthy evidence.</p>
-                    <div class="submission-card"><strong>✓ Product identity</strong><small>Manufacturer, brand and product name reviewed</small></div>
-                    <div class="submission-card"><strong>✓ Product variants</strong><small>Variant structure reviewed</small></div>
-                    <div class="submission-card"><strong>✓ Size variants</strong><small>Physical sizes reviewed</small></div>
-                    <div class="submission-card"><strong>✓ Product details</strong><small>Factual product information reviewed</small></div>
+                    @foreach (var area in requiredVerificationAreas)
+                    {
+                        var verification = GetVerification(area);
+
+                        <div class="submission-card">
+                            <div>
+                                <strong>@(verification is not null ? "✓" : "○") @FormatVerificationArea(area)</strong>
+                                <small>@VerificationScope(area)</small>
+                                @if (verification is not null)
+                                {
+                                    <small>Source: @verification.Source</small>
+                                }
+                            </div>
+                            @if (verification is null && submission.Status == CatalogueSubmissionStatus.InVerification)
+                            {
+                                <button class="ds-button ds-button-secondary" type="button" @onclick="() => BeginVerificationReview(area)" disabled="@saving">Verify</button>
+                            }
+                            else if (verification is not null)
+                            {
+                                <span class="submission-status">@FormatEnum(verification.Status)</span>
+                            }
+                        </div>
+
+                        @if (verificationEditorArea == area)
+                        {
+                            <div class="submission-card submission-card-rights">
+                                <div class="submission-field submission-field-wide">
+                                    <label>Verification source</label>
+                                    <InputSelect class="ds-select" @bind-Value="verificationEditorSource">
+                                        <option value="">Select the evidence source…</option>
+                                        @foreach (var source in verificationSourceOptions)
+                                        {
+                                            <option value="@source">@source</option>
+                                        }
+                                    </InputSelect>
+                                </div>
+                                <div class="submission-field submission-field-wide">
+                                    <label>Source URL <span>(optional)</span></label>
+                                    <InputText class="ds-input" @bind-Value="verificationEditorSourceUrl" />
+                                </div>
+                                <div class="submission-field submission-field-wide">
+                                    <label>Verification notes <span>(optional)</span></label>
+                                    <InputTextArea class="ds-textarea" @bind-Value="verificationEditorNotes" />
+                                </div>
+                                <div class="submission-actions">
+                                    <button class="ds-button ds-button-secondary" type="button" @onclick="CancelVerificationReview">Cancel</button>
+                                    <button class="ds-button ds-button-primary" type="button" @onclick="SaveVerificationAsync" disabled="@saving">Save verification</button>
+                                </div>
+                            </div>
+                        }
+                    }
                     <div class="submission-card submission-card-rights">
                         <div>
                             <strong>Content publication rights</strong>
@@ -545,7 +596,7 @@
                                 }
                             </InputSelect>
                         </div>
-                        <button class="ds-button ds-button-secondary" type="button" @onclick="SaveSpecificationsAsync" disabled="@saving">Save rights setting</button>
+                        <button class="ds-button ds-button-secondary" type="button" @onclick="SaveDescriptionVisibilityAsync" disabled="@saving">Save rights setting</button>
                     </div>
                     <div class="submission-card">
                         @if (images.Count == 0)
@@ -564,7 +615,21 @@
                             <small>@images.Count image@(images.Count == 1 ? "" : "s") added. Any uncleared images will remain moderator-only until their rights are established.</small>
                         }
                     </div>
-                    <div class="submission-next"><div><p class="catalogue-kicker">CATALOGUE READY</p><h2>What would you like to do?</h2><p>The product has completed the creation workflow. Retail and Affiliate can be handled separately.</p></div><div class="submission-actions"><button class="ds-button ds-button-secondary" type="button">Save unpublished</button><button class="ds-button ds-button-primary" type="button">Publish now →</button></div></div>
+                    <div class="submission-next">
+                         <div>
+                             <p class="catalogue-kicker">CATALOGUE READY</p>
+                             <h2>What would you like to do?</h2>
+                             <p>The product has completed the creation workflow. Retail and Affiliate can be handled separately.</p>
+                         </div>
+                         <div class="submission-actions">
+                             @if (submission.Status == CatalogueSubmissionStatus.Approved)
+                             {
+                                 <button class="ds-button ds-button-secondary" type="button" @onclick="ReturnToVerificationAsync" disabled="@saving">Return to verification</button>
+                             }
+                             <button class="ds-button ds-button-secondary" type="button">Save unpublished</button>
+                             <button class="ds-button ds-button-primary" type="button" @onclick="PublishNowAsync" disabled="@saving">@(saving ? "Publishing…" : "Approve & publish →")</button>
+                         </div>
+                     </div>
                 </section>
             }
         }
@@ -593,6 +658,7 @@
     private bool saving;
     private bool accessDenied;
     private string? saveError;
+    private string? saveMessage;
     [Parameter] public Guid? submissionId { get; set; }
     [Parameter] public int? step { get; set; }
     [SupplyParameterFromQuery(Name = "maxStep")] private int? maxStep { get; set; }
@@ -616,6 +682,30 @@
 
     private IReadOnlyList<CatalogueSubmissionImageReceipt> images = [];
     private readonly Dictionary<Guid, string> imagePreviewDataUris = [];
+    private CatalogueSubmissionVerificationWorkspace? verificationWorkspace;
+    private CatalogueVerificationArea? verificationEditorArea;
+    private string verificationEditorSource = "";
+    private string? verificationEditorSourceUrl;
+    private string? verificationEditorNotes;
+
+    private static readonly CatalogueVerificationArea[] requiredVerificationAreas =
+    [
+        CatalogueVerificationArea.ProductIdentity,
+        CatalogueVerificationArea.Specifications
+    ];
+
+    private static readonly string[] verificationSourceOptions =
+    [
+        "Manufacturer website",
+        "Manufacturer product documentation",
+        "Product packaging / label",
+        "Retailer website",
+        "Retailer product documentation",
+        "Physical product inspection",
+        "User/community supplied evidence",
+        "Other"
+    ];
+
     private CatalogueSubmissionImageRole? activeImageRole;
     private Guid? editingImageId;
     private IBrowserFile? selectedImageFile;
@@ -671,6 +761,9 @@
             if (currentStep >= 5)
                 await LoadImagesAsync();
 
+            if (currentStep >= 6)
+                await LoadVerificationWorkspaceAsync();
+
             return;
         }
 
@@ -703,6 +796,139 @@
 
             if (preview is not null)
                 imagePreviewDataUris[image.Id] = preview;
+        }
+    }
+
+    private async Task LoadVerificationWorkspaceAsync()
+    {
+        if (submission is null)
+            return;
+
+        var result = await Catalogue.GetVerificationWorkspaceAsync(submission.Id);
+
+        if (result.Status == CatalogueSubmissionVerificationWorkspaceStatus.Found)
+        {
+            verificationWorkspace = result.Workspace;
+            return;
+        }
+
+        verificationWorkspace = null;
+
+        if (result.Status == CatalogueSubmissionVerificationWorkspaceStatus.AccessDenied)
+            accessDenied = true;
+        else if (result.Status == CatalogueSubmissionVerificationWorkspaceStatus.Failed)
+            saveError = result.Message ?? "The verification workspace could not be loaded.";
+    }
+
+    private CatalogueSubmissionVerificationReceipt? GetVerification(
+        CatalogueVerificationArea area) =>
+        verificationWorkspace?.Verifications
+            .Where(value =>
+                value.Area == area &&
+                value.Status is CatalogueVerificationStatus.Verified or CatalogueVerificationStatus.Inherited)
+            .OrderByDescending(value => value.VerifiedAtUtc)
+            .FirstOrDefault();
+
+    private static string FormatVerificationArea(CatalogueVerificationArea area) =>
+        area switch
+        {
+            CatalogueVerificationArea.ProductIdentity => "Product identity",
+            CatalogueVerificationArea.Specifications => "Product specifications",
+            CatalogueVerificationArea.ContentAndRights => "Content & rights",
+            CatalogueVerificationArea.Retail => "Retail information",
+            _ => FormatEnum(area)
+        };
+
+    private static string VerificationScope(CatalogueVerificationArea area) =>
+        area switch
+        {
+            CatalogueVerificationArea.ProductIdentity => "Manufacturer, brand and product name reviewed",
+            CatalogueVerificationArea.Specifications => "Variants and size information reviewed",
+            CatalogueVerificationArea.ContentAndRights => "Descriptions, images and publication rights reviewed",
+            CatalogueVerificationArea.Retail => "Retail destinations and listing information reviewed",
+            _ => "Catalogue information reviewed"
+        };
+
+    private void BeginVerificationReview(CatalogueVerificationArea area)
+    {
+        verificationEditorArea = area;
+        verificationEditorSource = "";
+        verificationEditorSourceUrl =
+            area == CatalogueVerificationArea.ProductIdentity
+                ? submission?.IdentitySourceUrl
+                : null;
+        verificationEditorNotes = null;
+        saveError = null;
+        saveMessage = null;
+    }
+
+    private void CancelVerificationReview()
+    {
+        verificationEditorArea = null;
+        verificationEditorSource = "";
+        verificationEditorSourceUrl = null;
+        verificationEditorNotes = null;
+    }
+
+    private async Task SaveVerificationAsync()
+    {
+        if (submission is null || verificationEditorArea is null)
+            return;
+
+        if (string.IsNullOrWhiteSpace(verificationEditorSource))
+        {
+            saveError = "A verification source is required.";
+            return;
+        }
+
+        saving = true;
+        saveError = null;
+        saveMessage = null;
+
+        try
+        {
+            var result = await Catalogue.AddVerificationAsync(
+                submission.Id,
+                new AddCatalogueSubmissionVerificationRequest(
+                    verificationEditorArea.Value,
+                    CatalogueVerificationStatus.Verified,
+                    VerificationScope(verificationEditorArea.Value),
+                    verificationEditorSource.Trim(),
+                    string.IsNullOrWhiteSpace(verificationEditorSourceUrl)
+                        ? null
+                        : verificationEditorSourceUrl.Trim(),
+                    string.IsNullOrWhiteSpace(verificationEditorNotes)
+                        ? null
+                        : verificationEditorNotes.Trim(),
+                    null));
+
+            if (result.Status == CatalogueSubmissionVerificationResultStatus.Added)
+            {
+                verificationEditorArea = null;
+                verificationEditorSource = "";
+                verificationEditorSourceUrl = null;
+                verificationEditorNotes = null;
+                await LoadVerificationWorkspaceAsync();
+                saveMessage = $"{FormatVerificationArea(result.Receipt!.Area)} verification saved.";
+            }
+            else if (result.Status == CatalogueSubmissionVerificationResultStatus.Invalid)
+            {
+                saveError = result.Errors is null
+                    ? "The verification could not be saved."
+                    : string.Join(" ", result.Errors.SelectMany(value => value.Value));
+            }
+            else if (result.Status == CatalogueSubmissionVerificationResultStatus.AccessDenied)
+            {
+                accessDenied = true;
+            }
+            else
+            {
+                saveError = result.Message ?? "The verification could not be saved just now.";
+            }
+        }
+        finally
+        {
+            saving = false;
         }
     }
 
@@ -1449,6 +1675,160 @@
         {
             saveError = result.Message;
         }
+    }
+
+    private async Task SaveDescriptionVisibilityAsync()
+    {
+        if (submission is null) return;
+
+        saving = true;
+        saveError = null;
+        saveMessage = null;
+        accessDenied = false;
+
+        var result = await Catalogue.UpdateSubmissionDescriptionVisibilityAsync(
+            submission.Id,
+            detailsModel.DescriptionVisibility);
+
+        Apply(result);
+
+        if (result.Status is CatalogueSubmissionResultStatus.Saved)
+            saveMessage = "Description visibility saved.";
+
+        saving = false;
+    }
+
+    private async Task PublishNowAsync()
+    {
+        if (submission is null)
+            return;
+
+        saving = true;
+        saveError = null;
+        saveMessage = null;
+        accessDenied = false;
+
+        if (submission.Status == CatalogueSubmissionStatus.InVerification)
+        {
+            var readyResult =
+                await Catalogue.MarkReadyForReviewAsync(submission.Id);
+
+            if (readyResult.Status != CatalogueSubmissionResultStatus.Saved)
+            {
+                Apply(readyResult);
+                saving = false;
+                return;
+            }
+
+            submission = readyResult.Receipt ?? submission;
+        }
+
+        if (submission.Status == CatalogueSubmissionStatus.ReadyForReview)
+        {
+            var reviewResult =
+                await Catalogue.ReviewSubmissionAsync(
+                    submission.Id,
+                    EditorialOutcome.Accepted,
+                    "Approved for publication.");
+
+            if (reviewResult.Status == CatalogueSubmissionReviewResultStatus.Invalid)
+            {
+                saveError = string.Join(
+                    " ",
+                    reviewResult.Errors!.SelectMany(pair => pair.Value));
+                saving = false;
+                return;
+            }
+
+            if (reviewResult.Status == CatalogueSubmissionReviewResultStatus.AccessDenied)
+            {
+                accessDenied = true;
+                saveError = reviewResult.Message;
+                saving = false;
+                return;
+            }
+
+            if (reviewResult.Status != CatalogueSubmissionReviewResultStatus.Decided)
+            {
+                saveError = reviewResult.Message;
+                saving = false;
+                return;
+            }
+
+            var approvedResult =
+                await Catalogue.GetSubmissionAsync(submission.Id);
+
+            if (approvedResult.Status != CatalogueSubmissionResultStatus.Saved)
+            {
+                Apply(approvedResult);
+                saving = false;
+                return;
+            }
+
+            submission = approvedResult.Receipt ?? submission;
+        }
+
+        if (submission.Status != CatalogueSubmissionStatus.Approved)
+        {
+            saveError =
+                $"This submission is {FormatEnum(submission.Status)} and cannot be published from this screen.";
+            saving = false;
+            return;
+        }
+
+        var result = await Catalogue.PublishSubmissionAsync(submission.Id);
+
+        if (result.Status == CataloguePublicationResultStatus.Published)
+        {
+            saveMessage =
+                $"Published successfully. Product ID: {result.Receipt!.ProductId}.";
+
+            var refreshed = await Catalogue.GetSubmissionAsync(submission.Id);
+            if (refreshed.Status == CatalogueSubmissionResultStatus.Saved)
+                submission = refreshed.Receipt ?? submission;
+        }
+        else if (result.Status == CataloguePublicationResultStatus.Invalid)
+        {
+            saveError = string.Join(
+                " ",
+                result.Errors!.SelectMany(pair => pair.Value));
+        }
+        else if (result.Status == CataloguePublicationResultStatus.AccessDenied)
+        {
+            accessDenied = true;
+            saveError = result.Message;
+        }
+        else
+        {
+            saveError = result.Message;
+        }
+
+        saving = false;
+    }
+
+    private async Task ReturnToVerificationAsync()
+    {
+        if (submission is null)
+            return;
+
+        saving = true;
+        saveError = null;
+        saveMessage = null;
+        accessDenied = false;
+
+        var result = await Catalogue.ReturnSubmissionToVerificationAsync(
+            submission.Id);
+
+        Apply(result);
+
+        if (result.Status == CatalogueSubmissionResultStatus.Saved)
+        {
+            verificationEditorArea = null;
+            await LoadVerificationWorkspaceAsync();
+            saveMessage = "Returned to verification. Complete the outstanding verification areas before publishing.";
+        }
+
+        saving = false;
     }
 
     private async Task SaveSpecificationsAsync()

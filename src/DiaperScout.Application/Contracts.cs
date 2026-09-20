@@ -484,6 +484,12 @@ public sealed record UpdateCatalogueSubmissionIdentity(
     string? ProposedSku,
     string? IdentitySourceUrl);
 
+public sealed record ResolveCatalogueSubmissionEntities(
+    Guid? ManufacturerId,
+    string? NewManufacturerName,
+    Guid? BrandId,
+    string? NewBrandName);
+
 public sealed record AddCatalogueSubmissionVerification(
     CatalogueVerificationArea Area,
     CatalogueVerificationStatus Status,
@@ -834,10 +840,22 @@ public interface ICatalogueSubmissions
         UpdateCatalogueSubmissionIdentity command,
         CancellationToken cancellationToken = default);
 
+    Task<CatalogueSubmissionReceipt> ResolveEntitiesAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        ResolveCatalogueSubmissionEntities command,
+        CancellationToken cancellationToken = default);
+
     Task<CatalogueSubmissionReceipt> UpdateSpecificationsAsync(
         AuthenticatedUser actor,
         Guid submissionId,
         UpdateCatalogueSubmissionSpecifications command,
+        CancellationToken cancellationToken = default);
+
+    Task<CatalogueSubmissionReceipt> UpdateDescriptionVisibilityAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        CatalogueContentVisibility visibility,
         CancellationToken cancellationToken = default);
 
     Task<CatalogueSubmissionRetailDestinationReceipt> AddRetailDestinationAsync(
@@ -902,6 +920,11 @@ public interface ICatalogueSubmissions
         AuthenticatedUser actor,
         Guid submissionId,
         ReviewCatalogueSubmission command,
+        CancellationToken cancellationToken = default);
+
+    Task<CatalogueSubmissionReceipt> ReturnToVerificationAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
         CancellationToken cancellationToken = default);
 
     Task<CataloguePublicationReceipt> PublishAsync(

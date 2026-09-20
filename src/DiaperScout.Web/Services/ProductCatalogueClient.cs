@@ -568,6 +568,139 @@ public sealed class ProductCatalogueClient(HttpClient client)
             cancellationToken);
     }
 
+    public async Task<CatalogueSubmissionResult> UpdateSubmissionDescriptionVisibilityAsync(
+        Guid submissionId,
+        CatalogueContentVisibility visibility,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.PutAsJsonAsync(
+            $"api/v1/catalogue-submissions/{submissionId}/description-visibility",
+            new UpdateCatalogueSubmissionDescriptionVisibilityRequest(visibility),
+            cancellationToken);
+
+        return await ReadSubmissionResponseAsync(
+            response,
+            cancellationToken);
+    }
+
+    public async Task<CatalogueSubmissionResult> MarkReadyForReviewAsync(
+        Guid submissionId,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.PostAsync(
+            $"api/v1/catalogue-submissions/{submissionId}/ready-for-review",
+            content: null,
+            cancellationToken);
+
+        return await ReadSubmissionResponseAsync(
+            response,
+            cancellationToken);
+    }
+
+    public async Task<CatalogueSubmissionResult> ReturnSubmissionToVerificationAsync(
+        Guid submissionId,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.PostAsync(
+            $"api/v1/catalogue-submissions/{submissionId}/return-to-verification",
+            content: null,
+            cancellationToken);
+
+        return await ReadSubmissionResponseAsync(
+            response,
+            cancellationToken);
+    }
+
+    public async Task<CatalogueSubmissionReviewResult> ReviewSubmissionAsync(
+        Guid submissionId,
+        EditorialOutcome outcome,
+        string? rationale,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.PostAsJsonAsync(
+            $"api/v1/catalogue-submissions/{submissionId}/review",
+            new ReviewCatalogueSubmissionRequest(outcome, rationale),
+            cancellationToken);
+
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            return CatalogueSubmissionReviewResult.AccessDenied();
+
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var problem =
+                await response.Content.ReadFromJsonAsync<ValidationProblemDetails>(
+                    cancellationToken);
+
+            IReadOnlyDictionary<string, string[]> errors =
+                problem?.Errors is not null
+                    ? new Dictionary<string, string[]>(problem.Errors)
+                    : new Dictionary<string, string[]>
+                    {
+                        ["review"] =
+                        [
+                            "The editorial review could not be completed."
+                        ]
+                    };
+
+            return CatalogueSubmissionReviewResult.Invalid(errors);
+        }
+
+        if (!response.IsSuccessStatusCode)
+            return CatalogueSubmissionReviewResult.Failed();
+
+        var receipt =
+            await response.Content.ReadFromJsonAsync<CatalogueSubmissionEditorialDecisionReceipt>(
+                cancellationToken);
+
+        return receipt is null
+            ? CatalogueSubmissionReviewResult.Failed()
+            : CatalogueSubmissionReviewResult.Decided(receipt);
+    }
+
+    public async Task<CataloguePublicationResult> PublishSubmissionAsync(
+        Guid submissionId,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.PostAsync(
+            $"api/v1/catalogue-submissions/{submissionId}/publish",
+            content: null,
+            cancellationToken);
+
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            return CataloguePublicationResult.AccessDenied();
+
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var problem =
+                await response.Content.ReadFromJsonAsync<ValidationProblemDetails>(
+                    cancellationToken);
+
+            IReadOnlyDictionary<string, string[]> errors =
+                problem?.Errors is not null
+                    ? new Dictionary<string, string[]>(problem.Errors)
+                    : new Dictionary<string, string[]>
+                    {
+                        ["publication"] =
+                        [
+                            "The catalogue submission could not be published."
+                        ]
+                    };
+
+            return CataloguePublicationResult.Invalid(errors);
+        }
+
+        if (!response.IsSuccessStatusCode)
+            return CataloguePublicationResult.Failed();
+
+        var receipt =
+            await response.Content.ReadFromJsonAsync<CataloguePublicationReceipt>(
+                cancellationToken);
+
+        return receipt is null
+            ? CataloguePublicationResult.Failed()
+            : CataloguePublicationResult.Published(receipt);
+    }
+
     public async Task<CatalogueRetailersResult> GetRetailersAsync(
         CancellationToken cancellationToken = default)
     {
@@ -1083,6 +1216,13 @@ public sealed record UpdateCatalogueSubmissionIdentityRequest(
     string? ProposedSku,
     string? IdentitySourceUrl);
 
+public sealed record ReviewCatalogueSubmissionRequest(
+    EditorialOutcome Outcome,
+    string? Rationale);
+
+public sealed record UpdateCatalogueSubmissionDescriptionVisibilityRequest(
+    CatalogueContentVisibility Visibility);
+
 public sealed record UpdateCatalogueSubmissionSpecificationsRequest(
     ProductType? ProposedProductType,
     PackagingType? ProposedPackagingType,
@@ -1154,6 +1294,84 @@ public enum CatalogueSubmissionResultStatus
 {
     Saved,
     Deleted,
+    Invalid,
+    AccessDenied,
+    Failed
+}
+
+public sealed record CatalogueSubmissionReviewResult(
+    CatalogueSubmissionReviewResultStatus Status,
+    CatalogueSubmissionEditorialDecisionReceipt? Receipt = null,
+    IReadOnlyDictionary<string, string[]>? Errors = null,
+    string? Message = null)
+{
+    public static CatalogueSubmissionReviewResult Decided(
+        CatalogueSubmissionEditorialDecisionReceipt receipt) =>
+        new(
+            CatalogueSubmissionReviewResultStatus.Decided,
+            Receipt: receipt);
+
+    public static CatalogueSubmissionReviewResult Invalid(
+        IReadOnlyDictionary<string, string[]> errors) =>
+        new(
+            CatalogueSubmissionReviewResultStatus.Invalid,
+            Errors: errors);
+
+    public static CatalogueSubmissionReviewResult AccessDenied() =>
+        new(
+            CatalogueSubmissionReviewResultStatus.AccessDenied,
+            Message:
+                "You need Moderator editorial authority to review catalogue products.");
+
+    public static CatalogueSubmissionReviewResult Failed() =>
+        new(
+            CatalogueSubmissionReviewResultStatus.Failed,
+            Message:
+                "The catalogue submission could not be reviewed just now. Please try again.");
+}
+
+public enum CatalogueSubmissionReviewResultStatus
+{
+    Decided,
+    Invalid,
+    AccessDenied,
+    Failed
+}
+
+public sealed record CataloguePublicationResult(
+    CataloguePublicationResultStatus Status,
+    CataloguePublicationReceipt? Receipt = null,
+    IReadOnlyDictionary<string, string[]>? Errors = null,
+    string? Message = null)
+{
+    public static CataloguePublicationResult Published(
+        CataloguePublicationReceipt receipt) =>
+        new(
+            CataloguePublicationResultStatus.Published,
+            Receipt: receipt);
+
+    public static CataloguePublicationResult Invalid(
+        IReadOnlyDictionary<string, string[]> errors) =>
+        new(
+            CataloguePublicationResultStatus.Invalid,
+            Errors: errors);
+
+    public static CataloguePublicationResult AccessDenied() =>
+        new(
+            CataloguePublicationResultStatus.AccessDenied,
+            Message:
+                "You need Moderator editorial authority to publish catalogue products.");
+
+    public static CataloguePublicationResult Failed() =>
+        new(
+            CataloguePublicationResultStatus.Failed,
+            Message:
+                "The catalogue submission could not be published just now. Please try again.");
+}
+
+public enum CataloguePublicationResultStatus
+{
+    Published,
     Invalid,
     AccessDenied,
     Failed

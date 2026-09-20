@@ -1160,6 +1160,55 @@ if (builder.Configuration.GetValue<bool>(
         .ProducesValidationProblem();
 
     app.MapPut(
+        "/api/v1/catalogue-submissions/{id:guid}/entity-resolution",
+        async (
+            Guid id,
+            ResolveCatalogueSubmissionEntitiesRequest request,
+            ICurrentUser currentUser,
+            ICatalogueSubmissions submissions,
+            CancellationToken cancellationToken) =>
+        {
+            var actor =
+                await currentUser.GetAsync(cancellationToken);
+
+            if (actor is null)
+                return Results.Forbid();
+
+            try
+            {
+                var receipt =
+                    await submissions.ResolveEntitiesAsync(
+                        actor,
+                        id,
+                        new ResolveCatalogueSubmissionEntities(
+                            request.ManufacturerId,
+                            request.NewManufacturerName,
+                            request.BrandId,
+                            request.NewBrandName),
+                        cancellationToken);
+
+                return Results.Ok(receipt);
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(
+                    new Dictionary<string, string[]>
+                    {
+                        [exception.Field] = new[] { exception.Message }
+                    });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("ResolveCatalogueSubmissionEntities")
+        .WithTags("Catalogue Submissions")
+        .Produces<CatalogueSubmissionReceipt>()
+        .ProducesValidationProblem();
+
+    app.MapPut(
         "/api/v1/catalogue-submissions/{id:guid}/specifications",
         async (
             Guid id,
@@ -1217,6 +1266,51 @@ if (builder.Configuration.GetValue<bool>(
         })
         .RequireAuthorization("PublishAtlas")
         .WithName("UpdateCatalogueSubmissionSpecifications")
+        .WithTags("Catalogue Submissions")
+        .Produces<CatalogueSubmissionReceipt>()
+        .ProducesValidationProblem();
+
+    app.MapPut(
+        "/api/v1/catalogue-submissions/{id:guid}/description-visibility",
+        async (
+            Guid id,
+            UpdateCatalogueSubmissionDescriptionVisibilityRequest request,
+            ICurrentUser currentUser,
+            ICatalogueSubmissions submissions,
+            CancellationToken cancellationToken) =>
+        {
+            var actor =
+                await currentUser.GetAsync(cancellationToken);
+
+            if (actor is null)
+                return Results.Forbid();
+
+            try
+            {
+                var receipt =
+                    await submissions.UpdateDescriptionVisibilityAsync(
+                        actor,
+                        id,
+                        request.Visibility,
+                        cancellationToken);
+
+                return Results.Ok(receipt);
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(
+                    new Dictionary<string, string[]>
+                    {
+                        [exception.Field] = new[] { exception.Message }
+                    });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("UpdateCatalogueSubmissionDescriptionVisibility")
         .WithTags("Catalogue Submissions")
         .Produces<CatalogueSubmissionReceipt>()
         .ProducesValidationProblem();
@@ -1764,6 +1858,49 @@ if (builder.Configuration.GetValue<bool>(
         .ProducesValidationProblem();
 
     app.MapPost(
+        "/api/v1/catalogue-submissions/{id:guid}/return-to-verification",
+        async (
+            Guid id,
+            ICurrentUser currentUser,
+            ICatalogueSubmissions submissions,
+            CancellationToken cancellationToken) =>
+        {
+            var actor =
+                await currentUser.GetAsync(cancellationToken);
+
+            if (actor is null)
+                return Results.Forbid();
+
+            try
+            {
+                var receipt =
+                    await submissions.ReturnToVerificationAsync(
+                        actor,
+                        id,
+                        cancellationToken);
+
+                return Results.Ok(receipt);
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(
+                    new Dictionary<string, string[]>
+                    {
+                        [exception.Field] = new[] { exception.Message }
+                    });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("ReturnCatalogueSubmissionToVerification")
+        .WithTags("Catalogue Submissions")
+        .Produces<CatalogueSubmissionReceipt>()
+        .ProducesValidationProblem();
+
+    app.MapPost(
         "/api/v1/catalogue-submissions/{id:guid}/publish",
         async (
             Guid id,
@@ -2121,6 +2258,9 @@ public sealed record AddCatalogueSubmissionVerificationRequest(
     string? Notes,
     string? PermissionTerms);
 
+public sealed record UpdateCatalogueSubmissionDescriptionVisibilityRequest(
+    CatalogueContentVisibility Visibility);
+
 public sealed record UpdateCatalogueSubmissionImageMetadataRequest(
     CatalogueImageSourceType SourceType,
     string? SourceUrl,
@@ -2155,5 +2295,11 @@ public sealed record UpdateCatalogueSubmissionIdentityRequest(
     string? ProposedGtin,
     string? ProposedSku,
     string? IdentitySourceUrl);
+
+public sealed record ResolveCatalogueSubmissionEntitiesRequest(
+    Guid? ManufacturerId,
+    string? NewManufacturerName,
+    Guid? BrandId,
+    string? NewBrandName);
 
 public partial class Program;

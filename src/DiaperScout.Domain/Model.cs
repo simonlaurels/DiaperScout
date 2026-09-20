@@ -1246,6 +1246,24 @@ public sealed class CatalogueSubmission : Entity
         Touch();
     }
 
+    public void ResolveCanonicalEntities(
+        string manufacturerName,
+        string? brandName)
+    {
+        if (Status is CatalogueSubmissionStatus.Published or CatalogueSubmissionStatus.Rejected)
+            throw new InvalidOperationException("Published or rejected submissions cannot have catalogue entities resolved.");
+
+        if (string.IsNullOrWhiteSpace(manufacturerName))
+            throw new ArgumentException("A manufacturer name is required.", nameof(manufacturerName));
+
+        ProposedManufacturerName = manufacturerName.Trim();
+        ProposedBrandName = string.IsNullOrWhiteSpace(brandName)
+            ? null
+            : brandName.Trim();
+
+        Touch();
+    }
+
     public void UpdateSpecifications(
         ProductType? proposedProductType,
         PackagingType? proposedPackagingType,
@@ -1300,6 +1318,21 @@ public sealed class CatalogueSubmission : Entity
         Touch();
     }
 
+    public void UpdateDescriptionVisibility(CatalogueContentVisibility visibility)
+    {
+        if (Status is not CatalogueSubmissionStatus.Draft
+            and not CatalogueSubmissionStatus.NeedsChanges
+            and not CatalogueSubmissionStatus.InVerification)
+            throw new InvalidOperationException(
+                "Description visibility can only be changed while a submission is being prepared or verified.");
+
+        if (!Enum.IsDefined(visibility))
+            throw new ArgumentException("The description visibility is invalid.", nameof(visibility));
+
+        ProposedDescriptionVisibility = visibility;
+        Touch();
+    }
+
     public void BeginVerification()
     {
         if (Status is not CatalogueSubmissionStatus.Draft and not CatalogueSubmissionStatus.NeedsChanges)
@@ -1342,6 +1375,15 @@ public sealed class CatalogueSubmission : Entity
             throw new InvalidOperationException("This submission cannot be rejected in its current state.");
 
         Status = CatalogueSubmissionStatus.Rejected;
+        Touch();
+    }
+
+    public void ReturnToVerification()
+    {
+        if (Status != CatalogueSubmissionStatus.Approved)
+            throw new InvalidOperationException("Only approved submissions can be returned to verification.");
+
+        Status = CatalogueSubmissionStatus.InVerification;
         Touch();
     }
 

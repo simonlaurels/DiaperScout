@@ -900,6 +900,55 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
     }
 
     [Fact]
+    public async Task UpdateCatalogueSubmissionDescriptionVisibility_AllowsModeratorDuringVerification()
+    {
+        using var client = AuthenticatedClient(PostgreSqlFixture.ModeratorSubject);
+
+        var createResponse = await client.PostAsJsonAsync(
+            "/api/v1/catalogue-submissions",
+            SubmissionRequest());
+
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+
+        var created = await createResponse.Content
+            .ReadFromJsonAsync<CatalogueSubmissionReceipt>();
+
+        Assert.NotNull(created);
+
+        var verificationResponse = await client.PostAsync(
+            $"/api/v1/catalogue-submissions/{created.Id}/begin-verification",
+            content: null);
+
+        Assert.Equal(HttpStatusCode.OK, verificationResponse.StatusCode);
+
+        var response = await client.PutAsJsonAsync(
+            $"/api/v1/catalogue-submissions/{created.Id}/description-visibility",
+            new { visibility = CatalogueContentVisibility.ModeratorOnly });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var receipt = await response.Content
+            .ReadFromJsonAsync<CatalogueSubmissionReceipt>();
+
+        Assert.NotNull(receipt);
+        Assert.Equal(
+            CatalogueContentVisibility.ModeratorOnly,
+            receipt.ProposedDescriptionVisibility);
+
+        await using var db = _fixture.CreateDbContext();
+
+        var submission = await db.CatalogueSubmissions
+            .SingleAsync(value => value.Id == created.Id);
+
+        Assert.Equal(
+            CatalogueContentVisibility.ModeratorOnly,
+            submission.ProposedDescriptionVisibility);
+        Assert.Equal(
+            CatalogueSubmissionStatus.InVerification,
+            submission.Status);
+    }
+
+    [Fact]
     public async Task UpdateCatalogueSubmissionSpecifications_AfterVerification_ReturnsValidationProblem()
     {
         using var client = AuthenticatedClient(PostgreSqlFixture.ModeratorSubject);
@@ -1281,6 +1330,96 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
 
 
     [Fact]
+    public async Task ResolveCatalogueSubmissionEntities_CanMatchExistingOrCreateNewCanonicalEntities()
+    {
+        using var client = AuthenticatedClient(PostgreSqlFixture.ModeratorSubject);
+
+        var existingResponse = await client.PostAsJsonAsync(
+            "/api/v1/catalogue-submissions",
+            new
+            {
+                source = CatalogueSubmissionSource.Moderator,
+                proposedManufacturerName = "Proposed Manufacturer",
+                proposedBrandName = "Proposed Brand",
+                proposedProductName = "Entity Resolution Existing Test",
+                proposedVariantName = (string?)null,
+                notes = "Entity resolution integration test."
+            });
+
+        Assert.Equal(HttpStatusCode.Created, existingResponse.StatusCode);
+
+        var existingSubmission =
+            await existingResponse.Content.ReadFromJsonAsync<CatalogueSubmissionReceipt>();
+        Assert.NotNull(existingSubmission);
+
+        var matchResponse = await client.PutAsJsonAsync(
+            $"/api/v1/catalogue-submissions/{existingSubmission.Id}/entity-resolution",
+            new
+            {
+                manufacturerId = _fixture.ManufacturerId,
+                brandId = _fixture.BrandId,
+                newManufacturerName = (string?)null,
+                newBrandName = (string?)null
+            });
+
+        Assert.Equal(HttpStatusCode.OK, matchResponse.StatusCode);
+
+        var matchedReceipt =
+            await matchResponse.Content.ReadFromJsonAsync<CatalogueSubmissionReceipt>();
+        Assert.NotNull(matchedReceipt);
+        Assert.Equal("Integration Test Manufacturer", matchedReceipt.ProposedManufacturerName);
+        Assert.Equal("Integration Test Brand", matchedReceipt.ProposedBrandName);
+
+        var newManufacturerName = $"Resolution Manufacturer {Guid.NewGuid():N}";
+        var newBrandName = $"Resolution Brand {Guid.NewGuid():N}";
+
+        var newResponse = await client.PostAsJsonAsync(
+            "/api/v1/catalogue-submissions",
+            new
+            {
+                source = CatalogueSubmissionSource.Moderator,
+                proposedManufacturerName = "Another Proposed Manufacturer",
+                proposedBrandName = "Another Proposed Brand",
+                proposedProductName = "Entity Resolution New Test",
+                proposedVariantName = (string?)null,
+                notes = "Entity resolution new entity integration test."
+            });
+
+        Assert.Equal(HttpStatusCode.Created, newResponse.StatusCode);
+
+        var newSubmission =
+            await newResponse.Content.ReadFromJsonAsync<CatalogueSubmissionReceipt>();
+        Assert.NotNull(newSubmission);
+
+        var createResponse = await client.PutAsJsonAsync(
+            $"/api/v1/catalogue-submissions/{newSubmission.Id}/entity-resolution",
+            new
+            {
+                manufacturerId = (Guid?)null,
+                brandId = (Guid?)null,
+                newManufacturerName,
+                newBrandName
+            });
+
+        Assert.Equal(HttpStatusCode.OK, createResponse.StatusCode);
+
+        var createdReceipt =
+            await createResponse.Content.ReadFromJsonAsync<CatalogueSubmissionReceipt>();
+        Assert.NotNull(createdReceipt);
+        Assert.Equal(newManufacturerName, createdReceipt.ProposedManufacturerName);
+        Assert.Equal(newBrandName, createdReceipt.ProposedBrandName);
+
+        await using var db = _fixture.CreateDbContext();
+
+        var manufacturer = await db.Manufacturers
+            .SingleAsync(value => value.Name == newManufacturerName);
+        var brand = await db.Brands
+            .SingleAsync(value => value.Name == newBrandName);
+
+        Assert.Equal(manufacturer.Id, brand.ManufacturerId);
+    }
+
+    [Fact]
     public async Task PublishCatalogueSubmission_ForApprovedFullyVerifiedSubmission_CreatesCanonicalProduct()
     {
         using var client = AuthenticatedClient(PostgreSqlFixture.ModeratorSubject);
@@ -1390,9 +1529,7 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
         foreach (var area in new[]
         {
             CatalogueVerificationArea.ProductIdentity,
-            CatalogueVerificationArea.Specifications,
-            CatalogueVerificationArea.ContentAndRights,
-            CatalogueVerificationArea.Retail
+            CatalogueVerificationArea.Specifications
         })
         {
             var verificationResponse = await client.PostAsJsonAsync(
@@ -1407,16 +1544,6 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
                 });
             Assert.Equal(HttpStatusCode.Created, verificationResponse.StatusCode);
         }
-
-        var retailResponse = await client.PostAsJsonAsync(
-            $"/api/v1/catalogue-submissions/{created.Id}/retail-destinations",
-            new
-            {
-                retailerId = _fixture.RetailerId,
-                listingUrl = "https://shop.example.test/published-product",
-                notes = "Current retailer listing."
-            });
-        Assert.Equal(HttpStatusCode.Created, retailResponse.StatusCode);
 
         Assert.Equal(
             HttpStatusCode.OK,

@@ -825,6 +825,129 @@ internal sealed class CatalogueSubmissions(
         return ToReceipt(submission);
     }
 
+    public async Task<CatalogueSubmissionReceipt> ResolveEntitiesAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        ResolveCatalogueSubmissionEntities command,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireModeratorAsync(actor, cancellationToken);
+
+        var submission = await GetSubmissionAsync(
+            submissionId,
+            cancellationToken);
+
+        if (submission.Status is CatalogueSubmissionStatus.Published or CatalogueSubmissionStatus.Rejected)
+            throw new CatalogueValidationException(
+                "status",
+                "Published or rejected submissions cannot have catalogue entities resolved.");
+
+        if (command.ManufacturerId is null && string.IsNullOrWhiteSpace(command.NewManufacturerName))
+            throw new CatalogueValidationException(
+                "manufacturer",
+                "Select an existing business or enter a new business name.");
+
+        if (command.ManufacturerId is not null && !string.IsNullOrWhiteSpace(command.NewManufacturerName))
+            throw new CatalogueValidationException(
+                "manufacturer",
+                "Choose either an existing business or a new business name, not both.");
+
+        Manufacturer manufacturer;
+
+        if (command.ManufacturerId is Guid manufacturerId)
+        {
+            manufacturer = await db.Manufacturers
+                .SingleOrDefaultAsync(
+                    value => value.Id == manufacturerId,
+                    cancellationToken)
+                ?? throw new CatalogueValidationException(
+                    "manufacturer",
+                    "The selected business could not be found.");
+        }
+        else
+        {
+            var manufacturerName = command.NewManufacturerName!.Trim();
+
+            var existingManufacturer = await db.Manufacturers
+                .SingleOrDefaultAsync(
+                    value => value.Name.ToLower() == manufacturerName.ToLower(),
+                    cancellationToken);
+
+            if (existingManufacturer is not null)
+                throw new CatalogueValidationException(
+                    "manufacturer",
+                    $"A canonical business named \"{existingManufacturer.Name}\" already exists. Select it instead of creating a duplicate.");
+
+            manufacturer = new Manufacturer(
+                manufacturerName,
+                Slugify(manufacturerName));
+
+            db.Manufacturers.Add(manufacturer);
+        }
+
+        Brand? brand = null;
+
+        if (!string.IsNullOrWhiteSpace(submission.ProposedBrandName))
+        {
+            if (command.BrandId is null && string.IsNullOrWhiteSpace(command.NewBrandName))
+                throw new CatalogueValidationException(
+                    "brand",
+                    "Select an existing brand or enter a new brand name.");
+
+            if (command.BrandId is not null && !string.IsNullOrWhiteSpace(command.NewBrandName))
+                throw new CatalogueValidationException(
+                    "brand",
+                    "Choose either an existing brand or a new brand name, not both.");
+
+            if (command.BrandId is Guid brandId)
+            {
+                brand = await db.Brands
+                    .SingleOrDefaultAsync(
+                        value => value.Id == brandId,
+                        cancellationToken)
+                    ?? throw new CatalogueValidationException(
+                        "brand",
+                        "The selected brand could not be found.");
+
+                if (brand.ManufacturerId != manufacturer.Id)
+                    throw new CatalogueValidationException(
+                        "brand",
+                        "The selected brand does not belong to the selected business.");
+            }
+            else
+            {
+                var brandName = command.NewBrandName!.Trim();
+
+                var existingBrand = await db.Brands
+                    .SingleOrDefaultAsync(
+                        value =>
+                            value.ManufacturerId == manufacturer.Id &&
+                            value.Name.ToLower() == brandName.ToLower(),
+                        cancellationToken);
+
+                if (existingBrand is not null)
+                    throw new CatalogueValidationException(
+                        "brand",
+                        $"A brand named \"{existingBrand.Name}\" already exists for this business. Select it instead of creating a duplicate.");
+
+                brand = new Brand(
+                    manufacturer.Id,
+                    brandName,
+                    Slugify(brandName));
+
+                db.Brands.Add(brand);
+            }
+        }
+
+        submission.ResolveCanonicalEntities(
+            manufacturer.Name,
+            brand?.Name);
+
+        await db.SaveChangesAsync(cancellationToken);
+
+        return ToReceipt(submission);
+    }
+
     public async Task<CatalogueSubmissionReceipt> UpdateSpecificationsAsync(
         AuthenticatedUser actor,
         Guid submissionId,
@@ -859,6 +982,33 @@ internal sealed class CatalogueSubmissions(
         catch (ArgumentException exception)
         {
             throw new CatalogueValidationException("specifications", exception.Message);
+        }
+        catch (InvalidOperationException exception)
+        {
+            throw new CatalogueValidationException("status", exception.Message);
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+        return ToReceipt(submission);
+    }
+
+    public async Task<CatalogueSubmissionReceipt> UpdateDescriptionVisibilityAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        CatalogueContentVisibility visibility,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireModeratorAsync(actor, cancellationToken);
+
+        var submission = await GetSubmissionAsync(submissionId, cancellationToken);
+
+        try
+        {
+            submission.UpdateDescriptionVisibility(visibility);
+        }
+        catch (ArgumentException exception)
+        {
+            throw new CatalogueValidationException("descriptionVisibility", exception.Message);
         }
         catch (InvalidOperationException exception)
         {
@@ -1307,6 +1457,33 @@ internal sealed class CatalogueSubmissions(
         }
     }
 
+    public async Task<CatalogueSubmissionReceipt> ReturnToVerificationAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireModeratorAsync(actor, cancellationToken);
+
+        var submission = await GetSubmissionAsync(
+            submissionId,
+            cancellationToken);
+
+        try
+        {
+            submission.ReturnToVerification();
+        }
+        catch (InvalidOperationException exception)
+        {
+            throw new CatalogueValidationException(
+                "status",
+                exception.Message);
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+
+        return ToReceipt(submission);
+    }
+
     public async Task<CataloguePublicationReceipt> PublishAsync(
         AuthenticatedUser actor,
         Guid submissionId,
@@ -1370,9 +1547,7 @@ internal sealed class CatalogueSubmissions(
         var requiredAreas = new[]
         {
             CatalogueVerificationArea.ProductIdentity,
-            CatalogueVerificationArea.Specifications,
-            CatalogueVerificationArea.ContentAndRights,
-            CatalogueVerificationArea.Retail
+            CatalogueVerificationArea.Specifications
         };
 
         var verifiedAreas = await db.CatalogueSubmissionVerifications
@@ -1392,16 +1567,6 @@ internal sealed class CatalogueSubmissions(
             throw new CatalogueValidationException(
                 "verification",
                 $"The {missingArea} verification area must be verified or inherited before publication.");
-
-        if (!await db.CatalogueSubmissionRetailDestinations
-            .AnyAsync(
-                value => value.SubmissionId == submission.Id,
-                cancellationToken))
-        {
-            throw new CatalogueValidationException(
-                "retail",
-                "At least one retail destination is required before publication.");
-        }
 
         var submissionVariants = await db.CatalogueSubmissionVariants
             .AsNoTracking()

@@ -138,6 +138,50 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db, IEditorialAuth
         await transaction.CommitAsync(cancellationToken);
     }
 
+    public async Task SetProductStatusAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        SetCanonicalProductStatus command,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireCatalogueManagerAsync(actor, cancellationToken);
+        ValidateAudit(command.SourceSummary, command.EditorialRationale);
+
+        if (command.Status is not ProductStatus.Current and not ProductStatus.Discontinued)
+            throw new CatalogueValidationException("status", "Product Management can only set a product to Current or Discontinued.");
+
+        var product = await db.Products.SingleOrDefaultAsync(value => value.Id == productId, cancellationToken)
+            ?? throw new KeyNotFoundException("The catalogue product was not found.");
+
+        if (product.Status == command.Status)
+            throw new CatalogueValidationException("status", $"The product is already {command.Status}.");
+
+        var previousStatus = product.Status;
+        product.SetStatus(command.Status);
+        await db.SaveChangesAsync(cancellationToken);
+
+        await AddAuditAsync(
+            CatalogueAuditAction.ProductChanged,
+            productId,
+            actor,
+            new
+            {
+                Action = "SetProductStatus",
+                PreviousStatus = previousStatus,
+                NewStatus = command.Status,
+                SourceSummary = command.SourceSummary,
+                SourceReferences = command.SourceReferences,
+                EditorialRationale = command.EditorialRationale,
+                CorrelationId = command.CorrelationId
+            },
+            new[] { productId },
+            cancellationToken,
+            command.SourceSummary,
+            command.SourceReferences,
+            command.EditorialRationale,
+            command.CorrelationId);
+    }
+
     public async Task AddProductVariantAsync(
         AuthenticatedUser actor,
         Guid productId,

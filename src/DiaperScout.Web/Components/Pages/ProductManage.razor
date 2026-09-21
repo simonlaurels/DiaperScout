@@ -134,6 +134,58 @@
                     </div>
                 </div>
 
+                <div class="product-editor-panel product-editor-lifecycle">
+                    <div class="product-editor-panel-heading">
+                        <div>
+                            <p class="catalogue-kicker">LIFECYCLE</p>
+                            <h2>Catalogue status</h2>
+                        </div>
+                        <span class="product-editor-status">@FormatEnum(product.Status)</span>
+                    </div>
+                    @if (product.Status == ProductStatus.Current)
+                    {
+                        <p class="product-editor-help">This product is currently visible in the public catalogue. Retiring it keeps the canonical record but removes it from the public catalogue.</p>
+                        @if (!confirmStatusChange)
+                        {
+                            <button class="ds-button ds-button-secondary" type="button" @onclick="BeginRetireProduct">Retire product</button>
+                        }
+                        else
+                        {
+                            <div class="product-editor-confirmation">
+                                <strong>Retire this product?</strong>
+                                <span>The product will remain in Product Management but will no longer appear in the public catalogue.</span>
+                                <div class="product-editor-actions product-editor-inline-actions">
+                                    <button class="ds-button ds-button-secondary" type="button" @onclick="CancelStatusChange" disabled="@statusSaving">Cancel</button>
+                                    <button class="ds-button ds-button-danger" type="button" @onclick="SetProductStatusAsync" disabled="@statusSaving">@(statusSaving ? "Retiring…" : "Confirm retirement")</button>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else if (product.Status == ProductStatus.Discontinued)
+                    {
+                        <p class="product-editor-help">This product remains in the canonical catalogue but is hidden from the public catalogue.</p>
+                        @if (!confirmStatusChange)
+                        {
+                            <button class="ds-button ds-button-primary" type="button" @onclick="BeginRestoreProduct">Restore product</button>
+                        }
+                        else
+                        {
+                            <div class="product-editor-confirmation">
+                                <strong>Restore this product?</strong>
+                                <span>The product will become visible in the public catalogue again.</span>
+                                <div class="product-editor-actions product-editor-inline-actions">
+                                    <button class="ds-button ds-button-secondary" type="button" @onclick="CancelStatusChange" disabled="@statusSaving">Cancel</button>
+                                    <button class="ds-button ds-button-primary" type="button" @onclick="SetProductStatusAsync" disabled="@statusSaving">@(statusSaving ? "Restoring…" : "Confirm restoration")</button>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="product-editor-help">This product has a catalogue status that is not managed by the retire/restore controls.</p>
+                    }
+                </div>
+
                 <div class="product-editor-panel">
                     <div class="product-editor-panel-heading">
                         <div>
@@ -558,6 +610,9 @@
     private bool accessDenied;
     private bool notFound;
     private bool saving;
+    private bool statusSaving;
+    private bool confirmStatusChange;
+    private ProductStatus requestedStatus;
     private string? loadError;
     private string? saveError;
     private string? saveMessage;
@@ -615,6 +670,68 @@
         }
 
         return Task.CompletedTask;
+    }
+
+    private void BeginRetireProduct()
+    {
+        requestedStatus = ProductStatus.Discontinued;
+        confirmStatusChange = true;
+    }
+
+    private void BeginRestoreProduct()
+    {
+        requestedStatus = ProductStatus.Current;
+        confirmStatusChange = true;
+    }
+
+    private void CancelStatusChange() => confirmStatusChange = false;
+
+    private async Task SetProductStatusAsync()
+    {
+        if (product is null)
+            return;
+
+        statusSaving = true;
+        saveError = null;
+        saveMessage = null;
+
+        try
+        {
+            var request = new SetCanonicalProductStatus(
+                requestedStatus,
+                editModel.SourceSummary,
+                editModel.SourceReferencesText.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries),
+                editModel.EditorialRationale,
+                null);
+
+            var result = await Catalogue.SetProductStatusAsync(ProductId, request);
+            switch (result.Status)
+            {
+                case CatalogueProductManagementUpdateStatus.Saved:
+                    saveMessage = requestedStatus == ProductStatus.Discontinued
+                        ? "Product retired from the public catalogue."
+                        : "Product restored to the public catalogue.";
+                    confirmStatusChange = false;
+                    await ReloadAfterSaveAsync();
+                    break;
+                case CatalogueProductManagementUpdateStatus.AccessDenied:
+                    saveError = "You need Moderator or Administrator editorial authority to change product lifecycle status.";
+                    break;
+                case CatalogueProductManagementUpdateStatus.NotFound:
+                    saveError = "The canonical product could not be found.";
+                    break;
+                case CatalogueProductManagementUpdateStatus.Invalid:
+                    saveError = FormatValidationErrors(result.Errors);
+                    break;
+                default:
+                    saveError = "The product status could not be changed just now.";
+                    break;
+            }
+        }
+        finally
+        {
+            statusSaving = false;
+        }
     }
 
     private async Task SaveAsync()

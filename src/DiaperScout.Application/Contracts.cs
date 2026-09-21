@@ -172,6 +172,13 @@ public sealed record UpdateCanonicalProductIdentity(
     string EditorialRationale,
     string? CorrelationId);
 
+public sealed record SetCanonicalProductStatus(
+    ProductStatus Status,
+    string SourceSummary,
+    IReadOnlyList<string> SourceReferences,
+    string EditorialRationale,
+    string? CorrelationId);
+
 public sealed record CreateCanonicalProductVariantManagement(
     string Name,
     BackingType BackingType,
@@ -1215,6 +1222,12 @@ public interface ICanonicalCatalogue
         AuthenticatedUser actor,
         Guid productId,
         UpdateCanonicalProductIdentity command,
+        CancellationToken cancellationToken = default);
+
+    Task SetProductStatusAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        SetCanonicalProductStatus command,
         CancellationToken cancellationToken = default);
 
     Task AddProductVariantAsync(

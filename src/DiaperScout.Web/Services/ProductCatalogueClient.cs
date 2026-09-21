@@ -279,6 +279,18 @@ public sealed class ProductCatalogueClient(HttpClient client)
             : CatalogueProductManagementUpdateResult.Failed();
     }
 
+    public async Task<CatalogueProductManagementUpdateResult> SetProductStatusAsync(
+        Guid productId,
+        SetCanonicalProductStatus request,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.PutAsJsonAsync(
+            $"api/v1/catalogue-management/products/{productId}/status",
+            request,
+            cancellationToken);
+        return await ReadManagementMutationResponseAsync(response, cancellationToken);
+    }
+
     public async Task<CatalogueProductManagementUpdateResult> AddProductVariantAsync(
         Guid productId,
         CreateCanonicalProductVariantManagement request,

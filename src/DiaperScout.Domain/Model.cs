@@ -174,6 +174,14 @@ public sealed class Product : Entity
     public void SetDescriptionVisibility(CatalogueContentVisibility visibility) =>
         DescriptionVisibility = visibility;
 
+    public void SetStatus(ProductStatus status)
+    {
+        if (!Enum.IsDefined(status))
+            throw new ArgumentException("The product status is invalid.", nameof(status));
+
+        Status = status;
+    }
+
     public void UpdateIdentity(
         Guid manufacturerId,
         Guid? brandId,

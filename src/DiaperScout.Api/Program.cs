@@ -2409,6 +2409,56 @@ if (builder.Configuration.GetValue<bool>(
         .Produces(StatusCodes.Status204NoContent)
         .ProducesValidationProblem();
 
+    app.MapPut(
+        "/api/v1/catalogue-management/products/{productId:guid}/status",
+        async (
+            Guid productId,
+            SetCanonicalProductStatus request,
+            HttpContext httpContext,
+            ICurrentUser currentUser,
+            ICanonicalCatalogue catalogue,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null)
+                return Results.Forbid();
+
+            try
+            {
+                await catalogue.SetProductStatusAsync(
+                    actor,
+                    productId,
+                    request with
+                    {
+                        CorrelationId = httpContext.Request.Headers["X-Correlation-ID"].FirstOrDefault()
+                            ?? httpContext.TraceIdentifier
+                    },
+                    cancellationToken);
+
+                return Results.NoContent();
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(new Dictionary<string, string[]>
+                {
+                    [exception.Field] = [exception.Message]
+                });
+            }
+            catch (KeyNotFoundException)
+            {
+                return Results.NotFound();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+        .WithName("SetCatalogueManagementProductStatus")
+        .WithTags("Catalogue Management")
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesValidationProblem();
+
     app.MapPost(
         "/api/v1/catalogue-management/products/{productId:guid}/variants",
         async (

@@ -488,3 +488,22 @@
         min-height: 190px;
     }
 }
+
+
+.product-editor-confirmation {
+    display: grid;
+    gap: .5rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--ds-border, #d8d8d8);
+    border-radius: .75rem;
+}
+
+.product-editor-confirmation span {
+    color: var(--ds-muted, #666);
+}
+
+.ds-button-danger {
+    background: #8b2f2f;
+    color: #fff;
+}

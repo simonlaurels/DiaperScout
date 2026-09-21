@@ -549,6 +549,11 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
             entity.Property(x => x.PermissionStatus).HasConversion<string>().HasMaxLength(40).IsRequired();
             entity.Property(x => x.PermissionEvidence).HasColumnType("text");
             entity.Property(x => x.Visibility).HasConversion<string>().HasMaxLength(32).IsRequired();
+            entity.Property(x => x.IsPrimary).IsRequired();
+            entity.HasIndex(x => x.ProductId)
+                .IsUnique()
+                .HasFilter("\"ProductId\" IS NOT NULL AND \"IsPrimary\" = TRUE")
+                .HasDatabaseName("IX_catalogue_submission_images_ProductId_IsPrimary");
             entity.HasIndex(x => new { x.ProductId, x.Role })
                 .IsUnique()
                 .HasFilter("\"ProductId\" IS NOT NULL AND \"Role\" <> 'Other'");

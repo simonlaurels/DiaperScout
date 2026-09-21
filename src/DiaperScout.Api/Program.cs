@@ -311,6 +311,15 @@ static IReadOnlyList<string> ParseStringList(string? value) =>
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToArray();
 
+static bool TryParseEnum<TEnum>(string? value, out TEnum result)
+    where TEnum : struct, Enum
+{
+    return Enum.TryParse(value, true, out result) && Enum.IsDefined(result);
+}
+
+static string? NullIfEmpty(string? value) =>
+    string.IsNullOrWhiteSpace(value) ? null : value.ToString();
+
 static bool TryParseGuidList(
     string? value,
     out IReadOnlyList<Guid> result)
@@ -2179,6 +2188,176 @@ if (builder.Configuration.GetValue<bool>(
         .WithTags("Catalogue Management")
         .Produces<CatalogueProductManagementDetails>()
         .Produces(StatusCodes.Status404NotFound);
+
+    app.MapPost(
+        "/api/v1/catalogue-management/products/{productId:guid}/images",
+        async (
+            Guid productId,
+            HttpRequest httpRequest,
+            HttpContext httpContext,
+            ICurrentUser currentUser,
+            ICanonicalCatalogue catalogue,
+            ICatalogueSubmissionImageStorage imageStorage,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null)
+                return Results.Forbid();
+
+            var form = await httpRequest.ReadFormAsync(cancellationToken);
+            var file = form.Files.GetFile("file");
+            if (file is null || file.Length <= 0 || file.Length > 15 * 1024 * 1024)
+                return Results.ValidationProblem(new Dictionary<string, string[]> { ["file"] = ["Images must be greater than zero and no larger than 15 MB."] });
+
+            if (!TryParseEnum(form["role"].ToString(), out CatalogueSubmissionImageRole role) ||
+                !TryParseEnum(form["sourceType"].ToString(), out CatalogueImageSourceType sourceType) ||
+                !TryParseEnum(form["permissionStatus"].ToString(), out CatalogueImagePermissionStatus permissionStatus))
+                return Results.ValidationProblem(new Dictionary<string, string[]> { ["image"] = ["One or more image metadata values are invalid."] });
+
+            var allowedTypes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["image/jpeg"] = ".jpg",
+                ["image/png"] = ".png",
+                ["image/webp"] = ".webp"
+            };
+            if (!allowedTypes.TryGetValue(file.ContentType, out var extension))
+                return Results.ValidationProblem(new Dictionary<string, string[]> { ["file"] = ["Only JPEG, PNG and WebP images are supported."] });
+
+            var storageKey = $"products/{productId:N}/{Guid.NewGuid():N}{extension}";
+            try
+            {
+                await using (var stream = file.OpenReadStream())
+                    await imageStorage.SaveAsync(storageKey, stream, cancellationToken);
+
+                var result = await catalogue.AddProductImageAsync(
+                    actor,
+                    productId,
+                    storageKey,
+                    Path.GetFileName(file.FileName),
+                    file.ContentType,
+                    file.Length,
+                    new AddCanonicalProductImageMetadata(
+                        role,
+                        sourceType,
+                        NullIfEmpty(form["sourceUrl"].ToString()),
+                        NullIfEmpty(form["sourceNotes"].ToString()),
+                        permissionStatus,
+                        NullIfEmpty(form["permissionEvidence"].ToString()),
+                        bool.TryParse(form["isPrimary"], out var isPrimary) && isPrimary,
+                        form["sourceSummary"].ToString(),
+                        ParseStringList(form["sourceReferences"]),
+                        form["editorialRationale"].ToString(),
+                        httpContext.Request.Headers["X-Correlation-ID"].FirstOrDefault() ?? httpContext.TraceIdentifier),
+                    cancellationToken);
+
+                return Results.Created($"/api/v1/catalogue-management/products/{productId}/images/{result.Id}", result);
+            }
+            catch (CatalogueValidationException exception)
+            {
+                await imageStorage.DeleteAsync(storageKey, cancellationToken);
+                return Results.ValidationProblem(new Dictionary<string, string[]> { [exception.Field] = [exception.Message] });
+            }
+            catch (KeyNotFoundException exception)
+            {
+                await imageStorage.DeleteAsync(storageKey, cancellationToken);
+                return Results.NotFound(exception.Message);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                await imageStorage.DeleteAsync(storageKey, cancellationToken);
+                return Results.Forbid();
+            }
+            catch
+            {
+                await imageStorage.DeleteAsync(storageKey, cancellationToken);
+                throw;
+            }
+        })
+        .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+        .WithName("AddCatalogueManagementProductImage")
+        .WithTags("Catalogue Management")
+        .Produces<CatalogueModeratorProductImage>(StatusCodes.Status201Created)
+        .ProducesValidationProblem();
+
+    app.MapPut(
+        "/api/v1/catalogue-management/products/{productId:guid}/images/{imageId:guid}",
+        async (
+            Guid productId,
+            Guid imageId,
+            UpdateCanonicalProductImageMetadata request,
+            ICurrentUser currentUser,
+            ICanonicalCatalogue catalogue,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null) return Results.Forbid();
+            try
+            {
+                var result = await catalogue.UpdateProductImageAsync(actor, productId, imageId, request, cancellationToken);
+                return Results.Ok(result);
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(new Dictionary<string, string[]> { [exception.Field] = [exception.Message] });
+            }
+            catch (KeyNotFoundException) { return Results.NotFound(); }
+            catch (UnauthorizedAccessException) { return Results.Forbid(); }
+        })
+        .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+        .WithName("UpdateCatalogueManagementProductImage")
+        .WithTags("Catalogue Management")
+        .Produces<CatalogueModeratorProductImage>()
+        .ProducesValidationProblem();
+
+    app.MapDelete(
+        "/api/v1/catalogue-management/products/{productId:guid}/images/{imageId:guid}",
+        async (
+            Guid productId,
+            Guid imageId,
+            [FromBody] RemoveCanonicalProductElement request,
+            ICurrentUser currentUser,
+            ICanonicalCatalogue catalogue,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null) return Results.Forbid();
+            try
+            {
+                await catalogue.RemoveProductImageAsync(actor, productId, imageId, request.SourceSummary, request.SourceReferences, request.EditorialRationale, request.CorrelationId, cancellationToken);
+                return Results.NoContent();
+            }
+            catch (KeyNotFoundException) { return Results.NotFound(); }
+            catch (UnauthorizedAccessException) { return Results.Forbid(); }
+        })
+        .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+        .WithName("RemoveCatalogueManagementProductImage")
+        .WithTags("Catalogue Management")
+        .Produces(StatusCodes.Status204NoContent);
+
+    app.MapPost(
+        "/api/v1/catalogue-management/products/{productId:guid}/images/{imageId:guid}/primary",
+        async (
+            Guid productId,
+            Guid imageId,
+            [FromBody] RemoveCanonicalProductElement request,
+            ICurrentUser currentUser,
+            ICanonicalCatalogue catalogue,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null) return Results.Forbid();
+            try
+            {
+                await catalogue.SetProductImagePrimaryAsync(actor, productId, imageId, request.SourceSummary, request.SourceReferences, request.EditorialRationale, request.CorrelationId, cancellationToken);
+                return Results.NoContent();
+            }
+            catch (KeyNotFoundException) { return Results.NotFound(); }
+            catch (UnauthorizedAccessException) { return Results.Forbid(); }
+        })
+        .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+        .WithName("SetCatalogueManagementProductImagePrimary")
+        .WithTags("Catalogue Management")
+        .Produces(StatusCodes.Status204NoContent);
 
     app.MapPut(
         "/api/v1/catalogue-management/products/{productId:guid}/identity",

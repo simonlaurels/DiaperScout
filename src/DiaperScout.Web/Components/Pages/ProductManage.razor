@@ -137,6 +137,32 @@
                 <div class="product-editor-panel">
                     <div class="product-editor-panel-heading">
                         <div>
+                            <p class="catalogue-kicker">CONTENT</p>
+                            <h2>Description &amp; publication rights</h2>
+                        </div>
+                        <span class="product-editor-summary">@FormatEnum(editModel.DescriptionVisibility)</span>
+                    </div>
+                    <p class="product-editor-help">Maintain the canonical product description and decide whether it is eligible for public display.</p>
+                    <div class="product-editor-grid">
+                        <div class="submission-field submission-field-wide">
+                            <label for="description">Description</label>
+                            <InputTextArea id="description" class="ds-input ds-textarea" @bind-Value="editModel.Description" rows="6" />
+                        </div>
+                        <div class="submission-field">
+                            <label for="description-visibility">Description visibility</label>
+                            <InputSelect id="description-visibility" class="ds-select" @bind-Value="editModel.DescriptionVisibility">
+                                @foreach (var value in Enum.GetValues<CatalogueContentVisibility>())
+                                {
+                                    <option value="@value">@FormatEnum(value)</option>
+                                }
+                            </InputSelect>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-editor-panel">
+                    <div class="product-editor-panel-heading">
+                        <div>
                             <p class="catalogue-kicker">CANONICAL STRUCTURE</p>
                             <h2>Variants &amp; Sizes</h2>
                         </div>
@@ -170,16 +196,24 @@
                                         <p class="catalogue-kicker">VARIANT</p>
                                         @if (editingVariantId == variant.Id)
                                         {
-                                            <div class="product-editor-inline-fields product-editor-variant-edit-fields">
-                                                <input class="ds-input" @bind="editingVariantName" />
-                                                <select class="ds-select" @bind="editingVariantBacking">
-                                                    @foreach (var value in Enum.GetValues<BackingType>())
-                                                    {
-                                                        <option value="@value">@FormatEnum(value)</option>
-                                                    }
-                                                </select>
-                                                <button class="ds-button ds-button-primary" type="button" @onclick="() => SaveVariantAsync(variant.Id)" disabled="@variantSaving">Save</button>
+                                            <div class="product-editor-detail-grid">
+                                                <div class="submission-field"><label>Variant name</label><input class="ds-input" @bind="editingVariantName" /></div>
+                                                <div class="submission-field"><label>Backing type</label><select class="ds-select" @bind="editingVariantBacking">@foreach (var value in Enum.GetValues<BackingType>()) { <option value="@value">@FormatEnum(value)</option> }</select></div>
+                                                <div class="submission-field"><label>Fastener type</label><select class="ds-select" @bind="editingVariantFastenerType">@foreach (var value in Enum.GetValues<FastenerType>()) { <option value="@value">@FormatEnum(value)</option> }</select></div>
+                                                <div class="submission-field"><label>Fastener count</label><input class="ds-input" type="number" min="0" @bind="editingVariantFastenerCount" /></div>
+                                                <div class="submission-field"><label>Appearance</label><select class="ds-select" @bind="editingVariantAppearance">@foreach (var value in Enum.GetValues<CatalogueVariantAppearance>()) { <option value="@value">@FormatEnum(value)</option> }</select></div>
+                                                <div class="submission-field"><label>Primary colour</label><select class="ds-select" @bind="editingVariantPrimaryColour">@foreach (var value in Enum.GetValues<CatalogueVariantColour>()) { <option value="@value">@FormatEnum(value)</option> }</select></div>
+                                                <div class="submission-field"><label>Wetness indicator</label><select class="ds-select" @bind="editingVariantWetness"><option value="">Unknown</option><option value="true">Yes</option><option value="false">No</option></select></div>
+                                                <div class="submission-field"><label>Standing leak guards</label><select class="ds-select" @bind="editingVariantLeakGuards"><option value="">Unknown</option><option value="true">Yes</option><option value="false">No</option></select></div>
+                                                <div class="submission-field"><label>Waistband style</label><select class="ds-select" @bind="editingVariantWaistbandStyle">@foreach (var value in Enum.GetValues<WaistbandStyle>()) { <option value="@value">@FormatEnum(value)</option> }</select></div>
+                                                <div class="submission-field"><label>Fragrance</label><select class="ds-select" @bind="editingVariantFragrance">@foreach (var value in Enum.GetValues<FragranceType>()) { <option value="@value">@FormatEnum(value)</option> }</select></div>
+                                                <div class="submission-field"><label>Latex free</label><select class="ds-select" @bind="editingVariantLatexFree"><option value="">Unknown</option><option value="true">Yes</option><option value="false">No</option></select></div>
+                                                <div class="submission-field"><label>Designed for</label><select class="ds-select" @bind="editingVariantDesignedFor">@foreach (var value in Enum.GetValues<CatalogueVariantDesignedFor>()) { <option value="@value">@FormatEnum(value)</option> }</select></div>
+                                                <div class="submission-field submission-field-wide"><label>Construction notes</label><textarea class="ds-input ds-textarea" rows="3" @bind="editingVariantConstructionNotes"></textarea></div>
+                                            </div>
+                                            <div class="product-editor-actions product-editor-inline-actions">
                                                 <button class="ds-button ds-button-secondary" type="button" @onclick="CancelVariantEdit">Cancel</button>
+                                                <button class="ds-button ds-button-primary" type="button" @onclick="() => SaveVariantAsync(variant.Id)" disabled="@variantSaving">@(variantSaving ? "Saving…" : "Save variant")</button>
                                             </div>
                                         }
                                         else
@@ -261,27 +295,22 @@
                                             @if (editingSizeId == size.Id)
                                             {
                                                 <div class="product-editor-size-editor product-editor-size-editor-compact">
-                                                    <div class="product-editor-size-grid">
-                                                        <div class="submission-field">
-                                                            <label>Manufacturer size <span>*</span></label>
-                                                            <input class="ds-input" @bind="editingSize.ManufacturerSize" />
-                                                        </div>
-                                                        <div class="submission-field">
-                                                            <label>Waist minimum (cm)</label>
-                                                            <input class="ds-input" type="number" min="0" @bind="editingSize.WaistMinimumCm" />
-                                                        </div>
-                                                        <div class="submission-field">
-                                                            <label>Waist maximum (cm)</label>
-                                                            <input class="ds-input" type="number" min="0" @bind="editingSize.WaistMaximumCm" />
-                                                        </div>
-                                                        <div class="submission-field">
-                                                            <label>Hip minimum (cm)</label>
-                                                            <input class="ds-input" type="number" min="0" @bind="editingSize.HipMinimumCm" />
-                                                        </div>
-                                                        <div class="submission-field">
-                                                            <label>Hip maximum (cm)</label>
-                                                            <input class="ds-input" type="number" min="0" @bind="editingSize.HipMaximumCm" />
-                                                        </div>
+                                                    <div class="product-editor-detail-grid">
+                                                        <div class="submission-field"><label>Manufacturer size <span>*</span></label><input class="ds-input" @bind="editingSize.ManufacturerSize" /></div>
+                                                        <div class="submission-field"><label>Fit measurement basis</label><input class="ds-input" @bind="editingSize.FitMeasurementBasis" placeholder="Waist, Hip, Waist and Hip…" /></div>
+                                                        <div class="submission-field"><label>Waist minimum (cm)</label><input class="ds-input" type="number" min="0" @bind="editingSize.WaistMinimumCm" /></div>
+                                                        <div class="submission-field"><label>Waist maximum (cm)</label><input class="ds-input" type="number" min="0" @bind="editingSize.WaistMaximumCm" /></div>
+                                                        <div class="submission-field"><label>Hip minimum (cm)</label><input class="ds-input" type="number" min="0" @bind="editingSize.HipMinimumCm" /></div>
+                                                        <div class="submission-field"><label>Hip maximum (cm)</label><input class="ds-input" type="number" min="0" @bind="editingSize.HipMaximumCm" /></div>
+                                                        <div class="submission-field"><label>Manufacturer-stated absorbency (ml)</label><input class="ds-input" type="number" min="0" @bind="editingSize.ManufacturerStatedAbsorbencyMl" /></div>
+                                                        <div class="submission-field"><label>Absorbency basis / method</label><input class="ds-input" @bind="editingSize.AbsorbencyBasisMethod" /></div>
+                                                        <div class="submission-field submission-field-wide"><label>Absorbency source / provenance</label><input class="ds-input" @bind="editingSize.AbsorbencySource" /></div>
+                                                        <div class="submission-field"><label>Product length (mm)</label><input class="ds-input" type="number" min="0" @bind="editingSize.LengthMm" /></div>
+                                                        <div class="submission-field"><label>Product width (mm)</label><input class="ds-input" type="number" min="0" @bind="editingSize.WidthMm" /></div>
+                                                        <div class="submission-field"><label>Product weight (g)</label><input class="ds-input" type="number" min="0" @bind="editingSize.WeightGrams" /></div>
+                                                        <div class="submission-field"><label>Manufacturer pack quantity</label><input class="ds-input" type="number" min="1" @bind="editingSize.ManufacturerPackQuantity" /></div>
+                                                        <div class="submission-field"><label>Packaging</label><select class="ds-select" @bind="editingSize.PackagingType">@foreach (var value in Enum.GetValues<PackagingType>()) { <option value="@value">@FormatEnum(value)</option> }</select></div>
+                                                        <div class="submission-field submission-field-wide"><label>GTIN / barcode</label><input class="ds-input" @bind="editingSize.Gtin" placeholder="8–14 digits" /></div>
                                                     </div>
                                                     <div class="product-editor-actions product-editor-inline-actions">
                                                         <button class="ds-button ds-button-secondary" type="button" @onclick="CancelSizeEdit">Cancel</button>
@@ -305,6 +334,184 @@
                                 </div>
                             </article>
                         }
+                    </div>
+                </div>
+
+                <div class="product-editor-panel product-editor-images">
+                    <div class="product-editor-panel-heading">
+                        <div>
+                            <p class="catalogue-kicker">MEDIA &amp; RIGHTS</p>
+                            <h2>Images</h2>
+                        </div>
+                        <span class="product-editor-summary">@product.Images.Count @(product.Images.Count == 1 ? "image" : "images")</span>
+                    </div>
+                    <p class="product-editor-help">Manage catalogue images, their source and rights evidence. Images remain moderator-only unless the source and permission state make them eligible for public display.</p>
+
+                    @if (product.Images.Count == 0)
+                    {
+                        <div class="product-editor-image-empty">No catalogue images are currently attached.</div>
+                    }
+                    else
+                    {
+                        <div class="product-editor-image-list">
+                            @foreach (var image in product.Images)
+                            {
+                                <article class="product-editor-image-card">
+                                    <div class="product-editor-image-preview">
+                                        <img src="@image.ContentUrl" alt="@FormatEnum(image.Role)" />
+                                    </div>
+                                    <div class="product-editor-image-content">
+                                        @if (editingImageId == image.Id)
+                                        {
+                                            <div class="product-editor-detail-grid">
+                                                <div class="submission-field">
+                                                    <label>Image role</label>
+                                                    <select class="ds-select" @bind="editingImageRole">
+                                                        @foreach (var value in Enum.GetValues<CatalogueSubmissionImageRole>())
+                                                        {
+                                                            <option value="@value">@FormatEnum(value)</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                                <div class="submission-field">
+                                                    <label>Source type</label>
+                                                    <select class="ds-select" @bind="editingImageSourceType">
+                                                        @foreach (var value in Enum.GetValues<CatalogueImageSourceType>())
+                                                        {
+                                                            <option value="@value">@FormatEnum(value)</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                                <div class="submission-field submission-field-wide">
+                                                    <label>Source URL</label>
+                                                    <input class="ds-input" @bind="editingImageSourceUrl" placeholder="https://…" />
+                                                </div>
+                                                <div class="submission-field submission-field-wide">
+                                                    <label>Source notes</label>
+                                                    <textarea class="ds-input ds-textarea" @bind="editingImageSourceNotes" rows="3"></textarea>
+                                                </div>
+                                                <div class="submission-field">
+                                                    <label>Permission status</label>
+                                                    <select class="ds-select" @bind="editingImagePermissionStatus">
+                                                        @foreach (var value in Enum.GetValues<CatalogueImagePermissionStatus>())
+                                                        {
+                                                            <option value="@value">@FormatEnum(value)</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                                <div class="submission-field submission-field-wide">
+                                                    <label>Permission evidence / terms</label>
+                                                    <textarea class="ds-input ds-textarea" @bind="editingImagePermissionEvidence" rows="3"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="product-editor-actions product-editor-inline-actions">
+                                                <button class="ds-button ds-button-secondary" type="button" @onclick="CancelImageEdit">Cancel</button>
+                                                <button class="ds-button ds-button-primary" type="button" @onclick="() => SaveImageAsync(image.Id)" disabled="@imageSaving">@(imageSaving ? "Saving…" : "Save image")</button>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="product-editor-image-heading">
+                                                <div>
+                                                    <strong>@FormatEnum(image.Role)</strong>
+                                                    @if (image.IsPrimary)
+                                                    {
+                                                        <span class="product-editor-image-badge">Primary</span>
+                                                    }
+                                                </div>
+                                                <span class="product-editor-status">@FormatEnum(image.Visibility)</span>
+                                            </div>
+                                            <div class="product-editor-image-meta">
+                                                <span>Source: @FormatEnum(image.SourceType)</span>
+                                                <span>Rights: @FormatEnum(image.PermissionStatus)</span>
+                                                <span>@FormatFileSize(image.FileSizeBytes)</span>
+                                            </div>
+                                            @if (image.Visibility == CatalogueContentVisibility.ModeratorOnly)
+                                            {
+                                                <div class="product-editor-image-warning">Not eligible for public display until the source and permission state establish public visibility.</div>
+                                            }
+                                            @if (!string.IsNullOrWhiteSpace(image.SourceUrl))
+                                            {
+                                                <a href="@image.SourceUrl" target="_blank" rel="noopener noreferrer">Open source ↗</a>
+                                            }
+                                            <div class="product-editor-actions product-editor-inline-actions">
+                                                <button class="ds-button ds-button-secondary" type="button" @onclick="() => BeginImageEdit(image)">Edit</button>
+                                                @if (!image.IsPrimary)
+                                                {
+                                                    <button class="ds-button ds-button-secondary" type="button" @onclick="() => SetPrimaryImageAsync(image.Id)" disabled="@imageSaving">Make primary</button>
+                                                }
+                                                <button class="product-editor-remove-button" type="button" @onclick="() => RemoveImageAsync(image.Id)" disabled="@imageSaving">@(confirmRemoveImageId == image.Id ? "Confirm remove" : "×")</button>
+                                            </div>
+                                        }
+                                    </div>
+                                </article>
+                            }
+                        </div>
+                    }
+
+                    <div class="product-editor-image-add">
+                        <div class="product-editor-panel-heading">
+                            <div>
+                                <h3>Add image</h3>
+                                <p class="product-editor-help">JPEG, PNG or WebP · maximum 15 MB.</p>
+                            </div>
+                        </div>
+                        <div class="product-editor-detail-grid">
+                            <div class="submission-field submission-field-wide">
+                                <label>Image file <span>*</span></label>
+                                <InputFile OnChange="ImageFileSelected" accept="image/jpeg,image/png,image/webp" />
+                                @if (newImageFile is not null)
+                                {
+                                    <small>@newImageFile.Name · @FormatFileSize(newImageFile.Size)</small>
+                                }
+                            </div>
+                            <div class="submission-field">
+                                <label>Image role</label>
+                                <select class="ds-select" @bind="newImageRole">
+                                    @foreach (var value in Enum.GetValues<CatalogueSubmissionImageRole>())
+                                    {
+                                        <option value="@value">@FormatEnum(value)</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="submission-field">
+                                <label>Source type</label>
+                                <select class="ds-select" @bind="newImageSourceType">
+                                    @foreach (var value in Enum.GetValues<CatalogueImageSourceType>())
+                                    {
+                                        <option value="@value">@FormatEnum(value)</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="submission-field submission-field-wide">
+                                <label>Source URL</label>
+                                <input class="ds-input" @bind="newImageSourceUrl" placeholder="https://…" />
+                            </div>
+                            <div class="submission-field submission-field-wide">
+                                <label>Source notes</label>
+                                <textarea class="ds-input ds-textarea" @bind="newImageSourceNotes" rows="3"></textarea>
+                            </div>
+                            <div class="submission-field">
+                                <label>Permission status</label>
+                                <select class="ds-select" @bind="newImagePermissionStatus">
+                                    @foreach (var value in Enum.GetValues<CatalogueImagePermissionStatus>())
+                                    {
+                                        <option value="@value">@FormatEnum(value)</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="submission-field submission-field-wide">
+                                <label>Permission evidence / terms</label>
+                                <textarea class="ds-input ds-textarea" @bind="newImagePermissionEvidence" rows="3"></textarea>
+                            </div>
+                            <label class="product-editor-checkbox">
+                                <input type="checkbox" @bind="newImageIsPrimary" />
+                                <span>Make this the primary product image</span>
+                            </label>
+                        </div>
+                        <div class="product-editor-actions product-editor-inline-actions">
+                            <button class="ds-button ds-button-primary" type="button" @onclick="AddImageAsync" disabled="@(imageSaving || newImageFile is null)">@(imageSaving ? "Adding…" : "Add image")</button>
+                        </div>
                     </div>
                 </div>
 
@@ -430,6 +637,8 @@
                 editModel.ProductName,
                 editModel.ProductType,
                 editModel.ProductFamily,
+                editModel.Description,
+                editModel.DescriptionVisibility,
                 editModel.OfficialWebsiteUrl,
                 editModel.SourceSummary,
                 editModel.SourceReferencesText.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries),
@@ -466,6 +675,17 @@
     private Guid? editingVariantId;
     private string editingVariantName = string.Empty;
     private BackingType editingVariantBacking = BackingType.Unknown;
+    private FastenerType editingVariantFastenerType = FastenerType.Unknown;
+    private CatalogueVariantAppearance editingVariantAppearance = CatalogueVariantAppearance.Unknown;
+    private CatalogueVariantColour editingVariantPrimaryColour = CatalogueVariantColour.Unknown;
+    private bool? editingVariantWetness;
+    private bool? editingVariantLeakGuards;
+    private WaistbandStyle editingVariantWaistbandStyle = WaistbandStyle.Unknown;
+    private FragranceType editingVariantFragrance = FragranceType.Unknown;
+    private bool? editingVariantLatexFree;
+    private CatalogueVariantDesignedFor editingVariantDesignedFor = CatalogueVariantDesignedFor.Unknown;
+    private int? editingVariantFastenerCount;
+    private string? editingVariantConstructionNotes;
     private string newVariantName = string.Empty;
     private BackingType newVariantBacking = BackingType.Unknown;
     private bool variantSaving;
@@ -478,11 +698,40 @@
     private bool sizeSaving;
     private Guid? confirmRemoveSizeId;
 
+    private IBrowserFile? newImageFile;
+    private CatalogueSubmissionImageRole newImageRole = CatalogueSubmissionImageRole.ProductFront;
+    private CatalogueImageSourceType newImageSourceType = CatalogueImageSourceType.Unknown;
+    private string? newImageSourceUrl;
+    private string? newImageSourceNotes;
+    private CatalogueImagePermissionStatus newImagePermissionStatus = CatalogueImagePermissionStatus.Unknown;
+    private string? newImagePermissionEvidence;
+    private bool newImageIsPrimary;
+    private Guid? editingImageId;
+    private CatalogueSubmissionImageRole editingImageRole;
+    private CatalogueImageSourceType editingImageSourceType;
+    private string? editingImageSourceUrl;
+    private string? editingImageSourceNotes;
+    private CatalogueImagePermissionStatus editingImagePermissionStatus;
+    private string? editingImagePermissionEvidence;
+    private bool imageSaving;
+    private Guid? confirmRemoveImageId;
+
     private void BeginVariantEdit(CatalogueProductVariant variant)
     {
         editingVariantId = variant.Id;
         editingVariantName = variant.Name;
         editingVariantBacking = variant.BackingType;
+        editingVariantFastenerType = variant.FastenerType;
+        editingVariantAppearance = variant.Appearance;
+        editingVariantPrimaryColour = variant.PrimaryColour;
+        editingVariantWetness = variant.HasWetnessIndicator;
+        editingVariantLeakGuards = variant.HasStandingLeakGuards;
+        editingVariantWaistbandStyle = variant.WaistbandStyle;
+        editingVariantFragrance = variant.Fragrance;
+        editingVariantLatexFree = variant.IsLatexFree;
+        editingVariantDesignedFor = variant.DesignedFor;
+        editingVariantFastenerCount = variant.FastenerCount;
+        editingVariantConstructionNotes = variant.ConstructionNotes;
     }
 
     private void CancelVariantEdit() => editingVariantId = null;
@@ -502,6 +751,17 @@
             var result = await Catalogue.AddProductVariantAsync(ProductId, new CreateCanonicalProductVariantManagement(
                 newVariantName,
                 newVariantBacking,
+                FastenerType.Unknown,
+                CatalogueVariantAppearance.Unknown,
+                CatalogueVariantColour.Unknown,
+                null,
+                null,
+                WaistbandStyle.Unknown,
+                FragranceType.Unknown,
+                null,
+                CatalogueVariantDesignedFor.Unknown,
+                null,
+                null,
                 editModel.SourceSummary,
                 SourceReferences(),
                 editModel.EditorialRationale,
@@ -535,6 +795,17 @@
             var result = await Catalogue.UpdateProductVariantAsync(ProductId, variantId, new UpdateCanonicalProductVariantManagement(
                 editingVariantName,
                 editingVariantBacking,
+                editingVariantFastenerType,
+                editingVariantAppearance,
+                editingVariantPrimaryColour,
+                editingVariantWetness,
+                editingVariantLeakGuards,
+                editingVariantWaistbandStyle,
+                editingVariantFragrance,
+                editingVariantLatexFree,
+                editingVariantDesignedFor,
+                editingVariantFastenerCount,
+                editingVariantConstructionNotes,
                 editModel.SourceSummary,
                 SourceReferences(),
                 editModel.EditorialRationale,
@@ -655,7 +926,10 @@
             AbsorbencySource = size.AbsorbencySource,
             LengthMm = size.LengthMm,
             WidthMm = size.WidthMm,
-            WeightGrams = size.WeightGrams
+            WeightGrams = size.WeightGrams,
+            ManufacturerPackQuantity = size.Packs.FirstOrDefault()?.QuantityPerPack ?? 1,
+            PackagingType = size.Packs.FirstOrDefault()?.PackagingType ?? PackagingType.Bag,
+            Gtin = size.Packs.FirstOrDefault()?.Gtins.FirstOrDefault()
         };
     }
 
@@ -686,6 +960,9 @@
                 editingSize.LengthMm,
                 editingSize.WidthMm,
                 editingSize.WeightGrams,
+                editingSize.ManufacturerPackQuantity,
+                editingSize.PackagingType,
+                editingSize.Gtin,
                 editModel.SourceSummary,
                 SourceReferences(),
                 editModel.EditorialRationale,
@@ -736,6 +1013,172 @@
             sizeSaving = false;
         }
     }
+
+    private void ImageFileSelected(InputFileChangeEventArgs args)
+    {
+        newImageFile = args.File;
+        saveError = null;
+    }
+
+    private void BeginImageEdit(CatalogueModeratorProductImage image)
+    {
+        editingImageId = image.Id;
+        editingImageRole = image.Role;
+        editingImageSourceType = image.SourceType;
+        editingImageSourceUrl = image.SourceUrl;
+        editingImageSourceNotes = image.SourceNotes;
+        editingImagePermissionStatus = image.PermissionStatus;
+        editingImagePermissionEvidence = image.PermissionEvidence;
+        confirmRemoveImageId = null;
+    }
+
+    private void CancelImageEdit() => editingImageId = null;
+
+    private async Task AddImageAsync()
+    {
+        if (newImageFile is null)
+            return;
+
+        imageSaving = true;
+        saveError = null;
+        try
+        {
+            var result = await Catalogue.AddProductImageAsync(
+                ProductId,
+                newImageFile,
+                new AddCanonicalProductImageMetadata(
+                    newImageRole,
+                    newImageSourceType,
+                    newImageSourceUrl,
+                    newImageSourceNotes,
+                    newImagePermissionStatus,
+                    newImagePermissionEvidence,
+                    newImageIsPrimary,
+                    editModel.SourceSummary,
+                    SourceReferences(),
+                    editModel.EditorialRationale,
+                    null));
+
+            saveMessage = null;
+            saveError = result.Status switch
+            {
+                CatalogueProductImageAddStatus.AccessDenied => "You need Moderator or Administrator editorial authority to add catalogue images.",
+                CatalogueProductImageAddStatus.NotFound => "The canonical product could not be found.",
+                CatalogueProductImageAddStatus.Invalid => FormatValidationErrors(result.Errors),
+                CatalogueProductImageAddStatus.Failed => "The image could not be added just now.",
+                _ => null
+            };
+
+            if (result.Status == CatalogueProductImageAddStatus.Saved)
+            {
+                saveMessage = "Image added.";
+                newImageFile = null;
+                newImageSourceUrl = null;
+                newImageSourceNotes = null;
+                newImagePermissionStatus = CatalogueImagePermissionStatus.Unknown;
+                newImagePermissionEvidence = null;
+                newImageIsPrimary = false;
+                await ReloadAfterSaveAsync();
+            }
+        }
+        finally
+        {
+            imageSaving = false;
+        }
+    }
+
+    private async Task SaveImageAsync(Guid imageId)
+    {
+        imageSaving = true;
+        saveError = null;
+        try
+        {
+            var result = await Catalogue.UpdateProductImageAsync(
+                ProductId,
+                imageId,
+                new UpdateCanonicalProductImageMetadata(
+                    editingImageRole,
+                    editingImageSourceType,
+                    editingImageSourceUrl,
+                    editingImageSourceNotes,
+                    editingImagePermissionStatus,
+                    editingImagePermissionEvidence,
+                    editModel.SourceSummary,
+                    SourceReferences(),
+                    editModel.EditorialRationale,
+                    null));
+            HandleManagementMutationResult(result, "Image saved.");
+            if (result.Status == CatalogueProductManagementUpdateStatus.Saved)
+            {
+                editingImageId = null;
+                await ReloadAfterSaveAsync();
+            }
+        }
+        finally
+        {
+            imageSaving = false;
+        }
+    }
+
+    private async Task SetPrimaryImageAsync(Guid imageId)
+    {
+        imageSaving = true;
+        saveError = null;
+        try
+        {
+            var result = await Catalogue.SetProductImagePrimaryAsync(
+                ProductId,
+                imageId,
+                new RemoveCanonicalProductElement(
+                    editModel.SourceSummary,
+                    SourceReferences(),
+                    editModel.EditorialRationale,
+                    null));
+            HandleManagementMutationResult(result, "Primary image updated.");
+            if (result.Status == CatalogueProductManagementUpdateStatus.Saved)
+                await ReloadAfterSaveAsync();
+        }
+        finally
+        {
+            imageSaving = false;
+        }
+    }
+
+    private async Task RemoveImageAsync(Guid imageId)
+    {
+        if (confirmRemoveImageId != imageId)
+        {
+            confirmRemoveImageId = imageId;
+            return;
+        }
+
+        imageSaving = true;
+        saveError = null;
+        try
+        {
+            var result = await Catalogue.RemoveProductImageAsync(
+                ProductId,
+                imageId,
+                new RemoveCanonicalProductElement(
+                    editModel.SourceSummary,
+                    SourceReferences(),
+                    editModel.EditorialRationale,
+                    null));
+            HandleManagementMutationResult(result, "Image removed.");
+            if (result.Status == CatalogueProductManagementUpdateStatus.Saved)
+            {
+                confirmRemoveImageId = null;
+                await ReloadAfterSaveAsync();
+            }
+        }
+        finally
+        {
+            imageSaving = false;
+        }
+    }
+
+    private static string FormatFileSize(long bytes) =>
+        bytes < 1024 ? $"{bytes} B" : bytes < 1024 * 1024 ? $"{bytes / 1024d:0.#} KB" : $"{bytes / (1024d * 1024d):0.#} MB";
 
     private IReadOnlyList<string> SourceReferences() =>
         editModel.SourceReferencesText.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
@@ -808,6 +1251,8 @@
         public string ProductName { get; set; } = string.Empty;
         public ProductType ProductType { get; set; }
         public string? ProductFamily { get; set; }
+        public string? Description { get; set; }
+        public CatalogueContentVisibility DescriptionVisibility { get; set; } = CatalogueContentVisibility.Public;
         public string? OfficialWebsiteUrl { get; set; }
         public string SourceSummary { get; set; } = string.Empty;
         public string SourceReferencesText { get; set; } = string.Empty;
@@ -824,6 +1269,8 @@
                 ProductName = product.Name,
                 ProductType = product.ProductType,
                 ProductFamily = product.ProductFamily,
+                Description = product.Description,
+                DescriptionVisibility = product.DescriptionVisibility,
                 OfficialWebsiteUrl = product.OfficialWebsiteUrl,
                 SourceSummary = sourceSummary ?? "Canonical product management edit",
                 SourceReferencesText = sourceReferences ?? string.Empty,

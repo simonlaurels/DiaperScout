@@ -72,6 +72,17 @@ public sealed record CatalogueProductVariant(
     Guid Id,
     string Name,
     BackingType BackingType,
+    FastenerType FastenerType,
+    CatalogueVariantAppearance Appearance,
+    CatalogueVariantColour PrimaryColour,
+    bool? HasWetnessIndicator,
+    bool? HasStandingLeakGuards,
+    WaistbandStyle WaistbandStyle,
+    FragranceType Fragrance,
+    bool? IsLatexFree,
+    CatalogueVariantDesignedFor DesignedFor,
+    int? FastenerCount,
+    string? ConstructionNotes,
     IReadOnlyList<CatalogueProductSize> Sizes);
 
 public sealed record CatalogueProductSize(
@@ -99,15 +110,21 @@ public sealed record CatalogueProductPack(
 public sealed record CatalogueProductImage(
     Guid Id,
     CatalogueSubmissionImageRole Role,
+    bool IsPrimary,
     string ContentUrl);
 
 public sealed record CatalogueModeratorProductImage(
     Guid Id,
     CatalogueSubmissionImageRole Role,
+    bool IsPrimary,
     CatalogueContentVisibility Visibility,
     CatalogueImageSourceType SourceType,
     string? SourceUrl,
+    string? SourceNotes,
     CatalogueImagePermissionStatus PermissionStatus,
+    string? PermissionEvidence,
+    string OriginalFileName,
+    long FileSizeBytes,
     string ContentUrl);
 
 public sealed record CatalogueModeratorProductDetails(
@@ -135,8 +152,11 @@ public sealed record CatalogueProductManagementDetails(
     string? ProductFamily,
     ProductType ProductType,
     ProductStatus Status,
+    string? Description,
+    CatalogueContentVisibility DescriptionVisibility,
     string? OfficialWebsiteUrl,
-    IReadOnlyList<CatalogueProductVariant> Variants);
+    IReadOnlyList<CatalogueProductVariant> Variants,
+    IReadOnlyList<CatalogueModeratorProductImage> Images);
 
 public sealed record UpdateCanonicalProductIdentity(
     Guid ManufacturerId,
@@ -144,6 +164,8 @@ public sealed record UpdateCanonicalProductIdentity(
     string ProductName,
     ProductType ProductType,
     string? ProductFamily,
+    string? Description,
+    CatalogueContentVisibility DescriptionVisibility,
     string? OfficialWebsiteUrl,
     string SourceSummary,
     IReadOnlyList<string> SourceReferences,
@@ -153,6 +175,17 @@ public sealed record UpdateCanonicalProductIdentity(
 public sealed record CreateCanonicalProductVariantManagement(
     string Name,
     BackingType BackingType,
+    FastenerType FastenerType,
+    CatalogueVariantAppearance Appearance,
+    CatalogueVariantColour PrimaryColour,
+    bool? HasWetnessIndicator,
+    bool? HasStandingLeakGuards,
+    WaistbandStyle WaistbandStyle,
+    FragranceType Fragrance,
+    bool? IsLatexFree,
+    CatalogueVariantDesignedFor DesignedFor,
+    int? FastenerCount,
+    string? ConstructionNotes,
     string SourceSummary,
     IReadOnlyList<string> SourceReferences,
     string EditorialRationale,
@@ -161,6 +194,17 @@ public sealed record CreateCanonicalProductVariantManagement(
 public sealed record UpdateCanonicalProductVariantManagement(
     string Name,
     BackingType BackingType,
+    FastenerType FastenerType,
+    CatalogueVariantAppearance Appearance,
+    CatalogueVariantColour PrimaryColour,
+    bool? HasWetnessIndicator,
+    bool? HasStandingLeakGuards,
+    WaistbandStyle WaistbandStyle,
+    FragranceType Fragrance,
+    bool? IsLatexFree,
+    CatalogueVariantDesignedFor DesignedFor,
+    int? FastenerCount,
+    string? ConstructionNotes,
     string SourceSummary,
     IReadOnlyList<string> SourceReferences,
     string EditorialRationale,
@@ -200,6 +244,34 @@ public sealed record UpdateCanonicalProductSizeManagement(
     int? LengthMm,
     int? WidthMm,
     int? WeightGrams,
+    int? ManufacturerPackQuantity,
+    PackagingType? PackagingType,
+    string? Gtin,
+    string SourceSummary,
+    IReadOnlyList<string> SourceReferences,
+    string EditorialRationale,
+    string? CorrelationId);
+
+public sealed record UpdateCanonicalProductImageMetadata(
+    CatalogueSubmissionImageRole Role,
+    CatalogueImageSourceType SourceType,
+    string? SourceUrl,
+    string? SourceNotes,
+    CatalogueImagePermissionStatus PermissionStatus,
+    string? PermissionEvidence,
+    string SourceSummary,
+    IReadOnlyList<string> SourceReferences,
+    string EditorialRationale,
+    string? CorrelationId);
+
+public sealed record AddCanonicalProductImageMetadata(
+    CatalogueSubmissionImageRole Role,
+    CatalogueImageSourceType SourceType,
+    string? SourceUrl,
+    string? SourceNotes,
+    CatalogueImagePermissionStatus PermissionStatus,
+    string? PermissionEvidence,
+    bool IsPrimary,
     string SourceSummary,
     IReadOnlyList<string> SourceReferences,
     string EditorialRationale,
@@ -1188,6 +1260,43 @@ public interface ICanonicalCatalogue
         Guid productId,
         Guid variantId,
         Guid sizeId,
+        string sourceSummary,
+        IReadOnlyList<string> sourceReferences,
+        string editorialRationale,
+        string? correlationId,
+        CancellationToken cancellationToken = default);
+
+    Task<CatalogueModeratorProductImage> AddProductImageAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        string storageKey,
+        string originalFileName,
+        string contentType,
+        long fileSizeBytes,
+        AddCanonicalProductImageMetadata command,
+        CancellationToken cancellationToken = default);
+
+    Task<CatalogueModeratorProductImage> UpdateProductImageAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        Guid imageId,
+        UpdateCanonicalProductImageMetadata command,
+        CancellationToken cancellationToken = default);
+
+    Task RemoveProductImageAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        Guid imageId,
+        string sourceSummary,
+        IReadOnlyList<string> sourceReferences,
+        string editorialRationale,
+        string? correlationId,
+        CancellationToken cancellationToken = default);
+
+    Task SetProductImagePrimaryAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        Guid imageId,
         string sourceSummary,
         IReadOnlyList<string> sourceReferences,
         string editorialRationale,

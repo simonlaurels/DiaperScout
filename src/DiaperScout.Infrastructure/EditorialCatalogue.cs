@@ -72,7 +72,7 @@ internal sealed class PrivilegedRoleAssignments(DiaperScoutDbContext db) : IPriv
     }
 }
 
-internal sealed class CanonicalCatalogue(DiaperScoutDbContext db, IEditorialAuthorisation editorialAuthorisation) : ICanonicalCatalogue
+internal sealed class CanonicalCatalogue(DiaperScoutDbContext db, IEditorialAuthorisation editorialAuthorisation, ICatalogueSubmissionImageStorage imageStorage) : ICanonicalCatalogue
 {
     private static readonly Regex SlugPattern = new("^[a-z0-9]+(?:-[a-z0-9]+)*$", RegexOptions.Compiled);
     private static readonly Regex GtinPattern = new("^[0-9]{8,14}$", RegexOptions.Compiled);
@@ -119,7 +119,7 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db, IEditorialAuth
 
         await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
 
-        product.UpdateIdentity(command.ManufacturerId, command.BrandId, command.ProductName, command.ProductType, command.ProductFamily, command.OfficialWebsiteUrl);
+        product.UpdateIdentity(command.ManufacturerId, command.BrandId, command.ProductName, command.ProductType, command.ProductFamily, command.Description, command.DescriptionVisibility, command.OfficialWebsiteUrl);
         await db.SaveChangesAsync(cancellationToken);
 
         db.CatalogueAuditRecords.Add(new CatalogueAuditRecord(
@@ -145,7 +145,7 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db, IEditorialAuth
         CancellationToken cancellationToken = default)
     {
         await RequireCatalogueManagerAsync(actor, cancellationToken);
-        ValidateVariantCommand(command.Name, command.BackingType, command.SourceSummary, command.EditorialRationale);
+        ValidateVariantCommand(command.Name, command.BackingType, command.FastenerType, command.Appearance, command.PrimaryColour, command.WaistbandStyle, command.Fragrance, command.DesignedFor, command.FastenerCount, command.SourceSummary, command.EditorialRationale);
 
         var product = await db.Products.SingleOrDefaultAsync(value => value.Id == productId, cancellationToken)
             ?? throw new KeyNotFoundException("The catalogue product was not found.");
@@ -156,7 +156,7 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db, IEditorialAuth
         if (duplicate)
             throw new CatalogueValidationException("name", "A product variant with this name already exists.");
 
-        var variant = new ProductVariant(product.Id, command.Name.Trim(), command.BackingType);
+        var variant = new ProductVariant(product.Id, command.Name.Trim(), command.BackingType, command.FastenerType, command.Appearance, command.PrimaryColour.ToString(), command.HasWetnessIndicator, command.HasStandingLeakGuards, command.WaistbandStyle, command.Fragrance, command.IsLatexFree, command.DesignedFor.ToString(), command.FastenerCount, command.ConstructionNotes);
         db.ProductVariants.Add(variant);
         await db.SaveChangesAsync(cancellationToken);
 
@@ -177,7 +177,7 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db, IEditorialAuth
         CancellationToken cancellationToken = default)
     {
         await RequireCatalogueManagerAsync(actor, cancellationToken);
-        ValidateVariantCommand(command.Name, command.BackingType, command.SourceSummary, command.EditorialRationale);
+        ValidateVariantCommand(command.Name, command.BackingType, command.FastenerType, command.Appearance, command.PrimaryColour, command.WaistbandStyle, command.Fragrance, command.DesignedFor, command.FastenerCount, command.SourceSummary, command.EditorialRationale);
 
         var variant = await db.ProductVariants.SingleOrDefaultAsync(
             value => value.Id == variantId && value.ProductId == productId,
@@ -190,7 +190,7 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db, IEditorialAuth
         if (duplicate)
             throw new CatalogueValidationException("name", "A product variant with this name already exists.");
 
-        variant.UpdateDetails(command.Name, command.BackingType);
+        variant.UpdateDetails(command.Name, command.BackingType, command.FastenerType, command.Appearance, command.PrimaryColour, command.HasWetnessIndicator, command.HasStandingLeakGuards, command.WaistbandStyle, command.Fragrance, command.IsLatexFree, command.DesignedFor, command.FastenerCount, command.ConstructionNotes);
         await db.SaveChangesAsync(cancellationToken);
 
         await AddAuditAsync(
@@ -337,6 +337,39 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db, IEditorialAuth
             command.WidthMm,
             command.WeightGrams);
 
+        if (command.ManufacturerPackQuantity.HasValue || command.PackagingType.HasValue || command.Gtin is not null)
+        {
+            var pack = await db.PackTypes.Include(value => value.Identifiers)
+                .Where(value => value.SizeVariantId == sizeId)
+                .OrderBy(value => value.QuantityPerPack)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (pack is null)
+            {
+                var newPack = new PackType(size.Id, command.ManufacturerPackQuantity ?? 1, command.PackagingType ?? PackagingType.Bag);
+                db.PackTypes.Add(newPack);
+                if (NormaliseOptionalGtin(command.Gtin) is { } newGtin)
+                    db.ProductIdentifiers.Add(new ProductIdentifier(newPack.Id, IdentifierType.Gtin, newGtin));
+            }
+            else
+            {
+                pack.UpdateDetails(command.ManufacturerPackQuantity ?? pack.QuantityPerPack, command.PackagingType ?? pack.PackagingType);
+                var desiredGtin = NormaliseOptionalGtin(command.Gtin);
+                if (desiredGtin is not null && await db.ProductIdentifiers.AnyAsync(
+                        value => value.Type == IdentifierType.Gtin && value.Value == desiredGtin && value.PackTypeId != pack.Id,
+                        cancellationToken))
+                    throw new CatalogueValidationException("gtin", $"GTIN {desiredGtin} is already assigned to a published catalogue product.");
+
+                var existingGtin = pack.Identifiers.FirstOrDefault(value => value.Type == IdentifierType.Gtin);
+                if (existingGtin is not null && desiredGtin is null)
+                    db.ProductIdentifiers.Remove(existingGtin);
+                else if (existingGtin is not null && desiredGtin is not null)
+                    existingGtin.UpdateValue(desiredGtin);
+                else if (desiredGtin is not null)
+                    db.ProductIdentifiers.Add(new ProductIdentifier(pack.Id, IdentifierType.Gtin, desiredGtin));
+            }
+        }
+
         await db.SaveChangesAsync(cancellationToken);
         await AddAuditAsync(
             CatalogueAuditAction.ProductChanged,
@@ -395,12 +428,27 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db, IEditorialAuth
             throw new UnauthorizedAccessException();
     }
 
-    private static void ValidateVariantCommand(string name, BackingType backingType, string sourceSummary, string editorialRationale)
+    private static void ValidateVariantCommand(
+        string name,
+        BackingType backingType,
+        FastenerType fastenerType,
+        CatalogueVariantAppearance appearance,
+        CatalogueVariantColour primaryColour,
+        WaistbandStyle waistbandStyle,
+        FragranceType fragrance,
+        CatalogueVariantDesignedFor designedFor,
+        int? fastenerCount,
+        string sourceSummary,
+        string editorialRationale)
     {
         Required(name, "name");
         ValidateAudit(sourceSummary, editorialRationale);
-        if (!Enum.IsDefined(backingType))
-            throw new CatalogueValidationException("backingType", "The backing type is invalid.");
+        if (!Enum.IsDefined(backingType) || !Enum.IsDefined(fastenerType) || !Enum.IsDefined(appearance) ||
+            !Enum.IsDefined(primaryColour) || !Enum.IsDefined(waistbandStyle) || !Enum.IsDefined(fragrance) ||
+            !Enum.IsDefined(designedFor))
+            throw new CatalogueValidationException("variant", "One or more variant specification values are invalid.");
+        if (fastenerCount is < 0)
+            throw new CatalogueValidationException("fastenerCount", "Fastener count cannot be negative.");
     }
 
     private static void ValidateSizeCommand(string manufacturerSize, int manufacturerPackQuantity, PackagingType packagingType, string? gtin, string sourceSummary, string editorialRationale)
@@ -481,6 +529,184 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db, IEditorialAuth
             correlationId?.Trim()));
         await db.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task<CatalogueModeratorProductImage> AddProductImageAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        string storageKey,
+        string originalFileName,
+        string contentType,
+        long fileSizeBytes,
+        AddCanonicalProductImageMetadata command,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireCatalogueManagerAsync(actor, cancellationToken);
+        ValidateAudit(command.SourceSummary, command.EditorialRationale);
+
+        var product = await db.Products.AsNoTracking()
+            .SingleOrDefaultAsync(value => value.Id == productId, cancellationToken)
+            ?? throw new KeyNotFoundException("The catalogue product was not found.");
+
+        var submissionId = await db.CatalogueSubmissions
+            .Where(value => value.PublishedProductId == productId)
+            .OrderByDescending(value => value.UpdatedAtUtc)
+            .Select(value => (Guid?)value.Id)
+            .FirstOrDefaultAsync(cancellationToken)
+            ?? throw new CatalogueValidationException("image", "The canonical product does not have a published submission to associate the image with.");
+
+        if (command.Role != CatalogueSubmissionImageRole.Other &&
+            await db.CatalogueSubmissionImages.AnyAsync(value => value.ProductId == productId && value.Role == command.Role, cancellationToken))
+            throw new CatalogueValidationException("role", "An image with this role already exists. Edit or remove the existing image first.");
+
+        var image = new CatalogueSubmissionImage(
+            submissionId,
+            command.Role,
+            storageKey,
+            originalFileName,
+            contentType,
+            fileSizeBytes,
+            command.SourceType,
+            command.SourceUrl,
+            command.SourceNotes,
+            command.PermissionStatus,
+            command.PermissionEvidence);
+        image.PublishToProduct(productId);
+        db.CatalogueSubmissionImages.Add(image);
+        await db.SaveChangesAsync(cancellationToken);
+
+        if (command.IsPrimary)
+            await SetProductImagePrimaryAsync(actor, productId, image.Id, command.SourceSummary, command.SourceReferences, command.EditorialRationale, command.CorrelationId, cancellationToken);
+
+        await AddAuditAsync(
+            CatalogueAuditAction.ProductChanged,
+            productId,
+            actor,
+            command,
+            new[] { productId, image.Id },
+            cancellationToken);
+
+        return ToModeratorImage(image, productId);
+    }
+
+    public async Task<CatalogueModeratorProductImage> UpdateProductImageAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        Guid imageId,
+        UpdateCanonicalProductImageMetadata command,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireCatalogueManagerAsync(actor, cancellationToken);
+        ValidateAudit(command.SourceSummary, command.EditorialRationale);
+
+        var image = await db.CatalogueSubmissionImages
+            .SingleOrDefaultAsync(value => value.ProductId == productId && value.Id == imageId, cancellationToken)
+            ?? throw new KeyNotFoundException("The product image was not found.");
+
+        if (command.Role != CatalogueSubmissionImageRole.Other &&
+            await db.CatalogueSubmissionImages.AnyAsync(value => value.ProductId == productId && value.Id != imageId && value.Role == command.Role, cancellationToken))
+            throw new CatalogueValidationException("role", "An image with this role already exists.");
+
+        image.UpdateRole(command.Role);
+        image.UpdateMetadata(command.SourceType, command.SourceUrl, command.SourceNotes, command.PermissionStatus, command.PermissionEvidence);
+        await db.SaveChangesAsync(cancellationToken);
+
+        await AddAuditAsync(
+            CatalogueAuditAction.ProductChanged,
+            productId,
+            actor,
+            command,
+            new[] { productId, image.Id },
+            cancellationToken);
+
+        return ToModeratorImage(image, productId);
+    }
+
+    public async Task RemoveProductImageAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        Guid imageId,
+        string sourceSummary,
+        IReadOnlyList<string> sourceReferences,
+        string editorialRationale,
+        string? correlationId,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireCatalogueManagerAsync(actor, cancellationToken);
+        ValidateAudit(sourceSummary, editorialRationale);
+
+        var image = await db.CatalogueSubmissionImages
+            .SingleOrDefaultAsync(value => value.ProductId == productId && value.Id == imageId, cancellationToken)
+            ?? throw new KeyNotFoundException("The product image was not found.");
+
+        var storageKey = image.StorageKey;
+        db.CatalogueSubmissionImages.Remove(image);
+        await db.SaveChangesAsync(cancellationToken);
+        await imageStorage.DeleteAsync(storageKey, cancellationToken);
+
+        await AddAuditAsync(
+            CatalogueAuditAction.ProductChanged,
+            productId,
+            actor,
+            new { Action = "RemoveImage", ImageId = imageId, SourceSummary = sourceSummary, SourceReferences = sourceReferences, EditorialRationale = editorialRationale, CorrelationId = correlationId },
+            new[] { productId, imageId },
+            cancellationToken,
+            sourceSummary,
+            sourceReferences,
+            editorialRationale,
+            correlationId);
+    }
+
+    public async Task SetProductImagePrimaryAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        Guid imageId,
+        string sourceSummary,
+        IReadOnlyList<string> sourceReferences,
+        string editorialRationale,
+        string? correlationId,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireCatalogueManagerAsync(actor, cancellationToken);
+        ValidateAudit(sourceSummary, editorialRationale);
+
+        var images = await db.CatalogueSubmissionImages
+            .Where(value => value.ProductId == productId)
+            .ToListAsync(cancellationToken);
+        var selected = images.SingleOrDefault(value => value.Id == imageId)
+            ?? throw new KeyNotFoundException("The product image was not found.");
+
+        foreach (var image in images)
+            image.SetPrimary(image.Id == selected.Id);
+
+        await db.SaveChangesAsync(cancellationToken);
+
+        await AddAuditAsync(
+            CatalogueAuditAction.ProductChanged,
+            productId,
+            actor,
+            new { Action = "SetPrimaryImage", ImageId = imageId, SourceSummary = sourceSummary, SourceReferences = sourceReferences, EditorialRationale = editorialRationale, CorrelationId = correlationId },
+            new[] { productId, imageId },
+            cancellationToken,
+            sourceSummary,
+            sourceReferences,
+            editorialRationale,
+            correlationId);
+    }
+
+    private static CatalogueModeratorProductImage ToModeratorImage(CatalogueSubmissionImage image, Guid productId) =>
+        new(
+            image.Id,
+            image.Role,
+            image.IsPrimary,
+            image.Visibility,
+            image.SourceType,
+            image.SourceUrl,
+            image.SourceNotes,
+            image.PermissionStatus,
+            image.PermissionEvidence,
+            image.OriginalFileName,
+            image.FileSizeBytes,
+            $"/api/v1/products/{productId}/moderator-images/{image.Id}");
 
     public async Task<CanonicalProductReceipt> CreateProductAsync(
         AuthenticatedUser actor,

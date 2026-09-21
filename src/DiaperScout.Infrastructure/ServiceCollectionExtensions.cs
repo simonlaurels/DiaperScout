@@ -332,7 +332,7 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmission
                                  value.Id, value.Name, value.Slug, value.ManufacturerId, value.BrandId,
                                  ManufacturerName = manufacturer.Name,
                                  BrandName = brand == null ? null : brand.Name,
-                                 ProductFamily = value.Family, value.ProductType, value.Status, value.OfficialWebsiteUrl
+                                 ProductFamily = value.Family, ProductType = value.ProductType, ProductStatus = value.Status, Description = value.Description, DescriptionVisibility = value.DescriptionVisibility, OfficialWebsiteUrl = value.OfficialWebsiteUrl
                              })
             .SingleOrDefaultAsync(cancellationToken);
 
@@ -374,13 +374,37 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmission
                 sizeResults.Add(new CatalogueProductSize(size.Id, size.ManufacturerSize, size.WaistMinimumCm, size.WaistMaximumCm, size.HipMinimumCm, size.HipMaximumCm, size.ManufacturerStatedAbsorbencyMl, size.FitMeasurementBasis, size.AbsorbencyBasisMethod, size.AbsorbencySource, size.LengthMm, size.WidthMm, size.WeightGrams, packResults));
             }
 
-            variantResults.Add(new CatalogueProductVariant(variant.Id, variant.Name, variant.BackingType, sizeResults));
+            var appearance = Enum.TryParse<CatalogueVariantAppearance>(variant.PrintDesign, true, out var parsedAppearance) && Enum.IsDefined(parsedAppearance) ? parsedAppearance : CatalogueVariantAppearance.Unknown;
+            var colour = Enum.TryParse<CatalogueVariantColour>(variant.PrimaryColour, true, out var parsedColour) && Enum.IsDefined(parsedColour) ? parsedColour : CatalogueVariantColour.Unknown;
+            var designedFor = Enum.TryParse<CatalogueVariantDesignedFor>(variant.DesignedFor, true, out var parsedDesignedFor) && Enum.IsDefined(parsedDesignedFor) ? parsedDesignedFor : CatalogueVariantDesignedFor.Unknown;
+            variantResults.Add(new CatalogueProductVariant(variant.Id, variant.Name, variant.BackingType, variant.FastenerType, appearance, colour, variant.HasWetnessIndicator, variant.HasStandingLeakGuards, variant.WaistbandStyle, variant.Fragrance, variant.IsLatexFree, designedFor, variant.FastenerCount, variant.ConstructionNotes, sizeResults));
         }
+
+        var managementImages = await db.CatalogueSubmissionImages
+            .AsNoTracking()
+            .Where(value => value.ProductId == product.Id)
+            .OrderByDescending(value => value.IsPrimary)
+            .ThenBy(value => value.Role)
+            .ThenBy(value => value.CreatedAtUtc)
+            .Select(value => new CatalogueModeratorProductImage(
+                value.Id,
+                value.Role,
+                value.IsPrimary,
+                value.Visibility,
+                value.SourceType,
+                value.SourceUrl,
+                value.SourceNotes,
+                value.PermissionStatus,
+                value.PermissionEvidence,
+                value.OriginalFileName,
+                value.FileSizeBytes,
+                $"/api/v1/products/{product.Id}/moderator-images/{value.Id}"))
+            .ToListAsync(cancellationToken);
 
         return new CatalogueProductManagementDetails(
             product.Id, product.Name, product.Slug, product.ManufacturerId, product.BrandId,
             product.ManufacturerName, product.BrandName, product.ProductFamily, product.ProductType,
-            product.Status, product.OfficialWebsiteUrl, variantResults);
+            product.ProductStatus, product.Description, product.DescriptionVisibility, product.OfficialWebsiteUrl, variantResults, managementImages);
     }
 
     public async Task<CatalogueProductImageContent?> GetProductImageContentAsync(
@@ -471,7 +495,10 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmission
                 sizeResults.Add(new CatalogueProductSize(size.Id, size.ManufacturerSize, size.WaistMinimumCm, size.WaistMaximumCm, size.HipMinimumCm, size.HipMaximumCm, size.ManufacturerStatedAbsorbencyMl, size.FitMeasurementBasis, size.AbsorbencyBasisMethod, size.AbsorbencySource, size.LengthMm, size.WidthMm, size.WeightGrams, packResults));
             }
 
-            variantResults.Add(new CatalogueProductVariant(variant.Id, variant.Name, variant.BackingType, sizeResults));
+            var appearance = Enum.TryParse<CatalogueVariantAppearance>(variant.PrintDesign, true, out var parsedAppearance) && Enum.IsDefined(parsedAppearance) ? parsedAppearance : CatalogueVariantAppearance.Unknown;
+            var colour = Enum.TryParse<CatalogueVariantColour>(variant.PrimaryColour, true, out var parsedColour) && Enum.IsDefined(parsedColour) ? parsedColour : CatalogueVariantColour.Unknown;
+            var designedFor = Enum.TryParse<CatalogueVariantDesignedFor>(variant.DesignedFor, true, out var parsedDesignedFor) && Enum.IsDefined(parsedDesignedFor) ? parsedDesignedFor : CatalogueVariantDesignedFor.Unknown;
+            variantResults.Add(new CatalogueProductVariant(variant.Id, variant.Name, variant.BackingType, variant.FastenerType, appearance, colour, variant.HasWetnessIndicator, variant.HasStandingLeakGuards, variant.WaistbandStyle, variant.Fragrance, variant.IsLatexFree, designedFor, variant.FastenerCount, variant.ConstructionNotes, sizeResults));
         }
 
         var images = await db.CatalogueSubmissionImages
@@ -486,6 +513,7 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmission
             .Select(value => new CatalogueProductImage(
                 value.Id,
                 value.Role,
+                value.IsPrimary,
                 $"/api/v1/products/{product.Id}/images/{value.Id}"))
             .ToList();
 
@@ -493,10 +521,15 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmission
             .Select(value => new CatalogueModeratorProductImage(
                 value.Id,
                 value.Role,
+                value.IsPrimary,
                 value.Visibility,
                 value.SourceType,
                 value.SourceUrl,
+                value.SourceNotes,
                 value.PermissionStatus,
+                value.PermissionEvidence,
+                value.OriginalFileName,
+                value.FileSizeBytes,
                 $"/api/v1/products/{product.Id}/moderator-images/{value.Id}"))
             .ToList();
 

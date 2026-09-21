@@ -180,13 +180,24 @@ public sealed class Product : Entity
         string name,
         ProductType productType,
         string? family,
+        string? description,
+        CatalogueContentVisibility descriptionVisibility,
         string? officialWebsiteUrl)
     {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("A product name is required.", nameof(name));
+        if (!Enum.IsDefined(productType))
+            throw new ArgumentException("The product type is invalid.", nameof(productType));
+        if (!Enum.IsDefined(descriptionVisibility))
+            throw new ArgumentException("The description visibility is invalid.", nameof(descriptionVisibility));
+
         ManufacturerId = manufacturerId;
         BrandId = brandId;
         Name = name.Trim();
         ProductType = productType;
         Family = string.IsNullOrWhiteSpace(family) ? null : family.Trim();
+        Description = string.IsNullOrWhiteSpace(description) ? null : description.Trim();
+        DescriptionVisibility = descriptionVisibility;
         OfficialWebsiteUrl = string.IsNullOrWhiteSpace(officialWebsiteUrl) ? null : officialWebsiteUrl.Trim();
     }
 }
@@ -241,19 +252,45 @@ public sealed class ProductVariant : Entity
     public string? ConstructionNotes { get; private set; }
     public ICollection<SizeVariant> Sizes { get; } = new List<SizeVariant>();
 
-    public void UpdateDetails(string name, BackingType backingType)
+    public void UpdateDetails(
+        string name,
+        BackingType backingType,
+        FastenerType fastenerType,
+        CatalogueVariantAppearance appearance,
+        CatalogueVariantColour primaryColour,
+        bool? hasWetnessIndicator,
+        bool? hasStandingLeakGuards,
+        WaistbandStyle waistbandStyle,
+        FragranceType fragrance,
+        bool? isLatexFree,
+        CatalogueVariantDesignedFor designedFor,
+        int? fastenerCount,
+        string? constructionNotes)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("A variant name is required.", nameof(name));
-
         if (name.Trim().Length > 200)
             throw new ArgumentException("Variant name must be 200 characters or fewer.", nameof(name));
-
-        if (!Enum.IsDefined(backingType))
-            throw new ArgumentException("The backing type is invalid.", nameof(backingType));
+        if (!Enum.IsDefined(backingType) || !Enum.IsDefined(fastenerType) || !Enum.IsDefined(appearance) ||
+            !Enum.IsDefined(primaryColour) || !Enum.IsDefined(waistbandStyle) || !Enum.IsDefined(fragrance) ||
+            !Enum.IsDefined(designedFor))
+            throw new ArgumentException("One or more variant specification values are invalid.");
+        if (fastenerCount is < 0)
+            throw new ArgumentException("Fastener count cannot be negative.", nameof(fastenerCount));
 
         Name = name.Trim();
         BackingType = backingType;
+        FastenerType = fastenerType;
+        PrintDesign = appearance.ToString();
+        PrimaryColour = primaryColour.ToString();
+        HasWetnessIndicator = hasWetnessIndicator;
+        HasStandingLeakGuards = hasStandingLeakGuards;
+        WaistbandStyle = waistbandStyle;
+        Fragrance = fragrance;
+        IsLatexFree = isLatexFree;
+        DesignedFor = designedFor.ToString();
+        FastenerCount = fastenerCount;
+        ConstructionNotes = string.IsNullOrWhiteSpace(constructionNotes) ? null : constructionNotes.Trim();
     }
 }
 
@@ -391,6 +428,16 @@ public sealed class PackType : Entity
     public int? CaseQuantity { get; private set; }
     public string? PackagingNotes { get; private set; }
     public ICollection<ProductIdentifier> Identifiers { get; } = new List<ProductIdentifier>();
+
+    public void UpdateDetails(int quantityPerPack, PackagingType packagingType)
+    {
+        if (quantityPerPack <= 0)
+            throw new ArgumentException("Pack quantity must be greater than zero.", nameof(quantityPerPack));
+        if (!Enum.IsDefined(packagingType))
+            throw new ArgumentException("The packaging type is invalid.", nameof(packagingType));
+        QuantityPerPack = quantityPerPack;
+        PackagingType = packagingType;
+    }
 }
 
 public sealed class ProductIdentifier : Entity
@@ -400,6 +447,13 @@ public sealed class ProductIdentifier : Entity
     public Guid PackTypeId { get; private set; }
     public IdentifierType Type { get; private set; }
     public string Value { get; private set; }
+
+    public void UpdateValue(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new ArgumentException("Identifier value is required.", nameof(value));
+        Value = value.Trim();
+    }
 }
 
 public sealed class Country : Entity
@@ -650,6 +704,7 @@ public sealed class CatalogueSubmissionImage : Entity
         SourceNotes = NormaliseText(sourceNotes);
         PermissionStatus = permissionStatus;
         PermissionEvidence = NormaliseText(permissionEvidence);
+        IsPrimary = false;
         Visibility = CalculateVisibility(sourceType, permissionStatus);
         CreatedAtUtc = DateTimeOffset.UtcNow;
         UpdatedAtUtc = CreatedAtUtc;
@@ -668,8 +723,18 @@ public sealed class CatalogueSubmissionImage : Entity
     public CatalogueImagePermissionStatus PermissionStatus { get; private set; }
     public string? PermissionEvidence { get; private set; }
     public CatalogueContentVisibility Visibility { get; private set; }
+    public bool IsPrimary { get; private set; }
     public DateTimeOffset CreatedAtUtc { get; private set; }
     public DateTimeOffset UpdatedAtUtc { get; private set; }
+
+    public void UpdateRole(CatalogueSubmissionImageRole role)
+    {
+        if (!Enum.IsDefined(role))
+            throw new ArgumentException("The image role is invalid.", nameof(role));
+
+        Role = role;
+        UpdatedAtUtc = DateTimeOffset.UtcNow;
+    }
 
     public void UpdateMetadata(
         CatalogueImageSourceType sourceType,
@@ -690,6 +755,12 @@ public sealed class CatalogueSubmissionImage : Entity
         PermissionStatus = permissionStatus;
         PermissionEvidence = NormaliseText(permissionEvidence);
         Visibility = CalculateVisibility(sourceType, permissionStatus);
+        UpdatedAtUtc = DateTimeOffset.UtcNow;
+    }
+
+    public void SetPrimary(bool isPrimary)
+    {
+        IsPrimary = isPrimary;
         UpdatedAtUtc = DateTimeOffset.UtcNow;
     }
 

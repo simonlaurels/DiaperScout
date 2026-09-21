@@ -3,6 +3,7 @@ using System;
 using DiaperScout.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DiaperScout.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DiaperScoutDbContext))]
-    partial class DiaperScoutDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260921082354_ProductManagementImagesRightsProvenance")]
+    partial class ProductManagementImagesRightsProvenance
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -252,57 +254,22 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                     b.ToTable("catalogue_submissions", "diaperscout");
                 });
 
-            modelBuilder.Entity("DiaperScout.Domain.CatalogueSubmissionEditorialDecision", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("DecidedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("ModeratorUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Outcome")
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("character varying(40)");
-
-                    b.Property<string>("Rationale")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("SubmissionId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ModeratorUserId");
-
-                    b.HasIndex("SubmissionId", "DecidedAtUtc");
-
-                    b.ToTable("catalogue_submission_editorial_decisions", "diaperscout");
-                });
-
             modelBuilder.Entity("DiaperScout.Domain.CatalogueSubmissionImage", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("ContentType")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<long>("FileSizeBytes")
                         .HasColumnType("bigint");
-
-                    b.Property<bool>("IsPrimary")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("OriginalFileName")
                         .IsRequired()
@@ -337,28 +304,23 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
 
+                    b.Property<Guid>("SubmissionId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("StorageKey")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
-
-                    b.Property<Guid>("SubmissionId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Visibility")
                         .IsRequired()
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)");
 
-                    b.HasKey("Id");
+                    b.Property<DateTimeOffset>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.HasIndex("ProductId")
-                        .IsUnique()
-                        .HasFilter("\"ProductId\" IS NOT NULL AND \"IsPrimary\" = TRUE")
-                        .HasDatabaseName("IX_catalogue_submission_images_ProductId_IsPrimary");
+                    b.HasKey("Id");
 
                     b.HasIndex("ProductId", "Role")
                         .IsUnique()
@@ -369,6 +331,38 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .HasFilter("\"Role\" <> 'Other'");
 
                     b.ToTable("catalogue_submission_images", "diaperscout");
+                });
+
+            modelBuilder.Entity("DiaperScout.Domain.CatalogueSubmissionEditorialDecision", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("DecidedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ModeratorUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Outcome")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<string>("Rationale")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("SubmissionId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ModeratorUserId");
+
+                    b.HasIndex("SubmissionId", "DecidedAtUtc");
+
+                    b.ToTable("catalogue_submission_editorial_decisions", "diaperscout");
                 });
 
             modelBuilder.Entity("DiaperScout.Domain.CatalogueSubmissionRetailAffiliate", b =>
@@ -1446,6 +1440,20 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
+            modelBuilder.Entity("DiaperScout.Domain.CatalogueSubmissionImage", b =>
+                {
+                    b.HasOne("DiaperScout.Domain.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("DiaperScout.Domain.CatalogueSubmission", null)
+                        .WithMany("Images")
+                        .HasForeignKey("SubmissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("DiaperScout.Domain.CatalogueSubmissionEditorialDecision", b =>
                 {
                     b.HasOne("DiaperScout.Domain.User", null)
@@ -1456,20 +1464,6 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
 
                     b.HasOne("DiaperScout.Domain.CatalogueSubmission", null)
                         .WithMany()
-                        .HasForeignKey("SubmissionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("DiaperScout.Domain.CatalogueSubmissionImage", b =>
-                {
-                    b.HasOne("DiaperScout.Domain.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("DiaperScout.Domain.CatalogueSubmission", null)
-                        .WithMany("Images")
                         .HasForeignKey("SubmissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

@@ -162,6 +162,95 @@ public sealed class ProductCatalogueClient(HttpClient client)
         return product is null ? CatalogueProductManagementResult.Failed() : CatalogueProductManagementResult.Found(product);
     }
 
+    public async Task<CatalogueProductImageAddResult> AddProductImageAsync(
+        Guid productId,
+        IBrowserFile file,
+        AddCanonicalProductImageMetadata metadata,
+        CancellationToken cancellationToken = default)
+    {
+        await using var stream = file.OpenReadStream(15 * 1024 * 1024, cancellationToken);
+        using var content = new MultipartFormDataContent();
+        using var streamContent = new StreamContent(stream);
+        streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+        content.Add(streamContent, "file", file.Name);
+        content.Add(new StringContent(metadata.Role.ToString()), "role");
+        content.Add(new StringContent(metadata.SourceType.ToString()), "sourceType");
+        content.Add(new StringContent(metadata.SourceUrl ?? string.Empty), "sourceUrl");
+        content.Add(new StringContent(metadata.SourceNotes ?? string.Empty), "sourceNotes");
+        content.Add(new StringContent(metadata.PermissionStatus.ToString()), "permissionStatus");
+        content.Add(new StringContent(metadata.PermissionEvidence ?? string.Empty), "permissionEvidence");
+        content.Add(new StringContent(metadata.IsPrimary.ToString()), "isPrimary");
+        content.Add(new StringContent(metadata.SourceSummary), "sourceSummary");
+        content.Add(new StringContent(string.Join('\n', metadata.SourceReferences)), "sourceReferences");
+        content.Add(new StringContent(metadata.EditorialRationale), "editorialRationale");
+
+        using var response = await client.PostAsync(
+            $"api/v1/catalogue-management/products/{productId}/images",
+            content,
+            cancellationToken);
+
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            return CatalogueProductImageAddResult.AccessDenied();
+        if (response.StatusCode == HttpStatusCode.NotFound)
+            return CatalogueProductImageAddResult.NotFound();
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>(cancellationToken);
+            return CatalogueProductImageAddResult.Invalid(
+                problem?.Errors is null
+                    ? new Dictionary<string, string[]> { ["image"] = ["The image could not be saved."] }
+                    : new Dictionary<string, string[]>(problem.Errors));
+        }
+
+        if (!response.IsSuccessStatusCode)
+            return CatalogueProductImageAddResult.Failed();
+
+        var image = await response.Content.ReadFromJsonAsync<CatalogueModeratorProductImage>(cancellationToken);
+        return image is null ? CatalogueProductImageAddResult.Failed() : CatalogueProductImageAddResult.Saved(image);
+    }
+
+    public async Task<CatalogueProductManagementUpdateResult> UpdateProductImageAsync(
+        Guid productId,
+        Guid imageId,
+        UpdateCanonicalProductImageMetadata request,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.PutAsJsonAsync(
+            $"api/v1/catalogue-management/products/{productId}/images/{imageId}",
+            request,
+            cancellationToken);
+        return await ReadManagementMutationResponseAsync(response, cancellationToken);
+    }
+
+    public async Task<CatalogueProductManagementUpdateResult> RemoveProductImageAsync(
+        Guid productId,
+        Guid imageId,
+        RemoveCanonicalProductElement request,
+        CancellationToken cancellationToken = default)
+    {
+        using var message = new HttpRequestMessage(
+            HttpMethod.Delete,
+            $"api/v1/catalogue-management/products/{productId}/images/{imageId}")
+        {
+            Content = JsonContent.Create(request)
+        };
+        using var response = await client.SendAsync(message, cancellationToken);
+        return await ReadManagementMutationResponseAsync(response, cancellationToken);
+    }
+
+    public async Task<CatalogueProductManagementUpdateResult> SetProductImagePrimaryAsync(
+        Guid productId,
+        Guid imageId,
+        RemoveCanonicalProductElement request,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.PostAsJsonAsync(
+            $"api/v1/catalogue-management/products/{productId}/images/{imageId}/primary",
+            request,
+            cancellationToken);
+        return await ReadManagementMutationResponseAsync(response, cancellationToken);
+    }
+
     public async Task<CatalogueProductManagementUpdateResult> UpdateProductIdentityAsync(
         Guid productId,
         UpdateCanonicalProductIdentity request,
@@ -2019,6 +2108,20 @@ public sealed record CatalogueSubmissionImportClientResult(CatalogueSubmissionIm
 public enum CatalogueSubmissionImportClientStatus { Succeeded, AccessDenied, Failed }
 
 internal sealed record ImportErrorResponse(string? Message);
+
+public enum CatalogueProductImageAddStatus { Saved, AccessDenied, NotFound, Invalid, Failed }
+
+public sealed record CatalogueProductImageAddResult(
+    CatalogueProductImageAddStatus Status,
+    CatalogueModeratorProductImage? Image = null,
+    IReadOnlyDictionary<string, string[]>? Errors = null)
+{
+    public static CatalogueProductImageAddResult Saved(CatalogueModeratorProductImage image) => new(CatalogueProductImageAddStatus.Saved, image);
+    public static CatalogueProductImageAddResult AccessDenied() => new(CatalogueProductImageAddStatus.AccessDenied);
+    public static CatalogueProductImageAddResult NotFound() => new(CatalogueProductImageAddStatus.NotFound);
+    public static CatalogueProductImageAddResult Invalid(IReadOnlyDictionary<string, string[]> errors) => new(CatalogueProductImageAddStatus.Invalid, Errors: errors);
+    public static CatalogueProductImageAddResult Failed() => new(CatalogueProductImageAddStatus.Failed);
+}
 
 public enum CatalogueProductManagementStatus { Found, AccessDenied, NotFound, Failed }
 

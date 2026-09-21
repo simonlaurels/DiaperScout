@@ -141,6 +141,33 @@ public sealed record CatalogueModeratorProductDetails(
     IReadOnlyList<CatalogueProductVariant> Variants,
     IReadOnlyList<CatalogueModeratorProductImage> Images);
 
+public enum CatalogueDataQualitySeverity
+{
+    Blocking,
+    Warning
+}
+
+public sealed record CatalogueDataQualityProduct(
+    Guid ProductId,
+    string ProductName,
+    string ManufacturerName,
+    string Detail);
+
+public sealed record CatalogueDataQualityRule(
+    string Code,
+    string Label,
+    string Impact,
+    CatalogueDataQualitySeverity Severity,
+    int ProductCount,
+    IReadOnlyList<CatalogueDataQualityProduct> Products);
+
+public sealed record CatalogueDataQualitySummary(
+    int CurrentProductCount,
+    int AutomationReadyProductCount,
+    int BlockingProductCount,
+    int WarningProductCount,
+    IReadOnlyList<CatalogueDataQualityRule> Rules);
+
 public sealed record CatalogueProductManagementDetails(
     Guid Id,
     string Name,
@@ -398,6 +425,10 @@ public interface IAtlasQueries
     Task<CatalogueProductManagementDetails?> GetProductManagementDetailsAsync(
         AuthenticatedUser actor,
         Guid productId,
+        CancellationToken cancellationToken = default);
+
+    Task<CatalogueDataQualitySummary> GetProductDataQualityAsync(
+        AuthenticatedUser actor,
         CancellationToken cancellationToken = default);
 
     Task<CatalogueProductImageContent?> GetProductImageContentAsync(

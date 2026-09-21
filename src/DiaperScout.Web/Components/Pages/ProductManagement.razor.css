@@ -531,3 +531,68 @@
     .products-management-pagination { flex-wrap: wrap; }
     .products-management-page-size { width: 100%; margin-left: 0; }
 }
+
+.data-quality-panel { margin-bottom: 1.25rem; }
+.data-quality-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: .75rem;
+    margin: 1rem 0;
+}
+.data-quality-metric {
+    padding: .9rem 1rem;
+    border: 1px solid rgba(20, 58, 75, .12);
+    border-radius: .75rem;
+    background: rgba(255,255,255,.72);
+}
+.data-quality-metric span { display: block; font-size: .78rem; opacity: .72; }
+.data-quality-metric strong { display: block; margin-top: .2rem; font-size: 1.45rem; }
+.data-quality-metric-good { border-color: rgba(44, 126, 83, .28); }
+.data-quality-metric-warning { border-color: rgba(210, 150, 40, .38); }
+.data-quality-metric-blocking { border-color: rgba(190, 70, 70, .35); }
+.data-quality-success {
+    display: flex;
+    flex-direction: column;
+    gap: .2rem;
+    padding: 1rem;
+    border-radius: .75rem;
+    background: rgba(44, 126, 83, .08);
+}
+.data-quality-success span { opacity: .75; }
+.data-quality-rules { display: grid; gap: .55rem; }
+.data-quality-rule { border: 1px solid rgba(20, 58, 75, .12); border-radius: .7rem; overflow: hidden; }
+.data-quality-rule summary {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: .7rem;
+    padding: .8rem 1rem;
+    cursor: pointer;
+    list-style: none;
+}
+.data-quality-rule summary::-webkit-details-marker { display: none; }
+.data-quality-rule-title { font-weight: 650; }
+.data-quality-severity {
+    padding: .2rem .45rem;
+    border-radius: 999px;
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+.data-quality-severity.severity-blocking { background: rgba(190,70,70,.12); color: #963838; }
+.data-quality-severity.severity-warning { background: rgba(210,150,40,.14); color: #875e10; }
+.data-quality-rule-body { padding: 0 1rem 1rem; }
+.data-quality-rule-body p { margin: 0 0 .6rem; opacity: .78; }
+.data-quality-rule-body ul { margin: 0; padding-left: 1.2rem; }
+.data-quality-rule-body li { margin: .4rem 0; }
+.data-quality-rule-body li span { display: block; font-size: .82rem; opacity: .68; }
+.data-quality-rule-body a { font-weight: 650; }
+
+@media (max-width: 900px) {
+    .data-quality-metrics { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 520px) {
+    .data-quality-metrics { grid-template-columns: 1fr; }
+}

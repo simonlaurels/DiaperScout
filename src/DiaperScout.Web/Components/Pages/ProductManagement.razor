@@ -232,6 +232,79 @@
         }
         else
         {
+            @if (dataQualityLoading)
+            {
+                <section class="product-management-panel data-quality-panel">
+                    <div class="product-management-empty"><strong>Checking data quality…</strong><span>Assessing the current catalogue for retail automation readiness.</span></div>
+                </section>
+            }
+            else if (dataQuality is not null)
+            {
+                <section class="product-management-panel data-quality-panel">
+                    <div class="product-management-panel-heading">
+                        <div>
+                            <p class="catalogue-kicker">DATA QUALITY</p>
+                            <h2>Automation readiness</h2>
+                            <p class="product-management-help">Find catalogue gaps that could prevent reliable retailer and affiliate automation later.</p>
+                        </div>
+                    </div>
+
+                    <div class="data-quality-metrics">
+                        <div class="data-quality-metric">
+                            <span>Current products</span>
+                            <strong>@dataQuality.CurrentProductCount</strong>
+                        </div>
+                        <div class="data-quality-metric data-quality-metric-good">
+                            <span>Retail matching ready</span>
+                            <strong>@dataQuality.AutomationReadyProductCount</strong>
+                        </div>
+                        <div class="data-quality-metric @(dataQuality.BlockingProductCount > 0 ? "data-quality-metric-blocking" : "data-quality-metric-good")">
+                            <span>Matching blocked</span>
+                            <strong>@dataQuality.BlockingProductCount</strong>
+                        </div>
+                        <div class="data-quality-metric @(dataQuality.WarningProductCount > 0 ? "data-quality-metric-warning" : "data-quality-metric-good")">
+                            <span>Catalogue warnings</span>
+                            <strong>@dataQuality.WarningProductCount</strong>
+                        </div>
+                    </div>
+
+                    @if (dataQuality.Rules.Count == 0)
+                    {
+                        <div class="data-quality-success">
+                            <strong>Everything currently meets the defined quality rules.</strong>
+                            <span>The current catalogue is ready for the automation checks we have defined so far.</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="data-quality-rules">
+                            @foreach (var rule in dataQuality.Rules)
+                            {
+                                <details class="data-quality-rule">
+                                    <summary>
+                                        <span class="data-quality-severity severity-@rule.Severity.ToString().ToLowerInvariant()">@FormatEnum(rule.Severity)</span>
+                                        <span class="data-quality-rule-title">@rule.Label</span>
+                                        <strong>@rule.ProductCount</strong>
+                                    </summary>
+                                    <div class="data-quality-rule-body">
+                                        <p>@rule.Impact</p>
+                                        <ul>
+                                            @foreach (var product in rule.Products)
+                                            {
+                                                <li>
+                                                    <a href="@($"/catalogue/products/manage/{product.ProductId}")">@product.ProductName</a>
+                                                    <span>@product.ManufacturerName · @product.Detail</span>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </details>
+                            }
+                        </div>
+                    }
+                </section>
+            }
+
             <section class="product-management-panel products-management-panel">
                 <div class="product-management-panel-heading products-panel-heading">
                     <div>
@@ -419,6 +492,8 @@
     private bool IsSubmissionTab => string.Equals(Tab, "submissions", StringComparison.OrdinalIgnoreCase);
     private CatalogueProductSearch? productsCatalogue;
     private bool productsLoading;
+    private bool dataQualityLoading;
+    private CatalogueDataQualitySummary? dataQuality;
     private string? productsError;
     private string productQuery = string.Empty;
     private string selectedManufacturer = string.Empty;
@@ -499,6 +574,7 @@
         {
             await LoadAsync();
             await LoadProductsAsync();
+            await LoadDataQualityAsync();
         }
     }
 
@@ -535,6 +611,23 @@
         finally
         {
             loading = false;
+        }
+    }
+
+    private async Task LoadDataQualityAsync()
+    {
+        dataQualityLoading = true;
+        try
+        {
+            dataQuality = await Catalogue.GetProductDataQualityAsync();
+        }
+        catch (HttpRequestException)
+        {
+            dataQuality = null;
+        }
+        finally
+        {
+            dataQualityLoading = false;
         }
     }
 

@@ -314,6 +314,190 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmission
         return (await GetProductDetailsCoreByIdAsync(productId, includeModeratorOnly: true, cancellationToken))?.ModeratorDetails;
     }
 
+    public async Task<CatalogueDataQualitySummary> GetProductDataQualityAsync(
+        AuthenticatedUser actor,
+        CancellationToken cancellationToken = default)
+    {
+        if (!await editorialAuthorisation.CanManageCatalogueAsync(actor, cancellationToken))
+            throw new UnauthorizedAccessException();
+
+        var products = await (from product in db.Products.AsNoTracking()
+                              join manufacturer in db.Manufacturers.AsNoTracking() on product.ManufacturerId equals manufacturer.Id
+                              where product.Status == ProductStatus.Current
+                              orderby product.Name
+                              select new
+                              {
+                                  product.Id,
+                                  product.Name,
+                                  ManufacturerName = manufacturer.Name
+                              })
+            .ToListAsync(cancellationToken);
+
+        var productIds = products.Select(value => value.Id).ToArray();
+        if (productIds.Length == 0)
+            return new CatalogueDataQualitySummary(0, 0, 0, 0, []);
+
+        var variants = await db.ProductVariants.AsNoTracking()
+            .Where(value => productIds.Contains(value.ProductId))
+            .Select(value => new { value.Id, value.ProductId, value.Name })
+            .ToListAsync(cancellationToken);
+
+        var variantIds = variants.Select(value => value.Id).ToArray();
+        var sizes = variantIds.Length == 0
+            ? []
+            : await db.SizeVariants.AsNoTracking()
+                .Where(value => variantIds.Contains(value.ProductVariantId))
+                .Select(value => new { value.Id, value.ProductVariantId, value.ManufacturerSize })
+                .ToListAsync(cancellationToken);
+
+        var sizeIds = sizes.Select(value => value.Id).ToArray();
+        var packs = sizeIds.Length == 0
+            ? []
+            : await db.PackTypes.AsNoTracking()
+                .Where(value => sizeIds.Contains(value.SizeVariantId))
+                .Select(value => new { value.Id, value.SizeVariantId, value.QuantityPerPack, value.PackagingType })
+                .ToListAsync(cancellationToken);
+
+        var packIds = packs.Select(value => value.Id).ToArray();
+        var gtins = packIds.Length == 0
+            ? []
+            : await db.ProductIdentifiers.AsNoTracking()
+                .Where(value => packIds.Contains(value.PackTypeId) && value.Type == IdentifierType.Gtin)
+                .Select(value => new { value.PackTypeId, value.Value })
+                .ToListAsync(cancellationToken);
+
+        var primaryImageProductIds = await db.CatalogueSubmissionImages.AsNoTracking()
+            .Where(value => value.ProductId.HasValue && productIds.Contains(value.ProductId.Value) && value.IsPrimary && value.Visibility == CatalogueContentVisibility.Public)
+            .Select(value => value.ProductId!.Value)
+            .Distinct()
+            .ToListAsync(cancellationToken);
+
+        var variantsByProduct = variants.GroupBy(value => value.ProductId).ToDictionary(group => group.Key, group => group.ToList());
+        var sizesByVariant = sizes.GroupBy(value => value.ProductVariantId).ToDictionary(group => group.Key, group => group.ToList());
+        var packsBySize = packs.GroupBy(value => value.SizeVariantId).ToDictionary(group => group.Key, group => group.ToList());
+        var gtinsByPack = gtins.GroupBy(value => value.PackTypeId).ToDictionary(group => group.Key, group => group.Select(value => value.Value).ToList());
+        var productLookup = products.ToDictionary(value => value.Id);
+
+        var ruleProducts = new Dictionary<string, (string Label, string Impact, CatalogueDataQualitySeverity Severity, List<CatalogueDataQualityProduct> Products)>(StringComparer.Ordinal);
+
+        void AddIssue(string code, string label, string impact, CatalogueDataQualitySeverity severity, Guid productId, string detail)
+        {
+            if (!ruleProducts.TryGetValue(code, out var rule))
+            {
+                rule = (label, impact, severity, []);
+                ruleProducts[code] = rule;
+            }
+
+            rule.Products.Add(new CatalogueDataQualityProduct(
+                productId,
+                productLookup[productId].Name,
+                productLookup[productId].ManufacturerName,
+                detail));
+        }
+
+        var blockingProductIds = new HashSet<Guid>();
+        var warningProductIds = new HashSet<Guid>();
+
+        foreach (var product in products)
+        {
+            var productVariants = variantsByProduct.GetValueOrDefault(product.Id) ?? [];
+
+            if (productVariants.Count == 0)
+            {
+                AddIssue("RetailMatching.NoVariant", "No product variant", "Retail matching cannot identify a size or offer without a variant.", CatalogueDataQualitySeverity.Blocking, product.Id, "Add at least one product variant.");
+                blockingProductIds.Add(product.Id);
+            }
+
+            var productSizes = productVariants
+                .SelectMany(variant => sizesByVariant.GetValueOrDefault(variant.Id) ?? [])
+                .ToList();
+
+            if (productSizes.Count == 0)
+            {
+                AddIssue("RetailMatching.NoSize", "No manufacturer sizes", "Retail matching needs a size-level identity to match offers reliably.", CatalogueDataQualitySeverity.Blocking, product.Id, "Add at least one manufacturer size.");
+                blockingProductIds.Add(product.Id);
+            }
+
+            var productPacks = productSizes
+                .SelectMany(size => packsBySize.GetValueOrDefault(size.Id) ?? [])
+                .ToList();
+
+            if (productPacks.Count == 0)
+            {
+                AddIssue("RetailMatching.NoPack", "No manufacturer pack", "Retail matching needs a manufacturer pack configuration before an offer can be matched.", CatalogueDataQualitySeverity.Blocking, product.Id, "Add at least one pack configuration.");
+                blockingProductIds.Add(product.Id);
+            }
+
+            var packsWithoutGtins = productPacks
+                .Where(pack => !gtinsByPack.TryGetValue(pack.Id, out var values) || values.Count == 0)
+                .ToList();
+
+            if (packsWithoutGtins.Count > 0)
+            {
+                var detail = string.Join(", ", packsWithoutGtins.Select(pack =>
+                {
+                    var size = productSizes.First(value => packsBySize[value.Id].Any(candidate => candidate.Id == pack.Id));
+                    return $"{size.ManufacturerSize} / {pack.QuantityPerPack} {pack.PackagingType.ToString().ToLowerInvariant()}";
+                }));
+                AddIssue("RetailMatching.MissingGtin", "Missing GTIN / barcode", "GTINs are the primary matching key for automated retailer offer matching.", CatalogueDataQualitySeverity.Blocking, product.Id, $"Missing on: {detail}.");
+                blockingProductIds.Add(product.Id);
+            }
+
+            var invalidGtins = productPacks
+                .SelectMany(pack => gtinsByPack.GetValueOrDefault(pack.Id) ?? [], (pack, gtin) => new { pack, gtin })
+                .Where(value => !IsValidGtin(value.gtin))
+                .ToList();
+
+            if (invalidGtins.Count > 0)
+            {
+                AddIssue("RetailMatching.InvalidGtin", "Invalid GTIN / barcode", "An invalid GTIN cannot be used safely as an automated product match key.", CatalogueDataQualitySeverity.Blocking, product.Id, $"Invalid value: {invalidGtins[0].gtin}.");
+                blockingProductIds.Add(product.Id);
+            }
+
+            if (!primaryImageProductIds.Contains(product.Id))
+            {
+                AddIssue("Catalogue.MissingPrimaryImage", "Missing primary image", "The public catalogue has no primary product image for this product.", CatalogueDataQualitySeverity.Warning, product.Id, "Add a public primary image with appropriate rights/provenance.");
+                warningProductIds.Add(product.Id);
+            }
+        }
+
+        var rules = ruleProducts
+            .OrderBy(value => value.Value.Severity)
+            .ThenBy(value => value.Value.Label)
+            .Select(value => new CatalogueDataQualityRule(
+                value.Key,
+                value.Value.Label,
+                value.Value.Impact,
+                value.Value.Severity,
+                value.Value.Products.Count,
+                value.Value.Products.OrderBy(product => product.ProductName).ToList()))
+            .ToList();
+
+        return new CatalogueDataQualitySummary(
+            products.Count,
+            products.Count - blockingProductIds.Count,
+            blockingProductIds.Count,
+            warningProductIds.Count,
+            rules);
+    }
+
+    private static bool IsValidGtin(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value) || value.Length is not (8 or 12 or 13 or 14) || value.Any(character => !char.IsDigit(character)))
+            return false;
+
+        var checksum = 0;
+        var multiplier = 3;
+        for (var index = value.Length - 2; index >= 0; index--)
+        {
+            checksum += (value[index] - '0') * multiplier;
+            multiplier = multiplier == 3 ? 1 : 3;
+        }
+
+        var expected = (10 - checksum % 10) % 10;
+        return expected == value[^1] - '0';
+    }
+
     public async Task<CatalogueProductManagementDetails?> GetProductManagementDetailsAsync(
         AuthenticatedUser actor,
         Guid productId,

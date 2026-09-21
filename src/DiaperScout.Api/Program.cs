@@ -2162,6 +2162,31 @@ if (builder.Configuration.GetValue<bool>(
         .Produces<CatalogueEntryOptions>();
 
     app.MapGet(
+        "/api/v1/catalogue-management/data-quality",
+        async (
+            ICurrentUser currentUser,
+            IAtlasQueries atlasQueries,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null)
+                return Results.Forbid();
+
+            try
+            {
+                return Results.Ok(await atlasQueries.GetProductDataQualityAsync(actor, cancellationToken));
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+        .WithName("GetCatalogueProductDataQuality")
+        .WithTags("Catalogue Management")
+        .Produces<CatalogueDataQualitySummary>();
+
+    app.MapGet(
         "/api/v1/catalogue-management/products/{productId:guid}",
         async (
             Guid productId,

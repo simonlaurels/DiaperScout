@@ -143,6 +143,19 @@ public sealed class ProductCatalogueClient(HttpClient client)
         return response.IsSuccessStatusCode;
     }
 
+    public async Task<CatalogueDataQualitySummary?> GetProductDataQualityAsync(
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.GetAsync(
+            "api/v1/catalogue-management/data-quality",
+            cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+            return null;
+
+        return await response.Content.ReadFromJsonAsync<CatalogueDataQualitySummary>(cancellationToken);
+    }
+
     public async Task<CatalogueProductManagementResult> GetProductManagementAsync(
         Guid productId,
         CancellationToken cancellationToken = default)

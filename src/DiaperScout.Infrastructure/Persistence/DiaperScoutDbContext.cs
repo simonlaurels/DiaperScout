@@ -14,6 +14,7 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
     public DbSet<ProductIdentifier> ProductIdentifiers => Set<ProductIdentifier>();
     public DbSet<Country> Countries => Set<Country>();
     public DbSet<Retailer> Retailers => Set<Retailer>();
+    public DbSet<RetailerProductListing> RetailerProductListings => Set<RetailerProductListing>();
     public DbSet<RetailerIdentityVerification> RetailerIdentityVerifications => Set<RetailerIdentityVerification>();
     public DbSet<RetailerAffiliateProgramme> RetailerAffiliateProgrammes => Set<RetailerAffiliateProgramme>();
     public DbSet<Location> Locations => Set<Location>();
@@ -188,6 +189,26 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
                 .WithMany()
                 .HasForeignKey(x => x.VerifiedByUserId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<RetailerProductListing>(entity =>
+        {
+            entity.ToTable("retailer_product_listings");
+            entity.Property(x => x.ListingUrl).HasMaxLength(2000).IsRequired();
+            entity.Property(x => x.DiscoveryProvider).HasMaxLength(100).IsRequired();
+            entity.Property(x => x.SourceUrl).HasMaxLength(2000);
+            entity.Property(x => x.ExternalListingId).HasMaxLength(300);
+            entity.Property(x => x.Status).HasConversion<string>().HasMaxLength(50).IsRequired();
+            entity.HasIndex(x => new { x.PackTypeId, x.RetailerId, x.ListingUrl }).IsUnique();
+            entity.HasIndex(x => new { x.RetailerId, x.Status });
+            entity.HasOne<PackType>()
+                .WithMany()
+                .HasForeignKey(x => x.PackTypeId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne<Retailer>()
+                .WithMany()
+                .HasForeignKey(x => x.RetailerId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<RetailerAffiliateProgramme>(entity =>

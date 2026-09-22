@@ -121,6 +121,41 @@ public sealed class RetailerManagementClient(HttpClient client)
             : RetailerAffiliateProgrammeResult.Found(programmes);
     }
 
+    public async Task<RetailerAffiliateProgrammeResult> UpdateAffiliateProgrammeStatusAsync(
+        Guid retailerId,
+        Guid programmeId,
+        RetailerAffiliateProgrammeStatusUpdateRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.PutAsJsonAsync(
+            $"api/v1/retailer-management/{retailerId}/affiliate-programmes/{programmeId}/status",
+            request,
+            cancellationToken);
+
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            return RetailerAffiliateProgrammeResult.AccessDenied();
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+            return RetailerAffiliateProgrammeResult.NotFound();
+
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var problem = await response.Content.ReadFromJsonAsync<Microsoft.AspNetCore.Mvc.ValidationProblemDetails>(cancellationToken);
+            return RetailerAffiliateProgrammeResult.Invalid(
+                problem?.Errors is null
+                    ? new Dictionary<string, string[]> { ["status"] = ["The affiliate programme status could not be updated."] }
+                    : new Dictionary<string, string[]>(problem.Errors));
+        }
+
+        if (!response.IsSuccessStatusCode)
+            return RetailerAffiliateProgrammeResult.Failed();
+
+        var programme = await response.Content.ReadFromJsonAsync<RetailerAffiliateProgrammeItem>(cancellationToken);
+        return programme is null
+            ? RetailerAffiliateProgrammeResult.Failed()
+            : RetailerAffiliateProgrammeResult.StatusUpdated(programme);
+    }
+
     public async Task<RetailerAffiliateProgrammeResult> SelectAffiliateProgrammeAsync(
         Guid retailerId,
         Guid programmeId,
@@ -278,6 +313,9 @@ public sealed record RetailerAffiliateProgrammeResult(
     public static RetailerAffiliateProgrammeResult Selected(RetailerAffiliateProgrammeItem programme) =>
         new(RetailerAffiliateProgrammeResultStatus.Selected, SelectedProgramme: programme);
 
+    public static RetailerAffiliateProgrammeResult StatusUpdated(RetailerAffiliateProgrammeItem programme) =>
+        new(RetailerAffiliateProgrammeResultStatus.StatusUpdated, SelectedProgramme: programme);
+
     public static RetailerAffiliateProgrammeResult Invalid(IReadOnlyDictionary<string, string[]> errors) =>
         new(RetailerAffiliateProgrammeResultStatus.Invalid, Errors: errors);
 
@@ -295,6 +333,7 @@ public enum RetailerAffiliateProgrammeResultStatus
 {
     Found,
     Selected,
+    StatusUpdated,
     Invalid,
     AccessDenied,
     NotFound,

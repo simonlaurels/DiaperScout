@@ -1760,6 +1760,98 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
     }
 
     [Fact]
+    public async Task GetCatalogueProduct_IncludesVerifiedRetailOffers()
+    {
+        var retailer = new Retailer(
+            "Verified Offer Retailer",
+            $"verified-offer-retailer-{Guid.NewGuid():N}",
+            "https://verified-offer.example.test");
+        retailer.VerifyIdentity("https://verified-offer.example.test/about");
+
+        var listing = new RetailerProductListing(
+            _fixture.PackTypeId,
+            retailer.Id,
+            "https://verified-offer.example.test/products/integration-test",
+            "Integration Test Discovery");
+        listing.MarkVerified();
+
+        await using (var db = _fixture.CreateDbContext())
+        {
+            db.Retailers.Add(retailer);
+            db.RetailerProductListings.Add(listing);
+            await db.SaveChangesAsync();
+        }
+
+        using var client = _factory.CreateClient();
+        var response = await client.GetAsync("/api/v1/products/integration-test-product");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var product = await response.Content.ReadFromJsonAsync<CatalogueProductDetails>();
+        Assert.NotNull(product);
+
+        var offer = Assert.Single(product.RetailOffers, value => value.Id == listing.Id);
+        Assert.Equal(_fixture.PackTypeId, offer.PackTypeId);
+        Assert.Equal("Integration Test Size", offer.ManufacturerSize);
+        Assert.Equal(12, offer.QuantityPerPack);
+        Assert.Equal(PackagingType.Bag, offer.PackagingType);
+        Assert.Equal("12345678", offer.Gtin);
+        Assert.Equal("Verified Offer Retailer", offer.RetailerName);
+        Assert.Equal("https://verified-offer.example.test/products/integration-test", offer.ListingUrl);
+        Assert.Equal(offer.ListingUrl, offer.DestinationUrl);
+        Assert.Null(offer.AffiliateNetwork);
+        Assert.False(offer.IsAffiliateBacked);
+    }
+
+    [Fact]
+    public async Task GetCatalogueProduct_UsesConfiguredPreferredAwinProgrammeForRetailOffer()
+    {
+        var retailer = new Retailer(
+            "Affiliate Offer Retailer",
+            $"affiliate-offer-retailer-{Guid.NewGuid():N}",
+            "https://affiliate-offer.example.test");
+        retailer.VerifyIdentity("https://affiliate-offer.example.test/about");
+
+        var listing = new RetailerProductListing(
+            _fixture.PackTypeId,
+            retailer.Id,
+            "https://affiliate-offer.example.test/products/integration-test",
+            "Integration Test Discovery");
+        listing.MarkVerified();
+
+        var programme = new RetailerAffiliateProgramme(
+            retailer.Id,
+            "Awin",
+            "123456",
+            "Affiliate Offer Programme",
+            AffiliateProgrammeStatus.Configured,
+            deepLinksAllowed: true);
+        programme.MarkPreferred();
+
+        await using (var db = _fixture.CreateDbContext())
+        {
+            db.Retailers.Add(retailer);
+            db.RetailerProductListings.Add(listing);
+            db.RetailerAffiliateProgrammes.Add(programme);
+            await db.SaveChangesAsync();
+        }
+
+        using var client = _factory.CreateClient();
+        var response = await client.GetAsync("/api/v1/products/integration-test-product");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var product = await response.Content.ReadFromJsonAsync<CatalogueProductDetails>();
+        Assert.NotNull(product);
+
+        var offer = Assert.Single(product.RetailOffers, value => value.Id == listing.Id);
+        Assert.True(offer.IsAffiliateBacked);
+        Assert.Equal("Awin", offer.AffiliateNetwork);
+        Assert.StartsWith("https://www.awin1.com/cread.php?", offer.DestinationUrl);
+        Assert.Contains("awinmid=123456", offer.DestinationUrl);
+        Assert.Contains("awinaffid=", offer.DestinationUrl);
+        Assert.Contains("ued=https%3A%2F%2Faffiliate-offer.example.test%2Fproducts%2Fintegration-test", offer.DestinationUrl);
+    }
+
+    [Fact]
     public async Task GetCatalogueProduct_ForUnknownSlug_ReturnsNotFound()
     {
         using var client = _factory.CreateClient();

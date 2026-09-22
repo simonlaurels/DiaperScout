@@ -411,6 +411,21 @@
     opacity: .72;
 }
 
+.retailer-affiliate-controls {
+    display: grid;
+    grid-template-columns: minmax(180px, 260px) 1fr;
+    gap: .75rem;
+    align-items: end;
+    margin-top: 1rem;
+    padding-top: .9rem;
+    border-top: 1px solid rgba(20, 58, 75, .08);
+}
+
+.retailer-affiliate-actions {
+    justify-content: flex-end;
+    margin: 0;
+}
+
 .retailer-affiliate-preferred {
     display: inline-flex;
     align-items: center;

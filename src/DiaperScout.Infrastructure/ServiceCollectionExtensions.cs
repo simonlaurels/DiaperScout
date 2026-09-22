@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
 namespace DiaperScout.Infrastructure;
@@ -19,13 +20,22 @@ public static class ServiceCollectionExtensions
 
         services.AddDbContext<DiaperScoutDbContext>(options => options.UseNpgsql(connectionString));
         services.AddHttpContextAccessor();
+        services.Configure<DataForSeoOptions>(configuration.GetSection(DataForSeoOptions.SectionName));
+        services.Configure<AwinAffiliateProgrammeDiscoveryOptions>(configuration.GetSection(AwinAffiliateProgrammeDiscoveryOptions.SectionName));
+        services.Configure<RetailerDiscoveryJobOptions>(configuration.GetSection(RetailerDiscoveryJobOptions.SectionName));
+        services.AddHttpClient<IRetailerDiscoveryProvider, DataForSeoGoogleShoppingProvider>();
+        services.AddSingleton(TimeProvider.System);
+        services.AddScoped<IRetailerDiscoveryScheduler, RetailerDiscoveryScheduler>();
+        services.AddHostedService<RetailerDiscoveryBackgroundService>();
 
         services.AddScoped<IAtlasQueries, AtlasQueries>();
         services.AddScoped<IRetailerManagement, RetailerManagement>();
+        services.AddScoped<IRetailerDiscovery, RetailerDiscovery>();
         services.AddScoped<IObservationSubmissions, ObservationSubmissions>();
         services.AddScoped<ICatalogueSubmissions, CatalogueSubmissions>();
         services.AddSingleton<ICatalogueSubmissionImageStorage, CatalogueSubmissionImageStorage>();
         services.AddScoped<ICatalogueRetailQueries, CatalogueRetailQueries>();
+        services.AddSingleton<IAffiliateLinkResolver, AwinAffiliateLinkResolver>();
         services.AddScoped<ICurrentExplorer, CurrentExplorer>();
         services.AddScoped<ICurrentUser, CurrentUser>();
         services.AddScoped<IEditorialAuthorisation, EditorialAuthorisation>();
@@ -53,6 +63,222 @@ public sealed class CurrentExplorer(DiaperScoutDbContext db, IHttpContextAccesso
     }
 }
 
+
+internal sealed class RetailerDiscovery(DiaperScoutDbContext db, IRetailerDiscoveryProvider provider) : IRetailerDiscovery
+{
+    public async Task<IReadOnlyList<RetailerProductListingItem>> DiscoverAndRecordAsync(
+        string gtin,
+        CancellationToken cancellationToken = default)
+    {
+        var candidates = await provider.DiscoverAsync(gtin, cancellationToken);
+        var results = new List<RetailerProductListingItem>(candidates.Count);
+
+        foreach (var candidate in candidates)
+        {
+            var slug = CreateRetailerSlug(candidate.RetailerName);
+            results.Add(await RecordAsync(
+                new RetailerDiscoveryResult(
+                    candidate.Gtin,
+                    candidate.RetailerName,
+                    slug,
+                    candidate.RetailerWebsiteUrl,
+                    candidate.ListingUrl,
+                    "DataForSEO.GoogleShopping",
+                    candidate.SourceUrl,
+                    candidate.ExternalListingId),
+                cancellationToken));
+        }
+
+        return results;
+    }
+
+    public async Task<RetailerProductListingItem> RecordAsync(
+        RetailerDiscoveryResult result,
+        CancellationToken cancellationToken = default)
+    {
+        var gtin = result.Gtin?.Trim();
+        if (string.IsNullOrWhiteSpace(gtin))
+            throw new CatalogueValidationException("gtin", "A GTIN is required.");
+
+        var pack = await (from identifier in db.ProductIdentifiers
+                          join packType in db.PackTypes on identifier.PackTypeId equals packType.Id
+                          join size in db.SizeVariants on packType.SizeVariantId equals size.Id
+                          join variant in db.ProductVariants on size.ProductVariantId equals variant.Id
+                          join product in db.Products on variant.ProductId equals product.Id
+                          where identifier.Type == IdentifierType.Gtin && identifier.Value == gtin
+                          select new { PackType = packType, ProductStatus = product.Status })
+            .SingleOrDefaultAsync(cancellationToken);
+
+        if (pack is null)
+            throw new KeyNotFoundException();
+
+        if (pack.ProductStatus != ProductStatus.Current)
+            throw new CatalogueValidationException("gtin", "Retailer discovery is only available for current catalogue products.");
+
+        var retailer = await FindRetailerAsync(result, cancellationToken);
+        if (retailer is null)
+        {
+            var name = result.RetailerName?.Trim();
+            var slug = result.RetailerSlug?.Trim().ToLowerInvariant();
+            if (string.IsNullOrWhiteSpace(name))
+                throw new CatalogueValidationException("retailerName", "A retailer name is required.");
+            if (string.IsNullOrWhiteSpace(slug))
+                throw new CatalogueValidationException("retailerSlug", "A retailer slug is required.");
+
+            try
+            {
+                retailer = new Retailer(name, slug, result.RetailerWebsiteUrl);
+            }
+            catch (ArgumentException exception)
+            {
+                throw new CatalogueValidationException(exception.ParamName ?? "retailer", exception.Message);
+            }
+
+            db.Retailers.Add(retailer);
+        }
+
+        RetailerProductListing listing;
+        var listingUrl = NormalizeUrlForComparison(result.ListingUrl);
+        if (listingUrl is null)
+            throw new CatalogueValidationException("listingUrl", "A valid HTTP or HTTPS listing URL is required.");
+
+        listing = await db.RetailerProductListings
+            .SingleOrDefaultAsync(
+                value => value.PackTypeId == pack.PackType.Id &&
+                         value.RetailerId == retailer.Id &&
+                         value.ListingUrl == listingUrl,
+                cancellationToken);
+
+        try
+        {
+            if (listing is null)
+            {
+                listing = new RetailerProductListing(
+                    pack.PackType.Id,
+                    retailer.Id,
+                    listingUrl,
+                    result.DiscoveryProvider,
+                    result.SourceUrl,
+                    result.ExternalListingId);
+                db.RetailerProductListings.Add(listing);
+            }
+            else
+            {
+                listing.UpdateDiscovery(
+                    listingUrl,
+                    result.DiscoveryProvider,
+                    result.SourceUrl,
+                    result.ExternalListingId);
+            }
+        }
+        catch (ArgumentException exception)
+        {
+            throw new CatalogueValidationException(exception.ParamName ?? "discovery", exception.Message);
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+        return ToListingItem(listing, retailer);
+    }
+
+    public async Task<IReadOnlyList<RetailerProductListingItem>> GetForGtinAsync(
+        string gtin,
+        CancellationToken cancellationToken = default)
+    {
+        var normalizedGtin = gtin?.Trim();
+        if (string.IsNullOrWhiteSpace(normalizedGtin))
+            throw new CatalogueValidationException("gtin", "A GTIN is required.");
+
+        var packId = await db.ProductIdentifiers
+            .Where(identifier => identifier.Type == IdentifierType.Gtin && identifier.Value == normalizedGtin)
+            .Select(identifier => (Guid?)identifier.PackTypeId)
+            .SingleOrDefaultAsync(cancellationToken);
+
+        if (!packId.HasValue)
+            throw new KeyNotFoundException();
+
+        return await (from listing in db.RetailerProductListings.AsNoTracking()
+                      join retailer in db.Retailers.AsNoTracking() on listing.RetailerId equals retailer.Id
+                      where listing.PackTypeId == packId.Value
+                      orderby retailer.Name, listing.ListingUrl
+                      select new RetailerProductListingItem(
+                          listing.Id,
+                          listing.PackTypeId,
+                          listing.RetailerId,
+                          retailer.Name,
+                          retailer.Status,
+                          listing.ListingUrl,
+                          listing.DiscoveryProvider,
+                          listing.SourceUrl,
+                          listing.ExternalListingId,
+                          listing.Status,
+                          listing.DiscoveredAtUtc,
+                          listing.LastCheckedAtUtc))
+            .ToListAsync(cancellationToken);
+    }
+
+    private static string CreateRetailerSlug(string retailerName)
+    {
+        var slug = new string(retailerName.Trim().ToLowerInvariant()
+            .Select(character => char.IsLetterOrDigit(character) ? character : '-')
+            .ToArray());
+
+        while (slug.Contains("--", StringComparison.Ordinal))
+            slug = slug.Replace("--", "-", StringComparison.Ordinal);
+
+        return slug.Trim('-');
+    }
+
+    private async Task<Retailer?> FindRetailerAsync(
+        RetailerDiscoveryResult result,
+        CancellationToken cancellationToken)
+    {
+        var websiteUrl = NormalizeUrlForComparison(result.RetailerWebsiteUrl);
+        if (websiteUrl is not null)
+        {
+            var retailer = await db.Retailers
+                .SingleOrDefaultAsync(value => value.WebsiteUrl == websiteUrl, cancellationToken);
+            if (retailer is not null)
+                return retailer;
+        }
+
+        if (!string.IsNullOrWhiteSpace(result.RetailerSlug))
+            return await db.Retailers.SingleOrDefaultAsync(
+                value => value.Slug == result.RetailerSlug.Trim().ToLowerInvariant(),
+                cancellationToken);
+
+        return null;
+    }
+
+    private static string? NormalizeUrlForComparison(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
+
+        if (!Uri.TryCreate(value.Trim(), UriKind.Absolute, out var uri) ||
+            (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+            return null;
+
+        return uri.ToString();
+    }
+
+    private static RetailerProductListingItem ToListingItem(
+        RetailerProductListing listing,
+        Retailer retailer) =>
+        new(
+            listing.Id,
+            listing.PackTypeId,
+            listing.RetailerId,
+            retailer.Name,
+            retailer.Status,
+            listing.ListingUrl,
+            listing.DiscoveryProvider,
+            listing.SourceUrl,
+            listing.ExternalListingId,
+            listing.Status,
+            listing.DiscoveredAtUtc,
+            listing.LastCheckedAtUtc);
+
+}
 
 internal sealed class RetailerManagement(DiaperScoutDbContext db, IEditorialAuthorisation editorialAuthorisation) : IRetailerManagement
 {
@@ -327,6 +553,46 @@ internal sealed class RetailerManagement(DiaperScoutDbContext db, IEditorialAuth
         return ToAffiliateProgrammeItem(programme);
     }
 
+    public async Task<RetailerAffiliateProgrammeItem> UpdateAffiliateProgrammeStatusAsync(
+        AuthenticatedUser actor,
+        Guid retailerId,
+        Guid programmeId,
+        RetailerAffiliateProgrammeStatusUpdateRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireManagementAsync(actor, cancellationToken);
+
+        var retailer = await db.Retailers.SingleOrDefaultAsync(value => value.Id == retailerId, cancellationToken)
+            ?? throw new KeyNotFoundException();
+
+        if (retailer.Status != RetailerStatus.Verified)
+            throw new CatalogueValidationException("retailer", "The retailer must be verified before an affiliate programme can be managed.");
+
+        var programme = await db.RetailerAffiliateProgrammes
+            .SingleOrDefaultAsync(
+                value => value.Id == programmeId && value.RetailerId == retailerId,
+                cancellationToken)
+            ?? throw new KeyNotFoundException();
+
+        try
+        {
+            programme.SetManagementStatus(request.Status);
+        }
+        catch (ArgumentException exception)
+        {
+            throw new CatalogueValidationException(
+                exception.ParamName ?? "status",
+                exception.Message);
+        }
+        catch (InvalidOperationException exception)
+        {
+            throw new CatalogueValidationException("status", exception.Message);
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+        return ToAffiliateProgrammeItem(programme);
+    }
+
     public async Task<RetailerAffiliateProgrammeItem> SelectAffiliateProgrammeAsync(
         AuthenticatedUser actor,
         Guid retailerId,
@@ -476,7 +742,7 @@ internal sealed class RetailerManagement(DiaperScoutDbContext db, IEditorialAuth
             retailer.IdentityVerifiedAtUtc);
 }
 
-internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmissionImageStorage imageStorage, IEditorialAuthorisation editorialAuthorisation) : IAtlasQueries
+internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmissionImageStorage imageStorage, IEditorialAuthorisation editorialAuthorisation, IAffiliateLinkResolver affiliateLinkResolver) : IAtlasQueries
 {
     public async Task<ProductSummary?> GetProductBySlugAsync(string slug, CancellationToken cancellationToken = default) =>
         await db.Products.AsNoTracking()
@@ -1146,8 +1412,61 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmission
             ? product.Description
             : null;
 
+        var retailOfferRows = await (from listing in db.RetailerProductListings.AsNoTracking()
+                                     join retailer in db.Retailers.AsNoTracking() on listing.RetailerId equals retailer.Id
+                                     join pack in db.PackTypes.AsNoTracking() on listing.PackTypeId equals pack.Id
+                                     join size in db.SizeVariants.AsNoTracking() on pack.SizeVariantId equals size.Id
+                                     join variant in db.ProductVariants.AsNoTracking() on size.ProductVariantId equals variant.Id
+                                     join identifier in db.ProductIdentifiers.AsNoTracking().Where(value => value.Type == IdentifierType.Gtin) on pack.Id equals identifier.PackTypeId into identifierJoin
+                                     from identifier in identifierJoin.DefaultIfEmpty()
+                                     where variant.ProductId == product.Id
+                                           && product.Status == ProductStatus.Current
+                                           && retailer.Status == RetailerStatus.Verified
+                                           && listing.Status == RetailerProductDiscoveryStatus.Verified
+                                     orderby retailer.Name, size.ManufacturerSize, pack.QuantityPerPack, listing.ListingUrl
+                                     select new
+                                     {
+                                         ListingId = listing.Id,
+                                         PackTypeId = pack.Id,
+                                         ManufacturerSize = size.ManufacturerSize,
+                                         QuantityPerPack = pack.QuantityPerPack,
+                                         PackagingType = pack.PackagingType,
+                                         Gtin = identifier == null ? null : identifier.Value,
+                                         RetailerId = retailer.Id,
+                                         RetailerName = retailer.Name,
+                                         ListingUrl = listing.ListingUrl
+                                     })
+            .ToListAsync(cancellationToken);
+
+        var retailerIds = retailOfferRows.Select(value => value.RetailerId).Distinct().ToArray();
+        var preferredProgrammes = await db.RetailerAffiliateProgrammes.AsNoTracking()
+            .Where(value => retailerIds.Contains(value.RetailerId)
+                            && value.IsPreferred
+                            && value.Status == AffiliateProgrammeStatus.Configured)
+            .ToDictionaryAsync(value => value.RetailerId, cancellationToken);
+
+        var retailOffers = retailOfferRows
+            .Select(value =>
+            {
+                preferredProgrammes.TryGetValue(value.RetailerId, out var programme);
+                var destination = affiliateLinkResolver.Resolve(value.ListingUrl, programme);
+                return new CatalogueRetailOffer(
+                    value.ListingId,
+                    value.PackTypeId,
+                    value.ManufacturerSize,
+                    value.QuantityPerPack,
+                    value.PackagingType,
+                    value.Gtin,
+                    value.RetailerName,
+                    value.ListingUrl,
+                    destination.Url,
+                    destination.Network,
+                    destination.IsAffiliateBacked);
+            })
+            .ToList();
+
         return (
-            new CatalogueProductDetails(product.Id, product.Name, product.Slug, product.ProductType, product.Status, product.ManufacturerName, product.BrandName, publicDescription, product.DescriptionVisibility, product.OfficialWebsiteUrl, variantResults, publicImages),
+            new CatalogueProductDetails(product.Id, product.Name, product.Slug, product.ProductType, product.Status, product.ManufacturerName, product.BrandName, publicDescription, product.DescriptionVisibility, product.OfficialWebsiteUrl, variantResults, publicImages, retailOffers),
             new CatalogueModeratorProductDetails(product.Id, product.Name, product.Slug, product.ProductType, product.Status, product.ManufacturerName, product.BrandName, product.Description, product.DescriptionVisibility, product.OfficialWebsiteUrl, variantResults, moderatorImages));
     }
 

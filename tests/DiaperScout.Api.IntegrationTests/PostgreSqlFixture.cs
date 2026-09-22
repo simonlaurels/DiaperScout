@@ -27,6 +27,7 @@ public sealed class PostgreSqlFixture : IAsyncLifetime
     public Guid ProductId { get; private set; }
     public Guid LocationId { get; private set; }
     public Guid RetailerId { get; private set; }
+    public Guid PackTypeId { get; private set; }
 
     public async Task InitializeAsync()
     {
@@ -103,6 +104,7 @@ public sealed class PostgreSqlFixture : IAsyncLifetime
         ProductId = product.Id;
         LocationId = location.Id;
         RetailerId = retailer.Id;
+        PackTypeId = packType.Id;
     }
 
     public DiaperScoutDbContext CreateDbContext()

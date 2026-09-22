@@ -10,6 +10,7 @@ public enum ProductType { Tape, PullUp, Pad, Booster, AllInOne, Other }
 public enum ProductStatus { Current, Discontinued, Prototype }
 public enum RetailerStatus { Discovered, Verified, NeedsReview, Inactive }
 public enum RetailerIdentityVerificationOutcome { Verified, NeedsReview }
+public enum RetailerProductDiscoveryStatus { Discovered, Verified, NeedsReview, Inactive }
 public enum BackingType { Unknown, Plastic, Cloth, Hybrid, Other }
 public enum FastenerType { Unknown, AdhesiveTape, HookAndLoop, Other }
 public enum CatalogueVariantAppearance { Unknown, Plain, Printed }
@@ -1822,6 +1823,111 @@ public sealed class DiscoveryTask : Entity
     public Guid? ResultingObservationId { get; private set; }
 }
 
+public sealed class RetailerProductListing : Entity
+{
+    private RetailerProductListing()
+    {
+        ListingUrl = null!;
+        DiscoveryProvider = null!;
+    }
+
+    public RetailerProductListing(
+        Guid packTypeId,
+        Guid retailerId,
+        string listingUrl,
+        string discoveryProvider,
+        string? sourceUrl = null,
+        string? externalListingId = null)
+    {
+        if (packTypeId == Guid.Empty)
+            throw new ArgumentException("A manufacturer pack is required.", nameof(packTypeId));
+        if (retailerId == Guid.Empty)
+            throw new ArgumentException("A retailer is required.", nameof(retailerId));
+
+        PackTypeId = packTypeId;
+        RetailerId = retailerId;
+        ListingUrl = NormalizeRequiredUrl(listingUrl, nameof(listingUrl));
+        DiscoveryProvider = RequireValue(discoveryProvider, nameof(discoveryProvider), 100);
+        SourceUrl = NormalizeUrl(sourceUrl, nameof(sourceUrl));
+        ExternalListingId = NormalizeText(externalListingId);
+        Status = RetailerProductDiscoveryStatus.Discovered;
+        DiscoveredAtUtc = DateTimeOffset.UtcNow;
+        LastCheckedAtUtc = DiscoveredAtUtc;
+    }
+
+    public Guid PackTypeId { get; private set; }
+    public Guid RetailerId { get; private set; }
+    public string ListingUrl { get; private set; }
+    public string DiscoveryProvider { get; private set; }
+    public string? SourceUrl { get; private set; }
+    public string? ExternalListingId { get; private set; }
+    public RetailerProductDiscoveryStatus Status { get; private set; }
+    public DateTimeOffset DiscoveredAtUtc { get; private set; }
+    public DateTimeOffset LastCheckedAtUtc { get; private set; }
+
+    public void UpdateDiscovery(
+        string listingUrl,
+        string discoveryProvider,
+        string? sourceUrl,
+        string? externalListingId)
+    {
+        ListingUrl = NormalizeRequiredUrl(listingUrl, nameof(listingUrl));
+        DiscoveryProvider = RequireValue(discoveryProvider, nameof(discoveryProvider), 100);
+        SourceUrl = NormalizeUrl(sourceUrl, nameof(sourceUrl));
+        ExternalListingId = NormalizeText(externalListingId);
+        LastCheckedAtUtc = DateTimeOffset.UtcNow;
+    }
+
+    public void MarkVerified()
+    {
+        Status = RetailerProductDiscoveryStatus.Verified;
+        LastCheckedAtUtc = DateTimeOffset.UtcNow;
+    }
+
+    public void MarkNeedsReview()
+    {
+        Status = RetailerProductDiscoveryStatus.NeedsReview;
+        LastCheckedAtUtc = DateTimeOffset.UtcNow;
+    }
+
+    public void MarkInactive()
+    {
+        Status = RetailerProductDiscoveryStatus.Inactive;
+        LastCheckedAtUtc = DateTimeOffset.UtcNow;
+    }
+
+    private static string RequireValue(string value, string parameterName, int maxLength)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new ArgumentException("A value is required.", parameterName);
+
+        var trimmed = value.Trim();
+        if (trimmed.Length > maxLength)
+            throw new ArgumentException($"The value must be {maxLength} characters or fewer.", parameterName);
+
+        return trimmed;
+    }
+
+    private static string NormalizeRequiredUrl(string value, string parameterName) =>
+        NormalizeUrl(value, parameterName)
+        ?? throw new ArgumentException("A valid HTTP or HTTPS URL is required.", parameterName);
+
+    private static string? NormalizeText(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+    private static string? NormalizeUrl(string? value, string parameterName)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
+
+        if (!Uri.TryCreate(value.Trim(), UriKind.Absolute, out var uri)
+            || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+            throw new ArgumentException("The URL must be an absolute HTTP or HTTPS URL.", parameterName);
+
+        return uri.ToString();
+    }
+}
+
 public sealed class RetailerAffiliateProgramme : Entity
 {
     private RetailerAffiliateProgramme()
@@ -1905,9 +2011,32 @@ public sealed class RetailerAffiliateProgramme : Entity
         DeepLinksAllowed = deepLinksAllowed;
         ApplicationRequired = applicationRequired;
         SourceUrl = NormalizeUrl(sourceUrl, nameof(sourceUrl));
-        Status = status;
+        if (!IsModeratorManagedStatus(Status))
+            Status = status;
         LastCheckedAtUtc = DateTimeOffset.UtcNow;
     }
+
+    public void SetManagementStatus(AffiliateProgrammeStatus status)
+    {
+        if (!Enum.IsDefined(status))
+            throw new ArgumentException("The affiliate programme status is invalid.", nameof(status));
+
+        if (status is AffiliateProgrammeStatus.NotInvestigated or AffiliateProgrammeStatus.NoAffiliateProgramme)
+            throw new ArgumentException("This status is discovery-only and cannot be recorded as a moderator lifecycle state.", nameof(status));
+
+        if (status == AffiliateProgrammeStatus.Configured
+            && Status is not AffiliateProgrammeStatus.Approved
+            && Status is not AffiliateProgrammeStatus.Configured)
+            throw new InvalidOperationException("An affiliate programme must be approved before it can be marked configured.");
+
+        Status = status;
+    }
+
+    private static bool IsModeratorManagedStatus(AffiliateProgrammeStatus status) =>
+        status is AffiliateProgrammeStatus.ApplicationSubmitted
+            or AffiliateProgrammeStatus.Approved
+            or AffiliateProgrammeStatus.Configured
+            or AffiliateProgrammeStatus.NotApplicable;
 
     public void MarkPreferred()
     {

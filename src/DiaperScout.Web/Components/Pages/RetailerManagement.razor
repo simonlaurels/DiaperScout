@@ -260,14 +260,28 @@
                                                                     <span>Application: @(programme.ApplicationRequired ? "Required" : "Not required")</span>
                                                                 </div>
 
-                                                                @if (!programme.IsPreferred)
-                                                                {
-                                                                    <div class="retailer-form-actions">
-                                                                        <button class="ds-button ds-button-secondary" type="button" @onclick="() => SelectAffiliateProgrammeAsync(programme.Id)" disabled="@saving">
-                                                                            Select preferred
+                                                                <div class="retailer-affiliate-controls">
+                                                                    <div class="retailer-field">
+                                                                        <label for="affiliate-status-@programme.Id">Programme state</label>
+                                                                        <select id="affiliate-status-@programme.Id" class="ds-select" value="@GetAffiliateStatusValue(programme)" @onchange="eventArgs => OnAffiliateStatusChanged(programme.Id, eventArgs)">
+                                                                            @foreach (var status in GetManageableAffiliateStatuses())
+                                                                            {
+                                                                                <option value="@status">@FormatEnum(status)</option>
+                                                                            }
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="retailer-form-actions retailer-affiliate-actions">
+                                                                        @if (!programme.IsPreferred)
+                                                                        {
+                                                                            <button class="ds-button ds-button-secondary" type="button" @onclick="() => SelectAffiliateProgrammeAsync(programme.Id)" disabled="@saving">
+                                                                                Select preferred
+                                                                            </button>
+                                                                        }
+                                                                        <button class="ds-button ds-button-primary" type="button" @onclick="() => UpdateAffiliateProgrammeStatusAsync(programme.Id)" disabled="@saving">
+                                                                            Save state
                                                                         </button>
                                                                     </div>
-                                                                }
+                                                                </div>
                                                             </article>
                                                         }
                                                     </div>
@@ -318,6 +332,7 @@
     private Guid? editingRetailerId;
     private bool affiliateLoading;
     private List<RetailerAffiliateProgrammeItem> affiliateProgrammes = [];
+    private readonly Dictionary<Guid, AffiliateProgrammeStatus> affiliateStatusSelections = [];
 
     private readonly RetailerFormModel createModel = new();
     private readonly RetailerFormModel editModel = new();
@@ -407,7 +422,12 @@
         affiliateLoading = false;
 
         if (result.Status == RetailerAffiliateProgrammeResultStatus.Found)
+        {
             affiliateProgrammes = result.Programmes?.ToList() ?? [];
+            affiliateStatusSelections.Clear();
+            foreach (var programme in affiliateProgrammes)
+                affiliateStatusSelections[programme.Id] = programme.Status;
+        }
         else if (result.Status is RetailerAffiliateProgrammeResultStatus.AccessDenied)
             accessDenied = true;
         else if (result.Status != RetailerAffiliateProgrammeResultStatus.NotFound)
@@ -419,6 +439,7 @@
         editingRetailerId = null;
         editModel.Clear();
         affiliateProgrammes = [];
+        affiliateStatusSelections.Clear();
     }
 
     private async Task SaveEditAsync()
@@ -464,7 +485,11 @@
         {
             var refreshed = await Retailers.GetAffiliateProgrammesAsync(retailerId);
             if (refreshed.Status == RetailerAffiliateProgrammeResultStatus.Found)
+            {
                 affiliateProgrammes = refreshed.Programmes?.ToList() ?? [];
+                foreach (var programme in affiliateProgrammes)
+                    affiliateStatusSelections[programme.Id] = programme.Status;
+            }
         }
         else if (result.Status == RetailerAffiliateProgrammeResultStatus.Invalid)
         {
@@ -508,6 +533,63 @@
         else
         {
             errorMessage = result.Message ?? "The identity could not be verified.";
+        }
+
+        saving = false;
+    }
+
+    private string GetAffiliateStatusValue(RetailerAffiliateProgrammeItem programme) =>
+        affiliateStatusSelections.TryGetValue(programme.Id, out var status)
+            ? status.ToString()
+            : programme.Status.ToString();
+
+    private void OnAffiliateStatusChanged(Guid programmeId, ChangeEventArgs eventArgs)
+    {
+        if (Enum.TryParse<AffiliateProgrammeStatus>(eventArgs.Value?.ToString(), true, out var status))
+            affiliateStatusSelections[programmeId] = status;
+    }
+
+    private static IReadOnlyList<AffiliateProgrammeStatus> GetManageableAffiliateStatuses() =>
+    [
+        AffiliateProgrammeStatus.ProgrammeAvailable,
+        AffiliateProgrammeStatus.ApplicationRequired,
+        AffiliateProgrammeStatus.ApplicationSubmitted,
+        AffiliateProgrammeStatus.Approved,
+        AffiliateProgrammeStatus.Configured,
+        AffiliateProgrammeStatus.NotApplicable
+    ];
+
+    private async Task UpdateAffiliateProgrammeStatusAsync(Guid programmeId)
+    {
+        if (editingRetailerId is not Guid retailerId
+            || !affiliateStatusSelections.TryGetValue(programmeId, out var status))
+            return;
+
+        saving = true;
+        errorMessage = null;
+
+        var result = await Retailers.UpdateAffiliateProgrammeStatusAsync(
+            retailerId,
+            programmeId,
+            new RetailerAffiliateProgrammeStatusUpdateRequest(status));
+
+        if (result.Status == RetailerAffiliateProgrammeResultStatus.StatusUpdated)
+        {
+            var refreshed = await Retailers.GetAffiliateProgrammesAsync(retailerId);
+            if (refreshed.Status == RetailerAffiliateProgrammeResultStatus.Found)
+            {
+                affiliateProgrammes = refreshed.Programmes?.ToList() ?? [];
+                foreach (var programme in affiliateProgrammes)
+                    affiliateStatusSelections[programme.Id] = programme.Status;
+            }
+        }
+        else if (result.Status == RetailerAffiliateProgrammeResultStatus.Invalid)
+        {
+            errorMessage = string.Join(" ", result.Errors!.SelectMany(pair => pair.Value));
+        }
+        else
+        {
+            errorMessage = result.Message ?? "The affiliate programme state could not be updated.";
         }
 
         saving = false;

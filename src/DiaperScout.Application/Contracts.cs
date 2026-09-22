@@ -317,6 +317,19 @@ public sealed record RemoveCanonicalProductElement(
     string EditorialRationale,
     string? CorrelationId);
 
+public sealed record CatalogueRetailOffer(
+    Guid Id,
+    Guid PackTypeId,
+    string ManufacturerSize,
+    int QuantityPerPack,
+    PackagingType PackagingType,
+    string? Gtin,
+    string RetailerName,
+    string ListingUrl,
+    string DestinationUrl,
+    string? AffiliateNetwork,
+    bool IsAffiliateBacked);
+
 public sealed record CatalogueProductDetails(
     Guid Id,
     string Name,
@@ -329,7 +342,8 @@ public sealed record CatalogueProductDetails(
     CatalogueContentVisibility DescriptionVisibility,
     string? OfficialWebsiteUrl,
     IReadOnlyList<CatalogueProductVariant> Variants,
-    IReadOnlyList<CatalogueProductImage> Images);
+    IReadOnlyList<CatalogueProductImage> Images,
+    IReadOnlyList<CatalogueRetailOffer> RetailOffers);
 
 public sealed record ExplorerIdentity(
     Guid UserId,
@@ -464,6 +478,75 @@ public sealed record RetailerAffiliateProgrammeItem(
     bool IsPreferred,
     DateTimeOffset? PreferredAtUtc);
 
+public sealed record RetailerAffiliateProgrammeStatusUpdateRequest(
+    AffiliateProgrammeStatus Status);
+
+public sealed record RetailerDiscoveryResult(
+    string Gtin,
+    string RetailerName,
+    string RetailerSlug,
+    string? RetailerWebsiteUrl,
+    string ListingUrl,
+    string DiscoveryProvider,
+    string? SourceUrl,
+    string? ExternalListingId);
+
+public sealed record RetailerProductListingItem(
+    Guid Id,
+    Guid PackTypeId,
+    Guid RetailerId,
+    string RetailerName,
+    RetailerStatus RetailerStatus,
+    string ListingUrl,
+    string DiscoveryProvider,
+    string? SourceUrl,
+    string? ExternalListingId,
+    RetailerProductDiscoveryStatus Status,
+    DateTimeOffset DiscoveredAtUtc,
+    DateTimeOffset LastCheckedAtUtc);
+
+public sealed record RetailerDiscoveryCandidate(
+    string Gtin,
+    string RetailerName,
+    string? RetailerWebsiteUrl,
+    string ListingUrl,
+    string? ExternalListingId,
+    string? SourceUrl);
+
+public interface IRetailerDiscoveryProvider
+{
+    Task<IReadOnlyList<RetailerDiscoveryCandidate>> DiscoverAsync(
+        string gtin,
+        CancellationToken cancellationToken = default);
+}
+
+public sealed record RetailerDiscoveryRunResult(
+    int EligibleGtins,
+    int SucceededGtins,
+    int DiscoveredListings,
+    int FailedGtins);
+
+public interface IRetailerDiscoveryScheduler
+{
+    Task<RetailerDiscoveryRunResult> RunOnceAsync(
+        CancellationToken cancellationToken = default);
+}
+
+public interface IRetailerDiscovery
+{
+    Task<IReadOnlyList<RetailerProductListingItem>> DiscoverAndRecordAsync(
+        string gtin,
+        CancellationToken cancellationToken = default);
+
+    Task<RetailerProductListingItem> RecordAsync(
+        RetailerDiscoveryResult result,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<RetailerProductListingItem>> GetForGtinAsync(
+        string gtin,
+        CancellationToken cancellationToken = default);
+}
+
 public interface IRetailerManagement
 {
     Task<IReadOnlyList<RetailerManagementItem>> GetAsync(
@@ -509,6 +592,13 @@ public interface IRetailerManagement
         AuthenticatedUser actor,
         Guid retailerId,
         Guid programmeId,
+        CancellationToken cancellationToken = default);
+
+    Task<RetailerAffiliateProgrammeItem> UpdateAffiliateProgrammeStatusAsync(
+        AuthenticatedUser actor,
+        Guid retailerId,
+        Guid programmeId,
+        RetailerAffiliateProgrammeStatusUpdateRequest request,
         CancellationToken cancellationToken = default);
 }
 

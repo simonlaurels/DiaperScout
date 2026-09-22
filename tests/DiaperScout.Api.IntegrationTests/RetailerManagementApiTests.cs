@@ -23,6 +23,18 @@ public sealed class RetailerManagementApiTests : IClassFixture<PostgreSqlFixture
     {
         using var client = AuthenticatedClient(PostgreSqlFixture.ModeratorSubject);
 
+        var createResponse = await client.PostAsJsonAsync(
+            "/api/v1/retailer-management",
+            new CreateRetailerManagement(
+                "Canonical Retailer Listing Test",
+                $"canonical-retailer-listing-test-{Guid.NewGuid():N}",
+                "https://canonical-retailer-listing.example"));
+
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+
+        var created = await createResponse.Content.ReadFromJsonAsync<RetailerManagementItem>();
+        Assert.NotNull(created);
+
         var response = await client.GetAsync("/api/v1/retailer-management");
 
         var responseBody = await response.Content.ReadAsStringAsync();
@@ -33,15 +45,15 @@ public sealed class RetailerManagementApiTests : IClassFixture<PostgreSqlFixture
         var retailers = await response.Content.ReadFromJsonAsync<IReadOnlyList<RetailerManagementItem>>();
         Assert.NotNull(retailers);
 
-        var fixtureRetailer = Assert.Single(
+        var retailer = Assert.Single(
             retailers,
-            retailer => retailer.Id == _fixture.RetailerId);
+            value => value.Id == created!.Id);
 
-        Assert.Equal("Integration Test Retailer", fixtureRetailer.Name);
-        Assert.Equal("integration-test-retailer", fixtureRetailer.Slug);
-        Assert.Equal(RetailerStatus.Discovered, fixtureRetailer.Status);
-        Assert.NotEqual(default, fixtureRetailer.CreatedAtUtc);
-        Assert.NotEqual(default, fixtureRetailer.UpdatedAtUtc);
+        Assert.Equal("Canonical Retailer Listing Test", retailer.Name);
+        Assert.Equal(created.Slug, retailer.Slug);
+        Assert.Equal(RetailerStatus.Discovered, retailer.Status);
+        Assert.NotEqual(default, retailer.CreatedAtUtc);
+        Assert.NotEqual(default, retailer.UpdatedAtUtc);
     }
 
     [Fact]
@@ -243,6 +255,140 @@ public sealed class RetailerManagementApiTests : IClassFixture<PostgreSqlFixture
         Assert.NotNull(programmes);
         Assert.Contains(programmes!, value => value.Id == second.Id && value.IsPreferred);
         Assert.Contains(programmes!, value => value.Id == discovered.Id && !value.IsPreferred);
+    }
+
+    [Fact]
+    public async Task RetailerManagement_CanUpdateAffiliateProgrammeLifecycleStatus()
+    {
+        using var client = AuthenticatedClient(PostgreSqlFixture.ModeratorSubject);
+
+        await client.PostAsJsonAsync(
+            $"/api/v1/retailer-management/{_fixture.RetailerId}/identity-verification",
+            new RetailerIdentityVerificationRequest(
+                "Integration Test Retailer",
+                "https://retailer.example.test/source",
+                "https://retailer.example.test/product/123",
+                RetailerIdentityVerificationOutcome.Verified,
+                null));
+
+        var discovery = await client.PostAsJsonAsync(
+            $"/api/v1/retailer-management/{_fixture.RetailerId}/affiliate-programmes",
+            new RetailerAffiliateProgrammeDiscoveryRequest(
+                "Lifecycle Network",
+                "lifecycle-001",
+                "Lifecycle Programme",
+                AffiliateProgrammeStatus.ApplicationRequired,
+                "https://network.example.test/programmes/lifecycle-001",
+                null,
+                "10% commission.",
+                30,
+                true,
+                true,
+                "https://network.example.test/search"));
+
+        var discovered = await discovery.Content.ReadFromJsonAsync<RetailerAffiliateProgrammeItem>();
+        Assert.NotNull(discovered);
+
+        var submitted = await client.PutAsJsonAsync(
+            $"/api/v1/retailer-management/{_fixture.RetailerId}/affiliate-programmes/{discovered!.Id}/status",
+            new RetailerAffiliateProgrammeStatusUpdateRequest(AffiliateProgrammeStatus.ApplicationSubmitted));
+
+        Assert.Equal(HttpStatusCode.OK, submitted.StatusCode);
+        var submittedItem = await submitted.Content.ReadFromJsonAsync<RetailerAffiliateProgrammeItem>();
+        Assert.Equal(AffiliateProgrammeStatus.ApplicationSubmitted, submittedItem!.Status);
+
+        var approved = await client.PutAsJsonAsync(
+            $"/api/v1/retailer-management/{_fixture.RetailerId}/affiliate-programmes/{discovered.Id}/status",
+            new RetailerAffiliateProgrammeStatusUpdateRequest(AffiliateProgrammeStatus.Approved));
+
+        Assert.Equal(HttpStatusCode.OK, approved.StatusCode);
+
+        var configured = await client.PutAsJsonAsync(
+            $"/api/v1/retailer-management/{_fixture.RetailerId}/affiliate-programmes/{discovered.Id}/status",
+            new RetailerAffiliateProgrammeStatusUpdateRequest(AffiliateProgrammeStatus.Configured));
+
+        Assert.Equal(HttpStatusCode.OK, configured.StatusCode);
+        var configuredItem = await configured.Content.ReadFromJsonAsync<RetailerAffiliateProgrammeItem>();
+        Assert.Equal(AffiliateProgrammeStatus.Configured, configuredItem!.Status);
+    }
+
+    [Fact]
+    public async Task RetailerManagement_CannotConfigureAffiliateProgrammeBeforeApproval()
+    {
+        using var client = AuthenticatedClient(PostgreSqlFixture.ModeratorSubject);
+
+        await client.PostAsJsonAsync(
+            $"/api/v1/retailer-management/{_fixture.RetailerId}/identity-verification",
+            new RetailerIdentityVerificationRequest(
+                "Integration Test Retailer",
+                "https://retailer.example.test/source",
+                "https://retailer.example.test/product/123",
+                RetailerIdentityVerificationOutcome.Verified,
+                null));
+
+        var discovery = await client.PostAsJsonAsync(
+            $"/api/v1/retailer-management/{_fixture.RetailerId}/affiliate-programmes",
+            new RetailerAffiliateProgrammeDiscoveryRequest(
+                "Lifecycle Network",
+                "lifecycle-002",
+                "Lifecycle Programme",
+                AffiliateProgrammeStatus.ProgrammeAvailable,
+                null, null, null, null, null, false, null));
+
+        var discovered = await discovery.Content.ReadFromJsonAsync<RetailerAffiliateProgrammeItem>();
+        Assert.NotNull(discovered);
+
+        var response = await client.PutAsJsonAsync(
+            $"/api/v1/retailer-management/{_fixture.RetailerId}/affiliate-programmes/{discovered!.Id}/status",
+            new RetailerAffiliateProgrammeStatusUpdateRequest(AffiliateProgrammeStatus.Configured));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task RetailerManagement_AffiliateDiscoveryDoesNotDowngradeManagedProgrammeStatus()
+    {
+        using var client = AuthenticatedClient(PostgreSqlFixture.ModeratorSubject);
+
+        await client.PostAsJsonAsync(
+            $"/api/v1/retailer-management/{_fixture.RetailerId}/identity-verification",
+            new RetailerIdentityVerificationRequest(
+                "Integration Test Retailer",
+                "https://retailer.example.test/source",
+                "https://retailer.example.test/product/123",
+                RetailerIdentityVerificationOutcome.Verified,
+                null));
+
+        var discovery = await client.PostAsJsonAsync(
+            $"/api/v1/retailer-management/{_fixture.RetailerId}/affiliate-programmes",
+            new RetailerAffiliateProgrammeDiscoveryRequest(
+                "Lifecycle Network",
+                "lifecycle-003",
+                "Lifecycle Programme",
+                AffiliateProgrammeStatus.ApplicationRequired,
+                null, null, null, null, null, true, null));
+
+        var discovered = await discovery.Content.ReadFromJsonAsync<RetailerAffiliateProgrammeItem>();
+        Assert.NotNull(discovered);
+
+        var approved = await client.PutAsJsonAsync(
+            $"/api/v1/retailer-management/{_fixture.RetailerId}/affiliate-programmes/{discovered!.Id}/status",
+            new RetailerAffiliateProgrammeStatusUpdateRequest(AffiliateProgrammeStatus.Approved));
+
+        Assert.Equal(HttpStatusCode.OK, approved.StatusCode);
+
+        var rediscovery = await client.PostAsJsonAsync(
+            $"/api/v1/retailer-management/{_fixture.RetailerId}/affiliate-programmes",
+            new RetailerAffiliateProgrammeDiscoveryRequest(
+                "Lifecycle Network",
+                "lifecycle-003",
+                "Lifecycle Programme",
+                AffiliateProgrammeStatus.ApplicationRequired,
+                null, null, null, null, null, true, null));
+
+        Assert.Equal(HttpStatusCode.OK, rediscovery.StatusCode);
+        var rediscovered = await rediscovery.Content.ReadFromJsonAsync<RetailerAffiliateProgrammeItem>();
+        Assert.Equal(AffiliateProgrammeStatus.Approved, rediscovered!.Status);
     }
 
     [Fact]

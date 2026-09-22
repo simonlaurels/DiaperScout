@@ -3,6 +3,7 @@ using System;
 using DiaperScout.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DiaperScout.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DiaperScoutDbContext))]
-    partial class DiaperScoutDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260922180000_RetailerProductDiscovery")]
+    partial class RetailerProductDiscovery : Migration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1290,6 +1292,21 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                     b.ToTable("retailers", "diaperscout");
                 });
 
+            modelBuilder.Entity("DiaperScout.Domain.RetailerProductListing", b =>
+                {
+                    b.HasOne("DiaperScout.Domain.PackType", null)
+                        .WithMany()
+                        .HasForeignKey("PackTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DiaperScout.Domain.Retailer", null)
+                        .WithMany()
+                        .HasForeignKey("RetailerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("DiaperScout.Domain.RetailerAffiliateProgramme", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1365,6 +1382,57 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                     b.ToTable("retailer_affiliate_programmes", "diaperscout");
                 });
 
+            modelBuilder.Entity("DiaperScout.Domain.RetailerProductListing", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("DiscoveredAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DiscoveryProvider")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ExternalListingId")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<DateTimeOffset>("LastCheckedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("PackTypeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RetailerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ListingUrl")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("SourceUrl")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PackTypeId", "RetailerId", "ListingUrl")
+                        .IsUnique();
+
+                    b.HasIndex("RetailerId", "Status");
+
+                    b.ToTable("retailer_product_listings", "diaperscout");
+                });
+
             modelBuilder.Entity("DiaperScout.Domain.RetailerIdentityVerification", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1424,57 +1492,6 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                     b.HasIndex("RetailerId", "VerifiedAtUtc");
 
                     b.ToTable("retailer_identity_verifications", "diaperscout");
-                });
-
-            modelBuilder.Entity("DiaperScout.Domain.RetailerProductListing", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("DiscoveredAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DiscoveryProvider")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("ExternalListingId")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
-
-                    b.Property<DateTimeOffset>("LastCheckedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ListingUrl")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<Guid>("PackTypeId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("RetailerId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("SourceUrl")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RetailerId", "Status");
-
-                    b.HasIndex("PackTypeId", "RetailerId", "ListingUrl")
-                        .IsUnique();
-
-                    b.ToTable("retailer_product_listings", "diaperscout");
                 });
 
             modelBuilder.Entity("DiaperScout.Domain.SavedLocation", b =>
@@ -1957,21 +1974,6 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("VerifiedByUserId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("DiaperScout.Domain.RetailerProductListing", b =>
-                {
-                    b.HasOne("DiaperScout.Domain.PackType", null)
-                        .WithMany()
-                        .HasForeignKey("PackTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DiaperScout.Domain.Retailer", null)
-                        .WithMany()
-                        .HasForeignKey("RetailerId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 

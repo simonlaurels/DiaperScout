@@ -140,9 +140,26 @@ else
                 <div>
                     <p class="catalogue-kicker">WHERE TO BUY</p>
                     <h2>Find this product</h2>
-                    <p>Retail destinations will appear here as they are verified.</p>
+                    @if (product.RetailOffers.Count == 0)
+                    {
+                        <p>Verified retail destinations will appear here as they are discovered.</p>
+                    }
+                    else
+                    {
+                        <div class="product-buy-list">
+                            @foreach (var offer in product.RetailOffers)
+                            {
+                                <a class="product-buy-card" href="@offer.DestinationUrl" target="_blank" rel="noopener noreferrer">
+                                    <div>
+                                        <strong>@offer.RetailerName</strong>
+                                        <span>@offer.ManufacturerSize · @offer.QuantityPerPack-pack · @FormatPackaging(offer.PackagingType)</span>
+                                    </div>
+                                    <span class="product-buy-action">@(offer.IsAffiliateBacked ? "Buy now ↗" : "Visit retailer ↗")</span>
+                                </a>
+                            }
+                        </div>
+                    }
                 </div>
-                <span class="product-buy-note">Coming next</span>
             </section>
         </div>
     </section>

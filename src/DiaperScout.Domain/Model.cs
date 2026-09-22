@@ -1821,3 +1821,138 @@ public sealed class DiscoveryTask : Entity
     public Guid? AcceptedByUserId { get; private set; }
     public Guid? ResultingObservationId { get; private set; }
 }
+
+public sealed class RetailerAffiliateProgramme : Entity
+{
+    private RetailerAffiliateProgramme()
+    {
+        Network = null!;
+        ProgrammeId = null!;
+        ProgrammeName = null!;
+    }
+
+    public RetailerAffiliateProgramme(
+        Guid retailerId,
+        string network,
+        string programmeId,
+        string programmeName,
+        AffiliateProgrammeStatus status,
+        string? programmeUrl = null,
+        string? termsUrl = null,
+        string? referralTerms = null,
+        int? cookieDurationDays = null,
+        bool? deepLinksAllowed = null,
+        bool applicationRequired = false,
+        string? sourceUrl = null)
+    {
+        if (retailerId == Guid.Empty)
+            throw new ArgumentException("A retailer is required.", nameof(retailerId));
+        if (!Enum.IsDefined(status))
+            throw new ArgumentException("The affiliate programme status is invalid.", nameof(status));
+
+        Network = RequireValue(network, nameof(network), 100);
+        ProgrammeId = RequireValue(programmeId, nameof(programmeId), 200);
+        ProgrammeName = RequireValue(programmeName, nameof(programmeName), 300);
+        ProgrammeUrl = NormalizeUrl(programmeUrl, nameof(programmeUrl));
+        TermsUrl = NormalizeUrl(termsUrl, nameof(termsUrl));
+        ReferralTerms = NormalizeText(referralTerms);
+        CookieDurationDays = ValidateCookieDuration(cookieDurationDays);
+        DeepLinksAllowed = deepLinksAllowed;
+        ApplicationRequired = applicationRequired;
+        SourceUrl = NormalizeUrl(sourceUrl, nameof(sourceUrl));
+        RetailerId = retailerId;
+        Status = status;
+        DiscoveredAtUtc = DateTimeOffset.UtcNow;
+        LastCheckedAtUtc = DiscoveredAtUtc;
+    }
+
+    public Guid RetailerId { get; private set; }
+    public string Network { get; private set; }
+    public string ProgrammeId { get; private set; }
+    public string ProgrammeName { get; private set; }
+    public string? ProgrammeUrl { get; private set; }
+    public AffiliateProgrammeStatus Status { get; private set; }
+    public string? TermsUrl { get; private set; }
+    public string? ReferralTerms { get; private set; }
+    public int? CookieDurationDays { get; private set; }
+    public bool? DeepLinksAllowed { get; private set; }
+    public bool ApplicationRequired { get; private set; }
+    public string? SourceUrl { get; private set; }
+    public DateTimeOffset DiscoveredAtUtc { get; private set; }
+    public DateTimeOffset LastCheckedAtUtc { get; private set; }
+    public bool IsPreferred { get; private set; }
+    public DateTimeOffset? PreferredAtUtc { get; private set; }
+
+    public void UpdateDiscovery(
+        string programmeName,
+        AffiliateProgrammeStatus status,
+        string? programmeUrl,
+        string? termsUrl,
+        string? referralTerms,
+        int? cookieDurationDays,
+        bool? deepLinksAllowed,
+        bool applicationRequired,
+        string? sourceUrl)
+    {
+        ProgrammeName = RequireValue(programmeName, nameof(programmeName), 300);
+        if (!Enum.IsDefined(status))
+            throw new ArgumentException("The affiliate programme status is invalid.", nameof(status));
+
+        ProgrammeUrl = NormalizeUrl(programmeUrl, nameof(programmeUrl));
+        TermsUrl = NormalizeUrl(termsUrl, nameof(termsUrl));
+        ReferralTerms = NormalizeText(referralTerms);
+        CookieDurationDays = ValidateCookieDuration(cookieDurationDays);
+        DeepLinksAllowed = deepLinksAllowed;
+        ApplicationRequired = applicationRequired;
+        SourceUrl = NormalizeUrl(sourceUrl, nameof(sourceUrl));
+        Status = status;
+        LastCheckedAtUtc = DateTimeOffset.UtcNow;
+    }
+
+    public void MarkPreferred()
+    {
+        IsPreferred = true;
+        PreferredAtUtc = DateTimeOffset.UtcNow;
+    }
+
+    public void ClearPreferred()
+    {
+        IsPreferred = false;
+        PreferredAtUtc = null;
+    }
+
+    private static int? ValidateCookieDuration(int? value)
+    {
+        if (value is < 0)
+            throw new ArgumentException("Cookie duration cannot be negative.", nameof(value));
+
+        return value;
+    }
+
+    private static string RequireValue(string value, string parameterName, int maxLength)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new ArgumentException("A value is required.", parameterName);
+
+        var trimmed = value.Trim();
+        if (trimmed.Length > maxLength)
+            throw new ArgumentException($"The value must be {maxLength} characters or fewer.", parameterName);
+
+        return trimmed;
+    }
+
+    private static string? NormalizeText(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+    private static string? NormalizeUrl(string? value, string parameterName)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
+
+        if (!Uri.TryCreate(value.Trim(), UriKind.Absolute, out var uri)
+            || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+            throw new ArgumentException("The URL must be an absolute HTTP or HTTPS URL.", parameterName);
+
+        return uri.ToString();
+    }
+}

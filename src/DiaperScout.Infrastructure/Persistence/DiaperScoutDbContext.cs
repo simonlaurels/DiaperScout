@@ -15,6 +15,7 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
     public DbSet<Country> Countries => Set<Country>();
     public DbSet<Retailer> Retailers => Set<Retailer>();
     public DbSet<RetailerIdentityVerification> RetailerIdentityVerifications => Set<RetailerIdentityVerification>();
+    public DbSet<RetailerAffiliateProgramme> RetailerAffiliateProgrammes => Set<RetailerAffiliateProgramme>();
     public DbSet<Location> Locations => Set<Location>();
     public DbSet<User> Users => Set<User>();
     public DbSet<PrivilegedRoleAssignment> PrivilegedRoleAssignments => Set<PrivilegedRoleAssignment>();
@@ -187,6 +188,28 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
                 .WithMany()
                 .HasForeignKey(x => x.VerifiedByUserId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<RetailerAffiliateProgramme>(entity =>
+        {
+            entity.ToTable("retailer_affiliate_programmes");
+            entity.Property(x => x.Network).HasMaxLength(100).IsRequired();
+            entity.Property(x => x.ProgrammeId).HasMaxLength(200).IsRequired();
+            entity.Property(x => x.ProgrammeName).HasMaxLength(300).IsRequired();
+            entity.Property(x => x.ProgrammeUrl).HasMaxLength(2048);
+            entity.Property(x => x.Status).HasConversion<string>().HasMaxLength(32).IsRequired();
+            entity.Property(x => x.TermsUrl).HasMaxLength(2048);
+            entity.Property(x => x.ReferralTerms).HasColumnType("text");
+            entity.Property(x => x.SourceUrl).HasMaxLength(2048);
+            entity.Property(x => x.DiscoveredAtUtc).IsRequired();
+            entity.Property(x => x.LastCheckedAtUtc).IsRequired();
+            entity.Property(x => x.IsPreferred).IsRequired();
+            entity.HasIndex(x => new { x.RetailerId, x.Network, x.ProgrammeId }).IsUnique();
+            entity.HasIndex(x => new { x.RetailerId, x.IsPreferred });
+            entity.HasOne<Retailer>()
+                .WithMany()
+                .HasForeignKey(x => x.RetailerId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<CatalogueSubmissionRetailDestination>(entity =>

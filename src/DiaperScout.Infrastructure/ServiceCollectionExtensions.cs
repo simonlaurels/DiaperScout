@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using DiaperScout.Application;
 using DiaperScout.Domain;
 using DiaperScout.Infrastructure.Persistence;
@@ -239,6 +240,165 @@ internal sealed class RetailerManagement(DiaperScoutDbContext db, IEditorialAuth
                 value.VerifiedAtUtc))
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<RetailerAffiliateProgrammeItem>> GetAffiliateProgrammesAsync(
+        AuthenticatedUser actor,
+        Guid retailerId,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireManagementAsync(actor, cancellationToken);
+
+        var exists = await db.Retailers.AnyAsync(value => value.Id == retailerId, cancellationToken);
+        if (!exists)
+            throw new KeyNotFoundException();
+
+        return await db.RetailerAffiliateProgrammes
+            .AsNoTracking()
+            .Where(value => value.RetailerId == retailerId)
+            .OrderByDescending(value => value.IsPreferred)
+            .ThenByDescending(value => value.LastCheckedAtUtc)
+            .Select(ToAffiliateProgrammeItemExpression())
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<RetailerAffiliateProgrammeItem> RecordAffiliateProgrammeDiscoveryAsync(
+        AuthenticatedUser actor,
+        Guid retailerId,
+        RetailerAffiliateProgrammeDiscoveryRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireManagementAsync(actor, cancellationToken);
+
+        var retailer = await db.Retailers.SingleOrDefaultAsync(value => value.Id == retailerId, cancellationToken)
+            ?? throw new KeyNotFoundException();
+
+        if (retailer.Status != RetailerStatus.Verified)
+            throw new CatalogueValidationException("retailer", "The retailer must be verified before affiliate programme discovery can be recorded.");
+
+        RetailerAffiliateProgramme programme;
+        try
+        {
+            programme = await db.RetailerAffiliateProgrammes
+                .SingleOrDefaultAsync(
+                    value => value.RetailerId == retailerId
+                        && value.Network == request.Network.Trim()
+                        && value.ProgrammeId == request.ProgrammeId.Trim(),
+                    cancellationToken);
+
+            if (programme is null)
+            {
+                programme = new RetailerAffiliateProgramme(
+                    retailerId,
+                    request.Network,
+                    request.ProgrammeId,
+                    request.ProgrammeName,
+                    request.Status,
+                    request.ProgrammeUrl,
+                    request.TermsUrl,
+                    request.ReferralTerms,
+                    request.CookieDurationDays,
+                    request.DeepLinksAllowed,
+                    request.ApplicationRequired,
+                    request.SourceUrl);
+                db.RetailerAffiliateProgrammes.Add(programme);
+            }
+            else
+            {
+                programme.UpdateDiscovery(
+                    request.ProgrammeName,
+                    request.Status,
+                    request.ProgrammeUrl,
+                    request.TermsUrl,
+                    request.ReferralTerms,
+                    request.CookieDurationDays,
+                    request.DeepLinksAllowed,
+                    request.ApplicationRequired,
+                    request.SourceUrl);
+            }
+        }
+        catch (ArgumentException exception)
+        {
+            throw new CatalogueValidationException(
+                exception.ParamName ?? "affiliate",
+                exception.Message);
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+        return ToAffiliateProgrammeItem(programme);
+    }
+
+    public async Task<RetailerAffiliateProgrammeItem> SelectAffiliateProgrammeAsync(
+        AuthenticatedUser actor,
+        Guid retailerId,
+        Guid programmeId,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireManagementAsync(actor, cancellationToken);
+
+        var retailer = await db.Retailers.SingleOrDefaultAsync(value => value.Id == retailerId, cancellationToken)
+            ?? throw new KeyNotFoundException();
+
+        if (retailer.Status != RetailerStatus.Verified)
+            throw new CatalogueValidationException("retailer", "The retailer must be verified before an affiliate programme can be selected.");
+
+        var programmes = await db.RetailerAffiliateProgrammes
+            .Where(value => value.RetailerId == retailerId)
+            .ToListAsync(cancellationToken);
+
+        var selected = programmes.SingleOrDefault(value => value.Id == programmeId)
+            ?? throw new KeyNotFoundException();
+
+        foreach (var programme in programmes)
+        {
+            if (programme.Id == selected.Id)
+                programme.MarkPreferred();
+            else
+                programme.ClearPreferred();
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+        return ToAffiliateProgrammeItem(selected);
+    }
+
+    private static Expression<Func<RetailerAffiliateProgramme, RetailerAffiliateProgrammeItem>> ToAffiliateProgrammeItemExpression() =>
+        value => new RetailerAffiliateProgrammeItem(
+            value.Id,
+            value.RetailerId,
+            value.Network,
+            value.ProgrammeId,
+            value.ProgrammeName,
+            value.Status,
+            value.ProgrammeUrl,
+            value.TermsUrl,
+            value.ReferralTerms,
+            value.CookieDurationDays,
+            value.DeepLinksAllowed,
+            value.ApplicationRequired,
+            value.SourceUrl,
+            value.DiscoveredAtUtc,
+            value.LastCheckedAtUtc,
+            value.IsPreferred,
+            value.PreferredAtUtc);
+
+    private static RetailerAffiliateProgrammeItem ToAffiliateProgrammeItem(RetailerAffiliateProgramme value) =>
+        new(
+            value.Id,
+            value.RetailerId,
+            value.Network,
+            value.ProgrammeId,
+            value.ProgrammeName,
+            value.Status,
+            value.ProgrammeUrl,
+            value.TermsUrl,
+            value.ReferralTerms,
+            value.CookieDurationDays,
+            value.DeepLinksAllowed,
+            value.ApplicationRequired,
+            value.SourceUrl,
+            value.DiscoveredAtUtc,
+            value.LastCheckedAtUtc,
+            value.IsPreferred,
+            value.PreferredAtUtc);
 
     private static RetailerIdentityCheckResults BuildChecks(
         Retailer retailer,

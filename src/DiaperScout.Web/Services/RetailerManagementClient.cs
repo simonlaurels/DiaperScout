@@ -98,6 +98,63 @@ public sealed class RetailerManagementClient(HttpClient client)
             : RetailerVerificationResult.Saved(verification);
     }
 
+    public async Task<RetailerAffiliateProgrammeResult> GetAffiliateProgrammesAsync(
+        Guid retailerId,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.GetAsync(
+            $"api/v1/retailer-management/{retailerId}/affiliate-programmes",
+            cancellationToken);
+
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            return RetailerAffiliateProgrammeResult.AccessDenied();
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+            return RetailerAffiliateProgrammeResult.NotFound();
+
+        if (!response.IsSuccessStatusCode)
+            return RetailerAffiliateProgrammeResult.Failed();
+
+        var programmes = await response.Content.ReadFromJsonAsync<IReadOnlyList<RetailerAffiliateProgrammeItem>>(cancellationToken);
+        return programmes is null
+            ? RetailerAffiliateProgrammeResult.Failed()
+            : RetailerAffiliateProgrammeResult.Found(programmes);
+    }
+
+    public async Task<RetailerAffiliateProgrammeResult> SelectAffiliateProgrammeAsync(
+        Guid retailerId,
+        Guid programmeId,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.PostAsync(
+            $"api/v1/retailer-management/{retailerId}/affiliate-programmes/{programmeId}/select",
+            null,
+            cancellationToken);
+
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            return RetailerAffiliateProgrammeResult.AccessDenied();
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+            return RetailerAffiliateProgrammeResult.NotFound();
+
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var problem = await response.Content.ReadFromJsonAsync<Microsoft.AspNetCore.Mvc.ValidationProblemDetails>(cancellationToken);
+            return RetailerAffiliateProgrammeResult.Invalid(
+                problem?.Errors is null
+                    ? new Dictionary<string, string[]> { ["affiliate"] = ["The affiliate programme could not be selected."] }
+                    : new Dictionary<string, string[]>(problem.Errors));
+        }
+
+        if (!response.IsSuccessStatusCode)
+            return RetailerAffiliateProgrammeResult.Failed();
+
+        var programme = await response.Content.ReadFromJsonAsync<RetailerAffiliateProgrammeItem>(cancellationToken);
+        return programme is null
+            ? RetailerAffiliateProgrammeResult.Failed()
+            : RetailerAffiliateProgrammeResult.Selected(programme);
+    }
+
     private static async Task<RetailerMutationResult> ReadMutationAsync(
         HttpResponseMessage response,
         CancellationToken cancellationToken)
@@ -207,3 +264,40 @@ public enum RetailerVerificationStatus
     NotFound,
     Failed
 }
+
+public sealed record RetailerAffiliateProgrammeResult(
+    RetailerAffiliateProgrammeResultStatus Status,
+    IReadOnlyList<RetailerAffiliateProgrammeItem>? Programmes = null,
+    RetailerAffiliateProgrammeItem? SelectedProgramme = null,
+    IReadOnlyDictionary<string, string[]>? Errors = null,
+    string? Message = null)
+{
+    public static RetailerAffiliateProgrammeResult Found(IReadOnlyList<RetailerAffiliateProgrammeItem> programmes) =>
+        new(RetailerAffiliateProgrammeResultStatus.Found, Programmes: programmes);
+
+    public static RetailerAffiliateProgrammeResult Selected(RetailerAffiliateProgrammeItem programme) =>
+        new(RetailerAffiliateProgrammeResultStatus.Selected, SelectedProgramme: programme);
+
+    public static RetailerAffiliateProgrammeResult Invalid(IReadOnlyDictionary<string, string[]> errors) =>
+        new(RetailerAffiliateProgrammeResultStatus.Invalid, Errors: errors);
+
+    public static RetailerAffiliateProgrammeResult AccessDenied() =>
+        new(RetailerAffiliateProgrammeResultStatus.AccessDenied, Message: "You need Moderator editorial authority to manage retailer affiliate programmes.");
+
+    public static RetailerAffiliateProgrammeResult NotFound() =>
+        new(RetailerAffiliateProgrammeResultStatus.NotFound, Message: "The retailer or affiliate programme could not be found.");
+
+    public static RetailerAffiliateProgrammeResult Failed() =>
+        new(RetailerAffiliateProgrammeResultStatus.Failed, Message: "The affiliate programme workspace is unavailable just now. Please try again.");
+}
+
+public enum RetailerAffiliateProgrammeResultStatus
+{
+    Found,
+    Selected,
+    Invalid,
+    AccessDenied,
+    NotFound,
+    Failed
+}
+

@@ -431,6 +431,39 @@ public sealed record RetailerIdentityVerificationItem(
     Guid VerifiedByUserId,
     DateTimeOffset VerifiedAtUtc);
 
+
+public sealed record RetailerAffiliateProgrammeDiscoveryRequest(
+    string Network,
+    string ProgrammeId,
+    string ProgrammeName,
+    AffiliateProgrammeStatus Status,
+    string? ProgrammeUrl,
+    string? TermsUrl,
+    string? ReferralTerms,
+    int? CookieDurationDays,
+    bool? DeepLinksAllowed,
+    bool ApplicationRequired,
+    string? SourceUrl);
+
+public sealed record RetailerAffiliateProgrammeItem(
+    Guid Id,
+    Guid RetailerId,
+    string Network,
+    string ProgrammeId,
+    string ProgrammeName,
+    AffiliateProgrammeStatus Status,
+    string? ProgrammeUrl,
+    string? TermsUrl,
+    string? ReferralTerms,
+    int? CookieDurationDays,
+    bool? DeepLinksAllowed,
+    bool ApplicationRequired,
+    string? SourceUrl,
+    DateTimeOffset DiscoveredAtUtc,
+    DateTimeOffset LastCheckedAtUtc,
+    bool IsPreferred,
+    DateTimeOffset? PreferredAtUtc);
+
 public interface IRetailerManagement
 {
     Task<IReadOnlyList<RetailerManagementItem>> GetAsync(
@@ -459,6 +492,23 @@ public interface IRetailerManagement
     Task<IReadOnlyList<RetailerIdentityVerificationItem>> GetIdentityVerificationsAsync(
         AuthenticatedUser actor,
         Guid retailerId,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<RetailerAffiliateProgrammeItem>> GetAffiliateProgrammesAsync(
+        AuthenticatedUser actor,
+        Guid retailerId,
+        CancellationToken cancellationToken = default);
+
+    Task<RetailerAffiliateProgrammeItem> RecordAffiliateProgrammeDiscoveryAsync(
+        AuthenticatedUser actor,
+        Guid retailerId,
+        RetailerAffiliateProgrammeDiscoveryRequest request,
+        CancellationToken cancellationToken = default);
+
+    Task<RetailerAffiliateProgrammeItem> SelectAffiliateProgrammeAsync(
+        AuthenticatedUser actor,
+        Guid retailerId,
+        Guid programmeId,
         CancellationToken cancellationToken = default);
 }
 

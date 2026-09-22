@@ -158,7 +158,7 @@
                                         <span class="retailer-date">@retailer.UpdatedAtUtc.ToLocalTime().ToString("dd MMM yyyy")</span>
                                     </td>
                                     <td>
-                                        <button class="retailer-edit-button" type="button" @onclick="() => BeginEdit(retailer.Id)">
+                                        <button class="retailer-edit-button" type="button" @onclick="() => BeginEditAsync(retailer.Id)">
                                             Edit
                                         </button>
                                     </td>
@@ -200,6 +200,78 @@
                                                     </button>
                                                     <button class="ds-button ds-button-secondary" type="button" @onclick="() => SubmitVerificationAsync(RetailerIdentityVerificationOutcome.NeedsReview)" disabled="@saving">Mark needs review</button>
                                                 </div>
+                                            </div>
+
+                                            <div class="retailer-affiliate-workflow">
+                                                <div class="retailer-workflow-heading">
+                                                    <div>
+                                                        <p class="catalogue-kicker">AFFILIATE DISCOVERY</p>
+                                                        <h3>Affiliate programmes</h3>
+                                                        <p>Once retailer identity is verified, discovered affiliate programmes and their referral terms can be compared here.</p>
+                                                    </div>
+                                                </div>
+
+                                                @if (affiliateLoading)
+                                                {
+                                                    <p class="retailer-muted">Loading affiliate programme matches…</p>
+                                                }
+                                                else if (affiliateProgrammes.Count == 0)
+                                                {
+                                                    <div class="retailer-affiliate-empty">
+                                                        <strong>Not investigated</strong>
+                                                        <span>No affiliate programme matches have been recorded for this retailer yet.</span>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="retailer-affiliate-list">
+                                                        @foreach (var programme in affiliateProgrammes)
+                                                        {
+                                                            <article class="retailer-affiliate-card">
+                                                                <div class="retailer-affiliate-card-header">
+                                                                    <div>
+                                                                        <strong>@programme.ProgrammeName</strong>
+                                                                        <span>@programme.Network · @programme.ProgrammeId</span>
+                                                                    </div>
+                                                                    @if (programme.IsPreferred)
+                                                                    {
+                                                                        <span class="retailer-affiliate-preferred">Preferred</span>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <span class="retailer-status">@FormatEnum(programme.Status)</span>
+                                                                    }
+                                                                </div>
+
+                                                                @if (!string.IsNullOrWhiteSpace(programme.ReferralTerms))
+                                                                {
+                                                                    <p>@programme.ReferralTerms</p>
+                                                                }
+
+                                                                <div class="retailer-affiliate-meta">
+                                                                    @if (programme.CookieDurationDays is not null)
+                                                                    {
+                                                                        <span>Cookie: @programme.CookieDurationDays days</span>
+                                                                    }
+                                                                    @if (programme.DeepLinksAllowed is not null)
+                                                                    {
+                                                                        <span>Deep links: @(programme.DeepLinksAllowed.Value ? "Yes" : "No")</span>
+                                                                    }
+                                                                    <span>Application: @(programme.ApplicationRequired ? "Required" : "Not required")</span>
+                                                                </div>
+
+                                                                @if (!programme.IsPreferred)
+                                                                {
+                                                                    <div class="retailer-form-actions">
+                                                                        <button class="ds-button ds-button-secondary" type="button" @onclick="() => SelectAffiliateProgrammeAsync(programme.Id)" disabled="@saving">
+                                                                            Select preferred
+                                                                        </button>
+                                                                    </div>
+                                                                }
+                                                            </article>
+                                                        }
+                                                    </div>
+                                                }
                                             </div>
 
                                             <EditForm Model="editModel" OnValidSubmit="SaveEditAsync" class="retailer-form">
@@ -244,6 +316,8 @@
     private bool accessDenied;
     private string? errorMessage;
     private Guid? editingRetailerId;
+    private bool affiliateLoading;
+    private List<RetailerAffiliateProgrammeItem> affiliateProgrammes = [];
 
     private readonly RetailerFormModel createModel = new();
     private readonly RetailerFormModel editModel = new();
@@ -311,7 +385,7 @@
         saving = false;
     }
 
-    private void BeginEdit(Guid retailerId)
+    private async Task BeginEditAsync(Guid retailerId)
     {
         var retailer = retailers.FirstOrDefault(value => value.Id == retailerId);
         if (retailer is null)
@@ -325,13 +399,26 @@
         verificationModel.SourceUrl = retailer.WebsiteUrl ?? string.Empty;
         verificationModel.ListingUrl = string.Empty;
         verificationModel.Notes = string.Empty;
+        affiliateProgrammes = [];
+        affiliateLoading = true;
         errorMessage = null;
+
+        var result = await Retailers.GetAffiliateProgrammesAsync(retailerId);
+        affiliateLoading = false;
+
+        if (result.Status == RetailerAffiliateProgrammeResultStatus.Found)
+            affiliateProgrammes = result.Programmes?.ToList() ?? [];
+        else if (result.Status is RetailerAffiliateProgrammeResultStatus.AccessDenied)
+            accessDenied = true;
+        else if (result.Status != RetailerAffiliateProgrammeResultStatus.NotFound)
+            errorMessage = result.Message;
     }
 
     private void CancelEdit()
     {
         editingRetailerId = null;
         editModel.Clear();
+        affiliateProgrammes = [];
     }
 
     private async Task SaveEditAsync()
@@ -358,6 +445,34 @@
         else
         {
             HandleMutationResult(result);
+        }
+
+        saving = false;
+    }
+
+    private async Task SelectAffiliateProgrammeAsync(Guid programmeId)
+    {
+        if (editingRetailerId is not Guid retailerId)
+            return;
+
+        saving = true;
+        errorMessage = null;
+
+        var result = await Retailers.SelectAffiliateProgrammeAsync(retailerId, programmeId);
+
+        if (result.Status == RetailerAffiliateProgrammeResultStatus.Selected)
+        {
+            var refreshed = await Retailers.GetAffiliateProgrammesAsync(retailerId);
+            if (refreshed.Status == RetailerAffiliateProgrammeResultStatus.Found)
+                affiliateProgrammes = refreshed.Programmes?.ToList() ?? [];
+        }
+        else if (result.Status == RetailerAffiliateProgrammeResultStatus.Invalid)
+        {
+            errorMessage = string.Join(" ", result.Errors!.SelectMany(pair => pair.Value));
+        }
+        else
+        {
+            errorMessage = result.Message ?? "The affiliate programme could not be selected.";
         }
 
         saving = false;

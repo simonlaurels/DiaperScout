@@ -139,6 +139,130 @@ app.MapGet(
     .Produces<IReadOnlyList<RetailerIdentityVerificationItem>>();
 
 app.MapGet(
+    "/api/v1/retailer-management/{retailerId:guid}/affiliate-programmes",
+    async (
+        Guid retailerId,
+        ICurrentUser currentUser,
+        IRetailerManagement retailerManagement,
+        CancellationToken cancellationToken) =>
+    {
+        var actor = await currentUser.GetAsync(cancellationToken);
+        if (actor is null)
+            return Results.Forbid();
+
+        try
+        {
+            return Results.Ok(
+                await retailerManagement.GetAffiliateProgrammesAsync(
+                    actor,
+                    retailerId,
+                    cancellationToken));
+        }
+        catch (KeyNotFoundException)
+        {
+            return Results.NotFound();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Results.Forbid();
+        }
+    })
+    .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+    .WithName("GetRetailerAffiliateProgrammes")
+    .WithTags("Retailer Management")
+    .Produces<IReadOnlyList<RetailerAffiliateProgrammeItem>>();
+
+app.MapPost(
+    "/api/v1/retailer-management/{retailerId:guid}/affiliate-programmes",
+    async (
+        Guid retailerId,
+        RetailerAffiliateProgrammeDiscoveryRequest request,
+        ICurrentUser currentUser,
+        IRetailerManagement retailerManagement,
+        CancellationToken cancellationToken) =>
+    {
+        var actor = await currentUser.GetAsync(cancellationToken);
+        if (actor is null)
+            return Results.Forbid();
+
+        try
+        {
+            return Results.Ok(
+                await retailerManagement.RecordAffiliateProgrammeDiscoveryAsync(
+                    actor,
+                    retailerId,
+                    request,
+                    cancellationToken));
+        }
+        catch (KeyNotFoundException)
+        {
+            return Results.NotFound();
+        }
+        catch (CatalogueValidationException exception)
+        {
+            return Results.ValidationProblem(
+                new Dictionary<string, string[]>
+                {
+                    [exception.Field] = [exception.Message]
+                });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Results.Forbid();
+        }
+    })
+    .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+    .WithName("RecordRetailerAffiliateProgramme")
+    .WithTags("Retailer Management")
+    .Produces<RetailerAffiliateProgrammeItem>()
+    .ProducesValidationProblem();
+
+app.MapPost(
+    "/api/v1/retailer-management/{retailerId:guid}/affiliate-programmes/{programmeId:guid}/select",
+    async (
+        Guid retailerId,
+        Guid programmeId,
+        ICurrentUser currentUser,
+        IRetailerManagement retailerManagement,
+        CancellationToken cancellationToken) =>
+    {
+        var actor = await currentUser.GetAsync(cancellationToken);
+        if (actor is null)
+            return Results.Forbid();
+
+        try
+        {
+            return Results.Ok(
+                await retailerManagement.SelectAffiliateProgrammeAsync(
+                    actor,
+                    retailerId,
+                    programmeId,
+                    cancellationToken));
+        }
+        catch (KeyNotFoundException)
+        {
+            return Results.NotFound();
+        }
+        catch (CatalogueValidationException exception)
+        {
+            return Results.ValidationProblem(
+                new Dictionary<string, string[]>
+                {
+                    [exception.Field] = [exception.Message]
+                });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Results.Forbid();
+        }
+    })
+    .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+    .WithName("SelectRetailerAffiliateProgramme")
+    .WithTags("Retailer Management")
+    .Produces<RetailerAffiliateProgrammeItem>()
+    .ProducesValidationProblem();
+
+app.MapGet(
     "/api/v1/retailer-management",
     async (
         string? q,

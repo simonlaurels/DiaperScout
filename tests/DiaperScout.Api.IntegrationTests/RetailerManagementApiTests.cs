@@ -85,12 +85,25 @@ public sealed class RetailerManagementApiTests : IClassFixture<PostgreSqlFixture
     {
         using var client = AuthenticatedClient(PostgreSqlFixture.ModeratorSubject);
 
+        var createResponse = await client.PostAsJsonAsync(
+            "/api/v1/retailer-management",
+            new CreateRetailerManagement(
+                "Identity Verification Test Retailer",
+                "identity-verification-test-retailer",
+                "https://identity-verification.example"));
+
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+        var retailer = await createResponse.Content.ReadFromJsonAsync<RetailerManagementItem>();
+        Assert.NotNull(retailer);
+
+        var retailerId = retailer!.Id;
+
         var response = await client.PostAsJsonAsync(
-            $"/api/v1/retailer-management/{_fixture.RetailerId}/identity-verification",
+            $"/api/v1/retailer-management/{retailerId}/identity-verification",
             new RetailerIdentityVerificationRequest(
-                "Integration Test Retailer",
-                "https://retailer.example.test/source",
-                "https://retailer.example.test/product/123",
+                "Identity Verification Test Retailer",
+                "https://identity-verification.example/source",
+                "https://identity-verification.example/product/123",
                 RetailerIdentityVerificationOutcome.Verified,
                 "Matched retailer name, website and discovered listing."));
 
@@ -111,9 +124,9 @@ public sealed class RetailerManagementApiTests : IClassFixture<PostgreSqlFixture
         var retailers = await client.GetAsync("/api/v1/retailer-management?status=Verified");
         Assert.Equal(HttpStatusCode.OK, retailers.StatusCode);
         var verified = await retailers.Content.ReadFromJsonAsync<IReadOnlyList<RetailerManagementItem>>();
-        Assert.Contains(verified!, value => value.Id == _fixture.RetailerId && value.Status == RetailerStatus.Verified);
+        Assert.Contains(verified!, value => value.Id == retailerId && value.Status == RetailerStatus.Verified);
 
-        var history = await client.GetAsync($"/api/v1/retailer-management/{_fixture.RetailerId}/identity-verifications");
+        var history = await client.GetAsync($"/api/v1/retailer-management/{retailerId}/identity-verifications");
         Assert.Equal(HttpStatusCode.OK, history.StatusCode);
         var records = await history.Content.ReadFromJsonAsync<IReadOnlyList<RetailerIdentityVerificationItem>>();
         var saved = Assert.Single(records!);
@@ -153,6 +166,117 @@ public sealed class RetailerManagementApiTests : IClassFixture<PostgreSqlFixture
         var retailers = await client.GetAsync($"/api/v1/retailer-management?status={RetailerStatus.NeedsReview}");
         var needsReview = await retailers.Content.ReadFromJsonAsync<IReadOnlyList<RetailerManagementItem>>();
         Assert.Contains(needsReview!, value => value.Id == _fixture.RetailerId);
+    }
+
+    [Fact]
+    public async Task RetailerManagement_CanRecordAndSelectAffiliateProgramme()
+    {
+        using var client = AuthenticatedClient(PostgreSqlFixture.ModeratorSubject);
+
+        var verification = await client.PostAsJsonAsync(
+            $"/api/v1/retailer-management/{_fixture.RetailerId}/identity-verification",
+            new RetailerIdentityVerificationRequest(
+                "Integration Test Retailer",
+                "https://retailer.example.test/source",
+                "https://retailer.example.test/product/123",
+                RetailerIdentityVerificationOutcome.Verified,
+                null));
+
+        Assert.Equal(HttpStatusCode.OK, verification.StatusCode);
+
+        var discovery = await client.PostAsJsonAsync(
+            $"/api/v1/retailer-management/{_fixture.RetailerId}/affiliate-programmes",
+            new RetailerAffiliateProgrammeDiscoveryRequest(
+                "Integration Network",
+                "programme-001",
+                "Integration Retailer Programme",
+                AffiliateProgrammeStatus.ProgrammeAvailable,
+                "https://network.example.test/programmes/001",
+                "https://network.example.test/programmes/001/terms",
+                "10% commission; 30-day cookie.",
+                30,
+                true,
+                false,
+                "https://network.example.test/search"));
+
+        Assert.Equal(HttpStatusCode.OK, discovery.StatusCode);
+        var discovered = await discovery.Content.ReadFromJsonAsync<RetailerAffiliateProgrammeItem>();
+        Assert.NotNull(discovered);
+        Assert.False(discovered.IsPreferred);
+        Assert.Equal("Integration Network", discovered.Network);
+        Assert.Equal("programme-001", discovered.ProgrammeId);
+        Assert.Equal(AffiliateProgrammeStatus.ProgrammeAvailable, discovered.Status);
+
+        var secondDiscovery = await client.PostAsJsonAsync(
+            $"/api/v1/retailer-management/{_fixture.RetailerId}/affiliate-programmes",
+            new RetailerAffiliateProgrammeDiscoveryRequest(
+                "Second Network",
+                "programme-002",
+                "Second Retailer Programme",
+                AffiliateProgrammeStatus.ApplicationRequired,
+                "https://second.example.test/programmes/002",
+                null,
+                "12% commission; application required.",
+                45,
+                false,
+                true,
+                "https://second.example.test/search"));
+
+        Assert.Equal(HttpStatusCode.OK, secondDiscovery.StatusCode);
+        var second = await secondDiscovery.Content.ReadFromJsonAsync<RetailerAffiliateProgrammeItem>();
+        Assert.NotNull(second);
+
+        var selectedResponse = await client.PostAsync(
+            $"/api/v1/retailer-management/{_fixture.RetailerId}/affiliate-programmes/{second!.Id}/select",
+            null);
+
+        Assert.Equal(HttpStatusCode.OK, selectedResponse.StatusCode);
+        var selected = await selectedResponse.Content.ReadFromJsonAsync<RetailerAffiliateProgrammeItem>();
+        Assert.NotNull(selected);
+        Assert.True(selected.IsPreferred);
+
+        var programmesResponse = await client.GetAsync(
+            $"/api/v1/retailer-management/{_fixture.RetailerId}/affiliate-programmes");
+
+        Assert.Equal(HttpStatusCode.OK, programmesResponse.StatusCode);
+        var programmes = await programmesResponse.Content.ReadFromJsonAsync<IReadOnlyList<RetailerAffiliateProgrammeItem>>();
+        Assert.NotNull(programmes);
+        Assert.Contains(programmes!, value => value.Id == second.Id && value.IsPreferred);
+        Assert.Contains(programmes!, value => value.Id == discovered.Id && !value.IsPreferred);
+    }
+
+    [Fact]
+    public async Task RetailerManagement_AffiliateDiscoveryRequiresVerifiedRetailer()
+    {
+        using var client = AuthenticatedClient(PostgreSqlFixture.ModeratorSubject);
+
+        var createResponse = await client.PostAsJsonAsync(
+            "/api/v1/retailer-management",
+            new CreateRetailerManagement(
+                "Affiliate Discovery Unverified Retailer",
+                "affiliate-discovery-unverified",
+                "https://affiliate-unverified.example"));
+
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+        var retailer = await createResponse.Content.ReadFromJsonAsync<RetailerManagementItem>();
+        Assert.NotNull(retailer);
+
+        var response = await client.PostAsJsonAsync(
+            $"/api/v1/retailer-management/{retailer!.Id}/affiliate-programmes",
+            new RetailerAffiliateProgrammeDiscoveryRequest(
+                "Integration Network",
+                "programme-unverified",
+                "Should Not Be Recorded",
+                AffiliateProgrammeStatus.ProgrammeAvailable,
+                null,
+                null,
+                null,
+                null,
+                null,
+                false,
+                null));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
     [Fact]

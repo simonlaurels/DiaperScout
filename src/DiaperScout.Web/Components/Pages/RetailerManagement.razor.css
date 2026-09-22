@@ -342,3 +342,83 @@
         grid-column: auto;
     }
 }
+
+
+.retailer-affiliate-workflow {
+    margin-bottom: 1.25rem;
+    padding: 1rem;
+    border: 1px solid var(--ds-border, #d7dbe0);
+    border-radius: 0.75rem;
+    background: #fff;
+}
+
+.retailer-affiliate-empty {
+    display: flex;
+    flex-direction: column;
+    gap: .2rem;
+    margin-top: 1rem;
+    padding: .85rem;
+    border: 1px dashed rgba(20, 58, 75, .16);
+    border-radius: .65rem;
+    background: rgba(248, 251, 251, .82);
+}
+
+.retailer-affiliate-empty span {
+    font-size: .82rem;
+    opacity: .7;
+}
+
+.retailer-affiliate-list {
+    display: grid;
+    gap: .75rem;
+    margin-top: 1rem;
+}
+
+.retailer-affiliate-card {
+    padding: .85rem;
+    border: 1px solid rgba(20, 58, 75, .12);
+    border-radius: .65rem;
+    background: rgba(248, 251, 251, .7);
+}
+
+.retailer-affiliate-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.retailer-affiliate-card-header > div {
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
+}
+
+.retailer-affiliate-card-header span {
+    font-size: .76rem;
+    opacity: .62;
+}
+
+.retailer-affiliate-card p {
+    margin: .75rem 0;
+}
+
+.retailer-affiliate-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .45rem .9rem;
+    font-size: .76rem;
+    opacity: .72;
+}
+
+.retailer-affiliate-preferred {
+    display: inline-flex;
+    align-items: center;
+    padding: .28rem .55rem;
+    border-radius: 999px;
+    font-size: .72rem !important;
+    font-weight: 800;
+    background: rgba(45, 164, 104, .13);
+    color: #197044;
+    opacity: 1 !important;
+}

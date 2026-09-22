@@ -1,0 +1,344 @@
+.retailer-management-page {
+    padding: 6rem 1.5rem 3rem;
+}
+
+.retailer-management-container {
+    width: min(1180px, 100%);
+    margin: 0 auto;
+}
+
+.retailer-management-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.retailer-management-header h1 {
+    margin: 0;
+}
+
+.retailer-management-intro {
+    max-width: 780px;
+    margin: .7rem 0 0;
+    line-height: 1.6;
+}
+
+.retailer-panel {
+    margin-bottom: 1.25rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(20, 58, 75, .14);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .82);
+    box-shadow: 0 10px 30px rgba(20, 58, 75, .06);
+}
+
+.retailer-panel-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.retailer-panel-heading h2 {
+    margin: 0;
+}
+
+.retailer-panel-heading p:last-child {
+    max-width: 760px;
+    margin: .55rem 0 0;
+    opacity: .72;
+}
+
+.retailer-count {
+    white-space: nowrap;
+    font-size: .85rem;
+    font-weight: 700;
+    opacity: .72;
+}
+
+.retailer-message {
+    margin-bottom: 1.25rem;
+    padding: 1rem 1.2rem;
+    border-radius: 14px;
+}
+
+.retailer-message p {
+    margin: .3rem 0 0;
+}
+
+.retailer-message-error {
+    border: 1px solid rgba(160, 60, 60, .2);
+    background: rgba(190, 70, 70, .07);
+}
+
+.retailer-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: .75rem;
+    margin: 1.25rem 0;
+}
+
+.retailer-metrics > div {
+    padding: .9rem 1rem;
+    border: 1px solid rgba(20, 58, 75, .12);
+    border-radius: .75rem;
+    background: rgba(255, 255, 255, .72);
+}
+
+.retailer-metrics span {
+    display: block;
+    font-size: .78rem;
+    opacity: .7;
+}
+
+.retailer-metrics strong {
+    display: block;
+    margin-top: .2rem;
+    font-size: 1.4rem;
+}
+
+.retailer-toolbar {
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) 220px auto;
+    gap: .75rem;
+    align-items: end;
+    margin-bottom: 1rem;
+}
+
+.retailer-search,
+.retailer-filter,
+.retailer-field {
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+}
+
+.retailer-search label,
+.retailer-filter label,
+.retailer-field label {
+    font-size: .8rem;
+    font-weight: 700;
+}
+
+.retailer-search .ds-input,
+.retailer-filter .ds-select,
+.retailer-field .ds-input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.retailer-table-wrap {
+    overflow-x: auto;
+    border: 1px solid rgba(20, 58, 75, .12);
+    border-radius: 14px;
+}
+
+.retailer-table {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: collapse;
+}
+
+.retailer-table th,
+.retailer-table td {
+    padding: .85rem .75rem;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid rgba(20, 58, 75, .09);
+}
+
+.retailer-table th {
+    background: rgba(242, 246, 248, .78);
+    color: rgba(20, 58, 75, .78);
+    font-size: .74rem;
+    font-weight: 800;
+    letter-spacing: .04em;
+}
+
+.retail-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.retailer-identity {
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
+}
+
+.retailer-identity strong {
+    font-size: .93rem;
+}
+
+.retailer-identity span,
+.retailer-date,
+.retailer-muted {
+    font-size: .78rem;
+    opacity: .62;
+}
+
+.retailer-table a {
+    color: inherit;
+}
+
+.retailer-status {
+    display: inline-flex;
+    align-items: center;
+    padding: .28rem .55rem;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 800;
+    background: rgba(20, 58, 75, .08);
+}
+
+.retailer-status.status-verified {
+    background: rgba(45, 164, 104, .13);
+    color: #197044;
+}
+
+.retailer-status.status-needsreview {
+    background: rgba(210, 150, 40, .14);
+    color: #875e10;
+}
+
+.retailer-status.status-inactive {
+    background: rgba(190, 70, 70, .12);
+    color: #963838;
+}
+
+.retailer-edit-button {
+    padding: .35rem .6rem;
+    border: 1px solid rgba(20, 58, 75, .13);
+    border-radius: .55rem;
+    background: #fff;
+    cursor: pointer;
+}
+
+.retailer-edit-row td {
+    padding: 1.1rem;
+    background: rgba(248, 251, 251, .82);
+}
+
+.retailer-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.retailer-field-wide {
+    grid-column: 1 / -1;
+}
+
+.retailer-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: .5rem;
+    margin-top: 1rem;
+}
+
+.retailer-empty {
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+    padding: 2rem 1rem;
+    border: 1px dashed rgba(20, 58, 75, .18);
+    border-radius: 14px;
+}
+
+.retailer-empty span {
+    opacity: .7;
+}
+
+.retailer-create-panel {
+    margin-bottom: 1.25rem;
+}
+
+@media (max-width: 900px) {
+    .retailer-metrics {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .retailer-toolbar {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .retailer-refresh {
+        width: 100%;
+    }
+}
+
+@media (max-width: 700px) {
+    .retailer-management-page {
+        padding: 5rem 1rem 2rem;
+    }
+
+    .retailer-management-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .retailer-management-header .ds-button {
+        width: 100%;
+    }
+
+    .retailer-metrics,
+    .retailer-toolbar,
+    .retailer-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .retailer-field-wide {
+        grid-column: auto;
+    }
+
+    .retailer-panel-heading {
+        flex-direction: column;
+    }
+
+    .retailer-form-actions {
+        justify-content: stretch;
+        flex-direction: column;
+    }
+
+    .retailer-form-actions .ds-button {
+        width: 100%;
+    }
+}
+
+
+.retailer-identity-workflow {
+    margin-bottom: 1.25rem;
+    padding: 1rem;
+    border: 1px solid var(--ds-border, #d7dbe0);
+    border-radius: 0.75rem;
+    background: var(--ds-surface-subtle, #f7f8fa);
+}
+
+.retailer-workflow-heading h3 {
+    margin: 0.15rem 0 0.25rem;
+}
+
+.retailer-workflow-heading p:last-child {
+    margin-bottom: 0;
+}
+
+.retailer-verification-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.retailer-verification-grid .retailer-field-wide {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 800px) {
+    .retailer-verification-grid {
+        grid-template-columns: 1fr;
+    }
+    .retailer-verification-grid .retailer-field-wide {
+        grid-column: auto;
+    }
+}

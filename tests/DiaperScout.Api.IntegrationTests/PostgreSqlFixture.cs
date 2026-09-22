@@ -42,7 +42,7 @@ public sealed class PostgreSqlFixture : IAsyncLifetime
         var packType = new PackType(sizeVariant.Id, 12, PackagingType.Bag);
         var identifier = new ProductIdentifier(packType.Id, IdentifierType.Gtin, "12345678");
         var country = new Country("ZZ", "Integration Test Country");
-        var retailer = new Retailer("Integration Test Retailer", "integration-test-retailer");
+        var retailer = new Retailer("Integration Test Retailer", "integration-test-retailer", "https://retailer.example.test");
         var location = new Location(retailer.Id, country.Id, "Integration Test Location", "1 Test Street", "Testville", "ZZ1 1ZZ");
         var user = new User(ExplorerSubject);
         var explorer = new ExplorerProfile(user.Id, "Integration Explorer");

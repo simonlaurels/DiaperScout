@@ -68,6 +68,211 @@ app.MapGet(
     () => Results.Ok(new { status = "healthy" }))
     .WithName("Health");
 
+app.MapPost(
+    "/api/v1/retailer-management/{retailerId:guid}/identity-verification",
+    async (
+        Guid retailerId,
+        RetailerIdentityVerificationRequest request,
+        ICurrentUser currentUser,
+        IRetailerManagement retailerManagement,
+        CancellationToken cancellationToken) =>
+    {
+        var actor = await currentUser.GetAsync(cancellationToken);
+        if (actor is null)
+            return Results.Forbid();
+
+        try
+        {
+            return Results.Ok(await retailerManagement.VerifyIdentityAsync(actor, retailerId, request, cancellationToken));
+        }
+        catch (KeyNotFoundException)
+        {
+            return Results.NotFound();
+        }
+        catch (CatalogueValidationException exception)
+        {
+            return Results.ValidationProblem(new Dictionary<string, string[]> { [exception.Field] = [exception.Message] });
+        }
+        catch (ArgumentException exception)
+        {
+            return Results.ValidationProblem(new Dictionary<string, string[]> { [exception.ParamName ?? "identity"] = [exception.Message] });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Results.Forbid();
+        }
+    })
+    .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+    .WithName("VerifyRetailerIdentity")
+    .WithTags("Retailer Management")
+    .Produces<RetailerIdentityVerificationItem>()
+    .ProducesValidationProblem();
+
+app.MapGet(
+    "/api/v1/retailer-management/{retailerId:guid}/identity-verifications",
+    async (
+        Guid retailerId,
+        ICurrentUser currentUser,
+        IRetailerManagement retailerManagement,
+        CancellationToken cancellationToken) =>
+    {
+        var actor = await currentUser.GetAsync(cancellationToken);
+        if (actor is null)
+            return Results.Forbid();
+
+        try
+        {
+            return Results.Ok(await retailerManagement.GetIdentityVerificationsAsync(actor, retailerId, cancellationToken));
+        }
+        catch (KeyNotFoundException)
+        {
+            return Results.NotFound();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Results.Forbid();
+        }
+    })
+    .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+    .WithName("GetRetailerIdentityVerifications")
+    .WithTags("Retailer Management")
+    .Produces<IReadOnlyList<RetailerIdentityVerificationItem>>();
+
+app.MapGet(
+    "/api/v1/retailer-management",
+    async (
+        string? q,
+        string? status,
+        ICurrentUser currentUser,
+        IRetailerManagement retailerManagement,
+        CancellationToken cancellationToken) =>
+    {
+        var actor = await currentUser.GetAsync(cancellationToken);
+        if (actor is null)
+            return Results.Forbid();
+
+        RetailerStatus? parsedStatus = null;
+        if (!string.IsNullOrWhiteSpace(status))
+        {
+            if (!Enum.TryParse<RetailerStatus>(status, true, out var value) ||
+                !Enum.IsDefined(value))
+            {
+                return Results.ValidationProblem(
+                    new Dictionary<string, string[]>
+                    {
+                        ["status"] = ["The retailer status is invalid."]
+                    });
+            }
+
+            parsedStatus = value;
+        }
+
+        try
+        {
+            return Results.Ok(
+                await retailerManagement.GetAsync(
+                    actor,
+                    q,
+                    parsedStatus,
+                    cancellationToken));
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Results.Forbid();
+        }
+    })
+    .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+    .WithName("GetRetailerManagement")
+    .WithTags("Retailer Management")
+    .Produces<IReadOnlyList<RetailerManagementItem>>();
+
+app.MapPost(
+    "/api/v1/retailer-management",
+    async (
+        CreateRetailerManagement request,
+        ICurrentUser currentUser,
+        IRetailerManagement retailerManagement,
+        CancellationToken cancellationToken) =>
+    {
+        var actor = await currentUser.GetAsync(cancellationToken);
+        if (actor is null)
+            return Results.Forbid();
+
+        try
+        {
+            var retailer = await retailerManagement.CreateAsync(
+                actor,
+                request,
+                cancellationToken);
+
+            return Results.Created(
+                $"/api/v1/retailer-management/{retailer.Id}",
+                retailer);
+        }
+        catch (CatalogueValidationException exception)
+        {
+            return Results.ValidationProblem(
+                new Dictionary<string, string[]>
+                {
+                    [exception.Field] = [exception.Message]
+                });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Results.Forbid();
+        }
+    })
+    .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+    .WithName("CreateRetailerManagement")
+    .WithTags("Retailer Management")
+    .Produces<RetailerManagementItem>(StatusCodes.Status201Created)
+    .ProducesValidationProblem();
+
+app.MapPut(
+    "/api/v1/retailer-management/{retailerId:guid}/identity",
+    async (
+        Guid retailerId,
+        UpdateRetailerIdentity request,
+        ICurrentUser currentUser,
+        IRetailerManagement retailerManagement,
+        CancellationToken cancellationToken) =>
+    {
+        var actor = await currentUser.GetAsync(cancellationToken);
+        if (actor is null)
+            return Results.Forbid();
+
+        try
+        {
+            return Results.Ok(
+                await retailerManagement.UpdateIdentityAsync(
+                    actor,
+                    retailerId,
+                    request,
+                    cancellationToken));
+        }
+        catch (KeyNotFoundException)
+        {
+            return Results.NotFound();
+        }
+        catch (CatalogueValidationException exception)
+        {
+            return Results.ValidationProblem(
+                new Dictionary<string, string[]>
+                {
+                    [exception.Field] = [exception.Message]
+                });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Results.Forbid();
+        }
+    })
+    .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+    .WithName("UpdateRetailerIdentity")
+    .WithTags("Retailer Management")
+    .Produces<RetailerManagementItem>()
+    .ProducesValidationProblem();
+
 app.MapGet(
     "/api/v1/me/explorer",
     async (

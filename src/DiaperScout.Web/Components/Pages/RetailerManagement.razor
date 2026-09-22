@@ -1,0 +1,467 @@
+@page "/catalogue/retailers"
+@rendermode InteractiveServer
+@inject RetailerManagementClient Retailers
+
+<PageTitle>Retailer Management · DiaperScout</PageTitle>
+
+<section class="retailer-management-page">
+    <div class="retailer-management-container">
+        <header class="retailer-management-header">
+            <div>
+                <p class="catalogue-kicker">RETAIL</p>
+                <h1>Retailer Management</h1>
+                <p class="retailer-management-intro">
+                    Manage the canonical retailers that DiaperScout can discover, verify and connect to products.
+                    Retailer identity comes first; affiliate and retail monitoring are layered on afterwards.
+                </p>
+            </div>
+            <button class="ds-button ds-button-primary" type="button" @onclick="BeginCreate">
+                Add retailer <span aria-hidden="true">+</span>
+            </button>
+        </header>
+
+        @if (accessDenied)
+        {
+            <div class="retailer-message retailer-message-error" role="alert">
+                <strong>Retailer management unavailable</strong>
+                <p>You need Moderator editorial authority to manage retailers.</p>
+            </div>
+        }
+        else if (errorMessage is not null)
+        {
+            <div class="retailer-message retailer-message-error" role="alert">@errorMessage</div>
+        }
+
+        @if (showCreate)
+        {
+            <section class="retailer-panel retailer-create-panel">
+                <div class="retailer-panel-heading">
+                    <div>
+                        <p class="catalogue-kicker">NEW RETAILER</p>
+                        <h2>Establish a retailer</h2>
+                        <p>New canonical retailers start as <strong>Discovered</strong>. Verification will be handled by the retailer identity workflow.</p>
+                    </div>
+                    <button class="ds-button ds-button-secondary" type="button" @onclick="CancelCreate" disabled="@saving">Cancel</button>
+                </div>
+
+                <EditForm Model="createModel" OnValidSubmit="CreateAsync" class="retailer-form">
+                    <div class="retailer-form-grid">
+                        <div class="retailer-field">
+                            <label for="retailer-name">Retailer name</label>
+                            <InputText id="retailer-name" class="ds-input" @bind-Value="createModel.Name" placeholder="e.g. Tesco" />
+                        </div>
+                        <div class="retailer-field">
+                            <label for="retailer-slug">Slug</label>
+                            <InputText id="retailer-slug" class="ds-input" @bind-Value="createModel.Slug" placeholder="e.g. tesco" />
+                        </div>
+                        <div class="retailer-field retailer-field-wide">
+                            <label for="retailer-website">Website</label>
+                            <InputText id="retailer-website" class="ds-input" @bind-Value="createModel.WebsiteUrl" placeholder="https://…" />
+                        </div>
+                    </div>
+                    <div class="retailer-form-actions">
+                        <button class="ds-button ds-button-primary" type="submit" disabled="@saving">
+                            @(saving ? "Creating…" : "Create retailer")
+                        </button>
+                    </div>
+                </EditForm>
+            </section>
+        }
+
+        <section class="retailer-panel">
+            <div class="retailer-panel-heading">
+                <div>
+                    <p class="catalogue-kicker">CANONICAL RETAILERS</p>
+                    <h2>Retailer list</h2>
+                    <p>These are the retailer identities that discovery and affiliate workflows will reference.</p>
+                </div>
+                <span class="retailer-count">@retailers.Count retailer@(retailers.Count == 1 ? "" : "s")</span>
+            </div>
+
+            <div class="retailer-metrics">
+                <div><span>In current view</span><strong>@retailers.Count</strong></div>
+                <div><span>Discovered</span><strong>@CountByStatus(RetailerStatus.Discovered)</strong></div>
+                <div><span>Verified</span><strong>@CountByStatus(RetailerStatus.Verified)</strong></div>
+                <div><span>Needs review</span><strong>@CountByStatus(RetailerStatus.NeedsReview)</strong></div>
+            </div>
+
+            <div class="retailer-toolbar">
+                <div class="retailer-search">
+                    <label for="retailer-search">Search</label>
+                    <InputText id="retailer-search" class="ds-input" @bind-Value="query" @bind-Value:event="oninput" placeholder="Name, slug or website…" />
+                </div>
+                <div class="retailer-filter">
+                    <label for="retailer-status">Status</label>
+                    <InputSelect id="retailer-status" class="ds-select" @bind-Value="statusFilter">
+                        <option value="">All statuses</option>
+                        @foreach (var status in Enum.GetValues<RetailerStatus>())
+                        {
+                            <option value="@status">@FormatEnum(status)</option>
+                        }
+                    </InputSelect>
+                </div>
+                <button class="ds-button ds-button-secondary retailer-refresh" type="button" @onclick="LoadAsync" disabled="@loading">
+                    @(loading ? "Loading…" : "Refresh")
+                </button>
+            </div>
+
+            @if (loading)
+            {
+                <div class="retailer-empty"><strong>Loading retailers…</strong></div>
+            }
+            else if (retailers.Count == 0)
+            {
+                <div class="retailer-empty">
+                    <strong>No retailers match the current view.</strong>
+                    <span>Discovered retailers will appear here as the automated retail discovery workflow begins.</span>
+                </div>
+            }
+            else
+            {
+                <div class="retailer-table-wrap">
+                    <table class="retailer-table">
+                        <thead>
+                            <tr>
+                                <th>Retailer</th>
+                                <th>Status</th>
+                                <th>Website</th>
+                                <th>Last updated</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var retailer in retailers)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="retailer-identity">
+                                            <strong>@retailer.Name</strong>
+                                            <span>@retailer.Slug</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="retailer-status status-@retailer.Status.ToString().ToLowerInvariant()">
+                                            @FormatEnum(retailer.Status)
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrWhiteSpace(retailer.WebsiteUrl))
+                                        {
+                                            <a href="@retailer.WebsiteUrl" target="_blank" rel="noopener noreferrer">@DisplayHost(retailer.WebsiteUrl)</a>
+                                        }
+                                        else
+                                        {
+                                            <span class="retailer-muted">Not recorded</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="retailer-date">@retailer.UpdatedAtUtc.ToLocalTime().ToString("dd MMM yyyy")</span>
+                                    </td>
+                                    <td>
+                                        <button class="retailer-edit-button" type="button" @onclick="() => BeginEdit(retailer.Id)">
+                                            Edit
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                @if (editingRetailerId == retailer.Id)
+                                {
+                                    <tr class="retailer-edit-row">
+                                        <td colspan="5">
+                                            <div class="retailer-identity-workflow">
+                                                <div class="retailer-workflow-heading">
+                                                    <div>
+                                                        <p class="catalogue-kicker">IDENTITY VERIFICATION</p>
+                                                        <h3>Verify this retailer</h3>
+                                                        <p>Check the discovery evidence before this retailer is trusted by affiliate and retail automation.</p>
+                                                    </div>
+                                                </div>
+                                                <div class="retailer-verification-grid">
+                                                    <div class="retailer-field">
+                                                        <label>Observed retailer name</label>
+                                                        <InputText class="ds-input" @bind-Value="verificationModel.ObservedRetailerName" />
+                                                    </div>
+                                                    <div class="retailer-field">
+                                                        <label>Discovery source URL</label>
+                                                        <InputText class="ds-input" @bind-Value="verificationModel.SourceUrl" placeholder="https://…" />
+                                                    </div>
+                                                    <div class="retailer-field retailer-field-wide">
+                                                        <label>Discovered listing URL</label>
+                                                        <InputText class="ds-input" @bind-Value="verificationModel.ListingUrl" placeholder="https://…" />
+                                                    </div>
+                                                    <div class="retailer-field retailer-field-wide">
+                                                        <label>Moderator notes</label>
+                                                        <InputTextArea class="ds-input" @bind-Value="verificationModel.Notes" rows="3" placeholder="Optional evidence or correction notes…" />
+                                                    </div>
+                                                </div>
+                                                <div class="retailer-form-actions">
+                                                    <button class="ds-button ds-button-primary" type="button" @onclick="() => SubmitVerificationAsync(RetailerIdentityVerificationOutcome.Verified)" disabled="@saving">
+                                                        @(saving ? "Checking…" : "Verify retailer")
+                                                    </button>
+                                                    <button class="ds-button ds-button-secondary" type="button" @onclick="() => SubmitVerificationAsync(RetailerIdentityVerificationOutcome.NeedsReview)" disabled="@saving">Mark needs review</button>
+                                                </div>
+                                            </div>
+
+                                            <EditForm Model="editModel" OnValidSubmit="SaveEditAsync" class="retailer-form">
+                                                <div class="retailer-form-grid">
+                                                    <div class="retailer-field">
+                                                        <label>Name</label>
+                                                        <InputText class="ds-input" @bind-Value="editModel.Name" />
+                                                    </div>
+                                                    <div class="retailer-field">
+                                                        <label>Slug</label>
+                                                        <InputText class="ds-input" @bind-Value="editModel.Slug" />
+                                                    </div>
+                                                    <div class="retailer-field retailer-field-wide">
+                                                        <label>Website</label>
+                                                        <InputText class="ds-input" @bind-Value="editModel.WebsiteUrl" placeholder="https://…" />
+                                                    </div>
+                                                </div>
+                                                <div class="retailer-form-actions">
+                                                    <button class="ds-button ds-button-primary" type="submit" disabled="@saving">@(saving ? "Saving…" : "Save identity")</button>
+                                                    <button class="ds-button ds-button-secondary" type="button" @onclick="CancelEdit" disabled="@saving">Cancel</button>
+                                                </div>
+                                            </EditForm>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+    </div>
+</section>
+
+@code {
+    private List<RetailerManagementItem> retailers = [];
+    private string? query;
+    private string? statusFilter;
+    private bool loading = true;
+    private bool saving;
+    private bool showCreate;
+    private bool accessDenied;
+    private string? errorMessage;
+    private Guid? editingRetailerId;
+
+    private readonly RetailerFormModel createModel = new();
+    private readonly RetailerFormModel editModel = new();
+    private readonly RetailerVerificationFormModel verificationModel = new();
+
+    protected override async Task OnInitializedAsync() => await LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        loading = true;
+        errorMessage = null;
+
+        RetailerStatus? status = null;
+        if (!string.IsNullOrWhiteSpace(statusFilter) &&
+            Enum.TryParse<RetailerStatus>(statusFilter, true, out var parsed))
+        {
+            status = parsed;
+        }
+
+        var result = await Retailers.GetAsync(query, status);
+        loading = false;
+
+        accessDenied = result.Status == RetailerManagementStatus.AccessDenied;
+        if (result.Status == RetailerManagementStatus.Found)
+            this.retailers = result.Retailers?.ToList() ?? [];
+        else if (result.Status == RetailerManagementStatus.Failed)
+            errorMessage = result.Message;
+    }
+
+    private void BeginCreate()
+    {
+        errorMessage = null;
+        createModel.Clear();
+        showCreate = true;
+    }
+
+    private void CancelCreate()
+    {
+        showCreate = false;
+        createModel.Clear();
+    }
+
+    private async Task CreateAsync()
+    {
+        saving = true;
+        errorMessage = null;
+
+        var result = await Retailers.CreateAsync(
+            new CreateRetailerManagement(
+                createModel.Name,
+                createModel.Slug,
+                createModel.WebsiteUrl));
+
+        if (result.Status == RetailerMutationStatus.Saved)
+        {
+            showCreate = false;
+            createModel.Clear();
+            await LoadAsync();
+        }
+        else
+        {
+            HandleMutationResult(result);
+        }
+
+        saving = false;
+    }
+
+    private void BeginEdit(Guid retailerId)
+    {
+        var retailer = retailers.FirstOrDefault(value => value.Id == retailerId);
+        if (retailer is null)
+            return;
+
+        editingRetailerId = retailerId;
+        editModel.Name = retailer.Name;
+        editModel.Slug = retailer.Slug;
+        editModel.WebsiteUrl = retailer.WebsiteUrl;
+        verificationModel.ObservedRetailerName = retailer.Name;
+        verificationModel.SourceUrl = retailer.WebsiteUrl ?? string.Empty;
+        verificationModel.ListingUrl = string.Empty;
+        verificationModel.Notes = string.Empty;
+        errorMessage = null;
+    }
+
+    private void CancelEdit()
+    {
+        editingRetailerId = null;
+        editModel.Clear();
+    }
+
+    private async Task SaveEditAsync()
+    {
+        if (editingRetailerId is not Guid retailerId)
+            return;
+
+        saving = true;
+        errorMessage = null;
+
+        var result = await Retailers.UpdateIdentityAsync(
+            retailerId,
+            new UpdateRetailerIdentity(
+                editModel.Name,
+                editModel.Slug,
+                editModel.WebsiteUrl));
+
+        if (result.Status == RetailerMutationStatus.Saved)
+        {
+            editingRetailerId = null;
+            editModel.Clear();
+            await LoadAsync();
+        }
+        else
+        {
+            HandleMutationResult(result);
+        }
+
+        saving = false;
+    }
+
+    private async Task SubmitVerificationAsync(RetailerIdentityVerificationOutcome outcome)
+    {
+        if (editingRetailerId is not Guid retailerId)
+            return;
+
+        saving = true;
+        errorMessage = null;
+
+        var result = await Retailers.VerifyIdentityAsync(
+            retailerId,
+            new RetailerIdentityVerificationRequest(
+                verificationModel.ObservedRetailerName,
+                verificationModel.SourceUrl,
+                string.IsNullOrWhiteSpace(verificationModel.ListingUrl) ? null : verificationModel.ListingUrl,
+                outcome,
+                string.IsNullOrWhiteSpace(verificationModel.Notes) ? null : verificationModel.Notes));
+
+        if (result.Status == RetailerVerificationStatus.Saved)
+        {
+            editingRetailerId = null;
+            verificationModel.Clear();
+            await LoadAsync();
+        }
+        else if (result.Status == RetailerVerificationStatus.Invalid)
+        {
+            errorMessage = string.Join(" ", result.Errors!.SelectMany(pair => pair.Value));
+        }
+        else
+        {
+            errorMessage = result.Message ?? "The identity could not be verified.";
+        }
+
+        saving = false;
+    }
+
+    private void HandleMutationResult(RetailerMutationResult result)
+    {
+        if (result.Status == RetailerMutationStatus.AccessDenied)
+        {
+            accessDenied = true;
+            errorMessage = result.Message;
+            return;
+        }
+
+        if (result.Status == RetailerMutationStatus.Invalid)
+        {
+            errorMessage = string.Join(" ", result.Errors!.SelectMany(pair => pair.Value));
+            return;
+        }
+
+        errorMessage = result.Message ?? "The retailer could not be saved.";
+    }
+
+    private int CountByStatus(RetailerStatus status) =>
+        retailers.Count(value => value.Status == status);
+
+    private static string DisplayHost(string? url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            return "Not recorded";
+
+        return Uri.TryCreate(url, UriKind.Absolute, out var uri)
+            ? uri.Host
+            : url;
+    }
+
+    private static string FormatEnum<T>(T value) =>
+        System.Text.RegularExpressions.Regex.Replace(
+            value?.ToString() ?? string.Empty,
+            "(?<!^)([A-Z])",
+            " $1");
+
+    private sealed class RetailerVerificationFormModel
+    {
+        public string ObservedRetailerName { get; set; } = string.Empty;
+        public string SourceUrl { get; set; } = string.Empty;
+        public string? ListingUrl { get; set; }
+        public string? Notes { get; set; }
+
+        public void Clear()
+        {
+            ObservedRetailerName = string.Empty;
+            SourceUrl = string.Empty;
+            ListingUrl = null;
+            Notes = null;
+        }
+    }
+
+    private sealed class RetailerFormModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Slug { get; set; } = string.Empty;
+        public string? WebsiteUrl { get; set; }
+
+        public void Clear()
+        {
+            Name = string.Empty;
+            Slug = string.Empty;
+            WebsiteUrl = null;
+        }
+    }
+}

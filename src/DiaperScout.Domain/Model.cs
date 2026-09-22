@@ -8,6 +8,8 @@ public abstract class Entity
 
 public enum ProductType { Tape, PullUp, Pad, Booster, AllInOne, Other }
 public enum ProductStatus { Current, Discontinued, Prototype }
+public enum RetailerStatus { Discovered, Verified, NeedsReview, Inactive }
+public enum RetailerIdentityVerificationOutcome { Verified, NeedsReview }
 public enum BackingType { Unknown, Plastic, Cloth, Hybrid, Other }
 public enum FastenerType { Unknown, AdhesiveTape, HookAndLoop, Other }
 public enum CatalogueVariantAppearance { Unknown, Plain, Printed }
@@ -474,11 +476,172 @@ public sealed class Country : Entity
 
 public sealed class Retailer : Entity
 {
-    private Retailer() { Name = null!; Slug = null!; }
-    public Retailer(string name, string slug, string? websiteUrl = null) { Name = name; Slug = slug; WebsiteUrl = websiteUrl; }
+    private Retailer()
+    {
+        Name = null!;
+        Slug = null!;
+    }
+
+    public Retailer(string name, string slug, string? websiteUrl = null)
+    {
+        Name = RequireValue(name, nameof(name), 200);
+        Slug = RequireValue(slug, nameof(slug), 200);
+        WebsiteUrl = NormalizeUrl(websiteUrl, nameof(websiteUrl));
+        Status = RetailerStatus.Discovered;
+        CreatedAtUtc = DateTimeOffset.UtcNow;
+        UpdatedAtUtc = CreatedAtUtc;
+    }
+
     public string Name { get; private set; }
     public string Slug { get; private set; }
     public string? WebsiteUrl { get; private set; }
+    public RetailerStatus Status { get; private set; }
+    public DateTimeOffset CreatedAtUtc { get; private set; }
+    public DateTimeOffset UpdatedAtUtc { get; private set; }
+    public DateTimeOffset? IdentityVerifiedAtUtc { get; private set; }
+    public string? IdentitySourceUrl { get; private set; }
+
+    public void UpdateIdentity(string name, string slug, string? websiteUrl)
+    {
+        Name = RequireValue(name, nameof(name), 200);
+        Slug = RequireValue(slug, nameof(slug), 200);
+        WebsiteUrl = NormalizeUrl(websiteUrl, nameof(websiteUrl));
+
+        if (Status == RetailerStatus.Verified)
+        {
+            Status = RetailerStatus.NeedsReview;
+            IdentityVerifiedAtUtc = null;
+            IdentitySourceUrl = null;
+        }
+
+        UpdatedAtUtc = DateTimeOffset.UtcNow;
+    }
+
+    public void VerifyIdentity(string? sourceUrl = null)
+    {
+        Status = RetailerStatus.Verified;
+        IdentityVerifiedAtUtc = DateTimeOffset.UtcNow;
+        IdentitySourceUrl = NormalizeUrl(sourceUrl, nameof(sourceUrl));
+        UpdatedAtUtc = DateTimeOffset.UtcNow;
+    }
+
+    public void MarkNeedsReview()
+    {
+        Status = RetailerStatus.NeedsReview;
+        UpdatedAtUtc = DateTimeOffset.UtcNow;
+    }
+
+    public void MarkInactive()
+    {
+        Status = RetailerStatus.Inactive;
+        UpdatedAtUtc = DateTimeOffset.UtcNow;
+    }
+
+    private static string RequireValue(string value, string parameterName, int maxLength)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new ArgumentException("A value is required.", parameterName);
+
+        var trimmed = value.Trim();
+        if (trimmed.Length > maxLength)
+            throw new ArgumentException($"The value must be {maxLength} characters or fewer.", parameterName);
+
+        return trimmed;
+    }
+
+    private static string? NormalizeUrl(string? value, string parameterName)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
+
+        if (!Uri.TryCreate(value.Trim(), UriKind.Absolute, out var uri)
+            || (uri.Scheme != Uri.UriSchemeHttps && uri.Scheme != Uri.UriSchemeHttp))
+            throw new ArgumentException("The URL must be an absolute HTTP or HTTPS URL.", parameterName);
+
+        return uri.ToString();
+    }
+}
+
+
+public sealed class RetailerIdentityVerification : Entity
+{
+    private RetailerIdentityVerification()
+    {
+        SourceUrl = null!;
+        ObservedRetailerName = null!;
+    }
+
+    public RetailerIdentityVerification(
+        Guid retailerId,
+        Guid verifiedByUserId,
+        RetailerIdentityVerificationOutcome outcome,
+        string observedRetailerName,
+        string sourceUrl,
+        string? listingUrl,
+        bool websiteUrlValid,
+        bool sourceUrlValid,
+        bool listingUrlValid,
+        bool nameMatches,
+        bool domainMatches,
+        string? notes = null)
+    {
+        if (retailerId == Guid.Empty)
+            throw new ArgumentException("A retailer is required.", nameof(retailerId));
+        if (verifiedByUserId == Guid.Empty)
+            throw new ArgumentException("A verifying user is required.", nameof(verifiedByUserId));
+        if (!Enum.IsDefined(outcome))
+            throw new ArgumentException("The verification outcome is invalid.", nameof(outcome));
+        ObservedRetailerName = RequireValue(observedRetailerName, nameof(observedRetailerName), 200);
+        SourceUrl = RequireUrl(sourceUrl, nameof(sourceUrl));
+        ListingUrl = NormalizeUrl(listingUrl, nameof(listingUrl));
+        Notes = string.IsNullOrWhiteSpace(notes) ? null : notes.Trim();
+        RetailerId = retailerId;
+        VerifiedByUserId = verifiedByUserId;
+        Outcome = outcome;
+        WebsiteUrlValid = websiteUrlValid;
+        SourceUrlValid = sourceUrlValid;
+        ListingUrlValid = listingUrlValid;
+        NameMatches = nameMatches;
+        DomainMatches = domainMatches;
+        VerifiedAtUtc = DateTimeOffset.UtcNow;
+    }
+
+    public Guid RetailerId { get; private set; }
+    public Guid VerifiedByUserId { get; private set; }
+    public RetailerIdentityVerificationOutcome Outcome { get; private set; }
+    public string ObservedRetailerName { get; private set; }
+    public string SourceUrl { get; private set; }
+    public string? ListingUrl { get; private set; }
+    public bool WebsiteUrlValid { get; private set; }
+    public bool SourceUrlValid { get; private set; }
+    public bool ListingUrlValid { get; private set; }
+    public bool NameMatches { get; private set; }
+    public bool DomainMatches { get; private set; }
+    public string? Notes { get; private set; }
+    public DateTimeOffset VerifiedAtUtc { get; private set; }
+
+    private static string RequireValue(string value, string parameterName, int maxLength)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new ArgumentException("A value is required.", parameterName);
+        var trimmed = value.Trim();
+        if (trimmed.Length > maxLength)
+            throw new ArgumentException($"The value must be {maxLength} characters or fewer.", parameterName);
+        return trimmed;
+    }
+
+    private static string RequireUrl(string value, string parameterName) =>
+        NormalizeUrl(value, parameterName) ?? throw new ArgumentException("A valid HTTP or HTTPS URL is required.", parameterName);
+
+    private static string? NormalizeUrl(string? value, string parameterName)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
+        if (!Uri.TryCreate(value.Trim(), UriKind.Absolute, out var uri)
+            || (uri.Scheme != Uri.UriSchemeHttps && uri.Scheme != Uri.UriSchemeHttp))
+            throw new ArgumentException("The URL must be an absolute HTTP or HTTPS URL.", parameterName);
+        return uri.ToString();
+    }
 }
 
 public sealed class CatalogueSubmissionRetailAffiliate : Entity

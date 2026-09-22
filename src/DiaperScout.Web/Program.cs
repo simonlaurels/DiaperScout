@@ -39,6 +39,9 @@ builder.Services.AddHttpClient<ProductCatalogueClient>(client => client.BaseAddr
 builder.Services.AddHttpClient<CatalogueAffiliateClient>(client => client.BaseAddress = new Uri("https+http://api"))
     .AddHttpMessageHandler<DevelopmentSubjectForwardingHandler>()
     .AddServiceDiscovery();
+builder.Services.AddHttpClient<RetailerManagementClient>(client => client.BaseAddress = new Uri("https+http://api"))
+    .AddHttpMessageHandler<DevelopmentSubjectForwardingHandler>()
+    .AddServiceDiscovery();
 
 var app = builder.Build();
 

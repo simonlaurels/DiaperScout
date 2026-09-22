@@ -382,6 +382,86 @@ public sealed record CatalogueProductImageContent(
     string ContentType,
     string FileName);
 
+public sealed record RetailerManagementItem(
+    Guid Id,
+    string Name,
+    string Slug,
+    string? WebsiteUrl,
+    RetailerStatus Status,
+    DateTimeOffset CreatedAtUtc,
+    DateTimeOffset UpdatedAtUtc,
+    DateTimeOffset? IdentityVerifiedAtUtc);
+
+public sealed record CreateRetailerManagement(
+    string Name,
+    string Slug,
+    string? WebsiteUrl);
+
+public sealed record UpdateRetailerIdentity(
+    string Name,
+    string Slug,
+    string? WebsiteUrl);
+
+public sealed record RetailerIdentityCheckResults(
+    bool WebsiteUrlValid,
+    bool SourceUrlValid,
+    bool ListingUrlValid,
+    bool NameMatches,
+    bool DomainMatches)
+{
+    public bool ReadyToVerify => WebsiteUrlValid && SourceUrlValid && ListingUrlValid && NameMatches && DomainMatches;
+}
+
+public sealed record RetailerIdentityVerificationRequest(
+    string ObservedRetailerName,
+    string SourceUrl,
+    string? ListingUrl,
+    RetailerIdentityVerificationOutcome Outcome,
+    string? Notes);
+
+public sealed record RetailerIdentityVerificationItem(
+    Guid Id,
+    Guid RetailerId,
+    string ObservedRetailerName,
+    string SourceUrl,
+    string? ListingUrl,
+    RetailerIdentityVerificationOutcome Outcome,
+    RetailerIdentityCheckResults Checks,
+    string? Notes,
+    Guid VerifiedByUserId,
+    DateTimeOffset VerifiedAtUtc);
+
+public interface IRetailerManagement
+{
+    Task<IReadOnlyList<RetailerManagementItem>> GetAsync(
+        AuthenticatedUser actor,
+        string? query,
+        RetailerStatus? status,
+        CancellationToken cancellationToken = default);
+
+    Task<RetailerManagementItem> CreateAsync(
+        AuthenticatedUser actor,
+        CreateRetailerManagement command,
+        CancellationToken cancellationToken = default);
+
+    Task<RetailerManagementItem> UpdateIdentityAsync(
+        AuthenticatedUser actor,
+        Guid retailerId,
+        UpdateRetailerIdentity command,
+        CancellationToken cancellationToken = default);
+
+    Task<RetailerIdentityVerificationItem> VerifyIdentityAsync(
+        AuthenticatedUser actor,
+        Guid retailerId,
+        RetailerIdentityVerificationRequest request,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<RetailerIdentityVerificationItem>> GetIdentityVerificationsAsync(
+        AuthenticatedUser actor,
+        Guid retailerId,
+        CancellationToken cancellationToken = default);
+}
+
 public interface IAtlasQueries
 {
     Task<ProductSummary?> GetProductBySlugAsync(

@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
         services.AddHttpContextAccessor();
 
         services.AddScoped<IAtlasQueries, AtlasQueries>();
+        services.AddScoped<IRetailerManagement, RetailerManagement>();
         services.AddScoped<IObservationSubmissions, ObservationSubmissions>();
         services.AddScoped<ICatalogueSubmissions, CatalogueSubmissions>();
         services.AddSingleton<ICatalogueSubmissionImageStorage, CatalogueSubmissionImageStorage>();
@@ -49,6 +50,270 @@ public sealed class CurrentExplorer(DiaperScoutDbContext db, IHttpContextAccesso
                       select new ExplorerIdentity(user.Id, explorer.Id, user.Subject, explorer.DisplayName))
             .SingleOrDefaultAsync(cancellationToken);
     }
+}
+
+
+internal sealed class RetailerManagement(DiaperScoutDbContext db, IEditorialAuthorisation editorialAuthorisation) : IRetailerManagement
+{
+    public async Task<IReadOnlyList<RetailerManagementItem>> GetAsync(
+        AuthenticatedUser actor,
+        string? query,
+        RetailerStatus? status,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireManagementAsync(actor, cancellationToken);
+
+        var retailers = db.Retailers.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(query))
+        {
+            var pattern = $"%{query.Trim()}%";
+            retailers = retailers.Where(retailer =>
+                EF.Functions.ILike(retailer.Name, pattern) ||
+                EF.Functions.ILike(retailer.Slug, pattern) ||
+                (retailer.WebsiteUrl != null && EF.Functions.ILike(retailer.WebsiteUrl, pattern)));
+        }
+
+        if (status.HasValue)
+            retailers = retailers.Where(retailer => retailer.Status == status.Value);
+
+        return await retailers
+            .OrderBy(retailer => retailer.Name)
+            .Select(retailer => new RetailerManagementItem(
+                retailer.Id,
+                retailer.Name,
+                retailer.Slug,
+                retailer.WebsiteUrl,
+                retailer.Status,
+                retailer.CreatedAtUtc,
+                retailer.UpdatedAtUtc,
+                retailer.IdentityVerifiedAtUtc))
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<RetailerManagementItem> CreateAsync(
+        AuthenticatedUser actor,
+        CreateRetailerManagement command,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireManagementAsync(actor, cancellationToken);
+
+        var name = command.Name?.Trim();
+        var slug = command.Slug?.Trim().ToLowerInvariant();
+
+        if (string.IsNullOrWhiteSpace(name))
+            throw new CatalogueValidationException("name", "A retailer name is required.");
+
+        if (string.IsNullOrWhiteSpace(slug))
+            throw new CatalogueValidationException("slug", "A retailer slug is required.");
+
+        if (await db.Retailers.AnyAsync(retailer => retailer.Slug == slug, cancellationToken))
+            throw new CatalogueValidationException("slug", "A retailer with this slug already exists.");
+
+        Retailer retailer;
+        try
+        {
+            retailer = new Retailer(name, slug, command.WebsiteUrl);
+        }
+        catch (ArgumentException exception)
+        {
+            throw new CatalogueValidationException(
+                exception.ParamName ?? "retailer",
+                exception.Message);
+        }
+
+        db.Retailers.Add(retailer);
+        await db.SaveChangesAsync(cancellationToken);
+
+        return ToItem(retailer);
+    }
+
+    public async Task<RetailerManagementItem> UpdateIdentityAsync(
+        AuthenticatedUser actor,
+        Guid retailerId,
+        UpdateRetailerIdentity command,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireManagementAsync(actor, cancellationToken);
+
+        var retailer = await db.Retailers.SingleOrDefaultAsync(value => value.Id == retailerId, cancellationToken)
+            ?? throw new KeyNotFoundException();
+
+        var name = command.Name?.Trim();
+        var slug = command.Slug?.Trim().ToLowerInvariant();
+
+        if (string.IsNullOrWhiteSpace(name))
+            throw new CatalogueValidationException("name", "A retailer name is required.");
+
+        if (string.IsNullOrWhiteSpace(slug))
+            throw new CatalogueValidationException("slug", "A retailer slug is required.");
+
+        if (await db.Retailers.AnyAsync(value => value.Id != retailerId && value.Slug == slug, cancellationToken))
+            throw new CatalogueValidationException("slug", "A retailer with this slug already exists.");
+
+        try
+        {
+            retailer.UpdateIdentity(name, slug, command.WebsiteUrl);
+        }
+        catch (ArgumentException exception)
+        {
+            throw new CatalogueValidationException(
+                exception.ParamName ?? "retailer",
+                exception.Message);
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+        return ToItem(retailer);
+    }
+
+    public async Task<RetailerIdentityVerificationItem> VerifyIdentityAsync(
+        AuthenticatedUser actor,
+        Guid retailerId,
+        RetailerIdentityVerificationRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireManagementAsync(actor, cancellationToken);
+
+        var retailer = await db.Retailers.SingleOrDefaultAsync(value => value.Id == retailerId, cancellationToken)
+            ?? throw new KeyNotFoundException();
+
+        var checks = BuildChecks(retailer, request);
+        if (request.Outcome == RetailerIdentityVerificationOutcome.Verified && !checks.ReadyToVerify)
+            throw new CatalogueValidationException("identity", "The automated identity checks are not all satisfied. Review the evidence or correct the retailer identity first.");
+
+        if (request.Outcome == RetailerIdentityVerificationOutcome.Verified)
+            retailer.VerifyIdentity(request.SourceUrl);
+        else
+            retailer.MarkNeedsReview();
+
+        var verification = new RetailerIdentityVerification(
+            retailer.Id,
+            actor.UserId,
+            request.Outcome,
+            request.ObservedRetailerName,
+            request.SourceUrl,
+            request.ListingUrl,
+            checks.WebsiteUrlValid,
+            checks.SourceUrlValid,
+            checks.ListingUrlValid,
+            checks.NameMatches,
+            checks.DomainMatches,
+            request.Notes);
+
+        db.RetailerIdentityVerifications.Add(verification);
+        await db.SaveChangesAsync(cancellationToken);
+
+        return ToVerificationItem(verification);
+    }
+
+    public async Task<IReadOnlyList<RetailerIdentityVerificationItem>> GetIdentityVerificationsAsync(
+        AuthenticatedUser actor,
+        Guid retailerId,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireManagementAsync(actor, cancellationToken);
+
+        var exists = await db.Retailers.AnyAsync(value => value.Id == retailerId, cancellationToken);
+        if (!exists)
+            throw new KeyNotFoundException();
+
+        return await db.RetailerIdentityVerifications
+            .AsNoTracking()
+            .Where(value => value.RetailerId == retailerId)
+            .OrderByDescending(value => value.VerifiedAtUtc)
+            .Select(value => new RetailerIdentityVerificationItem(
+                value.Id,
+                value.RetailerId,
+                value.ObservedRetailerName,
+                value.SourceUrl,
+                value.ListingUrl,
+                value.Outcome,
+                new RetailerIdentityCheckResults(
+                    value.WebsiteUrlValid,
+                    value.SourceUrlValid,
+                    value.ListingUrlValid,
+                    value.NameMatches,
+                    value.DomainMatches),
+                value.Notes,
+                value.VerifiedByUserId,
+                value.VerifiedAtUtc))
+            .ToListAsync(cancellationToken);
+    }
+
+    private static RetailerIdentityCheckResults BuildChecks(
+        Retailer retailer,
+        RetailerIdentityVerificationRequest request)
+    {
+        var websiteUrlValid = IsHttpUrl(retailer.WebsiteUrl, out var website);
+        var sourceUrlValid = IsHttpUrl(request.SourceUrl, out _);
+        var listingUrlValid = IsHttpUrl(request.ListingUrl, out var listing);
+        var nameMatches = NormaliseName(retailer.Name) == NormaliseName(request.ObservedRetailerName);
+        var domainMatches = websiteUrlValid && listingUrlValid && SameDomain(website!, listing!);
+
+        return new RetailerIdentityCheckResults(
+            websiteUrlValid,
+            sourceUrlValid,
+            listingUrlValid,
+            nameMatches,
+            domainMatches);
+    }
+
+    private static bool IsHttpUrl(string? value, out Uri? uri)
+    {
+        uri = null;
+        return !string.IsNullOrWhiteSpace(value)
+            && Uri.TryCreate(value.Trim(), UriKind.Absolute, out uri)
+            && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
+    }
+
+    private static bool SameDomain(Uri first, Uri second)
+    {
+        var firstHost = first.Host.Trim().TrimEnd('.').ToLowerInvariant();
+        var secondHost = second.Host.Trim().TrimEnd('.').ToLowerInvariant();
+        firstHost = firstHost.StartsWith("www.", StringComparison.Ordinal) ? firstHost[4..] : firstHost;
+        secondHost = secondHost.StartsWith("www.", StringComparison.Ordinal) ? secondHost[4..] : secondHost;
+        return firstHost == secondHost || secondHost.EndsWith("." + firstHost, StringComparison.Ordinal);
+    }
+
+    private static string NormaliseName(string value) =>
+        new string(value.Trim().ToLowerInvariant().Where(char.IsLetterOrDigit).ToArray());
+
+    private static RetailerIdentityVerificationItem ToVerificationItem(RetailerIdentityVerification verification) =>
+        new(
+            verification.Id,
+            verification.RetailerId,
+            verification.ObservedRetailerName,
+            verification.SourceUrl,
+            verification.ListingUrl,
+            verification.Outcome,
+            new RetailerIdentityCheckResults(
+                verification.WebsiteUrlValid,
+                verification.SourceUrlValid,
+                verification.ListingUrlValid,
+                verification.NameMatches,
+                verification.DomainMatches),
+            verification.Notes,
+            verification.VerifiedByUserId,
+            verification.VerifiedAtUtc);
+
+    private async Task RequireManagementAsync(
+        AuthenticatedUser actor,
+        CancellationToken cancellationToken)
+    {
+        if (!await editorialAuthorisation.CanManageCatalogueAsync(actor, cancellationToken))
+            throw new UnauthorizedAccessException();
+    }
+
+    private static RetailerManagementItem ToItem(Retailer retailer) =>
+        new(
+            retailer.Id,
+            retailer.Name,
+            retailer.Slug,
+            retailer.WebsiteUrl,
+            retailer.Status,
+            retailer.CreatedAtUtc,
+            retailer.UpdatedAtUtc,
+            retailer.IdentityVerifiedAtUtc);
 }
 
 internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmissionImageStorage imageStorage, IEditorialAuthorisation editorialAuthorisation) : IAtlasQueries

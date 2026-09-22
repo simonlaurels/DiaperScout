@@ -14,6 +14,7 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
     public DbSet<ProductIdentifier> ProductIdentifiers => Set<ProductIdentifier>();
     public DbSet<Country> Countries => Set<Country>();
     public DbSet<Retailer> Retailers => Set<Retailer>();
+    public DbSet<RetailerIdentityVerification> RetailerIdentityVerifications => Set<RetailerIdentityVerification>();
     public DbSet<Location> Locations => Set<Location>();
     public DbSet<User> Users => Set<User>();
     public DbSet<PrivilegedRoleAssignment> PrivilegedRoleAssignments => Set<PrivilegedRoleAssignment>();
@@ -160,7 +161,32 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
             entity.ToTable("retailers");
             entity.Property(x => x.Name).HasMaxLength(200).IsRequired();
             entity.Property(x => x.Slug).HasMaxLength(200).IsRequired();
+            entity.Property(x => x.Status).HasConversion<string>().HasMaxLength(32).IsRequired();
+            entity.Property(x => x.CreatedAtUtc).IsRequired();
+            entity.Property(x => x.UpdatedAtUtc).IsRequired();
+            entity.Property(x => x.IdentitySourceUrl).HasMaxLength(2048);
             entity.HasIndex(x => x.Slug).IsUnique();
+            entity.HasIndex(x => x.Status);
+        });
+
+        modelBuilder.Entity<RetailerIdentityVerification>(entity =>
+        {
+            entity.ToTable("retailer_identity_verifications");
+            entity.Property(x => x.Outcome).HasConversion<string>().HasMaxLength(32).IsRequired();
+            entity.Property(x => x.ObservedRetailerName).HasMaxLength(200).IsRequired();
+            entity.Property(x => x.SourceUrl).HasMaxLength(2048).IsRequired();
+            entity.Property(x => x.ListingUrl).HasMaxLength(2048);
+            entity.Property(x => x.Notes).HasColumnType("text");
+            entity.Property(x => x.VerifiedAtUtc).IsRequired();
+            entity.HasIndex(x => new { x.RetailerId, x.VerifiedAtUtc });
+            entity.HasOne<Retailer>()
+                .WithMany()
+                .HasForeignKey(x => x.RetailerId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(x => x.VerifiedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<CatalogueSubmissionRetailDestination>(entity =>

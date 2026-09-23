@@ -23,14 +23,18 @@ public static class ServiceCollectionExtensions
         services.Configure<DataForSeoOptions>(configuration.GetSection(DataForSeoOptions.SectionName));
         services.Configure<AwinAffiliateProgrammeDiscoveryOptions>(configuration.GetSection(AwinAffiliateProgrammeDiscoveryOptions.SectionName));
         services.Configure<RetailerDiscoveryJobOptions>(configuration.GetSection(RetailerDiscoveryJobOptions.SectionName));
+        services.Configure<RetailerProductMonitoringJobOptions>(configuration.GetSection(RetailerProductMonitoringJobOptions.SectionName));
         services.AddHttpClient<IRetailerDiscoveryProvider, DataForSeoGoogleShoppingProvider>();
         services.AddSingleton(TimeProvider.System);
         services.AddScoped<IRetailerDiscoveryScheduler, RetailerDiscoveryScheduler>();
         services.AddHostedService<RetailerDiscoveryBackgroundService>();
+        services.AddScoped<IRetailerProductMonitoringScheduler, RetailerProductMonitoringScheduler>();
+        services.AddHostedService<RetailerProductMonitoringBackgroundService>();
 
         services.AddScoped<IAtlasQueries, AtlasQueries>();
         services.AddScoped<IRetailerManagement, RetailerManagement>();
         services.AddScoped<IRetailerDiscovery, RetailerDiscovery>();
+        services.AddScoped<IRetailerProductMonitoring, RetailerProductMonitoring>();
         services.AddScoped<IObservationSubmissions, ObservationSubmissions>();
         services.AddScoped<ICatalogueSubmissions, CatalogueSubmissions>();
         services.AddSingleton<ICatalogueSubmissionImageStorage, CatalogueSubmissionImageStorage>();
@@ -278,6 +282,70 @@ internal sealed class RetailerDiscovery(DiaperScoutDbContext db, IRetailerDiscov
             listing.DiscoveredAtUtc,
             listing.LastCheckedAtUtc);
 
+}
+
+internal sealed class RetailerProductMonitoring(DiaperScoutDbContext db) : IRetailerProductMonitoring
+{
+    public async Task<RetailerProductObservationItem> RecordAsync(
+        Guid retailerProductListingId,
+        RecordRetailerProductObservationRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        var listing = await db.RetailerProductListings
+            .SingleOrDefaultAsync(value => value.Id == retailerProductListingId, cancellationToken);
+
+        if (listing is null)
+            throw new KeyNotFoundException();
+
+        var observation = new RetailerProductObservation(
+            retailerProductListingId,
+            request.ObservedAtUtc,
+            request.PriceAmount,
+            request.PriceCurrencyCode,
+            request.Availability,
+            request.Source,
+            request.SourceUrl);
+
+        db.RetailerProductObservations.Add(observation);
+        listing.MarkChecked();
+        await db.SaveChangesAsync(cancellationToken);
+
+        return ToItem(observation);
+    }
+
+    public async Task<RetailerProductObservationItem?> GetLatestAsync(
+        Guid retailerProductListingId,
+        CancellationToken cancellationToken = default)
+    {
+        return await db.RetailerProductObservations
+            .AsNoTracking()
+            .Where(observation => observation.RetailerProductListingId == retailerProductListingId)
+            .OrderByDescending(observation => observation.ObservedAtUtc)
+            .ThenByDescending(observation => observation.CreatedAtUtc)
+            .Select(observation => new RetailerProductObservationItem(
+                observation.Id,
+                observation.RetailerProductListingId,
+                observation.ObservedAtUtc,
+                observation.PriceAmount,
+                observation.PriceCurrencyCode,
+                observation.Availability,
+                observation.Source,
+                observation.SourceUrl,
+                observation.CreatedAtUtc))
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    private static RetailerProductObservationItem ToItem(RetailerProductObservation observation) =>
+        new(
+            observation.Id,
+            observation.RetailerProductListingId,
+            observation.ObservedAtUtc,
+            observation.PriceAmount,
+            observation.PriceCurrencyCode,
+            observation.Availability,
+            observation.Source,
+            observation.SourceUrl,
+            observation.CreatedAtUtc);
 }
 
 internal sealed class RetailerManagement(DiaperScoutDbContext db, IEditorialAuthorisation editorialAuthorisation) : IRetailerManagement

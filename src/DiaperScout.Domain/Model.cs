@@ -11,6 +11,7 @@ public enum ProductStatus { Current, Discontinued, Prototype }
 public enum RetailerStatus { Discovered, Verified, NeedsReview, Inactive }
 public enum RetailerIdentityVerificationOutcome { Verified, NeedsReview }
 public enum RetailerProductDiscoveryStatus { Discovered, Verified, NeedsReview, Inactive }
+public enum RetailerProductAvailability { Unknown, InStock, OutOfStock, PreOrder, Discontinued }
 public enum BackingType { Unknown, Plastic, Cloth, Hybrid, Other }
 public enum FastenerType { Unknown, AdhesiveTape, HookAndLoop, Other }
 public enum CatalogueVariantAppearance { Unknown, Plain, Printed }
@@ -1777,6 +1778,82 @@ public sealed class Observation : Entity
     public ICollection<EvidenceItem> Evidence { get; } = new List<EvidenceItem>();
 }
 
+public sealed class RetailerProductObservation : Entity
+{
+    private RetailerProductObservation()
+    {
+        Source = null!;
+    }
+
+    public RetailerProductObservation(
+        Guid retailerProductListingId,
+        DateTimeOffset observedAtUtc,
+        decimal? priceAmount,
+        string? priceCurrencyCode,
+        RetailerProductAvailability availability,
+        string source,
+        string? sourceUrl = null)
+    {
+        if (retailerProductListingId == Guid.Empty)
+            throw new ArgumentException("A retailer product listing is required.", nameof(retailerProductListingId));
+        if (priceAmount is < 0)
+            throw new ArgumentOutOfRangeException(nameof(priceAmount), "Price cannot be negative.");
+
+        RetailerProductListingId = retailerProductListingId;
+        ObservedAtUtc = observedAtUtc;
+        PriceAmount = priceAmount;
+        PriceCurrencyCode = NormalizeCurrencyCode(priceCurrencyCode);
+        Availability = availability;
+        Source = RequireValue(source, nameof(source), 100);
+        SourceUrl = NormalizeUrl(sourceUrl);
+    }
+
+    public Guid RetailerProductListingId { get; private set; }
+    public DateTimeOffset ObservedAtUtc { get; private set; }
+    public decimal? PriceAmount { get; private set; }
+    public string? PriceCurrencyCode { get; private set; }
+    public RetailerProductAvailability Availability { get; private set; }
+    public string Source { get; private set; }
+    public string? SourceUrl { get; private set; }
+    public DateTimeOffset CreatedAtUtc { get; private set; } = DateTimeOffset.UtcNow;
+
+    private static string RequireValue(string value, string parameterName, int maxLength)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new ArgumentException("A value is required.", parameterName);
+
+        var trimmed = value.Trim();
+        if (trimmed.Length > maxLength)
+            throw new ArgumentException($"The value must be {maxLength} characters or fewer.", parameterName);
+
+        return trimmed;
+    }
+
+    private static string? NormalizeCurrencyCode(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
+
+        var trimmed = value.Trim().ToUpperInvariant();
+        if (trimmed.Length != 3)
+            throw new ArgumentException("Currency code must be a 3-letter ISO code.", nameof(value));
+
+        return trimmed;
+    }
+
+    private static string? NormalizeUrl(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
+
+        if (!Uri.TryCreate(value.Trim(), UriKind.Absolute, out var uri) ||
+            (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+            throw new ArgumentException("A valid HTTP or HTTPS URL is required.", nameof(value));
+
+        return uri.ToString();
+    }
+}
+
 public sealed class EvidenceItem : Entity
 {
     private EvidenceItem() { StorageKey = null!; }
@@ -1877,6 +1954,8 @@ public sealed class RetailerProductListing : Entity
         ExternalListingId = NormalizeText(externalListingId);
         LastCheckedAtUtc = DateTimeOffset.UtcNow;
     }
+
+    public void MarkChecked() => LastCheckedAtUtc = DateTimeOffset.UtcNow;
 
     public void MarkVerified()
     {

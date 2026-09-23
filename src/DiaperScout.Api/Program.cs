@@ -379,6 +379,70 @@ app.MapPost(
     .Produces<RetailerProductListingItem>()
     .ProducesValidationProblem();
 
+app.MapPost(
+    "/api/v1/retailer-listings/{retailerProductListingId:guid}/observations",
+    async (
+        Guid retailerProductListingId,
+        RecordRetailerProductObservationRequest request,
+        ICurrentUser currentUser,
+        IRetailerProductMonitoring monitoring,
+        CancellationToken cancellationToken) =>
+    {
+        var actor = await currentUser.GetAsync(cancellationToken);
+        if (actor is null)
+            return Results.Forbid();
+
+        try
+        {
+            return Results.Ok(await monitoring.RecordAsync(
+                retailerProductListingId,
+                request,
+                cancellationToken));
+        }
+        catch (KeyNotFoundException)
+        {
+            return Results.NotFound();
+        }
+        catch (ArgumentException exception)
+        {
+            return Results.ValidationProblem(
+                new Dictionary<string, string[]>
+                {
+                    [exception.ParamName ?? "request"] = [exception.Message]
+                });
+        }
+    })
+    .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+    .WithName("RecordRetailerProductObservation")
+    .WithTags("Retailer Product Monitoring")
+    .Produces<RetailerProductObservationItem>()
+    .ProducesValidationProblem();
+
+app.MapGet(
+    "/api/v1/retailer-listings/{retailerProductListingId:guid}/observations/latest",
+    async (
+        Guid retailerProductListingId,
+        ICurrentUser currentUser,
+        IRetailerProductMonitoring monitoring,
+        CancellationToken cancellationToken) =>
+    {
+        var actor = await currentUser.GetAsync(cancellationToken);
+        if (actor is null)
+            return Results.Forbid();
+
+        var observation = await monitoring.GetLatestAsync(
+            retailerProductListingId,
+            cancellationToken);
+
+        return observation is null
+            ? Results.NotFound()
+            : Results.Ok(observation);
+    })
+    .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+    .WithName("GetLatestRetailerProductObservation")
+    .WithTags("Retailer Product Monitoring")
+    .Produces<RetailerProductObservationItem>();
+
 app.MapGet(
     "/api/v1/retailer-management",
     async (

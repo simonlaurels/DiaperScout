@@ -21,10 +21,16 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<DiaperScoutDbContext>(options => options.UseNpgsql(connectionString));
         services.AddHttpContextAccessor();
         services.Configure<DataForSeoOptions>(configuration.GetSection(DataForSeoOptions.SectionName));
+        services.AddDataProtection();
+        services.AddSingleton<DataForSeoRuntimeSettingsStore>();
+        services.AddScoped<DataForSeoIntegrationStore>();
+        services.AddScoped<IDataForSeoIntegration, DataForSeoIntegrationService>();
+        services.AddSingleton<DataForSeoConnectionTester>();
         services.Configure<AwinAffiliateProgrammeDiscoveryOptions>(configuration.GetSection(AwinAffiliateProgrammeDiscoveryOptions.SectionName));
         services.Configure<RetailerDiscoveryJobOptions>(configuration.GetSection(RetailerDiscoveryJobOptions.SectionName));
         services.Configure<RetailerProductMonitoringJobOptions>(configuration.GetSection(RetailerProductMonitoringJobOptions.SectionName));
         services.AddHttpClient<IRetailerDiscoveryProvider, DataForSeoGoogleShoppingProvider>();
+        services.AddHttpClient<IRetailerProductMonitor, DataForSeoGoogleShoppingMonitor>();
         services.AddSingleton(TimeProvider.System);
         services.AddScoped<IRetailerDiscoveryScheduler, RetailerDiscoveryScheduler>();
         services.AddHostedService<RetailerDiscoveryBackgroundService>();

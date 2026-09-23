@@ -3286,6 +3286,53 @@ if (builder.Configuration.GetValue<bool>(
         .ProducesValidationProblem();
 }
 
+
+app.MapGet(
+    "/api/v1/admin/integrations/dataforseo",
+    async (
+        IDataForSeoIntegration integration,
+        CancellationToken cancellationToken) =>
+        Results.Ok(await integration.GetAsync(cancellationToken)))
+    .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+    .WithName("GetDataForSeoIntegration")
+    .WithTags("Admin Integrations");
+
+app.MapPut(
+    "/api/v1/admin/integrations/dataforseo",
+    async (
+        UpdateDataForSeoIntegrationSettings request,
+        IDataForSeoIntegration integration,
+        CancellationToken cancellationToken) =>
+    {
+        try
+        {
+            return Results.Ok(await integration.SaveAsync(request, cancellationToken));
+        }
+        catch (ArgumentException exception)
+        {
+            return Results.ValidationProblem(new Dictionary<string, string[]>
+            {
+                [exception.ParamName ?? "integration"] = [exception.Message]
+            });
+        }
+    })
+    .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+    .WithName("SaveDataForSeoIntegration")
+    .WithTags("Admin Integrations")
+    .Produces<DataForSeoIntegrationSettings>()
+    .ProducesValidationProblem();
+
+app.MapPost(
+    "/api/v1/admin/integrations/dataforseo/test",
+    async (
+        IDataForSeoIntegration integration,
+        CancellationToken cancellationToken) =>
+        Results.Ok(await integration.TestConnectionAsync(cancellationToken)))
+    .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+    .WithName("TestDataForSeoIntegration")
+    .WithTags("Admin Integrations")
+    .Produces<DataForSeoConnectionTestResult>();
+
 app.Run();
 
 public sealed record CreateObservationRequest(

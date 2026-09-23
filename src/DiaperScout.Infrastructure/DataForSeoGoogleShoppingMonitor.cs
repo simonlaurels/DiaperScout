@@ -8,17 +8,57 @@ using Microsoft.Extensions.Options;
 
 namespace DiaperScout.Infrastructure;
 
-public sealed class DataForSeoGoogleShoppingMonitor(
-    HttpClient httpClient,
-    IOptions<DataForSeoOptions> options)
-    : IRetailerProductMonitor
+public sealed class DataForSeoGoogleShoppingMonitor : IRetailerProductMonitor
 {
     private const string DiscoveryProvider = "DataForSEO.GoogleShopping";
     private const string Source = "DataForSEO.GoogleShopping.ProductInfo";
-    private readonly DataForSeoOptions options = options.Value;
+    private readonly HttpClient httpClient;
+    private readonly DataForSeoOptions fallbackOptions;
+    private readonly DataForSeoRuntimeSettingsStore? runtime;
+
+    public DataForSeoGoogleShoppingMonitor(
+        HttpClient httpClient,
+        IOptions<DataForSeoOptions> options,
+        DataForSeoRuntimeSettingsStore? runtime = null)
+    {
+        this.httpClient = httpClient;
+        fallbackOptions = options.Value;
+        this.runtime = runtime;
+    }
+
+    public DataForSeoGoogleShoppingMonitor(
+        HttpClient httpClient,
+        IOptions<DataForSeoOptions> options)
+        : this(httpClient, options, null)
+    {
+    }
+
+    private DataForSeoOptions Options
+    {
+        get
+        {
+            var current = runtime?.Current;
+            if (current is null)
+                return fallbackOptions;
+
+            return new DataForSeoOptions
+            {
+                Enabled = current.Enabled,
+                Login = current.Login,
+                Password = current.Password,
+                LocationName = current.LocationName,
+                LanguageCode = current.LanguageCode,
+                SearchDomain = current.SearchDomain,
+                SearchDepth = fallbackOptions.SearchDepth,
+                MaxProductsPerGtin = fallbackOptions.MaxProductsPerGtin,
+                PollAttempts = fallbackOptions.PollAttempts,
+                PollDelaySeconds = fallbackOptions.PollDelaySeconds
+            };
+        }
+    }
 
     public bool CanMonitor(RetailerProductListing listing) =>
-        options.Enabled &&
+        Options.Enabled &&
         string.Equals(listing.DiscoveryProvider, DiscoveryProvider, StringComparison.OrdinalIgnoreCase) &&
         !string.IsNullOrWhiteSpace(listing.ExternalListingId);
 
@@ -44,13 +84,13 @@ public sealed class DataForSeoGoogleShoppingMonitor(
 
     private void ConfigureClient()
     {
-        if (string.IsNullOrWhiteSpace(options.Login) || string.IsNullOrWhiteSpace(options.Password))
+        if (string.IsNullOrWhiteSpace(Options.Login) || string.IsNullOrWhiteSpace(Options.Password))
             throw new InvalidOperationException(
                 "DataForSEO is enabled but DataForSEO:Login and DataForSEO:Password are not configured.");
 
         httpClient.BaseAddress ??= new Uri("https://api.dataforseo.com/");
         var credentials = Convert.ToBase64String(
-            Encoding.ASCII.GetBytes($"{options.Login}:{options.Password}"));
+            Encoding.ASCII.GetBytes($"{Options.Login}:{Options.Password}"));
         httpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Basic", credentials);
     }
@@ -63,9 +103,9 @@ public sealed class DataForSeoGoogleShoppingMonitor(
         {
             new
             {
-                location_name = options.LocationName,
-                language_code = options.LanguageCode,
-                se_domain = options.SearchDomain,
+                location_name = Options.LocationName,
+                language_code = Options.LanguageCode,
+                se_domain = Options.SearchDomain,
                 product_id = productId,
                 priority = 1
             }
@@ -90,8 +130,8 @@ public sealed class DataForSeoGoogleShoppingMonitor(
         string path,
         CancellationToken cancellationToken)
     {
-        var attempts = Math.Max(1, options.PollAttempts);
-        var delay = TimeSpan.FromSeconds(Math.Max(1, options.PollDelaySeconds));
+        var attempts = Math.Max(1, Options.PollAttempts);
+        var delay = TimeSpan.FromSeconds(Math.Max(1, Options.PollDelaySeconds));
 
         for (var attempt = 0; attempt < attempts; attempt++)
         {

@@ -1,0 +1,121 @@
+@page "/admin"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Moderator,Administrator")]
+@rendermode InteractiveServer
+
+<PageTitle>Admin · DiaperScout</PageTitle>
+
+<section class="admin-page">
+    <div class="admin-container">
+        <header class="admin-header">
+            <div>
+                <p class="admin-kicker">SCOUT'S WATCHTOWER</p>
+                <h1>Admin</h1>
+                <p class="admin-intro">
+                    The back office for keeping DiaperScout accurate, useful and ready for the next expedition.
+                </p>
+            </div>
+            <div class="admin-compass" aria-hidden="true">✦</div>
+        </header>
+
+        <section class="admin-section" aria-labelledby="catalogue-heading">
+            <div class="admin-section-heading">
+                <div>
+                    <p class="admin-kicker">CATALOGUE</p>
+                    <h2 id="catalogue-heading">Keep the catalogue tidy</h2>
+                </div>
+                <span class="admin-section-note">Core editorial work</span>
+            </div>
+
+            <div class="admin-card-grid">
+                <a class="admin-card" href="/catalogue/products">
+                    <span class="admin-card-icon" aria-hidden="true">◇</span>
+                    <span class="admin-card-content">
+                        <strong>Product Management</strong>
+                        <span>Manage canonical products, variants, images and the submission queue.</span>
+                    </span>
+                    <span class="admin-card-arrow" aria-hidden="true">→</span>
+                </a>
+
+                <a class="admin-card" href="/catalogue/products?tab=submissions">
+                    <span class="admin-card-icon" aria-hidden="true">▣</span>
+                    <span class="admin-card-content">
+                        <strong>Submission Queue</strong>
+                        <span>Review catalogue candidates and keep publication work moving.</span>
+                    </span>
+                    <span class="admin-card-arrow" aria-hidden="true">→</span>
+                </a>
+            </div>
+        </section>
+
+        <section class="admin-section" aria-labelledby="retailers-heading">
+            <div class="admin-section-heading">
+                <div>
+                    <p class="admin-kicker">RETAILERS</p>
+                    <h2 id="retailers-heading">Keep the retail map trustworthy</h2>
+                </div>
+                <span class="admin-section-note">Retail ecosystem</span>
+            </div>
+
+            <div class="admin-card-grid">
+                <a class="admin-card" href="/catalogue/retailers">
+                    <span class="admin-card-icon" aria-hidden="true">⌂</span>
+                    <span class="admin-card-content">
+                        <strong>Retailer Management</strong>
+                        <span>Review retailer identities, verification and the relationships behind listings.</span>
+                    </span>
+                    <span class="admin-card-arrow" aria-hidden="true">→</span>
+                </a>
+            </div>
+        </section>
+
+        <section class="admin-section" aria-labelledby="market-heading">
+            <div class="admin-section-heading">
+                <div>
+                    <p class="admin-kicker">MARKET DATA</p>
+                    <h2 id="market-heading">Watch the market</h2>
+                </div>
+                <span class="admin-section-note">Coming next</span>
+            </div>
+
+            <div class="admin-card-grid">
+                <article class="admin-card admin-card-disabled">
+                    <span class="admin-card-icon" aria-hidden="true">⌁</span>
+                    <span class="admin-card-content">
+                        <strong>Monitoring</strong>
+                        <span>See listing checks, observations, price changes and availability as Scout gathers them.</span>
+                    </span>
+                    <span class="admin-card-status">Soon</span>
+                </article>
+            </div>
+        </section>
+
+        <section class="admin-section" aria-labelledby="integrations-heading">
+            <div class="admin-section-heading">
+                <div>
+                    <p class="admin-kicker">INTEGRATIONS</p>
+                    <h2 id="integrations-heading">Connect the expedition kit</h2>
+                </div>
+                <span class="admin-section-note">Coming next</span>
+            </div>
+
+            <div class="admin-card-grid">
+                <a class="admin-card" href="/admin/integrations/dataforseo">
+                    <span class="admin-card-icon" aria-hidden="true">✦</span>
+                    <span class="admin-card-content">
+                        <strong>Data providers &amp; affiliate services</strong>
+                        <span>Configure connections such as DataForSEO and Awin, then test them without leaving DiaperScout.</span>
+                    </span>
+                    <span class="admin-card-arrow" aria-hidden="true">→</span>
+                </a>
+            </div>
+        </section>
+
+        <aside class="admin-scout-note">
+            <span class="admin-scout-note-mark" aria-hidden="true">⌁</span>
+            <div>
+                <strong>A little Scout advice</strong>
+                <p>Keep the catalogue clean, keep the evidence close, and let the data do the wandering.</p>
+            </div>
+        </aside>
+    </div>
+</section>

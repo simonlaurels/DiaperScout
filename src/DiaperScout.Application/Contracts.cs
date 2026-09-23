@@ -1680,3 +1680,35 @@ public sealed class CatalogueValidationException(
 {
     public string Field { get; } = field;
 }
+public sealed record DataForSeoIntegrationSettings(
+    bool Enabled,
+    string Login,
+    bool HasPassword,
+    string LocationName,
+    string LanguageCode,
+    string SearchDomain);
+
+public sealed record UpdateDataForSeoIntegrationSettings(
+    bool Enabled,
+    string Login,
+    string? Password,
+    string LocationName,
+    string LanguageCode,
+    string SearchDomain);
+
+public sealed record DataForSeoConnectionTestResult(
+    bool Success,
+    string Message,
+    string? Login);
+
+public interface IDataForSeoIntegration
+{
+    Task<DataForSeoIntegrationSettings> GetAsync(CancellationToken cancellationToken = default);
+
+    Task<DataForSeoIntegrationSettings> SaveAsync(
+        UpdateDataForSeoIntegrationSettings request,
+        CancellationToken cancellationToken = default);
+
+    Task<DataForSeoConnectionTestResult> TestConnectionAsync(
+        CancellationToken cancellationToken = default);
+}

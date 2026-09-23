@@ -22,18 +22,51 @@ public sealed class DataForSeoOptions
     public int PollDelaySeconds { get; set; } = 10;
 }
 
-public sealed class DataForSeoGoogleShoppingProvider(
-    HttpClient httpClient,
-    IOptions<DataForSeoOptions> options)
-    : DiaperScout.Application.IRetailerDiscoveryProvider
+public sealed class DataForSeoGoogleShoppingProvider : DiaperScout.Application.IRetailerDiscoveryProvider
 {
-    private readonly DataForSeoOptions options = options.Value;
+    private readonly HttpClient httpClient;
+    private readonly DataForSeoOptions fallbackOptions;
+    private readonly DataForSeoRuntimeSettingsStore? runtime;
+
+    public DataForSeoGoogleShoppingProvider(
+        HttpClient httpClient,
+        IOptions<DataForSeoOptions> options,
+        DataForSeoRuntimeSettingsStore? runtime = null)
+    {
+        this.httpClient = httpClient;
+        fallbackOptions = options.Value;
+        this.runtime = runtime;
+    }
+
+    private DataForSeoOptions Options
+    {
+        get
+        {
+            var current = runtime?.Current;
+            if (current is null)
+                return fallbackOptions;
+
+            return new DataForSeoOptions
+            {
+                Enabled = current.Enabled,
+                Login = current.Login,
+                Password = current.Password,
+                LocationName = current.LocationName,
+                LanguageCode = current.LanguageCode,
+                SearchDomain = current.SearchDomain,
+                SearchDepth = fallbackOptions.SearchDepth,
+                MaxProductsPerGtin = fallbackOptions.MaxProductsPerGtin,
+                PollAttempts = fallbackOptions.PollAttempts,
+                PollDelaySeconds = fallbackOptions.PollDelaySeconds
+            };
+        }
+    }
 
     public async Task<IReadOnlyList<DiaperScout.Application.RetailerDiscoveryCandidate>> DiscoverAsync(
         string gtin,
         CancellationToken cancellationToken = default)
     {
-        if (!options.Enabled)
+        if (!Options.Enabled)
             return [];
 
         var normalizedGtin = gtin.Trim();
@@ -48,7 +81,7 @@ public sealed class DataForSeoGoogleShoppingProvider(
             cancellationToken);
 
         var productIds = ExtractProductIds(searchDocument)
-            .Take(Math.Max(1, options.MaxProductsPerGtin))
+            .Take(Math.Max(1, Options.MaxProductsPerGtin))
             .ToArray();
 
         if (productIds.Length == 0)
@@ -72,11 +105,11 @@ public sealed class DataForSeoGoogleShoppingProvider(
 
     private void ConfigureClient()
     {
-        if (string.IsNullOrWhiteSpace(options.Login) || string.IsNullOrWhiteSpace(options.Password))
+        if (string.IsNullOrWhiteSpace(Options.Login) || string.IsNullOrWhiteSpace(Options.Password))
             throw new InvalidOperationException("DataForSEO is enabled but DataForSEO:Login and DataForSEO:Password are not configured.");
 
         httpClient.BaseAddress ??= new Uri("https://api.dataforseo.com/");
-        var credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{options.Login}:{options.Password}"));
+        var credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{Options.Login}:{Options.Password}"));
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
     }
 
@@ -86,11 +119,11 @@ public sealed class DataForSeoGoogleShoppingProvider(
         {
             new
             {
-                location_name = options.LocationName,
-                language_code = options.LanguageCode,
-                se_domain = options.SearchDomain,
+                location_name = Options.LocationName,
+                language_code = Options.LanguageCode,
+                se_domain = Options.SearchDomain,
                 keyword = gtin,
-                depth = Math.Clamp(options.SearchDepth, 1, 120),
+                depth = Math.Clamp(Options.SearchDepth, 1, 120),
                 priority = 1,
                 tag = gtin
             }
@@ -113,9 +146,9 @@ public sealed class DataForSeoGoogleShoppingProvider(
         {
             new
             {
-                location_name = options.LocationName,
-                language_code = options.LanguageCode,
-                se_domain = options.SearchDomain,
+                location_name = Options.LocationName,
+                language_code = Options.LanguageCode,
+                se_domain = Options.SearchDomain,
                 product_id = productId,
                 priority = 1
             }
@@ -134,8 +167,8 @@ public sealed class DataForSeoGoogleShoppingProvider(
 
     private async Task<JsonDocument> WaitForTaskAsync(string path, CancellationToken cancellationToken)
     {
-        var attempts = Math.Max(1, options.PollAttempts);
-        var delay = TimeSpan.FromSeconds(Math.Max(1, options.PollDelaySeconds));
+        var attempts = Math.Max(1, Options.PollAttempts);
+        var delay = TimeSpan.FromSeconds(Math.Max(1, Options.PollDelaySeconds));
 
         for (var attempt = 0; attempt < attempts; attempt++)
         {

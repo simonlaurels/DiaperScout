@@ -22,10 +22,7 @@ public static class ServiceCollectionExtensions
         services.AddHttpContextAccessor();
         services.AddDataProtection();
         services.Configure<AwinAffiliateProgrammeDiscoveryOptions>(configuration.GetSection(AwinAffiliateProgrammeDiscoveryOptions.SectionName));
-        services.Configure<RetailerDiscoveryJobOptions>(configuration.GetSection(RetailerDiscoveryJobOptions.SectionName));
         services.AddSingleton(TimeProvider.System);
-        services.AddScoped<IRetailerDiscoveryScheduler, RetailerDiscoveryScheduler>();
-        services.AddHostedService<RetailerDiscoveryBackgroundService>();
 
         services.AddScoped<IAtlasQueries, AtlasQueries>();
         services.AddScoped<IRetailerManagement, RetailerManagement>();
@@ -63,34 +60,8 @@ public sealed class CurrentExplorer(DiaperScoutDbContext db, IHttpContextAccesso
 }
 
 
-internal sealed class RetailerDiscovery(DiaperScoutDbContext db, IRetailerDiscoveryProvider provider) : IRetailerDiscovery
+internal sealed class RetailerDiscovery(DiaperScoutDbContext db) : IRetailerDiscovery
 {
-    public async Task<IReadOnlyList<RetailerProductListingItem>> DiscoverAndRecordAsync(
-        string gtin,
-        CancellationToken cancellationToken = default)
-    {
-        var candidates = await provider.DiscoverAsync(gtin, cancellationToken);
-        var results = new List<RetailerProductListingItem>(candidates.Count);
-
-        foreach (var candidate in candidates)
-        {
-            var slug = CreateRetailerSlug(candidate.RetailerName);
-            results.Add(await RecordAsync(
-                new RetailerDiscoveryResult(
-                    candidate.Gtin,
-                    candidate.RetailerName,
-                    slug,
-                    candidate.RetailerWebsiteUrl,
-                    candidate.ListingUrl,
-                    "DataForSEO.GoogleShopping",
-                    candidate.SourceUrl,
-                    candidate.ExternalListingId),
-                cancellationToken));
-        }
-
-        return results;
-    }
-
     public async Task<RetailerProductListingItem> RecordAsync(
         RetailerDiscoveryResult result,
         CancellationToken cancellationToken = default)

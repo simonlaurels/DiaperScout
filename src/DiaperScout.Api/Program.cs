@@ -3222,4 +3222,8 @@ if (builder.Configuration.GetValue<bool>(
         .ProducesValidationProblem();
 }
 
+app.Run();
 
+public partial class Program
+{
+}

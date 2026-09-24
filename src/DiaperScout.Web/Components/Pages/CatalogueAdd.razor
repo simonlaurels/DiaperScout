@@ -1092,7 +1092,7 @@
 
         var result = await Catalogue.ResolveSubmissionEntitiesAsync(
             submission.Id,
-            new ResolveCatalogueSubmissionEntitiesRequest(
+            new DiaperScout.Web.Services.ResolveCatalogueSubmissionEntitiesRequest(
                 entityManufacturerMode == "existing" ? entityManufacturerId : null,
                 entityManufacturerMode == "new" ? entityNewManufacturerName : null,
                 entityBrandMode == "existing" ? entityBrandId : null,
@@ -1178,7 +1178,7 @@
         {
             var result = await Catalogue.AddVerificationAsync(
                 submission.Id,
-                new AddCatalogueSubmissionVerificationRequest(
+                new DiaperScout.Web.Services.AddCatalogueSubmissionVerificationRequest(
                     verificationEditorArea.Value,
                     CatalogueVerificationStatus.Verified,
                     VerificationScope(verificationEditorArea.Value),
@@ -1409,7 +1409,7 @@
     private async Task CreateAsync()
     {
         saving = true; saveError = null; accessDenied = false;
-        var result = await Catalogue.CreateSubmissionAsync(new CreateCatalogueSubmissionRequest(
+        var result = await Catalogue.CreateSubmissionAsync(new DiaperScout.Web.Services.CreateCatalogueSubmissionRequest(
             CatalogueSubmissionSource.Moderator,
             createModel.ProposedManufacturerName,
             createModel.ProposedBrandName,
@@ -1820,7 +1820,7 @@
                 result = await Catalogue.UpdateSubmissionVariantAsync(
                     submission.Id,
                     editingVariant.Id,
-                    new UpdateCatalogueSubmissionVariantRequest(variantEditorName.Trim()));
+                    new DiaperScout.Web.Services.UpdateCatalogueSubmissionVariantRequest(variantEditorName.Trim()));
             }
             else
             {
@@ -1926,7 +1926,7 @@
             var result = await Catalogue.UpdateSubmissionVariantOverrideAsync(
                 submission!.Id,
                 variantId,
-                new UpdateCatalogueSubmissionVariantOverrideRequest(value.Attribute, value.Value));
+                new DiaperScout.Web.Services.UpdateCatalogueSubmissionVariantOverrideRequest(value.Attribute, value.Value));
 
             if (result.Status != CatalogueSubmissionVariantOverrideResultStatus.Saved)
             {
@@ -2122,7 +2122,7 @@
         saving = true; saveError = null; accessDenied = false;
         var result = await Catalogue.UpdateSubmissionSpecificationsAsync(
             submission.Id,
-            new UpdateCatalogueSubmissionSpecificationsRequest(
+            new DiaperScout.Web.Services.UpdateCatalogueSubmissionSpecificationsRequest(
                 ProposedProductType: detailsModel.ProposedProductType,
                 ProposedPackagingType: detailsModel.PackagingType,
                 ProposedProductFamily: detailsModel.ProductFamily,

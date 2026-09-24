@@ -506,40 +506,8 @@ public sealed record RetailerProductListingItem(
     DateTimeOffset LastCheckedAtUtc);
 
 
-
-public sealed record RetailerDiscoveryCandidate(
-    string Gtin,
-    string RetailerName,
-    string? RetailerWebsiteUrl,
-    string ListingUrl,
-    string? ExternalListingId,
-    string? SourceUrl);
-
-public interface IRetailerDiscoveryProvider
-{
-    Task<IReadOnlyList<RetailerDiscoveryCandidate>> DiscoverAsync(
-        string gtin,
-        CancellationToken cancellationToken = default);
-}
-
-public sealed record RetailerDiscoveryRunResult(
-    int EligibleGtins,
-    int SucceededGtins,
-    int DiscoveredListings,
-    int FailedGtins);
-
-public interface IRetailerDiscoveryScheduler
-{
-    Task<RetailerDiscoveryRunResult> RunOnceAsync(
-        CancellationToken cancellationToken = default);
-}
-
 public interface IRetailerDiscovery
 {
-    Task<IReadOnlyList<RetailerProductListingItem>> DiscoverAndRecordAsync(
-        string gtin,
-        CancellationToken cancellationToken = default);
-
     Task<RetailerProductListingItem> RecordAsync(
         RetailerDiscoveryResult result,
         CancellationToken cancellationToken = default);
@@ -1615,41 +1583,128 @@ public interface IPrivilegedRoleAssignments
         CancellationToken cancellationToken = default);
 }
 
+// API transport request contracts.
+public sealed record CreateObservationRequest(
+    ObservationType Type,
+    DateTimeOffset ObservedAtUtc,
+    Guid? ProductId,
+    string? CandidateProductName,
+    Guid? LocationId,
+    string? Narrative);
+
+public sealed record UpdateCatalogueProductDescriptionVisibilityRequest(
+    CatalogueContentVisibility Visibility);
+
+public sealed record CreateCatalogueSubmissionRequest(
+    CatalogueSubmissionSource Source,
+    string ProposedManufacturerName,
+    string? ProposedBrandName,
+    string ProposedProductName,
+    string? ProposedVariantName,
+    string? Notes);
+
+public sealed record UpdateCatalogueSubmissionVariantOverrideRequest(
+    CatalogueVariantOverrideAttribute Attribute,
+    string? Value);
+
+public sealed record AddCatalogueSubmissionVariantRequest(
+    string? Name);
+
+public sealed record UpdateCatalogueSubmissionVariantRequest(
+    string Name);
+
+public sealed record UpdateCatalogueSubmissionIdentityRequest(
+    string? ProposedGtin,
+    string? ProposedSku,
+    string? IdentitySourceUrl);
+
+public sealed record ResolveCatalogueSubmissionEntitiesRequest(
+    Guid? ManufacturerId,
+    string? NewManufacturerName,
+    Guid? BrandId,
+    string? NewBrandName);
+
+public sealed record UpdateCatalogueSubmissionSpecificationsRequest(
+    ProductType? ProposedProductType,
+    PackagingType? ProposedPackagingType,
+    string? ProposedProductFamily,
+    string? ProposedDescription,
+    CatalogueContentVisibility ProposedDescriptionVisibility,
+    ProductStatus? ProposedProductStatus,
+    string? ProposedOfficialWebsiteUrl,
+    CatalogueVariantAppearance? SharedAppearance,
+    string? SharedPrimaryColour,
+    bool? SharedWetnessIndicator,
+    bool? SharedStandingLeakGuards,
+    WaistbandStyle? SharedWaistbandStyle,
+    FragranceType? SharedFragrance,
+    bool? SharedLatexFree,
+    string? SharedDesignedFor,
+    int? SharedFastenerCount,
+    string? SharedConstructionNotes);
+
+public sealed record UpdateCatalogueSubmissionDescriptionVisibilityRequest(
+    CatalogueContentVisibility Visibility);
+
+public sealed record AddCatalogueSubmissionRetailDestinationRequest(
+    Guid RetailerId,
+    string ListingUrl,
+    string? Notes);
+
+public sealed record UpdateCatalogueSubmissionImageMetadataRequest(
+    CatalogueImageSourceType SourceType,
+    string? SourceUrl,
+    string? SourceNotes,
+    CatalogueImagePermissionStatus PermissionStatus,
+    string? PermissionEvidence);
+
+public sealed record AddCatalogueSubmissionRetailAffiliateRequest(
+    AffiliateProgrammeStatus Status,
+    string? Network,
+    string? TrackingConfiguration,
+    string? DeepLinkMechanism,
+    string? TermsUrl,
+    string? ApplicationReference,
+    string? Notes);
+
+public sealed record ReviewCatalogueSubmissionRequest(
+    EditorialOutcome Outcome,
+    string? Rationale);
+
+public sealed record AddCatalogueSubmissionVerificationRequest(
+    CatalogueVerificationArea Area,
+    CatalogueVerificationStatus Status,
+    string Scope,
+    string Source,
+    string? SourceUrl,
+    string? Notes,
+    string? PermissionTerms);
+
+public sealed record CreateCanonicalProductRequest(
+    Guid ManufacturerId,
+    Guid? BrandId,
+    string ProductName,
+    string ProductSlug,
+    ProductType ProductType,
+    ProductStatus Status,
+    string VariantName,
+    BackingType BackingType,
+    string ManufacturerSize,
+    int? WaistMinimumCm,
+    int? WaistMaximumCm,
+    int QuantityPerPack,
+    PackagingType PackagingType,
+    string? Gtin,
+    string SourceSummary,
+    IReadOnlyList<string> SourceReferences,
+    string EditorialRationale,
+    string? ProductFamily = null,
+    string? Description = null,
+    string? OfficialWebsiteUrl = null);
+
 public sealed class CatalogueValidationException(
     string field,
     string message) : Exception(message)
 {
     public string Field { get; } = field;
-}
-public sealed record DataForSeoIntegrationSettings(
-    bool Enabled,
-    string Login,
-    bool HasPassword,
-    string LocationName,
-    string LanguageCode,
-    string SearchDomain);
-
-public sealed record UpdateDataForSeoIntegrationSettings(
-    bool Enabled,
-    string Login,
-    string? Password,
-    string LocationName,
-    string LanguageCode,
-    string SearchDomain);
-
-public sealed record DataForSeoConnectionTestResult(
-    bool Success,
-    string Message,
-    string? Login);
-
-public interface IDataForSeoIntegration
-{
-    Task<DataForSeoIntegrationSettings> GetAsync(CancellationToken cancellationToken = default);
-
-    Task<DataForSeoIntegrationSettings> SaveAsync(
-        UpdateDataForSeoIntegrationSettings request,
-        CancellationToken cancellationToken = default);
-
-    Task<DataForSeoConnectionTestResult> TestConnectionAsync(
-        CancellationToken cancellationToken = default);
 }

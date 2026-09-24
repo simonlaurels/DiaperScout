@@ -181,7 +181,7 @@
 
         var result = await Catalogue.AddRetailDestinationAsync(
             SubmissionId,
-            new AddCatalogueSubmissionRetailDestinationRequest(model.RetailerId, uri.ToString(), model.Notes));
+            new DiaperScout.Web.Services.AddCatalogueSubmissionRetailDestinationRequest(model.RetailerId, uri.ToString(), model.Notes));
 
         accessDenied = result.Status == CatalogueRetailDestinationResultStatus.AccessDenied;
         if (result.Receipt is not null)

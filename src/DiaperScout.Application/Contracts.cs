@@ -505,66 +505,7 @@ public sealed record RetailerProductListingItem(
     DateTimeOffset DiscoveredAtUtc,
     DateTimeOffset LastCheckedAtUtc);
 
-public sealed record RetailerProductObservationItem(
-    Guid Id,
-    Guid RetailerProductListingId,
-    DateTimeOffset ObservedAtUtc,
-    decimal? PriceAmount,
-    string? PriceCurrencyCode,
-    RetailerProductAvailability Availability,
-    string Source,
-    string? SourceUrl,
-    DateTimeOffset CreatedAtUtc);
 
-public sealed record RecordRetailerProductObservationRequest(
-    DateTimeOffset ObservedAtUtc,
-    decimal? PriceAmount,
-    string? PriceCurrencyCode,
-    RetailerProductAvailability Availability,
-    string Source,
-    string? SourceUrl);
-
-public interface IRetailerProductMonitoring
-{
-    Task<RetailerProductObservationItem> RecordAsync(
-        Guid retailerProductListingId,
-        RecordRetailerProductObservationRequest request,
-        CancellationToken cancellationToken = default);
-
-    Task<RetailerProductObservationItem?> GetLatestAsync(
-        Guid retailerProductListingId,
-        CancellationToken cancellationToken = default);
-}
-
-public sealed record RetailerProductObservationReading(
-    DateTimeOffset ObservedAtUtc,
-    decimal? PriceAmount,
-    string? PriceCurrencyCode,
-    RetailerProductAvailability Availability,
-    string Source,
-    string? SourceUrl);
-
-public sealed record RetailerProductMonitoringRunResult(
-    int EligibleListings,
-    int MonitoredListings,
-    int ObservationsRecorded,
-    int UnsupportedListings,
-    int FailedListings);
-
-public interface IRetailerProductMonitor
-{
-    bool CanMonitor(RetailerProductListing listing);
-
-    Task<RetailerProductObservationReading> ObserveAsync(
-        RetailerProductListing listing,
-        CancellationToken cancellationToken = default);
-}
-
-public interface IRetailerProductMonitoringScheduler
-{
-    Task<RetailerProductMonitoringRunResult> RunOnceAsync(
-        CancellationToken cancellationToken = default);
-}
 
 public sealed record RetailerDiscoveryCandidate(
     string Gtin,

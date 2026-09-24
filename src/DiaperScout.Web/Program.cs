@@ -42,9 +42,6 @@ builder.Services.AddHttpClient<CatalogueAffiliateClient>(client => client.BaseAd
 builder.Services.AddHttpClient<RetailerManagementClient>(client => client.BaseAddress = new Uri("https+http://api"))
     .AddHttpMessageHandler<DevelopmentSubjectForwardingHandler>()
     .AddServiceDiscovery();
-builder.Services.AddHttpClient<DataForSeoIntegrationClient>(client => client.BaseAddress = new Uri("https+http://api"))
-    .AddHttpMessageHandler<DevelopmentSubjectForwardingHandler>()
-    .AddServiceDiscovery();
 
 var app = builder.Build();
 

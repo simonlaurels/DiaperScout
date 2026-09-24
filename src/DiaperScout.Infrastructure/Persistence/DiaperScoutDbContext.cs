@@ -36,12 +36,10 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
     public DbSet<SavedProduct> SavedProducts => Set<SavedProduct>();
     public DbSet<SavedLocation> SavedLocations => Set<SavedLocation>();
     public DbSet<Observation> Observations => Set<Observation>();
-    public DbSet<RetailerProductObservation> RetailerProductObservations => Set<RetailerProductObservation>();
     public DbSet<EvidenceItem> EvidenceItems => Set<EvidenceItem>();
     public DbSet<EditorialDecision> EditorialDecisions => Set<EditorialDecision>();
     public DbSet<KnowledgeGap> KnowledgeGaps => Set<KnowledgeGap>();
     public DbSet<DiscoveryTask> DiscoveryTasks => Set<DiscoveryTask>();
-    public DbSet<DataForSeoIntegrationSetting> DataForSeoIntegrationSettings => Set<DataForSeoIntegrationSetting>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -191,21 +189,6 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
                 .WithMany()
                 .HasForeignKey(x => x.VerifiedByUserId)
                 .OnDelete(DeleteBehavior.Restrict);
-        });
-
-        modelBuilder.Entity<RetailerProductObservation>(entity =>
-        {
-            entity.ToTable("retailer_product_observations");
-            entity.Property(x => x.PriceAmount).HasPrecision(12, 2);
-            entity.Property(x => x.PriceCurrencyCode).HasMaxLength(3);
-            entity.Property(x => x.Availability).HasConversion<string>().HasMaxLength(50).IsRequired();
-            entity.Property(x => x.Source).HasMaxLength(100).IsRequired();
-            entity.Property(x => x.SourceUrl).HasMaxLength(2000);
-            entity.HasIndex(x => new { x.RetailerProductListingId, x.ObservedAtUtc });
-            entity.HasOne<RetailerProductListing>()
-                .WithMany()
-                .HasForeignKey(x => x.RetailerProductListingId)
-                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<RetailerProductListing>(entity =>
@@ -804,19 +787,6 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
                 .WithMany()
                 .HasForeignKey(x => x.ResultingObservationId)
                 .OnDelete(DeleteBehavior.Restrict);
-        });
-        modelBuilder.Entity<DataForSeoIntegrationSetting>(entity =>
-        {
-            entity.ToTable("dataforseo_integration_settings");
-            entity.Property(x => x.ProviderKey).HasMaxLength(100).IsRequired();
-            entity.Property(x => x.Login).HasMaxLength(320).IsRequired();
-            entity.Property(x => x.ProtectedPassword).HasColumnType("text");
-            entity.Property(x => x.LocationName).HasMaxLength(200).IsRequired();
-            entity.Property(x => x.LanguageCode).HasMaxLength(20).IsRequired();
-            entity.Property(x => x.SearchDomain).HasMaxLength(200).IsRequired();
-            entity.Property(x => x.CreatedAtUtc).IsRequired();
-            entity.Property(x => x.UpdatedAtUtc).IsRequired();
-            entity.HasIndex(x => x.ProviderKey).IsUnique();
         });
 
     }

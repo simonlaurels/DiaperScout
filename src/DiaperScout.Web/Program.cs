@@ -85,6 +85,30 @@ app.MapGet(
     .WithName("GetCatalogueImportTemplate")
     .WithTags("Catalogue");
 
+
+app.MapGet(
+    "/api/v1/products/{productId:guid}/images/{imageId:guid}",
+    async (
+        Guid productId,
+        Guid imageId,
+        ProductCatalogueClient catalogueClient,
+        CancellationToken cancellationToken) =>
+    {
+        using var response = await catalogueClient.GetProductImageAsync(
+            productId,
+            imageId,
+            cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+            return Results.StatusCode((int)response.StatusCode);
+
+        var content = await response.Content.ReadAsByteArrayAsync(cancellationToken);
+        var contentType = response.Content.Headers.ContentType?.ToString()
+            ?? "application/octet-stream";
+
+        return Results.File(content, contentType);
+    });
+
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

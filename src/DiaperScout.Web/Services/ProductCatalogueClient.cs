@@ -9,6 +9,18 @@ namespace DiaperScout.Web.Services;
 
 public sealed class ProductCatalogueClient(HttpClient client)
 {
+
+    public async Task<HttpResponseMessage> GetProductImageAsync(
+        Guid productId,
+        Guid imageId,
+        CancellationToken cancellationToken = default)
+    {
+        return await client.GetAsync(
+            $"api/v1/products/{productId}/images/{imageId}",
+            HttpCompletionOption.ResponseHeadersRead,
+            cancellationToken);
+    }
+
     public async Task<ProductCatalogueSearchResult> SearchAsync(
         string? query,
         CatalogueProductFilters? filters = null,

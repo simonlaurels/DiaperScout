@@ -560,6 +560,14 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db, IEditorialAuth
             correlationId = sizeUpdate.CorrelationId;
         }
 
+        else if (command is AddCanonicalProductImageMetadata imageAdd)
+        {
+            sourceSummary = imageAdd.SourceSummary;
+            sourceReferences = imageAdd.SourceReferences;
+            editorialRationale = imageAdd.EditorialRationale;
+            correlationId = imageAdd.CorrelationId;
+        }
+
         db.CatalogueAuditRecords.Add(new CatalogueAuditRecord(
             action,
             productId,

@@ -25,7 +25,6 @@ else
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
 
-// Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddServiceDiscovery();
@@ -58,19 +57,16 @@ if (app.Environment.IsDevelopment() &&
     app.Urls.Add(lanTestingUri.ToString());
 }
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-
-
 app.UseAntiforgery();
 
 app.MapGet(
@@ -85,7 +81,6 @@ app.MapGet(
     .WithName("GetCatalogueImportTemplate")
     .WithTags("Catalogue");
 
-
 app.MapGet(
     "/api/v1/products/{productId:guid}/images/{imageId:guid}",
     async (
@@ -94,20 +89,40 @@ app.MapGet(
         ProductCatalogueClient catalogueClient,
         CancellationToken cancellationToken) =>
     {
-        using var response = await catalogueClient.GetProductImageAsync(
-            productId,
-            imageId,
-            cancellationToken);
+        var content = await catalogueClient.GetProductImageContentAsync(
+            productId, imageId, false, cancellationToken);
 
-        if (!response.IsSuccessStatusCode)
-            return Results.StatusCode((int)response.StatusCode);
+        return content is null
+            ? Results.NotFound()
+            : Results.File(
+                content.Content,
+                content.ContentType,
+                enableRangeProcessing: true);
+    })
+    .WithName("GetWebCatalogueProductImage")
+    .WithTags("Products");
 
-        var content = await response.Content.ReadAsByteArrayAsync(cancellationToken);
-        var contentType = response.Content.Headers.ContentType?.ToString()
-            ?? "application/octet-stream";
+app.MapGet(
+    "/api/v1/products/{productId:guid}/moderator-images/{imageId:guid}",
+    async (
+        Guid productId,
+        Guid imageId,
+        ProductCatalogueClient catalogueClient,
+        CancellationToken cancellationToken) =>
+    {
+        var content = await catalogueClient.GetProductImageContentAsync(
+            productId, imageId, true, cancellationToken);
 
-        return Results.File(content, contentType);
-    });
+        return content is null
+            ? Results.NotFound()
+            : Results.File(
+                content.Content,
+                content.ContentType,
+                enableRangeProcessing: true);
+    })
+    .RequireAuthorization(policy => policy.RequireRole("Moderator", "Administrator"))
+    .WithName("GetWebModeratorCatalogueProductImage")
+    .WithTags("Products");
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()

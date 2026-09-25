@@ -168,6 +168,48 @@ public sealed class ProductCatalogueClient(HttpClient client)
         return await response.Content.ReadFromJsonAsync<CatalogueDataQualitySummary>(cancellationToken);
     }
 
+    public async Task<CatalogueProductImageContent?> GetProductImageContentAsync(
+        Guid productId,
+        Guid imageId,
+        bool moderatorOnly,
+        CancellationToken cancellationToken = default)
+    {
+        var path = moderatorOnly
+            ? $"api/v1/products/{productId}/moderator-images/{imageId}"
+            : $"api/v1/products/{productId}/images/{imageId}";
+
+        using var response = await client.GetAsync(
+            path,
+            HttpCompletionOption.ResponseHeadersRead,
+            cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+            return null;
+
+        var contentType = response.Content.Headers.ContentType?.MediaType
+            ?? "application/octet-stream";
+        var fileName = response.Content.Headers.ContentDisposition?.FileNameStar
+            ?? response.Content.Headers.ContentDisposition?.FileName?.Trim('"')
+            ?? $"{imageId}{GetFileExtension(contentType)}";
+        var bytes = await response.Content.ReadAsByteArrayAsync(cancellationToken);
+
+        return new CatalogueProductImageContent(
+            new MemoryStream(bytes, writable: false),
+            contentType,
+            fileName);
+    }
+
+    private static string GetFileExtension(string contentType) =>
+        contentType.ToLowerInvariant() switch
+        {
+            "image/jpeg" => ".jpg",
+            "image/png" => ".png",
+            "image/webp" => ".webp",
+            "image/gif" => ".gif",
+            "image/avif" => ".avif",
+            _ => string.Empty
+        };
+
     public async Task<CatalogueProductManagementResult> GetProductManagementAsync(
         Guid productId,
         CancellationToken cancellationToken = default)

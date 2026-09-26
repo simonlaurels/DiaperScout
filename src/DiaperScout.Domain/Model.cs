@@ -762,6 +762,89 @@ public sealed class User : Entity
 }
 
 /// <summary>Security authority assigned to an existing User; it is not a second identity.</summary>
+public sealed class UserEmail : Entity
+{
+    private UserEmail() { Email = null!; }
+
+    public UserEmail(Guid userId, string email)
+    {
+        if (userId == Guid.Empty)
+            throw new ArgumentException("A user is required.", nameof(userId));
+
+        if (string.IsNullOrWhiteSpace(email))
+            throw new ArgumentException("An email address is required.", nameof(email));
+
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+        if (normalizedEmail.Length > 320)
+            throw new ArgumentException("An email address must be 320 characters or fewer.", nameof(email));
+
+        UserId = userId;
+        Email = normalizedEmail;
+        CreatedAtUtc = DateTimeOffset.UtcNow;
+        UpdatedAtUtc = CreatedAtUtc;
+    }
+
+    public Guid UserId { get; private set; }
+    public string Email { get; private set; }
+    public DateTimeOffset CreatedAtUtc { get; private set; }
+    public DateTimeOffset UpdatedAtUtc { get; private set; }
+
+    public void UpdateEmail(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+            throw new ArgumentException("An email address is required.", nameof(email));
+
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+        if (normalizedEmail.Length > 320)
+            throw new ArgumentException("An email address must be 320 characters or fewer.", nameof(email));
+
+        Email = normalizedEmail;
+        UpdatedAtUtc = DateTimeOffset.UtcNow;
+    }
+}
+
+public sealed class MagicLinkToken : Entity
+{
+    private MagicLinkToken() { TokenHash = null!; }
+
+    public MagicLinkToken(
+        Guid userEmailId,
+        string tokenHash,
+        DateTimeOffset expiresAtUtc)
+    {
+        if (userEmailId == Guid.Empty)
+            throw new ArgumentException("A user email is required.", nameof(userEmailId));
+
+        if (string.IsNullOrWhiteSpace(tokenHash))
+            throw new ArgumentException("A token hash is required.", nameof(tokenHash));
+
+        if (expiresAtUtc <= DateTimeOffset.UtcNow)
+            throw new ArgumentException("The magic link must expire in the future.", nameof(expiresAtUtc));
+
+        UserEmailId = userEmailId;
+        TokenHash = tokenHash;
+        ExpiresAtUtc = expiresAtUtc;
+        CreatedAtUtc = DateTimeOffset.UtcNow;
+    }
+
+    public Guid UserEmailId { get; private set; }
+    public string TokenHash { get; private set; }
+    public DateTimeOffset ExpiresAtUtc { get; private set; }
+    public DateTimeOffset? UsedAtUtc { get; private set; }
+    public DateTimeOffset CreatedAtUtc { get; private set; }
+
+    public bool IsUsable(DateTimeOffset now) =>
+        UsedAtUtc is null && ExpiresAtUtc > now;
+
+    public void MarkUsed(DateTimeOffset usedAtUtc)
+    {
+        if (UsedAtUtc is not null)
+            throw new InvalidOperationException("This magic link has already been used.");
+
+        UsedAtUtc = usedAtUtc;
+    }
+}
+
 public sealed class PrivilegedRoleAssignment : Entity
 {
     private PrivilegedRoleAssignment() { }

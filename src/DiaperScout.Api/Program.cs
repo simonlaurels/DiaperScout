@@ -3222,6 +3222,44 @@ if (builder.Configuration.GetValue<bool>(
         .ProducesValidationProblem();
 }
 
+app.MapPost(
+    "/api/v1/auth/magic-link",
+    async (
+        [FromBody] MagicLinkRequest request,
+        IPasswordlessAuthentication authentication,
+        CancellationToken cancellationToken) =>
+    {
+        await authentication.RequestMagicLinkAsync(
+            request.Email,
+            cancellationToken);
+
+        return Results.Ok(new
+        {
+            message = "If that email address can receive DiaperScout sign-in links, one has been sent."
+        });
+    })
+    .AllowAnonymous();
+
+app.MapPost(
+    "/api/v1/auth/magic-link/consume",
+    async (
+        [FromQuery] string token,
+        IPasswordlessAuthentication authentication,
+        CancellationToken cancellationToken) =>
+    {
+        var result = await authentication.ConsumeMagicLinkAsync(
+            token,
+            cancellationToken);
+
+        return result is null
+            ? Results.BadRequest(new
+            {
+                message = "That sign-in link is invalid or has expired."
+            })
+            : Results.Ok(result);
+    })
+    .AllowAnonymous();
+
 app.Run();
 
 public partial class Program

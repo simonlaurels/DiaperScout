@@ -2,6 +2,7 @@ using DiaperScout.Web.Components;
 using DiaperScout.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,7 +20,17 @@ if (builder.Environment.IsDevelopment())
 }
 else
 {
-    builder.Services.AddAuthentication();
+    builder.Services
+        .AddAuthentication("ProductionCookie")
+        .AddCookie("ProductionCookie", options =>
+        {
+            options.Cookie.Name = "DiaperScout.Auth";
+            options.Cookie.HttpOnly = true;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            options.Cookie.SameSite = SameSiteMode.Lax;
+            options.LoginPath = "/signin";
+            options.LogoutPath = "/signout";
+        });
 }
 
 builder.Services.AddAuthorization();
@@ -30,15 +41,37 @@ builder.Services.AddRazorComponents()
 builder.Services.AddServiceDiscovery();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<DevelopmentSubjectForwardingHandler>();
-builder.Services.AddHttpClient<ProductLookupClient>(client => client.BaseAddress = new Uri("https+http://api"))
+
+builder.Services.AddHttpClient("DiaperScoutApi", client =>
+        client.BaseAddress = new Uri(
+            builder.Configuration["Api:BaseUrl"]
+            ?? "https+http://api"))
     .AddServiceDiscovery();
-builder.Services.AddHttpClient<ProductCatalogueClient>(client => client.BaseAddress = new Uri("https+http://api"))
+
+builder.Services.AddHttpClient<ProductLookupClient>(client =>
+        client.BaseAddress = new Uri(
+            builder.Configuration["Api:BaseUrl"]
+            ?? "https+http://api"))
+    .AddServiceDiscovery();
+
+builder.Services.AddHttpClient<ProductCatalogueClient>(client =>
+        client.BaseAddress = new Uri(
+            builder.Configuration["Api:BaseUrl"]
+            ?? "https+http://api"))
     .AddHttpMessageHandler<DevelopmentSubjectForwardingHandler>()
     .AddServiceDiscovery();
-builder.Services.AddHttpClient<CatalogueAffiliateClient>(client => client.BaseAddress = new Uri("https+http://api"))
+
+builder.Services.AddHttpClient<CatalogueAffiliateClient>(client =>
+        client.BaseAddress = new Uri(
+            builder.Configuration["Api:BaseUrl"]
+            ?? "https+http://api"))
     .AddHttpMessageHandler<DevelopmentSubjectForwardingHandler>()
     .AddServiceDiscovery();
-builder.Services.AddHttpClient<RetailerManagementClient>(client => client.BaseAddress = new Uri("https+http://api"))
+
+builder.Services.AddHttpClient<RetailerManagementClient>(client =>
+        client.BaseAddress = new Uri(
+            builder.Configuration["Api:BaseUrl"]
+            ?? "https+http://api"))
     .AddHttpMessageHandler<DevelopmentSubjectForwardingHandler>()
     .AddServiceDiscovery();
 
@@ -128,6 +161,79 @@ app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
+app.MapPost("/signin/request", async (
+    IHttpClientFactory httpClientFactory,
+    [FromForm] string email,
+    CancellationToken cancellationToken) =>
+{
+    var client = httpClientFactory.CreateClient("DiaperScoutApi");
+
+    using var response = await client.PostAsJsonAsync(
+        "/api/v1/auth/magic-link",
+        new { Email = email },
+        cancellationToken);
+
+    return Results.LocalRedirect(
+        response.IsSuccessStatusCode
+            ? "/signin?sent=true"
+            : "/signin?error=true");
+})
+    .AllowAnonymous()
+    .DisableAntiforgery();
+
+app.MapGet("/signin/magic-link", async (
+    HttpContext httpContext,
+    IHttpClientFactory httpClientFactory,
+    string token,
+    CancellationToken cancellationToken) =>
+{
+    if (string.IsNullOrWhiteSpace(token))
+        return Results.LocalRedirect("/signin?error=true");
+
+    var client = httpClientFactory.CreateClient("DiaperScoutApi");
+
+    using var response = await client.PostAsync(
+        $"/api/v1/auth/magic-link/consume?token={Uri.EscapeDataString(token)}",
+        content: null,
+        cancellationToken);
+
+    if (!response.IsSuccessStatusCode)
+        return Results.LocalRedirect("/signin?error=true");
+
+    var authentication =
+        await response.Content.ReadFromJsonAsync<PasswordlessAuthenticationResultDto>(
+            cancellationToken);
+
+    if (authentication is null)
+        return Results.LocalRedirect("/signin?error=true");
+
+    var claims = new[]
+    {
+        new Claim(ClaimTypes.NameIdentifier, authentication.UserId.ToString()),
+        new Claim(ClaimTypes.Name, authentication.Subject)
+    };
+
+    var identity = new ClaimsIdentity(claims, "ProductionCookie");
+
+    await httpContext.SignInAsync(
+        "ProductionCookie",
+        new ClaimsPrincipal(identity),
+        new AuthenticationProperties { IsPersistent = true });
+
+    return Results.LocalRedirect("/");
+})
+    .AllowAnonymous();
+
+app.MapGet("/signout", async (HttpContext httpContext) =>
+{
+    var scheme = app.Environment.IsDevelopment()
+        ? "DevelopmentCookie"
+        : "ProductionCookie";
+
+    await httpContext.SignOutAsync(scheme);
+    return Results.LocalRedirect("/");
+});
+
 if (app.Environment.IsDevelopment())
 {
     app.MapGet("/signin/development", async (
@@ -155,11 +261,10 @@ if (app.Environment.IsDevelopment())
         return Results.LocalRedirect("/catalogue/products");
     });
 
-    app.MapGet("/signout", async (HttpContext httpContext) =>
-    {
-        await httpContext.SignOutAsync("DevelopmentCookie");
-        return Results.LocalRedirect("/");
-    });
 }
 
 app.Run();
+
+public sealed record PasswordlessAuthenticationResultDto(
+    Guid UserId,
+    string Subject);

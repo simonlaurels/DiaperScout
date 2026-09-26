@@ -19,6 +19,8 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
     public DbSet<RetailerAffiliateProgramme> RetailerAffiliateProgrammes => Set<RetailerAffiliateProgramme>();
     public DbSet<Location> Locations => Set<Location>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<UserEmail> UserEmails => Set<UserEmail>();
+    public DbSet<MagicLinkToken> MagicLinkTokens => Set<MagicLinkToken>();
     public DbSet<PrivilegedRoleAssignment> PrivilegedRoleAssignments => Set<PrivilegedRoleAssignment>();
     public DbSet<PrivilegedRoleAssignmentAudit> PrivilegedRoleAssignmentAudits => Set<PrivilegedRoleAssignmentAudit>();
     public DbSet<CatalogueAuditRecord> CatalogueAuditRecords => Set<CatalogueAuditRecord>();
@@ -330,6 +332,33 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
                 .WithOne()
                 .HasForeignKey<ExplorerProfile>(x => x.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<UserEmail>(entity =>
+        {
+            entity.ToTable("user_emails");
+            entity.Property(x => x.Email).HasMaxLength(320).IsRequired();
+            entity.Property(x => x.CreatedAtUtc).IsRequired();
+            entity.Property(x => x.UpdatedAtUtc).IsRequired();
+            entity.HasIndex(x => x.Email).IsUnique();
+            entity.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<MagicLinkToken>(entity =>
+        {
+            entity.ToTable("magic_link_tokens");
+            entity.Property(x => x.TokenHash).HasMaxLength(128).IsRequired();
+            entity.Property(x => x.ExpiresAtUtc).IsRequired();
+            entity.Property(x => x.CreatedAtUtc).IsRequired();
+            entity.HasIndex(x => x.TokenHash).IsUnique();
+            entity.HasIndex(x => new { x.UserEmailId, x.ExpiresAtUtc });
+            entity.HasOne<UserEmail>()
+                .WithMany()
+                .HasForeignKey(x => x.UserEmailId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<PrivilegedRoleAssignment>(entity =>

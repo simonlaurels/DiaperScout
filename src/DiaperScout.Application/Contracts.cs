@@ -355,6 +355,21 @@ public sealed record AuthenticatedUser(
     Guid UserId,
     string Subject);
 
+public sealed record PasswordlessAuthenticationResult(
+    Guid UserId,
+    string Subject);
+
+public interface IPasswordlessAuthentication
+{
+    Task RequestMagicLinkAsync(
+        string email,
+        CancellationToken cancellationToken = default);
+
+    Task<PasswordlessAuthenticationResult?> ConsumeMagicLinkAsync(
+        string token,
+        CancellationToken cancellationToken = default);
+}
+
 public interface ICurrentExplorer
 {
     Task<ExplorerIdentity?> GetAsync(
@@ -1584,6 +1599,9 @@ public interface IPrivilegedRoleAssignments
 }
 
 // API transport request contracts.
+public sealed record MagicLinkRequest(
+    string Email);
+
 public sealed record CreateObservationRequest(
     ObservationType Type,
     DateTimeOffset ObservedAtUtc,

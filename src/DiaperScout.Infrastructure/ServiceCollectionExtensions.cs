@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Resend;
 using System.Security.Claims;
 
 namespace DiaperScout.Infrastructure;
@@ -23,6 +24,10 @@ public static class ServiceCollectionExtensions
         services.AddDataProtection();
         services.Configure<AwinAffiliateProgrammeDiscoveryOptions>(configuration.GetSection(AwinAffiliateProgrammeDiscoveryOptions.SectionName));
         services.AddSingleton(TimeProvider.System);
+        services.AddResend(options =>
+        {
+            options.ApiToken = configuration["Resend:ApiToken"] ?? string.Empty;
+        });
 
         services.AddScoped<IAtlasQueries, AtlasQueries>();
         services.AddScoped<IRetailerManagement, RetailerManagement>();
@@ -32,6 +37,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ICatalogueSubmissionImageStorage, CatalogueSubmissionImageStorage>();
         services.AddScoped<ICatalogueRetailQueries, CatalogueRetailQueries>();
         services.AddSingleton<IAffiliateLinkResolver, AwinAffiliateLinkResolver>();
+        services.AddScoped<IPasswordlessAuthentication, PasswordlessAuthentication>();
         services.AddScoped<ICurrentExplorer, CurrentExplorer>();
         services.AddScoped<ICurrentUser, CurrentUser>();
         services.AddScoped<IEditorialAuthorisation, EditorialAuthorisation>();

@@ -10,6 +10,40 @@
             Sign in to access your DiaperScout account and any tools available to your role.
         </p>
 
+        @if (Sent)
+        {
+            <div class="ds-auth-message ds-auth-message-success">
+                <strong>Check your email</strong>
+                <p>
+                    If that email address can receive DiaperScout sign-in links, we've sent you a link.
+                    It expires in 15 minutes and can only be used once.
+                </p>
+            </div>
+        }
+        else
+        {
+            <form class="ds-auth-form" method="post" action="/signin/request">
+                <label for="email">Email address</label>
+                <input id="email"
+                       name="email"
+                       type="email"
+                       autocomplete="email"
+                       required
+                       placeholder="you@example.com" />
+                <button class="ds-button ds-button-primary" type="submit">
+                    Email me a sign-in link
+                </button>
+            </form>
+
+            @if (Error)
+            {
+                <p class="ds-auth-error">
+                    We couldn't sign you in with that link. It may have expired or already been used.
+                    Please request a new one.
+                </p>
+            }
+        }
+
         @if (Environment.IsDevelopment())
         {
             <div class="ds-auth-development">
@@ -22,16 +56,16 @@
                 </a>
             </div>
         }
-        else
-        {
-            <p>
-                Production sign-in is not connected yet.
-            </p>
-        }
     </div>
 </section>
 
 @code {
     [Inject]
     private IHostEnvironment Environment { get; set; } = default!;
+
+    [SupplyParameterFromQuery(Name = "sent")]
+    private bool Sent { get; set; }
+
+    [SupplyParameterFromQuery(Name = "error")]
+    private bool Error { get; set; }
 }

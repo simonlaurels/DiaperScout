@@ -752,6 +752,41 @@ public sealed class Location : Entity
     public decimal? Longitude { get; private set; }
 }
 
+public sealed class PlatformSetting : Entity
+{
+    private PlatformSetting()
+    {
+        Key = null!;
+        Value = null!;
+    }
+
+    public PlatformSetting(string key, string value, DateTimeOffset updatedAtUtc)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+            throw new ArgumentException("A setting key is required.", nameof(key));
+
+        if (string.IsNullOrWhiteSpace(value))
+            throw new ArgumentException("A setting value is required.", nameof(value));
+
+        Key = key.Trim();
+        Value = value.Trim();
+        UpdatedAtUtc = updatedAtUtc;
+    }
+
+    public string Key { get; private set; }
+    public string Value { get; private set; }
+    public DateTimeOffset UpdatedAtUtc { get; private set; }
+
+    public void UpdateValue(string value, DateTimeOffset updatedAtUtc)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new ArgumentException("A setting value is required.", nameof(value));
+
+        Value = value.Trim();
+        UpdatedAtUtc = updatedAtUtc;
+    }
+}
+
 public sealed class User : Entity
 {
     private User() { Subject = null!; }

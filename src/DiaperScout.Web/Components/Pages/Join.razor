@@ -1,4 +1,5 @@
 @page "/join"
+@inject DiaperScout.Web.Services.UserManagementClient UserManagementClient
 
 <PageTitle>Join DiaperScout</PageTitle>
 
@@ -6,11 +7,24 @@
     <div class="ds-auth-card">
         <p class="catalogue-kicker">DIAPERSCOUT</p>
         <h1>Join DiaperScout</h1>
-        <p>
-            Create your DiaperScout account to contribute to the catalogue and access tools available to your role.
-        </p>
 
-        @if (Sent)
+        @if (_loading)
+        {
+            <p>
+                Checking registration availability...
+            </p>
+        }
+        else if (!_registrationEnabled)
+        {
+            <div class="ds-auth-message">
+                <strong>Registrations are currently closed</strong>
+                <p>
+                    We're not accepting new Explorer registrations right now.
+                    Please check back later.
+                </p>
+            </div>
+        }
+        else if (Sent)
         {
             <div class="ds-auth-message ds-auth-message-success">
                 <strong>Check your email</strong>
@@ -22,6 +36,10 @@
         }
         else
         {
+            <p>
+                Create your DiaperScout account to contribute to the catalogue and access tools available to your role.
+            </p>
+
             <form class="ds-auth-form" method="post" action="/join/request">
                 <label for="email">Email address</label>
                 <input id="email"
@@ -48,8 +66,7 @@
             @if (Error)
             {
                 <p class="ds-auth-error">
-                    We couldn't start your registration. Registration may currently be closed,
-                    or the details provided may not be valid. Please try again.
+                    We couldn't start your registration. Please check the details provided and try again.
                 </p>
             }
         }
@@ -67,4 +84,15 @@
 
     [SupplyParameterFromQuery(Name = "error")]
     private bool Error { get; set; }
+
+    private bool _registrationEnabled;
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var settings = await UserManagementClient.GetRegistrationSettingsAsync();
+
+        _registrationEnabled = settings?.RegistrationEnabled ?? false;
+        _loading = false;
+    }
 }

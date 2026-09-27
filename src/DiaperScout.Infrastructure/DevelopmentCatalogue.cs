@@ -61,29 +61,53 @@ public static class DevelopmentCatalogue
             await db.SaveChangesAsync(cancellationToken);
         }
 
-        var assignmentExists = await db.PrivilegedRoleAssignments.AnyAsync(
+        var moderatorAssignmentExists = await db.PrivilegedRoleAssignments.AnyAsync(
             value => value.UserId == user.Id
                 && value.Role == PrivilegedRole.Moderator
                 && value.RevokedAtUtc == null,
             cancellationToken);
 
-        if (!assignmentExists)
+        var administratorAssignmentExists = await db.PrivilegedRoleAssignments.AnyAsync(
+            value => value.UserId == user.Id
+                && value.Role == PrivilegedRole.Administrator
+                && value.RevokedAtUtc == null,
+            cancellationToken);
+
+        if (!moderatorAssignmentExists || !administratorAssignmentExists)
         {
             var now = DateTimeOffset.UtcNow;
-            var assignment = new PrivilegedRoleAssignment(
-                user.Id,
-                PrivilegedRole.Moderator,
-                user.Id,
-                now);
 
-            db.AddRange(
-                assignment,
-                new PrivilegedRoleAssignmentAudit(
-                    user.Id,
-                    user.Id,
-                    PrivilegedRole.Moderator,
-                    PrivilegedRoleAssignmentAction.Granted,
-                    now));
+            if (!moderatorAssignmentExists)
+            {
+                db.AddRange(
+                    new PrivilegedRoleAssignment(
+                        user.Id,
+                        PrivilegedRole.Moderator,
+                        user.Id,
+                        now),
+                    new PrivilegedRoleAssignmentAudit(
+                        user.Id,
+                        user.Id,
+                        PrivilegedRole.Moderator,
+                        PrivilegedRoleAssignmentAction.Granted,
+                        now));
+            }
+
+            if (!administratorAssignmentExists)
+            {
+                db.AddRange(
+                    new PrivilegedRoleAssignment(
+                        user.Id,
+                        PrivilegedRole.Administrator,
+                        user.Id,
+                        now),
+                    new PrivilegedRoleAssignmentAudit(
+                        user.Id,
+                        user.Id,
+                        PrivilegedRole.Administrator,
+                        PrivilegedRoleAssignmentAction.Granted,
+                        now));
+            }
 
             await db.SaveChangesAsync(cancellationToken);
         }

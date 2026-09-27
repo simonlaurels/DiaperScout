@@ -1,0 +1,222 @@
+.admin-users-page {
+    min-height: 100vh;
+}
+
+.admin-users-card {
+    display: grid;
+    gap: var(--space-3);
+    min-height: 112px;
+    padding: var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-background);
+    color: var(--color-ink);
+    box-shadow: var(--shadow-card);
+}
+
+.admin-users-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.admin-users-card-copy {
+    display: grid;
+    gap: 4px;
+}
+
+.admin-users-card-copy strong {
+    color: var(--color-primary);
+    font-size: 15px;
+    line-height: 20px;
+}
+
+.admin-users-card-copy span {
+    color: var(--color-muted);
+    font-size: 13px;
+    line-height: 19px;
+}
+
+.admin-users-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
+    cursor: pointer;
+}
+
+.admin-users-toggle-label {
+    color: var(--color-muted);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.admin-users-toggle input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.admin-users-toggle-track {
+    position: relative;
+    display: block;
+    width: 46px;
+    height: 26px;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-surface);
+    transition:
+        background-color 150ms ease,
+        border-color 150ms ease;
+}
+
+.admin-users-toggle-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--color-muted);
+    box-shadow: var(--shadow-card);
+    transition: transform 150ms ease, background-color 150ms ease;
+}
+
+.admin-users-toggle input:checked + .admin-users-toggle-track {
+    border-color: var(--color-sage);
+    background: var(--color-sage);
+}
+
+.admin-users-toggle input:checked + .admin-users-toggle-track .admin-users-toggle-thumb {
+    background: var(--color-background);
+    transform: translateX(20px);
+}
+
+.admin-users-toggle input:focus-visible + .admin-users-toggle-track {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+}
+
+.admin-users-toggle input:disabled + .admin-users-toggle-track {
+    cursor: wait;
+    opacity: 0.6;
+}
+
+.admin-users-feedback {
+    margin-top: var(--space-2);
+    margin-bottom: 0;
+    color: var(--color-muted);
+    font-size: 13px;
+    line-height: 19px;
+}
+
+.admin-users-table {
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-background);
+    box-shadow: var(--shadow-card);
+}
+
+.admin-users-row {
+    display: grid;
+    grid-template-columns: minmax(220px, 1.4fr) minmax(180px, 1fr) minmax(120px, 0.7fr) auto;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.admin-users-row:last-child {
+    border-bottom: 0;
+}
+
+.admin-users-row-header {
+    background: var(--color-surface);
+}
+
+.admin-users-row-header span {
+    color: var(--color-muted);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.admin-users-identity {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+}
+
+.admin-users-identity strong {
+    overflow: hidden;
+    color: var(--color-primary);
+    font-size: 14px;
+    line-height: 19px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-users-identity span,
+.admin-users-meta {
+    color: var(--color-muted);
+    font-size: 12px;
+    line-height: 18px;
+}
+
+.admin-users-status,
+.admin-users-role {
+    justify-self: start;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: var(--color-surface);
+    color: var(--color-muted);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.admin-users-empty {
+    padding: var(--space-4);
+}
+
+.admin-users-empty strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--color-primary);
+    font-size: 15px;
+}
+
+.admin-users-empty span {
+    color: var(--color-muted);
+    font-size: 13px;
+    line-height: 19px;
+}
+
+.admin-users-error {
+    color: var(--color-muted);
+}
+
+@media (max-width: 719px) {
+    .admin-users-card-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .admin-users-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
+    .admin-users-row-header {
+        display: none;
+    }
+
+    .admin-users-status,
+    .admin-users-role {
+        justify-self: start;
+    }
+}

@@ -1,3 +1,4 @@
+using DiaperScout.Domain;
 using DiaperScout.Web.Components;
 using DiaperScout.Web.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -52,6 +53,13 @@ builder.Services.AddHttpClient<ProductLookupClient>(client =>
         client.BaseAddress = new Uri(
             builder.Configuration["Api:BaseUrl"]
             ?? "https+http://api"))
+    .AddServiceDiscovery();
+
+builder.Services.AddHttpClient<UserManagementClient>(client =>
+        client.BaseAddress = new Uri(
+            builder.Configuration["Api:BaseUrl"]
+            ?? "https+http://api"))
+    .AddHttpMessageHandler<DevelopmentSubjectForwardingHandler>()
     .AddServiceDiscovery();
 
 builder.Services.AddHttpClient<ProductCatalogueClient>(client =>
@@ -232,11 +240,14 @@ app.MapGet("/signin/magic-link", async (
     if (authentication is null)
         return Results.LocalRedirect("/signin?error=true");
 
-    var claims = new[]
+    var claims = new List<Claim>
     {
-        new Claim(ClaimTypes.NameIdentifier, authentication.UserId.ToString()),
-        new Claim(ClaimTypes.Name, authentication.Subject)
+        new(ClaimTypes.NameIdentifier, authentication.UserId.ToString()),
+        new(ClaimTypes.Name, authentication.Subject)
     };
+
+    claims.AddRange(authentication.Roles.Select(role =>
+        new Claim(ClaimTypes.Role, role.ToString())));
 
     var scheme = app.Environment.IsDevelopment()
         ? "DevelopmentCookie"
@@ -276,7 +287,7 @@ if (app.Environment.IsDevelopment())
         {
             new Claim(ClaimTypes.NameIdentifier, subject),
             new Claim(ClaimTypes.Name, subject),
-            new Claim(ClaimTypes.Role, "Moderator")
+            new Claim(ClaimTypes.Role, "Administrator")
         };
 
         var identity = new ClaimsIdentity(claims, "DevelopmentCookie");
@@ -296,4 +307,5 @@ app.Run();
 
 public sealed record PasswordlessAuthenticationResultDto(
     Guid UserId,
-    string Subject);
+    string Subject,
+    IReadOnlyList<PrivilegedRole> Roles);

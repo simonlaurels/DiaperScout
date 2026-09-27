@@ -1,0 +1,242 @@
+@page "/admin/users"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Administrator")]
+@rendermode InteractiveServer
+@inject DiaperScout.Web.Services.UserManagementClient UserManagementClient
+
+<PageTitle>User Management · DiaperScout</PageTitle>
+
+<section class="admin-users-page">
+    <div class="admin-container">
+        <header class="admin-header">
+            <div>
+                <p class="admin-kicker">SCOUT'S WATCHTOWER</p>
+                <h1>User Management</h1>
+                <p class="admin-intro">
+                    Manage Explorer accounts and control access to the DiaperScout expedition.
+                </p>
+            </div>
+            <div class="admin-compass" aria-hidden="true">✦</div>
+        </header>
+
+        @if (_loading)
+        {
+            <section class="admin-section">
+                <div class="admin-users-card">
+                    <div class="admin-users-card-copy">
+                        <strong>Checking the expedition...</strong>
+                        <span>Scout is gathering the latest account and registration information.</span>
+                    </div>
+                </div>
+            </section>
+        }
+        else if (_error is not null)
+        {
+            <section class="admin-section" aria-labelledby="error-heading">
+                <div class="admin-section-heading">
+                    <div>
+                        <p class="admin-kicker">SOMETHING WENT ASTRAY</p>
+                        <h2 id="error-heading">Scout couldn't load this page</h2>
+                    </div>
+                </div>
+
+                <div class="admin-users-card">
+                    <div class="admin-users-card-copy admin-users-error">
+                        <strong>Unable to load user management</strong>
+                        <span>@_error</span>
+                    </div>
+                </div>
+            </section>
+        }
+        else
+        {
+            <section class="admin-section" aria-labelledby="registration-heading">
+                <div class="admin-section-heading">
+                    <div>
+                        <p class="admin-kicker">REGISTRATION</p>
+                        <h2 id="registration-heading">Control new expeditions</h2>
+                    </div>
+                    <span class="admin-section-note">Platform setting</span>
+                </div>
+
+                <div class="admin-users-card">
+                    <div class="admin-users-card-header">
+                        <div class="admin-users-card-copy">
+                            <strong>New registrations</strong>
+                            <span>
+                                @if (_registrationEnabled)
+                                {
+                                    @:New Explorers can currently join DiaperScout.
+                                }
+                                else
+                                {
+                                    @:New registrations are currently closed.
+                                }
+                            </span>
+                        </div>
+
+                        <label class="admin-users-toggle">
+                            <span class="admin-users-toggle-label">
+                                @(_registrationEnabled ? "Open" : "Closed")
+                            </span>
+
+                            <input type="checkbox"
+                                   checked="@_registrationEnabled"
+                                   @onchange="ToggleRegistrationAsync"
+                                   disabled="@_savingRegistration" />
+
+                            <span class="admin-users-toggle-track" aria-hidden="true">
+                                <span class="admin-users-toggle-thumb"></span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                @if (_registrationMessage is not null)
+                {
+                    <p class="admin-users-feedback">@_registrationMessage</p>
+                }
+            </section>
+
+            <section class="admin-section" aria-labelledby="users-heading">
+                <div class="admin-section-heading">
+                    <div>
+                        <p class="admin-kicker">EXPLORERS</p>
+                        <h2 id="users-heading">Expedition accounts</h2>
+                    </div>
+                    <span class="admin-section-note">@_users.Length account(s)</span>
+                </div>
+
+                @if (_users.Length == 0)
+                {
+                    <div class="admin-users-card admin-users-empty">
+                        <strong>No Explorers yet</strong>
+                        <span>When people join the expedition, their accounts will appear here.</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="admin-users-table">
+                        <div class="admin-users-row admin-users-row-header">
+                            <span>Explorer</span>
+                            <span>Joined</span>
+                            <span>Status</span>
+                            <span>Roles</span>
+                        </div>
+
+                        @foreach (var user in _users)
+                        {
+                            <div class="admin-users-row">
+                                <div class="admin-users-identity">
+                                    <strong>
+                                        @(string.IsNullOrWhiteSpace(user.DisplayName)
+                                            ? user.Email
+                                            : user.DisplayName)
+                                    </strong>
+                                    <span>@user.Email</span>
+                                </div>
+
+                                <span class="admin-users-meta">
+                                    @user.JoinedAtUtc.ToLocalTime().ToString("d MMM yyyy")
+                                </span>
+
+                                <span class="admin-users-status">
+                                    @user.Status
+                                </span>
+
+                                @if (user.Roles.Count > 0)
+                                {
+                                    <span class="admin-users-role">
+                                        @string.Join(" · ", user.Roles.Select(role => role.ToString()))
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="admin-users-meta">Explorer</span>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </section>
+        }
+
+        <aside class="admin-scout-note">
+            <span class="admin-scout-note-mark" aria-hidden="true">⌘</span>
+            <div>
+                <strong>A little Scout advice</strong>
+                <p>Keep the expedition open when you're ready for new Explorers, and close it when you need a little breathing room.</p>
+            </div>
+        </aside>
+    </div>
+</section>
+
+@code {
+    private UserManagementItem[] _users = [];
+    private bool _registrationEnabled;
+    private bool _loading = true;
+    private bool _savingRegistration;
+    private string? _error;
+    private string? _registrationMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var settings = await UserManagementClient.GetRegistrationSettingsAsync();
+
+            if (settings is null)
+            {
+                _error = "The registration setting could not be loaded.";
+                return;
+            }
+
+            _registrationEnabled = settings.RegistrationEnabled;
+            _users = await UserManagementClient.GetUsersAsync();
+        }
+        catch (Exception)
+        {
+            _error = "The user management service could not be reached.";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task ToggleRegistrationAsync(ChangeEventArgs args)
+    {
+        if (_savingRegistration)
+        {
+            return;
+        }
+
+        var enabled = args.Value is bool value && value;
+
+        _savingRegistration = true;
+        _registrationMessage = null;
+
+        try
+        {
+            var settings = await UserManagementClient.SetRegistrationEnabledAsync(enabled);
+
+            if (settings is null)
+            {
+                _registrationMessage = "Scout couldn't save that change.";
+                return;
+            }
+
+            _registrationEnabled = settings.RegistrationEnabled;
+            _registrationMessage = _registrationEnabled
+                ? "Registrations are now open."
+                : "Registrations are now closed.";
+        }
+        catch (Exception)
+        {
+            _registrationMessage = "Scout couldn't save that change.";
+        }
+        finally
+        {
+            _savingRegistration = false;
+        }
+    }
+}

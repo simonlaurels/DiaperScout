@@ -42,6 +42,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICurrentUser, CurrentUser>();
         services.AddScoped<IEditorialAuthorisation, EditorialAuthorisation>();
         services.AddScoped<IPrivilegedRoleAssignments, PrivilegedRoleAssignments>();
+        services.AddScoped<IUserManagement, UserManagement>();
+        services.AddScoped<IUserManagement, UserManagement>();
         services.AddScoped<ICanonicalCatalogue, CanonicalCatalogue>();
         services.AddScoped<ICanonicalCatalogueQueries, CanonicalCatalogueQueries>();
 

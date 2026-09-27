@@ -19,6 +19,7 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
     public DbSet<RetailerAffiliateProgramme> RetailerAffiliateProgrammes => Set<RetailerAffiliateProgramme>();
     public DbSet<Location> Locations => Set<Location>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<PlatformSetting> PlatformSettings => Set<PlatformSetting>();
     public DbSet<UserEmail> UserEmails => Set<UserEmail>();
     public DbSet<MagicLinkToken> MagicLinkTokens => Set<MagicLinkToken>();
     public DbSet<PendingRegistration> PendingRegistrations => Set<PendingRegistration>();
@@ -334,6 +335,15 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
                 .WithOne()
                 .HasForeignKey<ExplorerProfile>(x => x.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<PlatformSetting>(entity =>
+        {
+            entity.ToTable("platform_settings");
+            entity.Property(x => x.Key).HasMaxLength(100).IsRequired();
+            entity.Property(x => x.Value).HasMaxLength(1000).IsRequired();
+            entity.Property(x => x.UpdatedAtUtc).IsRequired();
+            entity.HasIndex(x => x.Key).IsUnique();
         });
 
         modelBuilder.Entity<UserEmail>(entity =>

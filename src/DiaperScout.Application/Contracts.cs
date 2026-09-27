@@ -357,7 +357,8 @@ public sealed record AuthenticatedUser(
 
 public sealed record PasswordlessAuthenticationResult(
     Guid UserId,
-    string Subject);
+    string Subject,
+    IReadOnlyList<PrivilegedRole> Roles);
 
 public interface IPasswordlessAuthentication
 {

@@ -18,6 +18,7 @@ internal sealed class PasswordlessAuthentication(
 {
     private const int DefaultMagicLinkLifetimeMinutes = 15;
     private const int TokenByteLength = 32;
+    private const string RegistrationEnabledSettingKey = "registration.enabled";
 
     private readonly int magicLinkLifetimeMinutes = GetLifetimeMinutes(configuration);
     private readonly string baseUrl = GetRequiredSetting(
@@ -34,6 +35,12 @@ internal sealed class PasswordlessAuthentication(
     {
         var normalizedEmail = NormalizeEmail(email);
         var normalizedDisplayName = NormalizeDisplayName(displayName);
+
+        if (!await IsRegistrationEnabledAsync(cancellationToken))
+        {
+            throw new InvalidOperationException(
+                "Registrations are currently closed. Please check back later.");
+        }
 
         var existingUser = await (
             from userEmail in db.UserEmails.AsNoTracking()
@@ -215,9 +222,16 @@ internal sealed class PasswordlessAuthentication(
         if (identity is null || identity.Status != UserAccountStatus.Active)
             return null;
 
+        var roles = await db.PrivilegedRoleAssignments
+            .AsNoTracking()
+            .Where(value => value.UserId == identity.Id && value.RevokedAtUtc == null)
+            .Select(value => value.Role)
+            .ToListAsync(cancellationToken);
+
         return new PasswordlessAuthenticationResult(
             identity.Id,
-            identity.Subject);
+            identity.Subject,
+            roles);
     }
 
     private async Task<PasswordlessAuthenticationResult?> CompleteRegistrationAsync(
@@ -277,7 +291,22 @@ internal sealed class PasswordlessAuthentication(
 
         return new PasswordlessAuthenticationResult(
             user.Id,
-            user.Subject);
+            user.Subject,
+            []);
+    }
+
+    private async Task<bool> IsRegistrationEnabledAsync(
+        CancellationToken cancellationToken)
+    {
+        var setting = await db.PlatformSettings
+            .AsNoTracking()
+            .SingleOrDefaultAsync(
+                item => item.Key == RegistrationEnabledSettingKey,
+                cancellationToken);
+
+        return setting is null ||
+               !bool.TryParse(setting.Value, out var enabled) ||
+               enabled;
     }
 
     private string BuildMagicLink(string token)

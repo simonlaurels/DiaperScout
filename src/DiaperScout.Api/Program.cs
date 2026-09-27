@@ -63,6 +63,8 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapUserManagementEndpoints();
+
 app.MapGet(
     "/health",
     () => Results.Ok(new { status = "healthy" }))

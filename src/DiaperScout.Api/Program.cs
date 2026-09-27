@@ -3223,13 +3223,32 @@ if (builder.Configuration.GetValue<bool>(
 }
 
 app.MapPost(
-    "/api/v1/auth/magic-link",
+    "/api/v1/auth/registration-link",
     async (
-        [FromBody] MagicLinkRequest request,
+        [FromBody] RegistrationLinkRequest request,
         IPasswordlessAuthentication authentication,
         CancellationToken cancellationToken) =>
     {
-        await authentication.RequestMagicLinkAsync(
+        await authentication.RequestRegistrationLinkAsync(
+            request.Email,
+            request.DisplayName,
+            cancellationToken);
+
+        return Results.Ok(new
+        {
+            message = "If that email address can receive DiaperScout registration links, one has been sent."
+        });
+    })
+    .AllowAnonymous();
+
+app.MapPost(
+    "/api/v1/auth/sign-in-link",
+    async (
+        [FromBody] SignInLinkRequest request,
+        IPasswordlessAuthentication authentication,
+        CancellationToken cancellationToken) =>
+    {
+        await authentication.RequestSignInLinkAsync(
             request.Email,
             cancellationToken);
 
@@ -3261,6 +3280,13 @@ app.MapPost(
     .AllowAnonymous();
 
 app.Run();
+
+public sealed record RegistrationLinkRequest(
+    string Email,
+    string DisplayName);
+
+public sealed record SignInLinkRequest(
+    string Email);
 
 public partial class Program
 {

@@ -21,6 +21,8 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
     public DbSet<User> Users => Set<User>();
     public DbSet<UserEmail> UserEmails => Set<UserEmail>();
     public DbSet<MagicLinkToken> MagicLinkTokens => Set<MagicLinkToken>();
+    public DbSet<PendingRegistration> PendingRegistrations => Set<PendingRegistration>();
+    public DbSet<PendingRegistrationToken> PendingRegistrationTokens => Set<PendingRegistrationToken>();
     public DbSet<PrivilegedRoleAssignment> PrivilegedRoleAssignments => Set<PrivilegedRoleAssignment>();
     public DbSet<PrivilegedRoleAssignmentAudit> PrivilegedRoleAssignmentAudits => Set<PrivilegedRoleAssignmentAudit>();
     public DbSet<CatalogueAuditRecord> CatalogueAuditRecords => Set<CatalogueAuditRecord>();
@@ -358,6 +360,30 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
             entity.HasOne<UserEmail>()
                 .WithMany()
                 .HasForeignKey(x => x.UserEmailId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<PendingRegistration>(entity =>
+        {
+            entity.ToTable("pending_registrations");
+            entity.Property(x => x.Email).HasMaxLength(320).IsRequired();
+            entity.Property(x => x.DisplayName).HasMaxLength(100).IsRequired();
+            entity.Property(x => x.CreatedAtUtc).IsRequired();
+            entity.Property(x => x.ExpiresAtUtc).IsRequired();
+            entity.HasIndex(x => x.Email).IsUnique();
+        });
+
+        modelBuilder.Entity<PendingRegistrationToken>(entity =>
+        {
+            entity.ToTable("pending_registration_tokens");
+            entity.Property(x => x.TokenHash).HasMaxLength(128).IsRequired();
+            entity.Property(x => x.ExpiresAtUtc).IsRequired();
+            entity.Property(x => x.CreatedAtUtc).IsRequired();
+            entity.HasIndex(x => x.TokenHash).IsUnique();
+            entity.HasIndex(x => new { x.PendingRegistrationId, x.ExpiresAtUtc });
+            entity.HasOne<PendingRegistration>()
+                .WithMany()
+                .HasForeignKey(x => x.PendingRegistrationId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 

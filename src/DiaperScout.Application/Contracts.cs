@@ -361,7 +361,12 @@ public sealed record PasswordlessAuthenticationResult(
 
 public interface IPasswordlessAuthentication
 {
-    Task RequestMagicLinkAsync(
+    Task RequestRegistrationLinkAsync(
+        string email,
+        string displayName,
+        CancellationToken cancellationToken = default);
+
+    Task RequestSignInLinkAsync(
         string email,
         CancellationToken cancellationToken = default);
 
@@ -1599,9 +1604,6 @@ public interface IPrivilegedRoleAssignments
 }
 
 // API transport request contracts.
-public sealed record MagicLinkRequest(
-    string Email);
-
 public sealed record CreateObservationRequest(
     ObservationType Type,
     DateTimeOffset ObservedAtUtc,

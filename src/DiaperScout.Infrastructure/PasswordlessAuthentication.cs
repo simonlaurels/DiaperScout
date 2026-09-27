@@ -27,7 +27,71 @@ internal sealed class PasswordlessAuthentication(
         configuration,
         "Resend:FromEmail");
 
-    public async Task RequestMagicLinkAsync(
+    public async Task RequestRegistrationLinkAsync(
+        string email,
+        string displayName,
+        CancellationToken cancellationToken = default)
+    {
+        var normalizedEmail = NormalizeEmail(email);
+        var normalizedDisplayName = NormalizeDisplayName(displayName);
+
+        var existingUser = await (
+            from userEmail in db.UserEmails.AsNoTracking()
+            join user in db.Users.AsNoTracking()
+                on userEmail.UserId equals user.Id
+            where userEmail.Email == normalizedEmail
+            select user)
+            .SingleOrDefaultAsync(cancellationToken);
+
+        if (existingUser is not null)
+        {
+            throw new InvalidOperationException(
+                "An account already exists for this email address. Please sign in instead.");
+        }
+
+        var now = timeProvider.GetUtcNow();
+        var expiresAtUtc = now.AddMinutes(magicLinkLifetimeMinutes);
+
+        var pendingRegistration = new PendingRegistration(
+            normalizedEmail,
+            normalizedDisplayName,
+            now,
+            expiresAtUtc);
+
+        var token = CreateToken();
+        var tokenHash = HashToken(token);
+
+        var pendingRegistrationToken = new PendingRegistrationToken(
+            pendingRegistration.Id,
+            tokenHash,
+            expiresAtUtc);
+
+        db.PendingRegistrations.Add(pendingRegistration);
+        db.PendingRegistrationTokens.Add(pendingRegistrationToken);
+
+        await db.SaveChangesAsync(cancellationToken);
+
+        var link = BuildMagicLink(token);
+        var encodedLink = HtmlEncoder.Default.Encode(link);
+
+        var message = new EmailMessage
+        {
+            From = fromEmail,
+            Subject = "Join DiaperScout",
+            HtmlBody = $"""
+                <p>Someone requested to create a DiaperScout account using this email address.</p>
+                <p><a href="{encodedLink}">Join DiaperScout</a></p>
+                <p>This link expires in {magicLinkLifetimeMinutes} minutes and can only be used once.</p>
+                <p>If you did not request this, you can safely ignore this email.</p>
+                """
+        };
+
+        message.To.Add(normalizedEmail);
+
+        await resend.EmailSendAsync(message);
+    }
+
+    public async Task RequestSignInLinkAsync(
         string email,
         CancellationToken cancellationToken = default)
     {
@@ -38,25 +102,16 @@ internal sealed class PasswordlessAuthentication(
                 item => item.Email == normalizedEmail,
                 cancellationToken);
 
-        User user;
-
         if (userEmail is null)
-        {
-            user = new User(Guid.NewGuid().ToString("N"));
-            userEmail = new UserEmail(user.Id, normalizedEmail);
+            return;
 
-            db.Users.Add(user);
-            db.UserEmails.Add(userEmail);
+        var user = await db.Users
+            .SingleAsync(
+                item => item.Id == userEmail.UserId,
+                cancellationToken);
 
-            await db.SaveChangesAsync(cancellationToken);
-        }
-        else
-        {
-            user = await db.Users
-                .SingleAsync(
-                    item => item.Id == userEmail.UserId,
-                    cancellationToken);
-        }
+        if (user.Status != UserAccountStatus.Active)
+            return;
 
         var token = CreateToken();
         var tokenHash = HashToken(token);
@@ -101,7 +156,7 @@ internal sealed class PasswordlessAuthentication(
         var tokenHash = HashToken(token);
         var now = timeProvider.GetUtcNow();
 
-        var consumed = await db.MagicLinkTokens
+        var consumedExistingAccountToken = await db.MagicLinkTokens
             .Where(item =>
                 item.TokenHash == tokenHash &&
                 item.UsedAtUtc == null &&
@@ -112,9 +167,36 @@ internal sealed class PasswordlessAuthentication(
                     now),
                 cancellationToken);
 
-        if (consumed != 1)
+        if (consumedExistingAccountToken == 1)
+        {
+            return await ConsumeExistingAccountMagicLinkAsync(
+                tokenHash,
+                cancellationToken);
+        }
+
+        var consumedRegistrationToken = await db.PendingRegistrationTokens
+            .Where(item =>
+                item.TokenHash == tokenHash &&
+                item.UsedAtUtc == null &&
+                item.ExpiresAtUtc > now)
+            .ExecuteUpdateAsync(
+                setters => setters.SetProperty(
+                    item => item.UsedAtUtc,
+                    now),
+                cancellationToken);
+
+        if (consumedRegistrationToken != 1)
             return null;
 
+        return await CompleteRegistrationAsync(
+            tokenHash,
+            cancellationToken);
+    }
+
+    private async Task<PasswordlessAuthenticationResult?> ConsumeExistingAccountMagicLinkAsync(
+        string tokenHash,
+        CancellationToken cancellationToken)
+    {
         var identity = await (
             from magicLink in db.MagicLinkTokens.AsNoTracking()
             join userEmail in db.UserEmails.AsNoTracking()
@@ -136,6 +218,66 @@ internal sealed class PasswordlessAuthentication(
         return new PasswordlessAuthenticationResult(
             identity.Id,
             identity.Subject);
+    }
+
+    private async Task<PasswordlessAuthenticationResult?> CompleteRegistrationAsync(
+        string tokenHash,
+        CancellationToken cancellationToken)
+    {
+        var pending = await (
+            from registrationToken in db.PendingRegistrationTokens.AsNoTracking()
+            join registration in db.PendingRegistrations.AsNoTracking()
+                on registrationToken.PendingRegistrationId equals registration.Id
+            where registrationToken.TokenHash == tokenHash
+            select new
+            {
+                registration.Id,
+                registration.Email,
+                registration.DisplayName,
+                registration.ExpiresAtUtc
+            })
+            .SingleOrDefaultAsync(cancellationToken);
+
+        if (pending is null)
+            return null;
+
+        var existingUser = await (
+            from existingUserEmail in db.UserEmails.AsNoTracking()
+            join existingAccount in db.Users.AsNoTracking()
+                on existingUserEmail.UserId equals existingAccount.Id
+            where existingUserEmail.Email == pending.Email
+            select existingAccount)
+            .SingleOrDefaultAsync(cancellationToken);
+
+        if (existingUser is not null)
+            return null;
+
+        await using var transaction =
+            await db.Database.BeginTransactionAsync(cancellationToken);
+
+        var user = new User(Guid.NewGuid().ToString("N"));
+
+        var userEmail = new UserEmail(
+            user.Id,
+            pending.Email);
+
+        var explorerProfile = new ExplorerProfile(
+            user.Id,
+            pending.DisplayName);
+
+        var backpack = new Backpack(user.Id);
+
+        db.Users.Add(user);
+        db.UserEmails.Add(userEmail);
+        db.ExplorerProfiles.Add(explorerProfile);
+        db.Backpacks.Add(backpack);
+
+        await db.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+
+        return new PasswordlessAuthenticationResult(
+            user.Id,
+            user.Subject);
     }
 
     private string BuildMagicLink(string token)
@@ -162,6 +304,23 @@ internal sealed class PasswordlessAuthentication(
             throw new ArgumentException(
                 "A valid email address is required.",
                 nameof(email));
+
+        return normalized;
+    }
+
+    private static string NormalizeDisplayName(string displayName)
+    {
+        if (string.IsNullOrWhiteSpace(displayName))
+            throw new ArgumentException(
+                "An Explorer Display Name is required.",
+                nameof(displayName));
+
+        var normalized = displayName.Trim();
+
+        if (normalized.Length > 100)
+            throw new ArgumentException(
+                "The Explorer Display Name must be 100 characters or fewer.",
+                nameof(displayName));
 
         return normalized;
     }

@@ -845,6 +845,91 @@ public sealed class MagicLinkToken : Entity
     }
 }
 
+public sealed class PendingRegistration : Entity
+{
+    private PendingRegistration()
+    {
+        Email = null!;
+        DisplayName = null!;
+    }
+
+    public PendingRegistration(
+        string email,
+        string displayName,
+        DateTimeOffset createdAtUtc,
+        DateTimeOffset expiresAtUtc)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+            throw new ArgumentException("An email address is required.", nameof(email));
+
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+        if (normalizedEmail.Length > 320)
+            throw new ArgumentException("An email address must be 320 characters or fewer.", nameof(email));
+
+        if (string.IsNullOrWhiteSpace(displayName))
+            throw new ArgumentException("An Explorer display name is required.", nameof(displayName));
+
+        var normalizedDisplayName = displayName.Trim();
+        if (normalizedDisplayName.Length > 100)
+            throw new ArgumentException("An Explorer display name must be 100 characters or fewer.", nameof(displayName));
+
+        if (expiresAtUtc <= createdAtUtc)
+            throw new ArgumentException("The pending registration must expire after it is created.", nameof(expiresAtUtc));
+
+        Email = normalizedEmail;
+        DisplayName = normalizedDisplayName;
+        CreatedAtUtc = createdAtUtc;
+        ExpiresAtUtc = expiresAtUtc;
+    }
+
+    public string Email { get; private set; }
+    public string DisplayName { get; private set; }
+    public DateTimeOffset CreatedAtUtc { get; private set; }
+    public DateTimeOffset ExpiresAtUtc { get; private set; }
+}
+
+public sealed class PendingRegistrationToken : Entity
+{
+    private PendingRegistrationToken() { TokenHash = null!; }
+
+    public PendingRegistrationToken(
+        Guid pendingRegistrationId,
+        string tokenHash,
+        DateTimeOffset expiresAtUtc)
+    {
+        if (pendingRegistrationId == Guid.Empty)
+            throw new ArgumentException("A pending registration is required.", nameof(pendingRegistrationId));
+
+        if (string.IsNullOrWhiteSpace(tokenHash))
+            throw new ArgumentException("A token hash is required.", nameof(tokenHash));
+
+        if (expiresAtUtc <= DateTimeOffset.UtcNow)
+            throw new ArgumentException("The registration link must expire in the future.", nameof(expiresAtUtc));
+
+        PendingRegistrationId = pendingRegistrationId;
+        TokenHash = tokenHash;
+        ExpiresAtUtc = expiresAtUtc;
+        CreatedAtUtc = DateTimeOffset.UtcNow;
+    }
+
+    public Guid PendingRegistrationId { get; private set; }
+    public string TokenHash { get; private set; }
+    public DateTimeOffset ExpiresAtUtc { get; private set; }
+    public DateTimeOffset? UsedAtUtc { get; private set; }
+    public DateTimeOffset CreatedAtUtc { get; private set; }
+
+    public bool IsUsable(DateTimeOffset now) =>
+        UsedAtUtc is null && ExpiresAtUtc > now;
+
+    public void MarkUsed(DateTimeOffset usedAtUtc)
+    {
+        if (UsedAtUtc is not null)
+            throw new InvalidOperationException("This registration link has already been used.");
+
+        UsedAtUtc = usedAtUtc;
+    }
+}
+
 public sealed class PrivilegedRoleAssignment : Entity
 {
     private PrivilegedRoleAssignment() { }

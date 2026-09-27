@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(TimeProvider.System);
         services.AddResend(options =>
         {
-            options.ApiToken = configuration["Resend:ApiToken"] ?? string.Empty;
+            options.ApiToken = Environment.GetEnvironmentVariable("RESEND_APITOKEN") ?? string.Empty;
         });
 
         services.AddScoped<IAtlasQueries, AtlasQueries>();

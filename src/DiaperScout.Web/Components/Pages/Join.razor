@@ -1,0 +1,70 @@
+@page "/join"
+
+<PageTitle>Join DiaperScout</PageTitle>
+
+<section class="ds-auth-page">
+    <div class="ds-auth-card">
+        <p class="catalogue-kicker">DIAPERSCOUT</p>
+        <h1>Join DiaperScout</h1>
+        <p>
+            Create your DiaperScout account to contribute to the catalogue and access tools available to your role.
+        </p>
+
+        @if (Sent)
+        {
+            <div class="ds-auth-message ds-auth-message-success">
+                <strong>Check your email</strong>
+                <p>
+                    If registration is currently available, we've sent a link to complete your DiaperScout account.
+                    It expires in 15 minutes and can only be used once.
+                </p>
+            </div>
+        }
+        else
+        {
+            <form class="ds-auth-form" method="post" action="/join/request">
+                <label for="email">Email address</label>
+                <input id="email"
+                       name="email"
+                       type="email"
+                       autocomplete="email"
+                       required
+                       placeholder="you@example.com" />
+
+                <label for="displayName">Explorer Display Name</label>
+                <input id="displayName"
+                       name="displayName"
+                       type="text"
+                       autocomplete="nickname"
+                       maxlength="100"
+                       required
+                       placeholder="How you'd like to appear on DiaperScout" />
+
+                <button class="ds-button ds-button-primary" type="submit">
+                    Email me a registration link
+                </button>
+            </form>
+
+            @if (Error)
+            {
+                <p class="ds-auth-error">
+                    We couldn't start your registration. Registration may currently be closed,
+                    or the details provided may not be valid. Please try again.
+                </p>
+            }
+        }
+
+        <p>
+            Already have a DiaperScout account?
+            <a href="/signin">Sign in</a>
+        </p>
+    </div>
+</section>
+
+@code {
+    [SupplyParameterFromQuery(Name = "sent")]
+    private bool Sent { get; set; }
+
+    [SupplyParameterFromQuery(Name = "error")]
+    private bool Error { get; set; }
+}

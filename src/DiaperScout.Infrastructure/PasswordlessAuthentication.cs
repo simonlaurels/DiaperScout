@@ -265,7 +265,7 @@ internal sealed class PasswordlessAuthentication(
             user.Id,
             pending.DisplayName);
 
-        var backpack = new Backpack(user.Id);
+        var backpack = new Backpack(explorerProfile.Id);
 
         db.Users.Add(user);
         db.UserEmails.Add(userEmail);

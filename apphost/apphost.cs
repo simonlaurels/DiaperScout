@@ -12,6 +12,10 @@ var postgresPassword = builder.AddParameter(
     "postgres",
     secret: true);
 
+var resendApiToken = builder.AddParameter(
+    "resend-api-token",
+    secret: true);
+
 var postgres = builder.AddPostgres(
         "postgres",
         password: postgresPassword,
@@ -24,7 +28,16 @@ var api = builder.AddCSharpApp(
     "api",
     "../src/DiaperScout.Api/DiaperScout.Api.csproj")
     .WithReference(database)
-    .WaitFor(database);
+    .WaitFor(database)
+    .WithEnvironment(
+        "Authentication__MagicLink__BaseUrl",
+        "https://web-diaperscout.dev.localhost:7167/signin/magic-link")
+    .WithEnvironment(
+        "Resend__FromEmail",
+        "hello@diaperscout.app")
+    .WithEnvironment(
+        "RESEND_APITOKEN",
+        resendApiToken);
 
 var web = builder.AddCSharpApp(
     "web",

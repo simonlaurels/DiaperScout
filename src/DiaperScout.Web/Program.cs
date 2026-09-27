@@ -169,7 +169,7 @@ app.MapPost("/signin/request", async (
     var client = httpClientFactory.CreateClient("DiaperScoutApi");
 
     using var response = await client.PostAsJsonAsync(
-        "/api/v1/auth/magic-link",
+        "/api/v1/auth/sign-in-link",
         new { Email = email },
         cancellationToken);
 
@@ -177,6 +177,31 @@ app.MapPost("/signin/request", async (
         response.IsSuccessStatusCode
             ? "/signin?sent=true"
             : "/signin?error=true");
+})
+    .AllowAnonymous()
+    .DisableAntiforgery();
+
+app.MapPost("/join/request", async (
+    IHttpClientFactory httpClientFactory,
+    [FromForm] string email,
+    [FromForm] string displayName,
+    CancellationToken cancellationToken) =>
+{
+    var client = httpClientFactory.CreateClient("DiaperScoutApi");
+
+    using var response = await client.PostAsJsonAsync(
+        "/api/v1/auth/registration-link",
+        new
+        {
+            Email = email,
+            DisplayName = displayName
+        },
+        cancellationToken);
+
+    return Results.LocalRedirect(
+        response.IsSuccessStatusCode
+            ? "/join?sent=true"
+            : "/join?error=true");
 })
     .AllowAnonymous()
     .DisableAntiforgery();
@@ -213,10 +238,14 @@ app.MapGet("/signin/magic-link", async (
         new Claim(ClaimTypes.Name, authentication.Subject)
     };
 
-    var identity = new ClaimsIdentity(claims, "ProductionCookie");
+    var scheme = app.Environment.IsDevelopment()
+        ? "DevelopmentCookie"
+        : "ProductionCookie";
+
+    var identity = new ClaimsIdentity(claims, scheme);
 
     await httpContext.SignInAsync(
-        "ProductionCookie",
+        scheme,
         new ClaimsPrincipal(identity),
         new AuthenticationProperties { IsPersistent = true });
 

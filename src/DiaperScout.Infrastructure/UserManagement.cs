@@ -16,12 +16,14 @@ internal sealed class UserManagement(DiaperScoutDbContext db) : IUserManagement
         var users = await (
             from user in db.Users.AsNoTracking()
             join email in db.UserEmails.AsNoTracking() on user.Id equals email.UserId
-            join profile in db.ExplorerProfiles.AsNoTracking() on user.Id equals profile.UserId
+            // An authenticated account can have privileged roles before it has an Explorer profile.
+            join explorerProfile in db.ExplorerProfiles.AsNoTracking() on user.Id equals explorerProfile.UserId into profiles
+            from profile in profiles.DefaultIfEmpty()
             select new
             {
                 user.Id,
                 email.Email,
-                profile.DisplayName,
+                DisplayName = profile == null ? string.Empty : profile.DisplayName,
                 user.Status,
                 JoinedAtUtc = email.CreatedAtUtc
             })

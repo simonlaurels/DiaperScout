@@ -56,6 +56,10 @@ public sealed class PasskeyBrowserTests(PostgreSqlFixture fixture) : IClassFixtu
         await Assertions.Expect(page.Locator("[data-passkey-message]")).ToHaveTextAsync("Passkey added. You can now use it to sign in.");
         await Assertions.Expect(page.Locator("[data-passkey-list]")).ToContainTextAsync("Browser test passkey");
         await page.GetByRole(AriaRole.Link, new() { Name = "Sign out", Exact = true }).ClickAsync();
+        await page.WaitForURLAsync(origin + "/products");
+        await Assertions.Expect(page.GetByRole(AriaRole.Link, new() { Name = "Sign in", Exact = true })).ToBeVisibleAsync();
+        await Assertions.Expect(page.GetByRole(AriaRole.Link, new() { Name = "Sign out", Exact = true })).ToHaveCountAsync(0);
+        await Assertions.Expect(page.GetByRole(AriaRole.Link, new() { Name = "Passkeys", Exact = true })).ToHaveCountAsync(0);
         await page.GotoAsync(origin + "/signin");
         await Assertions.Expect(page.GetByRole(AriaRole.Button, new() { Name = "Email me a sign-in link" })).ToBeVisibleAsync();
         await page.GetByRole(AriaRole.Button, new() { Name = "Sign in with a passkey" }).ClickAsync();

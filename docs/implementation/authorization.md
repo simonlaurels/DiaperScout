@@ -190,9 +190,9 @@ Administrators may:
 
 Administrator permissions must be tightly restricted.
 
-Administrators should not automatically receive editorial authority.
+Administrators may manage and publish catalogue products under ADR-0011.
 
-Where an individual legitimately requires both responsibilities, both permissions should be explicitly granted.
+A separate Moderator assignment is not required for an Administrator to manage or publish catalogue products.
 
 ---
 
@@ -254,7 +254,7 @@ Allows an authorised User to review community Observations.
 
 Allows an authorised User to approve publication of canonical knowledge.
 
-For v1 internal editorial tooling, `PublishAtlas` also permits an explicitly assigned Moderator to create or change canonical catalogue records under ADR-0011. It must require an active User and active persisted Moderator assignment; an Administrator assignment alone must not satisfy the policy.
+For v1 internal editorial tooling, `PublishAtlas` also permits an explicitly assigned Moderator or Administrator to create or change canonical catalogue records under ADR-0011. It requires an active User and an active persisted Moderator or Administrator assignment. Administrator authority is sufficient to manage and publish catalogue products without a separate Moderator assignment.
 
 ### ManageUsers
 
@@ -348,7 +348,7 @@ The server must establish ownership from the authenticated identity.
 
 # Editorial Authorization
 
-Editorial operations require explicit Moderator authority.
+Catalogue management and publication require an active Moderator or Administrator assignment.
 
 Examples include:
 
@@ -671,7 +671,7 @@ Client-side checks are never sufficient.
 
 ## Administrator Equals Moderator
 
-Administrative access does not automatically grant editorial authority.
+Administrator access includes catalogue management and publication under ADR-0011, without assigning the Moderator role.
 
 ## Manufacturer Equals Editor
 

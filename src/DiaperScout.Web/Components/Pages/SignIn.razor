@@ -10,6 +10,14 @@
             Sign in to access your DiaperScout account and any tools available to your role.
         </p>
 
+        <div class="ds-passkey-signin" data-passkey-signin>
+            <AntiforgeryToken />
+            <button class="ds-button ds-button-primary" type="button" data-passkey-action="signin">Sign in with a passkey</button>
+            <p data-passkey-message role="status" aria-live="polite"></p>
+            <p>Already added a passkey? Use your fingerprint, face, device PIN, or security key.</p>
+        </div>
+        <p>Or sign in with an email link.</p>
+
         @if (Sent)
         {
             <div class="ds-auth-message ds-auth-message-success">

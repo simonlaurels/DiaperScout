@@ -70,6 +70,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapUserManagementEndpoints();
+app.MapPasskeyEndpoints();
 
 app.MapGet(
     "/health",

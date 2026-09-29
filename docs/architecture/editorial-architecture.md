@@ -232,7 +232,7 @@ Moderators should explain significant editorial decisions where appropriate.
 
 ## V1 internal catalogue entry
 
-ADR-0011 permits an assigned Moderator to enter verified canonical catalogue data directly through internal tooling. This narrowly scoped path requires server-side `PublishAtlas` authority plus immutable audit and provenance. It does not change the evidence-led workflow for community or manufacturer contributions.
+ADR-0011 permits an assigned Moderator or Administrator to enter verified canonical catalogue data directly through internal tooling. This narrowly scoped path requires server-side `PublishAtlas` authority plus immutable audit and provenance. It does not change the evidence-led workflow for community or manufacturer contributions.
 
 ---
 

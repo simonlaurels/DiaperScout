@@ -38,6 +38,26 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICatalogueRetailQueries, CatalogueRetailQueries>();
         services.AddSingleton<IAffiliateLinkResolver, AwinAffiliateLinkResolver>();
         services.AddScoped<IPasswordlessAuthentication, PasswordlessAuthentication>();
+        services.AddSingleton<Fido2NetLib.IFido2>(_ =>
+        {
+            var rpId = configuration["Authentication:Passkeys:RpId"]
+                ?? throw new InvalidOperationException("Authentication:Passkeys:RpId is required.");
+            var origins = configuration.GetSection("Authentication:Passkeys:Origins").Get<string[]>() ?? [];
+            if (origins.Length == 0 || origins.Any(origin => !Uri.TryCreate(origin, UriKind.Absolute, out var uri)
+                || (uri.Scheme != "https" && !(uri.Scheme == "http" && uri.Host == "localhost"))
+                || (uri.Host != rpId && !uri.Host.EndsWith("." + rpId, StringComparison.OrdinalIgnoreCase))
+                || uri.AbsolutePath != "/" || !string.IsNullOrEmpty(uri.Query) || !string.IsNullOrEmpty(uri.Fragment)))
+                throw new InvalidOperationException("Passkey origins must be explicit HTTPS origins for the configured RP ID (HTTP localhost is allowed for development).");
+            return new Fido2NetLib.Fido2(new Fido2NetLib.Fido2Configuration
+            {
+                RPID = rpId,
+                RPName = "DiaperScout",
+                Origins = origins.ToHashSet(StringComparer.OrdinalIgnoreCase),
+                ChallengeSize = 32,
+                Timeout = 120000
+            });
+        });
+        services.AddScoped<IPasskeyAuthentication, PasskeyAuthentication>();
         services.AddScoped<ICurrentExplorer, CurrentExplorer>();
         services.AddScoped<ICurrentUser, CurrentUser>();
         services.AddScoped<IEditorialAuthorisation, EditorialAuthorisation>();

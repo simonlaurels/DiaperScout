@@ -1,4 +1,5 @@
 using DiaperScout.Domain;
+using DiaperScout.Application;
 using DiaperScout.Web.Components;
 using DiaperScout.Web.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -43,6 +44,7 @@ builder.Services.AddServiceDiscovery();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<DevelopmentSubjectForwardingHandler>();
 builder.Services.AddTransient<ProductionIdentityForwardingHandler>();
+builder.Services.AddPasskeyWebServices(builder.Configuration);
 
 builder.Services.AddHttpClient("DiaperScoutApi", client =>
         client.BaseAddress = new Uri(
@@ -113,7 +115,9 @@ app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages:
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 app.UseAntiforgery();
+app.MapPasskeyWebEndpoints();
 
 app.MapGet(
     "/catalogue/import-template",
@@ -239,32 +243,13 @@ app.MapGet("/signin/magic-link", async (
         return Results.LocalRedirect("/signin?error=true");
 
     var authentication =
-        await response.Content.ReadFromJsonAsync<PasswordlessAuthenticationResultDto>(
+        await response.Content.ReadFromJsonAsync<PasswordlessAuthenticationResult>(
             cancellationToken);
 
     if (authentication is null)
         return Results.LocalRedirect("/signin?error=true");
 
-    var claims = new List<Claim>
-    {
-        new(ClaimTypes.NameIdentifier, authentication.UserId.ToString()),
-        new(ClaimTypes.Name, authentication.Subject)
-    };
-
-    claims.AddRange(
-        authentication.Roles.Select(
-            role => new Claim(ClaimTypes.Role, role.ToString())));
-
-    var scheme = app.Environment.IsDevelopment()
-        ? "DevelopmentCookie"
-        : "ProductionCookie";
-
-    var identity = new ClaimsIdentity(claims, scheme);
-
-    await httpContext.SignInAsync(
-        scheme,
-        new ClaimsPrincipal(identity),
-        new AuthenticationProperties { IsPersistent = true });
+    await AuthenticationSession.SignInAsync(httpContext, authentication, app.Environment);
 
     return Results.LocalRedirect("/");
 })
@@ -293,7 +278,8 @@ if (app.Environment.IsDevelopment())
         {
             new Claim(ClaimTypes.NameIdentifier, subject),
             new Claim(ClaimTypes.Name, subject),
-            new Claim(ClaimTypes.Role, "Administrator")
+            new Claim(ClaimTypes.Role, "Administrator"),
+            new Claim("auth_time", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(System.Globalization.CultureInfo.InvariantCulture))
         };
 
         var identity = new ClaimsIdentity(claims, "DevelopmentCookie");
@@ -311,7 +297,4 @@ if (app.Environment.IsDevelopment())
 
 app.Run();
 
-public sealed record PasswordlessAuthenticationResultDto(
-    Guid UserId,
-    string Subject,
-    IReadOnlyList<PrivilegedRole> Roles);
+public partial class Program { }

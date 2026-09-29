@@ -19,6 +19,8 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
     public DbSet<RetailerAffiliateProgramme> RetailerAffiliateProgrammes => Set<RetailerAffiliateProgramme>();
     public DbSet<Location> Locations => Set<Location>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<PasskeyCredential> PasskeyCredentials => Set<PasskeyCredential>();
+    public DbSet<PasskeyChallenge> PasskeyChallenges => Set<PasskeyChallenge>();
     public DbSet<PlatformSetting> PlatformSettings => Set<PlatformSetting>();
     public DbSet<UserEmail> UserEmails => Set<UserEmail>();
     public DbSet<MagicLinkToken> MagicLinkTokens => Set<MagicLinkToken>();
@@ -335,6 +337,24 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
                 .WithOne()
                 .HasForeignKey<ExplorerProfile>(x => x.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<PasskeyCredential>(entity =>
+        {
+            entity.ToTable("passkey_credentials");
+            entity.HasIndex(x => x.CredentialId).IsUnique();
+            entity.Property(x => x.Name).HasMaxLength(100).IsRequired();
+            entity.Property(x => x.Version).IsConcurrencyToken();
+            entity.HasOne<User>().WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<PasskeyChallenge>(entity =>
+        {
+            entity.ToTable("passkey_challenges");
+            entity.Property(x => x.BindingHash).HasMaxLength(64).IsRequired();
+            entity.Property(x => x.OptionsJson).IsRequired();
+            entity.HasIndex(x => x.ExpiresAtUtc);
+            entity.HasOne<User>().WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<PlatformSetting>(entity =>

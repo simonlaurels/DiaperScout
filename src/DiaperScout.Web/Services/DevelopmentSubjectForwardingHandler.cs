@@ -18,10 +18,10 @@ public sealed class DevelopmentSubjectForwardingHandler(
             var httpContext = httpContextAccessor.HttpContext;
             var user = httpContext?.User;
 
-            if (user?.Identity?.IsAuthenticated == true &&
-                (user.IsInRole("Moderator") || user.IsInRole("Administrator")))
+            if (user?.Identity?.IsAuthenticated == true)
             {
-                var subject = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                var subject = user.FindFirst("sub")?.Value
+                    ?? user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
                     ?? configuration["Authentication:Development:Subject"];
 
                 if (!string.IsNullOrWhiteSpace(subject))
@@ -30,13 +30,9 @@ public sealed class DevelopmentSubjectForwardingHandler(
                         "X-Development-Subject",
                         subject);
 
-                    var role = user.IsInRole("Administrator")
-                        ? "Administrator"
-                        : "Moderator";
-
-                    request.Headers.TryAddWithoutValidation(
-                        "X-Development-Role",
-                        role);
+                    if (user.IsInRole("Administrator") || user.IsInRole("Moderator"))
+                        request.Headers.TryAddWithoutValidation("X-Development-Role",
+                            user.IsInRole("Administrator") ? "Administrator" : "Moderator");
                 }
             }
         }

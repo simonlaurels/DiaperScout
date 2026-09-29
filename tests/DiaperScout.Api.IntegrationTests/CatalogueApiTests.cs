@@ -44,14 +44,22 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
     }
 
     [Fact]
-    public async Task CreateCanonicalProduct_ForAdministratorWithoutModeratorAuthority_ReturnsForbidden()
+    public async Task CreateCanonicalProduct_ForAdministratorWithoutModeratorRole_PersistsProductAndAudit()
     {
         using var client = AuthenticatedClient(PostgreSqlFixture.AdministratorSubject);
         var response = await client.PostAsJsonAsync(
             "/api/v1/products",
             Request("7000000000003", "administrator-product"));
 
-        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var receipt = await response.Content.ReadFromJsonAsync<CanonicalProductReceipt>();
+        Assert.NotNull(receipt);
+        await using var db = _fixture.CreateDbContext();
+        Assert.True(await db.Products.AnyAsync(product => product.Id == receipt.ProductId));
+        var audit = await db.CatalogueAuditRecords.SingleAsync(record => record.Id == receipt.AuditRecordId);
+        Assert.Equal(_fixture.AdministratorUserId, audit.ActingUserId);
+        Assert.Equal(CatalogueAuditAction.ProductCreated, audit.Action);
+        Assert.Equal(receipt.ProductId, audit.ProductId);
     }
 
     [Fact]

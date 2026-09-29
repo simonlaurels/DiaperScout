@@ -21,6 +21,8 @@ public sealed class ObservationApiFactory(PostgreSqlFixture fixture) : WebApplic
             {
                 ["ConnectionStrings:diaperscout"] = fixture.ConnectionString,
                 ["Authentication:Development:Enabled"] = "true",
+                ["Authentication:MagicLink:BaseUrl"] = "https://localhost:7167/signin/magic-link",
+                ["Resend:FromEmail"] = "DiaperScout <test@example.test>",
                 ["DevelopmentCatalogue:Enabled"] = "false",
                 ["Editorial:CatalogueWritesEnabled"] = "true",
                 ["RetailerDiscoveryJob:Enabled"] = "false",

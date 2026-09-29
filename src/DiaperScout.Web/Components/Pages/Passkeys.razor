@@ -1,0 +1,24 @@
+@page "/account/passkeys"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+
+<PageTitle>Passkeys · DiaperScout</PageTitle>
+
+<section class="ds-passkeys-page" data-passkey-account>
+    <div class="ds-passkeys-card">
+        <p class="catalogue-kicker">YOUR ACCOUNT</p>
+        <h1>Passkeys</h1>
+        <p>Sign in using your fingerprint, face, device PIN, or security key. Your email sign-in links will still work.</p>
+        <p>For your security, adding or removing a passkey requires a sign-in within the last 15 minutes.
+            <a href="/signin" data-enhance-nav="false">Sign in again</a> if needed, then return here.</p>
+        <AntiforgeryToken />
+        <div class="ds-passkeys-add">
+            <label for="passkey-name">Passkey name</label>
+            <input id="passkey-name" type="text" maxlength="100" placeholder="For example, my phone" autocomplete="off" />
+            <button class="ds-button ds-button-primary" type="button" data-passkey-action="register">Add a passkey</button>
+        </div>
+        <p data-passkey-message role="status" aria-live="polite"></p>
+        <h2>Your saved passkeys</h2>
+        <div data-passkey-list aria-live="polite">Loading your passkeys…</div>
+        <noscript>Enable JavaScript to manage passkeys. Email sign-in links still work without it.</noscript>
+    </div>
+</section>

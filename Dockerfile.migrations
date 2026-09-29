@@ -1,0 +1,10 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+COPY . .
+RUN dotnet tool install dotnet-ef --tool-path /tools --version 10.0.0
+RUN /tools/dotnet-ef migrations bundle --project src/DiaperScout.Infrastructure --startup-project src/DiaperScout.Infrastructure --configuration Release --output /app/efbundle
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
+WORKDIR /app
+COPY --from=build /app/efbundle .
+ENTRYPOINT ["/app/efbundle"]

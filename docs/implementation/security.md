@@ -653,7 +653,7 @@ A Contributor cannot directly modify canonical Atlas data through the contributi
 
 # 33. Editorial Security
 
-Editorial operations require explicit Moderator authority.
+Catalogue management and publication require an active Moderator or Administrator assignment.
 
 The system must prevent:
 
@@ -673,9 +673,9 @@ Administrator access represents a high-privilege security boundary.
 
 Administrators should receive only the capabilities required for their operational responsibilities.
 
-Administrator access does not automatically grant editorial authority.
+Administrator access grants catalogue management and publication authority under ADR-0011.
 
-Where a User legitimately requires both responsibilities, both should be explicitly authorised.
+A separate Moderator assignment is not required for an Administrator to manage or publish catalogue products.
 
 Administrative actions should be auditable.
 

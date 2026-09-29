@@ -23,7 +23,7 @@
             <div class="product-management-header-actions">
                 @if (IsSubmissionTab)
                 {
-                    <a class="ds-button ds-button-secondary" href="@Catalogue.GetSubmissionImportTemplateUrl()">Download CSV template</a>
+                    <a class="ds-button ds-button-secondary" href="/catalogue/import-template">Download CSV template</a>
                     <label class="ds-button ds-button-secondary import-file-button">
                         Import CSV
                         <InputFile OnChange="HandleCsvSelected" accept=".csv,text/csv" />

@@ -26,7 +26,13 @@ if (builder.Environment.IsDevelopment() &&
 }
 else
 {
-    builder.Services.AddAuthentication();
+    builder.Services
+        .AddAuthentication("ProductionIdentity")
+        .AddScheme<
+            AuthenticationSchemeOptions,
+            ProductionIdentityAuthenticationHandler>(
+            "ProductionIdentity",
+            _ => { });
 }
 
 builder.Services

@@ -42,6 +42,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddServiceDiscovery();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<DevelopmentSubjectForwardingHandler>();
+builder.Services.AddTransient<ProductionIdentityForwardingHandler>();
 
 builder.Services.AddHttpClient("DiaperScoutApi", client =>
         client.BaseAddress = new Uri(
@@ -60,6 +61,7 @@ builder.Services.AddHttpClient<UserManagementClient>(client =>
             builder.Configuration["Api:BaseUrl"]
             ?? "https+http://api"))
     .AddHttpMessageHandler<DevelopmentSubjectForwardingHandler>()
+    .AddHttpMessageHandler<ProductionIdentityForwardingHandler>()
     .AddServiceDiscovery();
 
 builder.Services.AddHttpClient<ProductCatalogueClient>(client =>
@@ -67,6 +69,7 @@ builder.Services.AddHttpClient<ProductCatalogueClient>(client =>
             builder.Configuration["Api:BaseUrl"]
             ?? "https+http://api"))
     .AddHttpMessageHandler<DevelopmentSubjectForwardingHandler>()
+    .AddHttpMessageHandler<ProductionIdentityForwardingHandler>()
     .AddServiceDiscovery();
 
 builder.Services.AddHttpClient<CatalogueAffiliateClient>(client =>
@@ -74,6 +77,7 @@ builder.Services.AddHttpClient<CatalogueAffiliateClient>(client =>
             builder.Configuration["Api:BaseUrl"]
             ?? "https+http://api"))
     .AddHttpMessageHandler<DevelopmentSubjectForwardingHandler>()
+    .AddHttpMessageHandler<ProductionIdentityForwardingHandler>()
     .AddServiceDiscovery();
 
 builder.Services.AddHttpClient<RetailerManagementClient>(client =>
@@ -81,6 +85,7 @@ builder.Services.AddHttpClient<RetailerManagementClient>(client =>
             builder.Configuration["Api:BaseUrl"]
             ?? "https+http://api"))
     .AddHttpMessageHandler<DevelopmentSubjectForwardingHandler>()
+    .AddHttpMessageHandler<ProductionIdentityForwardingHandler>()
     .AddServiceDiscovery();
 
 var app = builder.Build();
@@ -246,8 +251,9 @@ app.MapGet("/signin/magic-link", async (
         new(ClaimTypes.Name, authentication.Subject)
     };
 
-    claims.AddRange(authentication.Roles.Select(role =>
-        new Claim(ClaimTypes.Role, role.ToString())));
+    claims.AddRange(
+        authentication.Roles.Select(
+            role => new Claim(ClaimTypes.Role, role.ToString())));
 
     var scheme = app.Environment.IsDevelopment()
         ? "DevelopmentCookie"

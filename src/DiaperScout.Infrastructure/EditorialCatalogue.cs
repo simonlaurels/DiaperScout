@@ -26,10 +26,15 @@ internal sealed class CurrentUser(DiaperScoutDbContext db, IHttpContextAccessor 
 
 internal sealed class EditorialAuthorisation(DiaperScoutDbContext db) : IEditorialAuthorisation
 {
-    public Task<bool> CanPublishAtlasAsync(AuthenticatedUser user, CancellationToken cancellationToken = default) =>
-        db.PrivilegedRoleAssignments.AnyAsync(assignment => assignment.UserId == user.UserId
-            && assignment.Role == PrivilegedRole.Moderator
-            && assignment.RevokedAtUtc == null, cancellationToken);
+    public Task<bool> CanPublishAtlasAsync(
+        AuthenticatedUser user,
+        CancellationToken cancellationToken = default) =>
+        db.PrivilegedRoleAssignments.AnyAsync(
+            assignment => assignment.UserId == user.UserId
+                && (assignment.Role == PrivilegedRole.Moderator ||
+                    assignment.Role == PrivilegedRole.Administrator)
+                && assignment.RevokedAtUtc == null,
+            cancellationToken);
 
     public Task<bool> CanManageCatalogueAsync(AuthenticatedUser user, CancellationToken cancellationToken = default) =>
         db.PrivilegedRoleAssignments.AnyAsync(assignment => assignment.UserId == user.UserId

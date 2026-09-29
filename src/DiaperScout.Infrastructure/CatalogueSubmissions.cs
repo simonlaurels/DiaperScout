@@ -2062,7 +2062,7 @@ internal sealed class CatalogueSubmissions(
                 cancellationToken))
         {
             throw new UnauthorizedAccessException(
-                "Only an assigned Moderator may manage catalogue submissions.");
+                "Only an assigned Moderator or Administrator may manage catalogue submissions.");
         }
     }
 

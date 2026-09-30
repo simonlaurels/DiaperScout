@@ -1679,6 +1679,33 @@ internal sealed class CatalogueSubmissions(
         }
     }
 
+    public async Task<CatalogueSubmissionReceipt> ReturnToDraftAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireModeratorAsync(actor, cancellationToken);
+
+        var submission = await GetSubmissionAsync(
+            submissionId,
+            cancellationToken);
+
+        try
+        {
+            submission.ReturnToDraft();
+        }
+        catch (InvalidOperationException exception)
+        {
+            throw new CatalogueValidationException(
+                "status",
+                exception.Message);
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+
+        return ToReceipt(submission);
+    }
+
     public async Task<CatalogueSubmissionReceipt> ReturnToVerificationAsync(
         AuthenticatedUser actor,
         Guid submissionId,
@@ -2010,6 +2037,22 @@ internal sealed class CatalogueSubmissions(
 
         try
         {
+            var incompleteSizes = await (
+                from size in db.CatalogueSubmissionSizeVariants.AsNoTracking()
+                join variant in db.CatalogueSubmissionVariants.AsNoTracking()
+                    on size.VariantId equals variant.Id
+                where variant.SubmissionId == submission.Id && size.ManufacturerPackQuantity == null
+                orderby variant.CreatedAtUtc, size.CreatedAtUtc
+                select new { VariantName = variant.Name, size.ManufacturerSize })
+                .ToListAsync(cancellationToken);
+
+            if (incompleteSizes.Count > 0)
+                throw new CatalogueValidationException(
+                    "manufacturerPackQuantity",
+                    "Manufacturer pack quantity is required before verification for: " +
+                    string.Join(", ", incompleteSizes.Select(size =>
+                        $"{size.VariantName ?? "Original"} / {size.ManufacturerSize}")) + ".");
+
             submission.BeginVerification();
         }
         catch (InvalidOperationException exception)

@@ -161,6 +161,15 @@
         }
         else
         {
+            @if (submission.Status is CatalogueSubmissionStatus.InVerification
+                or CatalogueSubmissionStatus.ReadyForReview
+                or CatalogueSubmissionStatus.Approved)
+            {
+                <div class="submission-actions">
+                    <button class="ds-button ds-button-secondary" type="button" @onclick="ReturnToDraftAsync" disabled="@saving">Return to draft to edit</button>
+                    <small>Preserves entered data. Complete verification and review again after editing.</small>
+                </div>
+            }
             @if (currentStep == 1)
             {
                 <section class="submission-panel">
@@ -2091,6 +2100,23 @@
         saving = false;
     }
 
+    private async Task ReturnToDraftAsync()
+    {
+        if (submission is null) return;
+        saving = true;
+        saveError = null;
+        saveMessage = null;
+        var result = await Catalogue.ReturnToDraftAsync(submission.Id);
+        Apply(result);
+        if (result.Status == CatalogueSubmissionResultStatus.Saved)
+        {
+            verificationEditorArea = null;
+            saveMessage = "Returned to draft. Edit the sizes, then complete verification and review again.";
+            GoToStep(3);
+            await LoadVariantsAsync();
+        }
+        saving = false;
+    }
     private async Task ReturnToVerificationAsync()
     {
         if (submission is null)

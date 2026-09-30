@@ -1142,6 +1142,125 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
             actions);
     }
 
+    [Theory]
+    [InlineData(CatalogueSubmissionStatus.InVerification, PostgreSqlFixture.ModeratorSubject)]
+    [InlineData(CatalogueSubmissionStatus.ReadyForReview, PostgreSqlFixture.ModeratorSubject)]
+    [InlineData(CatalogueSubmissionStatus.Approved, PostgreSqlFixture.AdministratorSubject)]
+    public async Task ReturnToDraft_PreservesDataAndAllowsSizeRepair(
+        CatalogueSubmissionStatus status, string subject)
+    {
+        await using var db = _fixture.CreateDbContext();
+        var submission = new CatalogueSubmission(CatalogueSubmissionSource.Moderator,
+            _fixture.ModeratorUserId, "Recovery manufacturer", "Recovery product", notes: "Keep this");
+        var variant = new CatalogueSubmissionVariant(submission.Id, "Printed");
+        var gtin = Random.Shared.NextInt64(10000000000000, 99999999999999).ToString();
+        var size = new CatalogueSubmissionSizeVariant(variant.Id, "Large", waistMinimumCm: 90, gtin: gtin);
+        submission.BeginVerification();
+        if (status != CatalogueSubmissionStatus.InVerification) submission.MarkReadyForReview();
+        if (status == CatalogueSubmissionStatus.Approved) submission.Approve();
+        db.AddRange(submission, variant, size);
+        await db.SaveChangesAsync();
+
+        using var client = AuthenticatedClient(subject);
+        var response = await client.PostAsync(
+            $"/api/v1/catalogue-submissions/{submission.Id}/return-to-draft", null);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        db.ChangeTracker.Clear();
+        var saved = await db.CatalogueSubmissions.SingleAsync(x => x.Id == submission.Id);
+        var savedSize = await db.CatalogueSubmissionSizeVariants.SingleAsync(x => x.Id == size.Id);
+        Assert.Equal(CatalogueSubmissionStatus.Draft, saved.Status);
+        Assert.Equal("Keep this", saved.Notes);
+        Assert.Equal("Recovery product", saved.ProposedProductName);
+        Assert.Null(saved.PublishedProductId);
+        Assert.Equal(90, savedSize.WaistMinimumCm);
+        Assert.Equal(gtin, savedSize.Gtin);
+        Assert.Equal("Printed", (await db.CatalogueSubmissionVariants.SingleAsync(x => x.Id == variant.Id)).Name);
+
+        var repair = await client.PutAsJsonAsync(
+            $"/api/v1/catalogue-submissions/{submission.Id}/variants/{variant.Id}/sizes/{size.Id}",
+            new { manufacturerSize = "Large", waistMinimumCm = 90, gtin = gtin, manufacturerPackQuantity = 15 });
+        Assert.True(repair.StatusCode == HttpStatusCode.OK, await repair.Content.ReadAsStringAsync());
+        var begin = await client.PostAsync(
+            $"/api/v1/catalogue-submissions/{submission.Id}/begin-verification", null);
+        Assert.Equal(HttpStatusCode.OK, begin.StatusCode);
+        db.ChangeTracker.Clear();
+        Assert.Equal(15, (await db.CatalogueSubmissionSizeVariants.SingleAsync(x => x.Id == size.Id)).ManufacturerPackQuantity);
+    }
+
+    [Theory]
+    [InlineData(CatalogueSubmissionStatus.Draft)]
+    [InlineData(CatalogueSubmissionStatus.NeedsChanges)]
+    public async Task BeginVerification_MissingCountsIdentifiesAllAffectedSizesAndPreservesState(CatalogueSubmissionStatus status)
+    {
+        await using var db = _fixture.CreateDbContext();
+        var submission = new CatalogueSubmission(CatalogueSubmissionSource.Moderator,
+            _fixture.ModeratorUserId, "Count manufacturer", "Count product");
+        if (status == CatalogueSubmissionStatus.NeedsChanges)
+        {
+            submission.BeginVerification();
+            submission.MarkReadyForReview();
+            submission.MarkNeedsChanges();
+        }
+        var original = new CatalogueSubmissionVariant(submission.Id, null);
+        var printed = new CatalogueSubmissionVariant(submission.Id, "Printed");
+        var small = new CatalogueSubmissionSizeVariant(original.Id, "Small");
+        var large = new CatalogueSubmissionSizeVariant(printed.Id, "Large");
+        var complete = new CatalogueSubmissionSizeVariant(printed.Id, "Medium", manufacturerPackQuantity: 10);
+        db.AddRange(submission, original, printed, small, large, complete);
+        await db.SaveChangesAsync();
+        using var client = AuthenticatedClient(PostgreSqlFixture.ModeratorSubject);
+        var response = await client.PostAsync(
+            $"/api/v1/catalogue-submissions/{submission.Id}/begin-verification", null);
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.NotNull(problem);
+        var error = Assert.Single(problem.Errors["manufacturerPackQuantity"]);
+        Assert.Contains("Original / Small", error);
+        Assert.Contains("Printed / Large", error);
+        Assert.DoesNotContain("Medium", error);
+        db.ChangeTracker.Clear();
+        Assert.Equal(status, (await db.CatalogueSubmissions.SingleAsync(x => x.Id == submission.Id)).Status);
+    }
+
+    [Theory]
+    [InlineData(null, HttpStatusCode.Unauthorized)]
+    [InlineData(PostgreSqlFixture.ExplorerSubject, HttpStatusCode.Forbidden)]
+    public async Task ReturnToDraft_RequiresModerator(string? subject, HttpStatusCode expected)
+    {
+        using var client = subject is null ? _factory.CreateClient() : AuthenticatedClient(subject);
+        var response = await client.PostAsync(
+            $"/api/v1/catalogue-submissions/{Guid.NewGuid()}/return-to-draft", null);
+        Assert.Equal(expected, response.StatusCode);
+    }
+
+    [Theory]
+    [InlineData(CatalogueSubmissionStatus.Draft)]
+    [InlineData(CatalogueSubmissionStatus.Rejected)]
+    [InlineData(CatalogueSubmissionStatus.Published)]
+    public async Task ReturnToDraft_RejectsInappropriateStates(CatalogueSubmissionStatus status)
+    {
+        await using var db = _fixture.CreateDbContext();
+        var submission = new CatalogueSubmission(CatalogueSubmissionSource.Moderator,
+            _fixture.ModeratorUserId, "State manufacturer", "State product");
+        if (status == CatalogueSubmissionStatus.Rejected) submission.Reject();
+        if (status == CatalogueSubmissionStatus.Published)
+        {
+            submission.BeginVerification();
+            submission.MarkReadyForReview();
+            submission.Approve();
+            submission.Publish(_fixture.ProductId);
+        }
+        db.Add(submission);
+        await db.SaveChangesAsync();
+        using var client = AuthenticatedClient(PostgreSqlFixture.ModeratorSubject);
+        var response = await client.PostAsync(
+            $"/api/v1/catalogue-submissions/{submission.Id}/return-to-draft", null);
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        db.ChangeTracker.Clear();
+        var saved = await db.CatalogueSubmissions.SingleAsync(x => x.Id == submission.Id);
+        Assert.Equal(status, saved.Status);
+        Assert.Equal(submission.PublishedProductId, saved.PublishedProductId);
+    }
     private HttpClient AuthenticatedClient(string subject)
     {
         var client = _factory.CreateClient();

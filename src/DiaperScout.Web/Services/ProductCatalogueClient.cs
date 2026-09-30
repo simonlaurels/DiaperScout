@@ -1303,6 +1303,20 @@ public sealed class ProductCatalogueClient(HttpClient client)
             : CatalogueSubmissionVerificationWorkspaceResult.Found(workspace);
     }
 
+    public async Task<CatalogueSubmissionResult> ReturnToDraftAsync(
+        Guid submissionId,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.PostAsync(
+            $"api/v1/catalogue-submissions/{submissionId}/return-to-draft",
+            content: null,
+            cancellationToken);
+
+        return await ReadSubmissionResponseAsync(
+            response,
+            cancellationToken);
+    }
+
     public async Task<CatalogueSubmissionResult> BeginVerificationAsync(
         Guid submissionId,
         CancellationToken cancellationToken = default)

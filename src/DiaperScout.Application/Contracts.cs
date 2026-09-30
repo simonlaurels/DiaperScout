@@ -1364,6 +1364,11 @@ public interface ICatalogueSubmissions
         ReviewCatalogueSubmission command,
         CancellationToken cancellationToken = default);
 
+    Task<CatalogueSubmissionReceipt> ReturnToDraftAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        CancellationToken cancellationToken = default);
+
     Task<CatalogueSubmissionReceipt> ReturnToVerificationAsync(
         AuthenticatedUser actor,
         Guid submissionId,

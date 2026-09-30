@@ -2366,6 +2366,49 @@ if (builder.Configuration.GetValue<bool>(
         .ProducesValidationProblem();
 
     app.MapPost(
+        "/api/v1/catalogue-submissions/{id:guid}/return-to-draft",
+        async (
+            Guid id,
+            ICurrentUser currentUser,
+            ICatalogueSubmissions submissions,
+            CancellationToken cancellationToken) =>
+        {
+            var actor =
+                await currentUser.GetAsync(cancellationToken);
+
+            if (actor is null)
+                return Results.Forbid();
+
+            try
+            {
+                var receipt =
+                    await submissions.ReturnToDraftAsync(
+                        actor,
+                        id,
+                        cancellationToken);
+
+                return Results.Ok(receipt);
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(
+                    new Dictionary<string, string[]>
+                    {
+                        [exception.Field] = new[] { exception.Message }
+                    });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("ReturnCatalogueSubmissionToDraft")
+        .WithTags("Catalogue Submissions")
+        .Produces<CatalogueSubmissionReceipt>()
+        .ProducesValidationProblem();
+
+    app.MapPost(
         "/api/v1/catalogue-submissions/{id:guid}/return-to-verification",
         async (
             Guid id,

@@ -1897,6 +1897,16 @@ public sealed class CatalogueSubmission : Entity
         Touch();
     }
 
+    public void ReturnToDraft()
+    {
+        if (Status is not CatalogueSubmissionStatus.InVerification
+            and not CatalogueSubmissionStatus.ReadyForReview
+            and not CatalogueSubmissionStatus.Approved)
+            throw new InvalidOperationException("Only unpublished submissions in verification, review or approval can be returned to draft.");
+
+        Status = CatalogueSubmissionStatus.Draft;
+        Touch();
+    }
     public void ReturnToVerification()
     {
         if (Status != CatalogueSubmissionStatus.Approved)

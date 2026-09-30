@@ -507,3 +507,6 @@
     background: #8b2f2f;
     color: #fff;
 }
+
+.waist-measurements { grid-column:1 / -1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)) minmax(90px,.6fr); gap:1rem; align-items:end; }
+.waist-unit-note { grid-column:1 / -1; color:var(--color-muted); }

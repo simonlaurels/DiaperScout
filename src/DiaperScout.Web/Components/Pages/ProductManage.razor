@@ -317,13 +317,11 @@
                                                     <label>GTIN</label>
                                                     <input class="ds-input" @bind="newSize.Gtin" />
                                                 </div>
-                                                <div class="submission-field">
-                                                    <label>Waist minimum (cm)</label>
-                                                    <input class="ds-input" type="number" min="0" @bind="newSize.WaistMinimumCm" />
-                                                </div>
-                                                <div class="submission-field">
-                                                    <label>Waist maximum (cm)</label>
-                                                    <input class="ds-input" type="number" min="0" @bind="newSize.WaistMaximumCm" />
+                                                <div class="waist-measurements">
+                                                    <div class="submission-field"><label>Waist minimum (@newSize.WaistUnitLabel)</label><input aria-label="Waist minimum" type="number" class="ds-input" min="0" step="any" @bind="newSize.WaistMinimum" /></div>
+                                                    <div class="submission-field"><label>Waist maximum (@newSize.WaistUnitLabel)</label><input aria-label="Waist maximum" type="number" class="ds-input" min="0" step="any" @bind="newSize.WaistMaximum" /></div>
+                                                    <div class="submission-field"><label>Waist units</label><select aria-label="Waist units" class="ds-select" @bind="newSize.WaistUnit"><option value="@WaistMeasurementUnit.Centimetres">cm</option><option value="@WaistMeasurementUnit.Inches">inches</option></select></div>
+                                                    @if (newSize.WaistUnit == WaistMeasurementUnit.Inches) { <small class="waist-unit-note">Inches are converted to the nearest whole centimetre when saved.</small> }
                                                 </div>
                                                 <div class="submission-field">
                                                     <label>Hip minimum (cm)</label>
@@ -350,8 +348,12 @@
                                                     <div class="product-editor-detail-grid">
                                                         <div class="submission-field"><label>Manufacturer size <span>*</span></label><input class="ds-input" @bind="editingSize.ManufacturerSize" /></div>
                                                         <div class="submission-field"><label>Fit measurement basis</label><input class="ds-input" @bind="editingSize.FitMeasurementBasis" placeholder="Waist, Hip, Waist and Hip…" /></div>
-                                                        <div class="submission-field"><label>Waist minimum (cm)</label><input class="ds-input" type="number" min="0" @bind="editingSize.WaistMinimumCm" /></div>
-                                                        <div class="submission-field"><label>Waist maximum (cm)</label><input class="ds-input" type="number" min="0" @bind="editingSize.WaistMaximumCm" /></div>
+                                                        <div class="waist-measurements">
+                                                            <div class="submission-field"><label>Waist minimum (@editingSize.WaistUnitLabel)</label><input aria-label="Waist minimum" type="number" class="ds-input" min="0" step="any" @bind="editingSize.WaistMinimum" /></div>
+                                                            <div class="submission-field"><label>Waist maximum (@editingSize.WaistUnitLabel)</label><input aria-label="Waist maximum" type="number" class="ds-input" min="0" step="any" @bind="editingSize.WaistMaximum" /></div>
+                                                            <div class="submission-field"><label>Waist units</label><select aria-label="Waist units" class="ds-select" @bind="editingSize.WaistUnit"><option value="@WaistMeasurementUnit.Centimetres">cm</option><option value="@WaistMeasurementUnit.Inches">inches</option></select></div>
+                                                            @if (editingSize.WaistUnit == WaistMeasurementUnit.Inches) { <small class="waist-unit-note">Inches are converted to the nearest whole centimetre when saved.</small> }
+                                                        </div>
                                                         <div class="submission-field"><label>Hip minimum (cm)</label><input class="ds-input" type="number" min="0" @bind="editingSize.HipMinimumCm" /></div>
                                                         <div class="submission-field"><label>Hip maximum (cm)</label><input class="ds-input" type="number" min="0" @bind="editingSize.HipMaximumCm" /></div>
                                                         <div class="submission-field"><label>Manufacturer-stated absorbency (ml)</label><input class="ds-input" type="number" min="0" @bind="editingSize.ManufacturerStatedAbsorbencyMl" /></div>
@@ -994,6 +996,7 @@
         saveError = null;
         try
         {
+            if (newSize.ValidateWaist() is { } waistError) { saveError = waistError; return; }
             var result = await Catalogue.AddProductSizeAsync(ProductId, variantId, new CreateCanonicalProductSizeManagement(
                 newSize.ManufacturerSize,
                 newSize.WaistMinimumCm,
@@ -1064,6 +1067,7 @@
         saveError = null;
         try
         {
+            if (editingSize.ValidateWaist() is { } waistError) { saveError = waistError; return; }
             var result = await Catalogue.UpdateProductSizeAsync(ProductId, variantId, sizeId, new UpdateCanonicalProductSizeManagement(
                 editingSize.ManufacturerSize,
                 editingSize.WaistMinimumCm,
@@ -1321,11 +1325,9 @@
             : $"{label}: {(minimum?.ToString() ?? "?")}–{(maximum?.ToString() ?? "?")} cm";
 
 
-    private sealed class CanonicalSizeEditModel
+    private sealed class CanonicalSizeEditModel : WaistMeasurementEditor
     {
         public string ManufacturerSize { get; set; } = string.Empty;
-        public int? WaistMinimumCm { get; set; }
-        public int? WaistMaximumCm { get; set; }
         public int? HipMinimumCm { get; set; }
         public int? HipMaximumCm { get; set; }
         public int? ManufacturerStatedAbsorbencyMl { get; set; }

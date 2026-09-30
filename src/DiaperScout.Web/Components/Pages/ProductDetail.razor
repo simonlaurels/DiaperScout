@@ -303,7 +303,7 @@ else
     private static string FormatFastener(FastenerType fastener) => fastener switch { FastenerType.AdhesiveTape => "Adhesive tape", FastenerType.HookAndLoop => "Hook & loop", _ => FormatEnum(fastener) };
     private static string FormatEnum<T>(T value) where T : struct, Enum => value.ToString().Replace("And", " & ").Replace("HookAndLoop", "Hook & Loop");
     private static string FormatPackaging(PackagingType packaging) => packaging.ToString();
-    private static string FormatWaistShort(int? minimum, int? maximum) => minimum.HasValue && maximum.HasValue ? $"{minimum}–{maximum} cm" : minimum.HasValue ? $"{minimum}+ cm" : maximum.HasValue ? $"Up to {maximum} cm" : "Size recorded";
+    private static string FormatWaistShort(int? minimum, int? maximum) => WaistMeasurementFormatting.FormatRange(minimum, maximum);
     private static string FormatImageRole(CatalogueSubmissionImageRole role) => role.ToString().Replace("Image", string.Empty).Replace("Product", "Product ").Trim();
     private static string RetailerInitial(string name) => string.IsNullOrWhiteSpace(name) ? "?" : name.Trim()[0].ToString().ToUpperInvariant();
 

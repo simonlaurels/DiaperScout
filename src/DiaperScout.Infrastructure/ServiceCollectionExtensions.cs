@@ -88,7 +88,7 @@ public sealed class CurrentExplorer(DiaperScoutDbContext db, IHttpContextAccesso
 }
 
 
-internal sealed class RetailerDiscovery(DiaperScoutDbContext db) : IRetailerDiscovery
+internal sealed partial class RetailerDiscovery(DiaperScoutDbContext db, IEditorialAuthorisation editorialAuthorisation) : IRetailerDiscovery
 {
     public async Task<RetailerProductListingItem> RecordAsync(
         RetailerDiscoveryResult result,
@@ -135,49 +135,9 @@ internal sealed class RetailerDiscovery(DiaperScoutDbContext db) : IRetailerDisc
             db.Retailers.Add(retailer);
         }
 
-        RetailerProductListing listing;
-        var listingUrl = NormalizeUrlForComparison(result.ListingUrl);
-        if (listingUrl is null)
-            throw new CatalogueValidationException("listingUrl", "A valid HTTP or HTTPS listing URL is required.");
-
-        listing = await db.RetailerProductListings
-            .SingleOrDefaultAsync(
-                value => value.PackTypeId == pack.PackType.Id &&
-                         value.RetailerId == retailer.Id &&
-                         value.ListingUrl == listingUrl,
-                cancellationToken);
-
-        try
-        {
-            if (listing is null)
-            {
-                listing = new RetailerProductListing(
-                    pack.PackType.Id,
-                    retailer.Id,
-                    listingUrl,
-                    result.DiscoveryProvider,
-                    result.SourceUrl,
-                    result.ExternalListingId);
-                db.RetailerProductListings.Add(listing);
-            }
-            else
-            {
-                listing.UpdateDiscovery(
-                    listingUrl,
-                    result.DiscoveryProvider,
-                    result.SourceUrl,
-                    result.ExternalListingId);
-            }
-        }
-        catch (ArgumentException exception)
-        {
-            throw new CatalogueValidationException(exception.ParamName ?? "discovery", exception.Message);
-        }
-
-        await db.SaveChangesAsync(cancellationToken);
-        return ToListingItem(listing, retailer);
+        return await UpsertAsync(new UpsertRetailerListing(pack.PackType.Id, retailer.Id,
+            result.ListingUrl, result.DiscoveryProvider, result.SourceUrl, result.ExternalListingId), cancellationToken);
     }
-
     public async Task<IReadOnlyList<RetailerProductListingItem>> GetForGtinAsync(
         string gtin,
         CancellationToken cancellationToken = default)

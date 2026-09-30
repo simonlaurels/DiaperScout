@@ -22,6 +22,8 @@ internal sealed class PasskeyWebFactory(WebApplicationFactory<Program> api) : We
         {
             foreach (var name in new[] { "PasskeyApi", "DiaperScoutApi" })
                 services.AddHttpClient(name).ConfigurePrimaryHttpMessageHandler(() => api.Server.CreateHandler());
+            services.AddHttpClient<DiaperScoutWeb::DiaperScout.Web.Services.RetailerManagementClient>()
+                .ConfigurePrimaryHttpMessageHandler(() => api.Server.CreateHandler());
             services.AddHttpClient<DiaperScoutWeb::DiaperScout.Web.Services.UserManagementClient>()
                 .ConfigurePrimaryHttpMessageHandler(() => api.Server.CreateHandler());
             services.AddHttpClient<DiaperScoutWeb::DiaperScout.Web.Services.ProductCatalogueClient>()

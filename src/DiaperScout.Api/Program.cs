@@ -52,6 +52,7 @@ builder.Services
             .AddRequirements(new PublishAtlasRequirement()));
 
 var app = builder.Build();
+app.MapRetailListingEndpoints();
 
 if (app.Environment.IsDevelopment() &&
     builder.Configuration.GetValue<bool>("DevelopmentCatalogue:Enabled"))

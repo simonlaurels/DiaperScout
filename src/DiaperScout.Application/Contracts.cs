@@ -527,8 +527,29 @@ public sealed record RetailerProductListingItem(
     DateTimeOffset LastCheckedAtUtc);
 
 
+public sealed record UpsertRetailerListing(Guid PackTypeId, Guid RetailerId, string ListingUrl,
+    string DiscoveryProvider, string? SourceUrl = null, string? ExternalListingId = null);
+public sealed record ManualRetailerListingRequest(Guid ProductId, Guid ProductVariantId, Guid SizeVariantId,
+    Guid PackTypeId, Guid RetailerId, string ListingUrl, string? SourceUrl = null, string? ExternalListingId = null);
+public sealed record RetailerListingUpdate(string ListingUrl, string? SourceUrl = null, string? ExternalListingId = null);
+public sealed record RetailerListingStatusUpdate(RetailerProductDiscoveryStatus Status);
+public sealed record RetailListingPackOption(Guid Id, int Quantity, PackagingType PackagingType, string? Gtin);
+public sealed record RetailListingSizeOption(Guid Id, string Name, IReadOnlyList<RetailListingPackOption> Packs);
+public sealed record RetailListingVariantOption(Guid Id, string? Name, IReadOnlyList<RetailListingSizeOption> Sizes);
+public sealed record RetailListingProductOption(Guid Id, string Name, string Slug, IReadOnlyList<RetailListingVariantOption> Variants);
+public sealed record ManagedRetailerListing(RetailerProductListingItem Listing, Guid ProductId, string ProductName,
+    string ProductSlug, Guid ProductVariantId, string? VariantName, Guid SizeVariantId, string SizeName,
+    int Quantity, PackagingType PackagingType);
 public interface IRetailerDiscovery
 {
+    // Provider-neutral canonical operation. Existing GTIN discovery is an adapter to this operation.
+    Task<RetailerProductListingItem> UpsertAsync(UpsertRetailerListing command, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<RetailListingProductOption>> GetListingCatalogueAsync(AuthenticatedUser actor, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<ManagedRetailerListing>> GetListingsAsync(AuthenticatedUser actor, Guid? retailerId = null, CancellationToken cancellationToken = default);
+    Task<RetailerProductListingItem> CreateManualListingAsync(AuthenticatedUser actor, ManualRetailerListingRequest command, CancellationToken cancellationToken = default);
+    Task<RetailerProductListingItem> UpdateListingAsync(AuthenticatedUser actor, Guid listingId, RetailerListingUpdate command, CancellationToken cancellationToken = default);
+    Task<RetailerProductListingItem> SetListingStatusAsync(AuthenticatedUser actor, Guid listingId, RetailerProductDiscoveryStatus status, CancellationToken cancellationToken = default);
+
     Task<RetailerProductListingItem> RecordAsync(
         RetailerDiscoveryResult result,
         CancellationToken cancellationToken = default);

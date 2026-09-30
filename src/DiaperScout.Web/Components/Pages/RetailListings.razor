@@ -1,0 +1,163 @@
+@page "/catalogue/retail-listings"
+@rendermode InteractiveServer
+@inject RetailerManagementClient Retailers
+
+<PageTitle>Retail Listings · DiaperScout</PageTitle>
+<section class="retailer-management-page">
+    <div class="retailer-management-container">
+        <header class="retailer-management-header">
+            <div><p class="catalogue-kicker">RETAIL</p><h1>Retail Listings</h1><p class="retailer-management-intro">Connect a retailer's product page to the exact catalogue pack, then confirm it for Where to buy.</p></div>
+            <a class="ds-button ds-button-secondary" href="/catalogue/retailers">Manage retailers</a>
+        </header>
+        @if (loading) { <p>Loading retailers and catalogue…</p> }
+        else if (accessDenied) { <div class="retailer-message retailer-message-error" role="alert">You need Moderator editorial authority to manage retail listings.</div> }
+        else
+        {
+            @if (error is not null) { <div class="retailer-message retailer-message-error" role="alert">@error</div> }
+            @if (message is not null) { <div class="retailer-message" role="status">@message</div> }
+            <section class="retailer-panel">
+                <div class="retailer-panel-heading"><div><p class="catalogue-kicker">NEW LISTING</p><h2>Add a place to buy</h2><p>Choose the exact variant, size and pack sold at this URL. Affiliate setup is optional.</p></div></div>
+                @if (verifiedRetailers.Count == 0) { <p>No verified retailers exist yet. <a href="/catalogue/retailers">Add or verify a retailer</a> first.</p> }
+                else if (products.Count == 0) { <p>No current published catalogue products are available. Publish a product before adding its listing.</p> }
+                else
+                {
+                    <div class="retailer-form-grid">
+                        <div class="retailer-field"><label for="listing-retailer">Retailer</label><select id="listing-retailer" class="ds-select" @bind="retailerId" disabled="@(saving || !interactiveReady)"><option value="@Guid.Empty">Choose a verified retailer…</option>@foreach (var r in verifiedRetailers) { <option value="@r.Id">@r.Name</option> }</select></div>
+                        <div class="retailer-field"><label for="listing-product">Product</label><select id="listing-product" class="ds-select" @bind="ProductId" disabled="@(saving || retailerId == Guid.Empty)"><option value="@Guid.Empty">Choose a product…</option>@foreach (var p in products) { <option value="@p.Id">@p.Name</option> }</select></div>
+                        <div class="retailer-field"><label for="listing-variant">Variant</label><select id="listing-variant" class="ds-select" @bind="VariantId" disabled="@(saving || SelectedProduct is null)"><option value="@Guid.Empty">Choose a variant…</option>@foreach (var v in SelectedProduct?.Variants ?? []) { <option value="@v.Id">@(v.Name ?? "Original / base")</option> }</select></div>
+                        <div class="retailer-field"><label for="listing-size">Size</label><select id="listing-size" class="ds-select" @bind="SizeId" disabled="@(saving || SelectedVariant is null)"><option value="@Guid.Empty">Choose a size…</option>@foreach (var s in SelectedVariant?.Sizes ?? []) { <option value="@s.Id">@s.Name</option> }</select></div>
+                        <div class="retailer-field retailer-field-wide"><label for="listing-pack">Pack / sellable item</label><select id="listing-pack" class="ds-select" @bind="packId" disabled="@(saving || SelectedSize is null)"><option value="@Guid.Empty">Choose a pack…</option>@foreach (var p in SelectedSize?.Packs ?? []) { <option value="@p.Id">@PackLabel(p)</option> }</select></div>
+                        @if (SelectionEmptyState is not null) { <p class="retailer-field-wide">@SelectionEmptyState</p> }
+                        <div class="retailer-field retailer-field-wide"><label for="manual-listing-url">Retailer product URL</label><input id="manual-listing-url" class="ds-input" type="url" @bind="listingUrl" disabled="@(saving || packId == Guid.Empty)" placeholder="https://retailer.example/product" /></div>
+                        <div class="retailer-field"><label for="manual-source">Evidence/source URL (optional)</label><input id="manual-source" class="ds-input" type="url" @bind="sourceUrl" disabled="@saving" /></div>
+                        <div class="retailer-field"><label for="manual-reference">Retailer listing reference (optional)</label><input id="manual-reference" class="ds-input" maxlength="300" @bind="externalId" disabled="@saving" /></div>
+                    </div>
+                    <p>Saved listings start unverified. Confirm that this page sells the selected pack before making it public.</p>
+                    <div class="retailer-form-actions"><button class="ds-button ds-button-primary" @onclick="CreateAsync" disabled="@(saving || packId == Guid.Empty || retailerId == Guid.Empty)">Save listing</button></div>
+                }
+            </section>
+            <section class="retailer-panel">
+                <div class="retailer-panel-heading"><div><p class="catalogue-kicker">LISTING MANAGEMENT</p><h2>Retail listings</h2><p>Confirmation makes a listing eligible for Where to buy while its retailer remains verified. Editing its details requires confirmation again.</p></div></div>
+                @if (listings.Count == 0) { <p>No retail listings have been added yet.</p> }
+                @foreach (var item in listings)
+                {
+                    <article class="retailer-panel listing-card" data-listing-id="@item.Listing.Id">
+                        <h3>@item.Listing.RetailerName · @item.ProductName</h3>
+                        <p>@(item.VariantName ?? "Original / base") → @item.SizeName → @item.Quantity pieces · @item.PackagingType</p>
+                        <p><strong>@item.Listing.Status</strong> · Retailer: @item.Listing.RetailerStatus · Source: @item.Listing.DiscoveryProvider</p>
+                        <small>Added @item.Listing.DiscoveredAtUtc.ToLocalTime().ToString("dd MMM yyyy") · Last checked @item.Listing.LastCheckedAtUtc.ToLocalTime().ToString("dd MMM yyyy")</small>
+                        @if (editingId == item.Listing.Id)
+                        {
+                            <div class="retailer-form-grid">
+                                <div class="retailer-field retailer-field-wide"><label for="edit-listing-url">Retailer product URL</label><input id="edit-listing-url" class="ds-input" @bind="editUrl" /></div>
+                                <div class="retailer-field"><label for="edit-listing-source">Evidence/source URL (optional)</label><input id="edit-listing-source" class="ds-input" @bind="editSource" /></div>
+                                <div class="retailer-field"><label for="edit-listing-reference">Retailer listing reference (optional)</label><input id="edit-listing-reference" class="ds-input" maxlength="300" @bind="editExternal" /></div>
+                            </div>
+                            <p>The retailer and pack stay fixed. If either is wrong, retire this listing and add the correct one.</p>
+                            <div class="retailer-form-actions"><button class="ds-button ds-button-secondary" @onclick="() => editingId = null" disabled="@saving">Cancel</button><button class="ds-button ds-button-primary" @onclick="SaveEditAsync" disabled="@saving">Save corrections</button></div>
+                        }
+                        else
+                        {
+                            <p><a href="@item.Listing.ListingUrl" target="_blank" rel="noopener noreferrer">Open retailer product page ↗</a> · <a href="@($"/products/{item.ProductSlug}")" target="_blank" rel="noopener noreferrer">View public product ↗</a></p>
+                            <div class="retailer-form-actions listing-actions">
+                                <button class="ds-button ds-button-secondary" @onclick="() => BeginEdit(item)" disabled="@saving">Edit listing</button>
+                                <button class="ds-button ds-button-primary" @onclick="() => SetStatusAsync(item, RetailerProductDiscoveryStatus.Verified)" disabled="@(saving || item.Listing.RetailerStatus != RetailerStatus.Verified || item.Listing.Status == RetailerProductDiscoveryStatus.Verified)">Confirm listing</button>
+                                <button class="ds-button ds-button-secondary" @onclick="() => SetStatusAsync(item, RetailerProductDiscoveryStatus.NeedsReview)" disabled="@(saving || item.Listing.Status == RetailerProductDiscoveryStatus.NeedsReview)">Needs review</button>
+                                <button class="ds-button ds-button-secondary" @onclick="() => SetStatusAsync(item, RetailerProductDiscoveryStatus.Inactive)" disabled="@(saving || item.Listing.Status == RetailerProductDiscoveryStatus.Inactive)">Retire listing</button>
+                            </div>
+                            @if (item.Listing.RetailerStatus != RetailerStatus.Verified) { <p>Verify this retailer in <a href="/catalogue/retailers">Retailer Management</a> before confirming the listing.</p> }
+                        }
+                    </article>
+                }
+            </section>
+        }
+    </div>
+</section>
+
+@code {
+    private bool loading = true, saving, accessDenied, interactiveReady;
+    private string? error, message;
+    private List<RetailerManagementItem> verifiedRetailers = [];
+    private IReadOnlyList<RetailListingProductOption> products = [];
+    private IReadOnlyList<ManagedRetailerListing> listings = [];
+    private Guid retailerId, productId, variantId, sizeId, packId;
+    private string listingUrl = "";
+    private string? sourceUrl, externalId;
+    private Guid? editingId;
+    private string editUrl = "";
+    private string? editSource, editExternal;
+    private Guid ProductId { get => productId; set { productId = value; variantId = sizeId = packId = Guid.Empty; } }
+    private Guid VariantId { get => variantId; set { variantId = value; sizeId = packId = Guid.Empty; } }
+    private Guid SizeId { get => sizeId; set { sizeId = value; packId = Guid.Empty; } }
+    private RetailListingProductOption? SelectedProduct => products.FirstOrDefault(x => x.Id == productId);
+    private RetailListingVariantOption? SelectedVariant => SelectedProduct?.Variants.FirstOrDefault(x => x.Id == variantId);
+    private RetailListingSizeOption? SelectedSize => SelectedVariant?.Sizes.FirstOrDefault(x => x.Id == sizeId);
+    private string? SelectionEmptyState => SelectedProduct?.Variants.Count == 0 ? "This product has no variants. Complete its catalogue data first." :
+        SelectedVariant?.Sizes.Count == 0 ? "This variant has no sizes. Add its sizes in Product Management first." :
+        SelectedSize?.Packs.Count == 0 ? "This size has no sellable packs. Add its packs in Product Management first." : null;
+    private static string PackLabel(RetailListingPackOption pack) => $"{pack.Quantity} pieces · {pack.PackagingType}" + (pack.Gtin is null ? " · No GTIN recorded" : $" · GTIN {pack.Gtin}");
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            interactiveReady = true;
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var retailers = await Retailers.GetAsync(status: RetailerStatus.Verified);
+            accessDenied = retailers.Status == RetailerManagementStatus.AccessDenied;
+            verifiedRetailers = retailers.Retailers?.ToList() ?? [];
+            if (retailers.Status == RetailerManagementStatus.Failed) error = "Retailers could not be loaded. Refresh to try again.";
+            var catalogue = await Retailers.GetListingCatalogueAsync();
+            accessDenied |= catalogue.AccessDenied;
+            products = catalogue.Value ?? [];
+            error ??= catalogue.Error;
+            await ReloadListingsAsync();
+        }
+        catch (HttpRequestException) { error = "The retail workspace could not be loaded. Refresh to try again."; }
+        finally { loading = false; }
+    }
+    private async Task ReloadListingsAsync()
+    {
+        var result = await Retailers.GetListingsAsync();
+        accessDenied |= result.AccessDenied;
+        error ??= result.Error;
+        if (result.Value is not null) listings = result.Value;
+    }
+    private async Task MutateAsync(Func<Task<RetailListingResponse<RetailerProductListingItem>>> action, string success)
+    {
+        saving = true; error = message = null;
+        try
+        {
+            var result = await action();
+            accessDenied |= result.AccessDenied;
+            error = result.Error;
+            if (result.Value is not null) { message = success; editingId = null; await ReloadListingsAsync(); }
+        }
+        catch (HttpRequestException) { error = "The listing could not be saved. Please try again."; }
+        finally { saving = false; }
+    }
+    private async Task CreateAsync()
+    {
+        await MutateAsync(() => Retailers.CreateListingAsync(new(productId, variantId, sizeId, packId,
+            retailerId, listingUrl, sourceUrl, externalId)), "Listing saved. Open its retailer page and confirm the pack before confirming the listing.");
+        if (error is null && message is not null)
+        {
+            listingUrl = "";
+            sourceUrl = externalId = null;
+        }
+    }
+    private void BeginEdit(ManagedRetailerListing item)
+    { editingId = item.Listing.Id; editUrl = item.Listing.ListingUrl; editSource = item.Listing.SourceUrl; editExternal = item.Listing.ExternalListingId; error = message = null; }
+    private Task SaveEditAsync() => editingId is { } id ? MutateAsync(() => Retailers.UpdateListingAsync(id,
+        new(editUrl, editSource, editExternal)), "Listing saved. Confirm changed details again before public display.") : Task.CompletedTask;
+    private Task SetStatusAsync(ManagedRetailerListing item, RetailerProductDiscoveryStatus status) => MutateAsync(() =>
+        Retailers.SetListingStatusAsync(item.Listing.Id, new(status)), status == RetailerProductDiscoveryStatus.Verified ?
+        "Listing confirmed. It is now eligible for Where to buy." : "Listing status updated. It will not appear in Where to buy.");
+}

@@ -64,10 +64,11 @@ public sealed class WaistMeasurementBrowserTests(PostgreSqlFixture fixture) : IC
     {
         var submission = new CatalogueSubmission(CatalogueSubmissionSource.Moderator,
             fixture.ModeratorUserId, "Browser manufacturer", "Browser unit product");
-        var variant = new CatalogueSubmissionVariant(submission.Id, null);
+        var variant = new CatalogueSubmissionVariant(submission.Id, "Printed");
+        var original = new CatalogueSubmissionVariant(submission.Id, null);
         await using (var db = fixture.CreateDbContext())
         {
-            db.AddRange(submission, variant);
+            db.AddRange(submission, variant, original);
             await db.SaveChangesAsync();
         }
         using var api = new ObservationApiFactory(fixture);
@@ -83,7 +84,8 @@ public sealed class WaistMeasurementBrowserTests(PostgreSqlFixture fixture) : IC
         var page = await browser.NewPageAsync(new() { ViewportSize = new() { Width = 1280, Height = 900 } });
         await page.GotoAsync(origin + "/signin/development");
         await page.GotoAsync(origin + $"/catalogue/add/{submission.Id}/3?maxStep=3");
-        await page.GetByRole(AriaRole.Button, new() { Name = "＋ Add size", Exact = true }).ClickAsync();
+        var sourceCard = page.Locator(".submission-size-variant").Filter(new() { HasText = "Printed" });
+        await sourceCard.GetByRole(AriaRole.Button, new() { Name = "＋ Add size", Exact = true }).ClickAsync();
         var waist = page.Locator(".waist-measurements");
         var minimum = waist.Locator("input").Nth(0);
         var maximum = waist.Locator("input").Nth(1);
@@ -120,8 +122,13 @@ public sealed class WaistMeasurementBrowserTests(PostgreSqlFixture fixture) : IC
             var size = await db.CatalogueSubmissionSizeVariants.SingleAsync(x => x.VariantId == variant.Id);
             Assert.Equal(83, size.WaistMinimumCm);
             Assert.Equal(102, size.WaistMaximumCm);
+            var copy = await db.CatalogueSubmissionSizeVariants.SingleAsync(x => x.VariantId == original.Id);
+            Assert.NotEqual(size.Id, copy.Id);
+            Assert.Equal(size.WaistMinimumCm, copy.WaistMinimumCm);
+            Assert.Equal(size.WaistMaximumCm, copy.WaistMaximumCm);
+            Assert.Null(copy.Gtin);
         }
-        await page.GetByRole(AriaRole.Button, new() { Name = "Edit", Exact = true }).ClickAsync();
+        await sourceCard.GetByRole(AriaRole.Button, new() { Name = "Edit", Exact = true }).ClickAsync();
         await Assertions.Expect(minimum).ToHaveValueAsync("83");
         await units.SelectOptionAsync("Inches");
         await Assertions.Expect(minimum).ToHaveValueAsync("32.68");

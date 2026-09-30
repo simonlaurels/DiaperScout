@@ -664,6 +664,17 @@ public sealed class ProductCatalogueClient(HttpClient client)
             : CatalogueSubmissionSizeVariantsResult.Found(sizes);
     }
 
+    public async Task<CatalogueSubmissionSizeVariantResult> SeedSubmissionSizeVariantAsync(
+        Guid submissionId,
+        Guid variantId,
+        AddCatalogueSubmissionSizeVariantRequest request,
+        CancellationToken cancellationToken = default) =>
+        await SendSizeVariantAsync(
+            HttpMethod.Post,
+            $"api/v1/catalogue-submissions/{submissionId}/variants/{variantId}/sizes/seed",
+            request,
+            cancellationToken);
+
     public async Task<CatalogueSubmissionSizeVariantResult> AddSubmissionSizeVariantAsync(
         Guid submissionId,
         Guid variantId,

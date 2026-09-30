@@ -603,6 +603,35 @@ internal sealed class CatalogueSubmissions(
         return CatalogueSubmissionSizeVariantsResult.Found(sizes);
     }
 
+    public async Task<CatalogueSubmissionSizeVariantReceipt> AddSizeVariantToAllVariantsAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        Guid variantId,
+        AddCatalogueSubmissionSizeVariant command,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireModeratorAsync(actor, cancellationToken);
+        var submission = await GetSubmissionAsync(submissionId, cancellationToken);
+        EnsureDraftEditable(submission);
+
+        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+        var receipt = await AddSizeVariantAsync(actor, submissionId, variantId, command, cancellationToken);
+        var sizeName = receipt.ManufacturerSize.ToLowerInvariant();
+        var otherVariantIds = await db.CatalogueSubmissionVariants
+            .Where(variant => variant.SubmissionId == submissionId && variant.Id != variantId &&
+                !db.CatalogueSubmissionSizeVariants.Any(size =>
+                    size.VariantId == variant.Id && size.ManufacturerSize.ToLower() == sizeName))
+            .Select(variant => variant.Id)
+            .ToListAsync(cancellationToken);
+
+        // Seed independent rows, preserving existing variant-specific sizes and identifiers.
+        foreach (var otherVariantId in otherVariantIds)
+            await AddSizeVariantAsync(actor, submissionId, otherVariantId,
+                command with { Gtin = null }, cancellationToken);
+
+        await transaction.CommitAsync(cancellationToken);
+        return receipt;
+    }
     public async Task<CatalogueSubmissionSizeVariantReceipt> AddSizeVariantAsync(
         AuthenticatedUser actor,
         Guid submissionId,

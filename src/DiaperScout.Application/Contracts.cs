@@ -1222,6 +1222,13 @@ public interface ICatalogueSubmissions
         Guid variantId,
         CancellationToken cancellationToken = default);
 
+    Task<CatalogueSubmissionSizeVariantReceipt> AddSizeVariantToAllVariantsAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        Guid variantId,
+        AddCatalogueSubmissionSizeVariant command,
+        CancellationToken cancellationToken = default);
+
     Task<CatalogueSubmissionSizeVariantReceipt> AddSizeVariantAsync(
         AuthenticatedUser actor,
         Guid submissionId,

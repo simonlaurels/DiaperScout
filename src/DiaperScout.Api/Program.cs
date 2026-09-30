@@ -1260,6 +1260,62 @@ if (builder.Configuration.GetValue<bool>(
         .Produces<IReadOnlyList<CatalogueSubmissionSizeVariantReceipt>>();
 
     app.MapPost(
+        "/api/v1/catalogue-submissions/{id:guid}/variants/{variantId:guid}/sizes/seed",
+        async (
+            Guid id,
+            Guid variantId,
+            AddCatalogueSubmissionSizeVariantRequest request,
+            ICurrentUser currentUser,
+            ICatalogueSubmissions submissions,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null) return Results.Forbid();
+
+            try
+            {
+                var receipt = await submissions.AddSizeVariantToAllVariantsAsync(
+                    actor,
+                    id,
+                    variantId,
+                    new AddCatalogueSubmissionSizeVariant(
+                        request.ManufacturerSize,
+                        request.WaistMinimumCm,
+                        request.WaistMaximumCm,
+                        request.HipMinimumCm,
+                        request.HipMaximumCm,
+                        request.ManufacturerStatedAbsorbencyMl,
+                        request.FitMeasurementBasis,
+                        request.AbsorbencyBasisMethod,
+                        request.AbsorbencySource,
+                        request.LengthMm,
+                        request.WidthMm,
+                        request.WeightGrams,
+                        request.ManufacturerPackQuantity,
+                        request.Gtin),
+                    cancellationToken);
+
+                return Results.Created(
+                    $"/api/v1/catalogue-submissions/{id}/variants/{variantId}/sizes/{receipt.Id}",
+                    receipt);
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(
+                    new Dictionary<string, string[]> { [exception.Field] = [exception.Message] });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("SeedCatalogueSubmissionSizeVariant")
+        .WithTags("Catalogue Submissions")
+        .Produces<CatalogueSubmissionSizeVariantReceipt>(StatusCodes.Status201Created)
+        .ProducesValidationProblem();
+
+    app.MapPost(
         "/api/v1/catalogue-submissions/{id:guid}/variants/{variantId:guid}/sizes",
         async (
             Guid id,

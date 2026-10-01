@@ -1,5 +1,5 @@
 // Only this sealed, public offline shell is cached. Bump the version when any listed asset changes.
-const CACHE = 'diaperscout-pwa-static-v1';
+const CACHE = 'diaperscout-pwa-static-v2';
 const STATIC = new Set([
   '/pwa/offline.html', '/pwa/offline.css', '/pwa/offline.js',
   '/images/brand/DiaperScout.svg', '/pwa/guide-map.webp',

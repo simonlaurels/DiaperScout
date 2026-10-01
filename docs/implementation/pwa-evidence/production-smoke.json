@@ -1,0 +1,293 @@
+{
+  "catalogue": [
+    {
+      "name": "Crinklz Original",
+      "url": "/products/original?variantId=9d71fd7f-b0e7-412c-9fff-0301d87916ff"
+    },
+    {
+      "name": "NorthShore MEGAMAX Black",
+      "url": "/products/megamax?variantId=bb3ad9fc-9dea-4f07-b179-5bc3f66b7d7e"
+    },
+    {
+      "name": "NorthShore MEGAMAX Blue",
+      "url": "/products/megamax?variantId=9fa236c9-bc03-4bfb-899d-e387e619c297"
+    },
+    {
+      "name": "NorthShore MEGAMAX Pink",
+      "url": "/products/megamax?variantId=c272b95a-4488-445b-b7b0-5d59d29295c5"
+    },
+    {
+      "name": "NorthShore MEGAMAX Purple",
+      "url": "/products/megamax?variantId=eae0f025-4718-4c1f-8673-9a4d66a9d638"
+    },
+    {
+      "name": "NorthShore MEGAMAX Tie-Dye",
+      "url": "/products/megamax?variantId=d7f3521c-307c-468e-ac59-061774db24a5"
+    },
+    {
+      "name": "NorthShore MEGAMAX White",
+      "url": "/products/megamax?variantId=c93e7408-1a40-40b1-953c-8a38091cd265"
+    }
+  ],
+  "variants": [
+    {
+      "name": "NorthShore MEGAMAX Black",
+      "url": "/products/megamax?variantId=bb3ad9fc-9dea-4f07-b179-5bc3f66b7d7e",
+      "sizes": [
+        "Extra Large",
+        "Large",
+        "Medium",
+        "Small"
+      ]
+    },
+    {
+      "name": "NorthShore MEGAMAX Blue",
+      "url": "/products/megamax?variantId=9fa236c9-bc03-4bfb-899d-e387e619c297",
+      "sizes": [
+        "Extra Large",
+        "Large",
+        "Medium",
+        "Small"
+      ]
+    },
+    {
+      "name": "NorthShore MEGAMAX Pink",
+      "url": "/products/megamax?variantId=c272b95a-4488-445b-b7b0-5d59d29295c5",
+      "sizes": [
+        "Extra Large",
+        "Large",
+        "Medium",
+        "Small"
+      ]
+    },
+    {
+      "name": "NorthShore MEGAMAX Purple",
+      "url": "/products/megamax?variantId=eae0f025-4718-4c1f-8673-9a4d66a9d638",
+      "sizes": [
+        "Extra Large",
+        "Large",
+        "Medium",
+        "Small"
+      ]
+    },
+    {
+      "name": "NorthShore MEGAMAX Tie-Dye",
+      "url": "/products/megamax?variantId=d7f3521c-307c-468e-ac59-061774db24a5",
+      "sizes": [
+        "Extra Large",
+        "Large",
+        "Medium",
+        "Small"
+      ]
+    },
+    {
+      "name": "NorthShore MEGAMAX White",
+      "url": "/products/megamax?variantId=c93e7408-1a40-40b1-953c-8a38091cd265",
+      "sizes": [
+        "2XL",
+        "3XL",
+        "Extra Large",
+        "Large",
+        "Medium",
+        "Small",
+        "X-Small"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "Explore landing",
+      "passed": true
+    },
+    {
+      "name": "five chosen navigation items",
+      "passed": true
+    },
+    {
+      "name": "mobile fits",
+      "passed": true
+    },
+    {
+      "name": "Chromium installability criteria",
+      "passed": true
+    },
+    {
+      "name": "standalone manifest",
+      "passed": true
+    },
+    {
+      "name": "icon /pwa/icons/icon-192.png",
+      "passed": true
+    },
+    {
+      "name": "icon /pwa/icons/icon-512.png",
+      "passed": true
+    },
+    {
+      "name": "icon /pwa/icons/maskable-512.png",
+      "passed": true
+    },
+    {
+      "name": "/atlas honestly deferred",
+      "passed": true
+    },
+    {
+      "name": "/backpack honestly deferred",
+      "passed": true
+    },
+    {
+      "name": "only owned offline/static resources cached",
+      "passed": true
+    },
+    {
+      "name": "honest offline fallback",
+      "passed": true
+    },
+    {
+      "name": "Crinklz Original catalogue identity",
+      "passed": true
+    },
+    {
+      "name": "independent MEGAMAX variant links",
+      "passed": true
+    },
+    {
+      "name": "NorthShore MEGAMAX Black details title",
+      "passed": true
+    },
+    {
+      "name": "NorthShore MEGAMAX Black size count is below flattened baseline",
+      "passed": true
+    },
+    {
+      "name": "NorthShore MEGAMAX Blue details title",
+      "passed": true
+    },
+    {
+      "name": "NorthShore MEGAMAX Blue size count is below flattened baseline",
+      "passed": true
+    },
+    {
+      "name": "NorthShore MEGAMAX Blue does not show Black pack NRU destination",
+      "passed": true
+    },
+    {
+      "name": "NorthShore MEGAMAX Pink details title",
+      "passed": true
+    },
+    {
+      "name": "NorthShore MEGAMAX Pink size count is below flattened baseline",
+      "passed": true
+    },
+    {
+      "name": "NorthShore MEGAMAX Pink does not show Black pack NRU destination",
+      "passed": true
+    },
+    {
+      "name": "NorthShore MEGAMAX Purple details title",
+      "passed": true
+    },
+    {
+      "name": "NorthShore MEGAMAX Purple size count is below flattened baseline",
+      "passed": true
+    },
+    {
+      "name": "NorthShore MEGAMAX Purple does not show Black pack NRU destination",
+      "passed": true
+    },
+    {
+      "name": "NorthShore MEGAMAX Tie-Dye details title",
+      "passed": true
+    },
+    {
+      "name": "NorthShore MEGAMAX Tie-Dye size count is below flattened baseline",
+      "passed": true
+    },
+    {
+      "name": "NorthShore MEGAMAX Tie-Dye does not show Black pack NRU destination",
+      "passed": true
+    },
+    {
+      "name": "NorthShore MEGAMAX White details title",
+      "passed": true
+    },
+    {
+      "name": "NorthShore MEGAMAX White size count is below flattened baseline",
+      "passed": true
+    },
+    {
+      "name": "NorthShore MEGAMAX White does not show Black pack NRU destination",
+      "passed": true
+    },
+    {
+      "name": "Black variant exists",
+      "passed": true
+    },
+    {
+      "name": "Black Medium 10-piece bag exists",
+      "passed": true
+    },
+    {
+      "name": "NRU exact pack present",
+      "passed": true
+    },
+    {
+      "name": "NRU disappears for Extra Large",
+      "passed": true
+    },
+    {
+      "name": "Extra Large pack differs from Medium",
+      "passed": true
+    },
+    {
+      "name": "variant change clears NRU",
+      "passed": true
+    },
+    {
+      "name": "refresh retains variant",
+      "passed": true
+    },
+    {
+      "name": "back restores Black variant",
+      "passed": true
+    },
+    {
+      "name": "forward restores intended variant",
+      "passed": true
+    },
+    {
+      "name": "malformed variant friendly not found",
+      "passed": true
+    },
+    {
+      "name": "/admin/commerce-plugins is protected for anonymous users",
+      "passed": true
+    },
+    {
+      "name": "/catalogue/retail-listings is protected for anonymous users",
+      "passed": true
+    }
+  ],
+  "signalR": [],
+  "installability": {
+    "installabilityErrors": []
+  },
+  "cachePaths": [
+    "/pwa/offline.html",
+    "/pwa/offline.css",
+    "/pwa/offline.js",
+    "/images/brand/DiaperScout.svg",
+    "/pwa/guide-map.webp",
+    "/pwa/icons/icon-192.png",
+    "/pwa/icons/icon-512.png",
+    "/pwa/icons/maskable-512.png",
+    "/pwa/icons/apple-touch-icon.png"
+  ],
+  "nru": {
+    "variant": "NorthShore MEGAMAX Black",
+    "size": "Medium",
+    "pack": "10 pieces · Bag",
+    "packId": "a17f3fa3-a690-4224-9fad-8c84902ebe90",
+    "url": "https://nru.co.uk/products/northshore-megamax-black?variant=50456472912205"
+  }
+}

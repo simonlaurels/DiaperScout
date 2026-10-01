@@ -1,0 +1,22 @@
+{
+  "checks": [
+    {
+      "name": "existing Scan route",
+      "passed": true
+    },
+    {
+      "name": "Scan fits mobile",
+      "passed": true
+    },
+    {
+      "name": "camera not automatically running",
+      "passed": true
+    },
+    {
+      "name": "manual lookup existing not-found state",
+      "passed": true
+    }
+  ],
+  "transportFailures": 0,
+  "reloads": 0
+}

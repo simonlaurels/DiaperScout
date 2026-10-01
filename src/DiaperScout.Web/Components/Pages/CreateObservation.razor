@@ -1,0 +1,96 @@
+@page "/observations/new"
+@rendermode InteractiveServer
+@inject PlaceObservationClient PlacesClient
+@inject AuthenticationStateProvider Authentication
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+<PageTitle>Create observation · DiaperScout</PageTitle>
+<main class="contribution-page">
+    <p class="catalogue-kicker">A real place, a moment in time</p><h1>Record where you found it</h1>
+    @if (loading) { <p role="status">Checking this exact pack…</p> }
+    else if (pack is null) { <p role="alert">@(error ?? "This pack is no longer available. Scan another item to continue.")</p><a href="/scan" class="ds-button ds-button-primary">Scan another item</a> }
+    else if (saved is not null) {
+        <section class="contribution-card" role="status"><h2>Observation saved</h2><p>Your report records this pack at @selectedShop?.Name at @saved.ObservedAtUtc.ToString("d MMM yyyy, HH:mm 'UTC'"). It does not promise future stock.</p></section>
+        <div class="contribution-actions"><a href="@($"/atlas?locationId={saved.LocationId}")" class="ds-button ds-button-primary">View in Atlas</a><a href="@ProductUrl" class="ds-button ds-button-secondary">View product</a><a href="/scan" class="ds-button ds-button-secondary">Scan another item</a></div>
+    } else {
+        <section class="contribution-card exact-pack"><h2>@pack.Product.Name</h2><p>@pack.VariantName · @pack.ManufacturerSize · Pack of @pack.QuantityPerPack</p><a href="@ProductUrl">View this exact product pack</a></section>
+        @if (!authenticated) {
+            <section class="contribution-card"><h2>Sign in to save an observation</h2><p>The exact pack is waiting for you. You won’t need to scan again.</p><a class="ds-button ds-button-primary" href="@SignInUrl" data-enhance-nav="false">Sign in and continue</a></section>
+        } else {
+            @if (error is not null) { <p role="alert" class="contribution-message">@error</p> }
+            <section class="contribution-card"><h2>Where did you find it?</h2>
+                <div class="contribution-search"><label for="place-query">Search shops by name, town or postcode</label><input id="place-query" @bind="query" maxlength="150" /><button type="button" class="ds-button ds-button-secondary" @onclick="SearchAsync" disabled="@busy">Search shops</button></div>
+                @if (searched && shops.Count == 0) { <p role="status">No matching shops yet. Add the specific physical shop below.</p> }
+                <div class="place-options">@foreach (var shop in shops) { <button type="button" class="atlas-place-choice @(selectedShop?.Id == shop.Id ? "selected" : "")" @onclick="() => Choose(shop)"><strong>@shop.Name</strong><span>@shop.AddressLine1, @shop.Locality, @shop.Postcode</span></button> }</div>
+                <button type="button" class="ds-button ds-button-secondary" @onclick="() => { creatingShop = !creatingShop; error = null; }">@(creatingShop ? "Cancel adding a shop" : "Add a physical shop")</button>
+                @if (selectedShop is not null) { <p role="status"><strong>Selected:</strong> @selectedShop.Name · @selectedShop.AddressLine1, @selectedShop.Locality</p> }
+            </section>
+            @if (creatingShop) {
+                <section class="contribution-card contribution-fields"><h2>Add the specific shop</h2><p>Use the branch’s public address. This information and the shop position will appear in Atlas.</p>
+                    <label for="shop-name">Shop or branch name</label><input id="shop-name" @bind="shopName" maxlength="200" autocomplete="organization" />
+                    <label for="shop-address">Street address</label><input id="shop-address" @bind="address" maxlength="250" autocomplete="off" />
+                    <label for="shop-town">Town or city</label><input id="shop-town" @bind="town" maxlength="150" autocomplete="off" />
+                    <label for="shop-postcode">Postcode or postal code</label><input id="shop-postcode" @bind="postcode" maxlength="32" autocomplete="off" />
+                    <label for="shop-country">Country</label><select id="shop-country" @bind="country">@foreach (var item in countries) { <option value="@item.Code">@item.Name</option> }</select>
+                    <p>Zoom and tap the shop on the map, or enter its coordinates. The initial map centre is only a starting view; no shop position is chosen automatically.</p>
+                    <PlaceMap PickPosition="true" PositionSelected="PositionSelected" />
+                    <div class="contribution-columns"><div><label for="shop-latitude">Shop latitude</label><input id="shop-latitude" type="number" step="0.000001" min="-90" max="90" @bind="latitude" /></div><div><label for="shop-longitude">Shop longitude</label><input id="shop-longitude" type="number" step="0.000001" min="-180" max="180" @bind="longitude" /></div></div>
+                    <label class="contribution-check"><input type="checkbox" @bind="confirmPublic" />This is a public commercial shop, not a home or private place.</label>
+                    <label class="contribution-check"><input type="checkbox" @bind="confirmPosition" />The position is the shop itself. I understand it will be public.</label>
+                    <button type="button" class="ds-button ds-button-secondary" @onclick="CreateShopAsync" disabled="@busy">@(busy ? "Saving shop…" : "Use this shop")</button>
+                </section>
+            }
+            <section class="contribution-card contribution-fields"><h2>What did you observe?</h2>
+                <label for="observed-at">Observed at (your local time)</label><input id="observed-at" type="datetime-local" value="@observedLocal" @onchange="e => observedLocal = e.Value?.ToString() ?? string.Empty" />
+                <div class="contribution-columns"><div><label for="observed-price">Price (optional)</label><input id="observed-price" type="number" step="0.01" min="0" @bind="price" inputmode="decimal" /></div><div><label for="observed-currency">Currency</label><input id="observed-currency" @bind="currency" maxlength="3" placeholder="GBP" /></div></div>
+                <p>This saves a dated contributor report for this exact pack at this shop. Your account identity is retained privately for provenance.</p>
+                <button type="button" class="ds-button ds-button-primary" @onclick="SaveAsync" disabled="@(busy || selectedShop is null || module is null)">@(busy ? "Saving…" : "Save observation")</button>
+                <a href="@SignInUrl" data-enhance-nav="false">Sign in again if your session has expired</a>
+            </section>
+        }
+    }
+</main>
+@code {
+    [SupplyParameterFromQuery(Name="packTypeId")] public Guid? PackTypeId { get; set; }
+    private ProductIdentification? pack;
+    private PhysicalObservationReceipt? saved;
+    private IReadOnlyList<PlaceItem> shops = [];
+    private IReadOnlyList<PlaceCountry> countries = [];
+    private PlaceItem? selectedShop;
+    private bool loading = true, authenticated, busy, creatingShop, searched, confirmPublic, confirmPosition;
+    private string? error;
+    private string query = "", shopName = "", address = "", town = "", postcode = "", country = "GB", currency = "GBP", observedLocal = "";
+    private decimal? latitude, longitude, price;
+    private readonly Guid contributionId = Guid.NewGuid();
+    private IJSObjectReference? module;
+    private string ProductUrl => pack is null ? "/scan" : PublicProductIdentity.ProductUrl(pack.Product.Slug, pack.ProductVariantId) + "&packTypeId=" + pack.PackTypeId;
+    private string SignInUrl => "/signin?returnUrl=" + Uri.EscapeDataString("/observations/new?packTypeId=" + PackTypeId);
+    protected override async Task OnInitializedAsync() {
+        authenticated = (await Authentication.GetAuthenticationStateAsync()).User.Identity?.IsAuthenticated == true;
+        try { if (PackTypeId.HasValue) pack = await PlacesClient.PackAsync(PackTypeId.Value); if (authenticated) countries = await PlacesClient.CountriesAsync(); }
+        catch (Exception e) when (e is HttpRequestException or TaskCanceledException) { error = "We couldn’t load this pack. Check your connection, then return to Scan and try again."; }
+        loading = false;
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (!firstRender) return;
+        try { module = await JS.InvokeAsync<IJSObjectReference>("import", "/js/contribution-draft.js"); observedLocal = await module.InvokeAsync<string>("localNow"); StateHasChanged(); }
+        catch (Exception e) when (e is JSException or JSDisconnectedException) { error = "We couldn’t initialise the observation time. Reload when connected to continue."; StateHasChanged(); }
+    }
+    private async Task SearchAsync() => await Act(async () => { shops = await PlacesClient.SearchAsync(query); searched = true; });
+    private void Choose(PlaceItem shop) { selectedShop = shop; creatingShop = false; }
+    private void PositionSelected(PlaceMap.PlacePosition point) { latitude = point.Latitude; longitude = point.Longitude; confirmPosition = false; }
+    private async Task CreateShopAsync() => await Act(async () => { selectedShop = await PlacesClient.CreateShopAsync(new(shopName, address, town, postcode, country, latitude, longitude, confirmPublic, confirmPosition)); creatingShop = false; });
+    private async Task SaveAsync() => await Act(async () => {
+        if (selectedShop is null || pack is null || module is null) return;
+        var iso = await module.InvokeAsync<string>("toUtc", observedLocal);
+        if (!DateTimeOffset.TryParse(iso, out var observed)) throw new ContributionException("Choose when you observed the pack.");
+        saved = await PlacesClient.ObserveAsync(new(pack.PackTypeId, selectedShop.Id, observed, price, currency, contributionId));
+    });
+    private async Task Act(Func<Task> action) {
+        if (busy) return; busy = true; error = null;
+        try { await action(); } catch (ContributionException e) { error = e.Message; }
+        catch (Exception e) when (e is HttpRequestException or TaskCanceledException or JSException) { error = "We couldn’t complete that action. Your entered information is still here; check your connection and try again."; }
+        finally { busy = false; }
+    }
+    public async ValueTask DisposeAsync() { try { if (module is not null) await module.DisposeAsync(); } catch (JSDisconnectedException) { } }
+}

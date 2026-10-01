@@ -125,7 +125,7 @@ public sealed class RetailListingApiTests(PostgreSqlFixture fixture) : IClassFix
         await using (var db = fixture.CreateDbContext()) { db.Add(pack); await db.SaveChangesAsync(); }
         var listing = await CreateAsync(client, selection with { PackTypeId = pack.Id });
         await StatusAsync(client, listing.Id, RetailerProductDiscoveryStatus.Verified);
-        var offer = Assert.Single((await ProductAsync(client)).RetailOffers, x => x.Id == listing.Id);
+        var offer = Assert.Single((await client.GetFromJsonAsync<CatalogueProductDetails>($"/api/v1/products/integration-test-product?variantId={selection.ProductVariantId}&packTypeId={pack.Id}"))!.RetailOffers, x => x.Id == listing.Id);
         Assert.Equal(24, offer.QuantityPerPack);
         Assert.Null(offer.Gtin);
         using var scope = factory.Services.CreateScope();
@@ -204,11 +204,11 @@ public sealed class RetailListingApiTests(PostgreSqlFixture fixture) : IClassFix
         Assert.True(response.IsSuccessStatusCode, await response.Content.ReadAsStringAsync());
         return (await response.Content.ReadFromJsonAsync<RetailerProductListingItem>())!;
     }
-    private static async Task StatusAsync(HttpClient client, Guid id, RetailerProductDiscoveryStatus status)
+    internal static async Task StatusAsync(HttpClient client, Guid id, RetailerProductDiscoveryStatus status)
     {
         var response = await client.PutAsJsonAsync($"/api/v1/retail-listings/{id}/status", new RetailerListingStatusUpdate(status));
         Assert.True(response.IsSuccessStatusCode, await response.Content.ReadAsStringAsync());
     }
-    private static async Task<CatalogueProductDetails> ProductAsync(HttpClient client) =>
-        (await client.GetFromJsonAsync<CatalogueProductDetails>("/api/v1/products/integration-test-product"))!;
+    private async Task<CatalogueProductDetails> ProductAsync(HttpClient client) =>
+        (await client.GetFromJsonAsync<CatalogueProductDetails>($"/api/v1/products/integration-test-product?packTypeId={fixture.PackTypeId}"))!;
 }

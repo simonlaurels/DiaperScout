@@ -486,11 +486,15 @@ public sealed class ProductCatalogueClient(HttpClient client)
 
     public async Task<ProductCatalogueDetailResult> GetAsync(
         string slug,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        Guid? variantId = null, Guid? packTypeId = null)
     {
-        using var response = await client.GetAsync(
-            $"api/v1/products/{Uri.EscapeDataString(slug)}",
-            cancellationToken);
+        var parameters = new List<string>();
+        if (variantId.HasValue) parameters.Add($"variantId={variantId.Value}");
+        if (packTypeId.HasValue) parameters.Add($"packTypeId={packTypeId.Value}");
+        var path = $"api/v1/products/{Uri.EscapeDataString(slug)}";
+        if (parameters.Count > 0) path += "?" + string.Join("&", parameters);
+        using var response = await client.GetAsync(path, cancellationToken);
 
         if (response.StatusCode == HttpStatusCode.NotFound)
             return ProductCatalogueDetailResult.NotFound();

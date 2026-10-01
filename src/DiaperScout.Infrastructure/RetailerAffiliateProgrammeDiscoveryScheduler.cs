@@ -20,7 +20,7 @@ public sealed class RetailerAffiliateProgrammeDiscoveryJobOptions
 
 public sealed class RetailerAffiliateProgrammeDiscovery(
     DiaperScoutDbContext db,
-    IRetailerAffiliateProgrammeDiscoveryProvider provider) : IRetailerAffiliateProgrammeDiscovery
+    ICommercePluginOrchestrator plugins) : IRetailerAffiliateProgrammeDiscovery
 {
     public async Task<IReadOnlyList<RetailerAffiliateProgrammeItem>> DiscoverAndRecordAsync(
         Guid retailerId,
@@ -40,7 +40,10 @@ public sealed class RetailerAffiliateProgrammeDiscovery(
             retailer.Name,
             retailer.WebsiteUrl);
 
-        var candidates = await provider.DiscoverAsync(target, cancellationToken);
+        var batch = await plugins.DiscoverAffiliateProgrammesAsync(target, cancellationToken);
+        if (batch.Observations.Count == 0 && batch.Executions.Any(e => e.Status is CommercePluginExecutionStatus.Failed or CommercePluginExecutionStatus.TimedOut or CommercePluginExecutionStatus.InvalidResult))
+            throw new InvalidOperationException("An affiliate integration could not complete programme discovery.");
+        var candidates = batch.Observations.Select(o => o.Value);
 
         var results = new List<RetailerAffiliateProgrammeItem>();
 

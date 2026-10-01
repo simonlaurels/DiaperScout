@@ -62,7 +62,7 @@ async function startWithNativeDetector(video, dotnet) {
             detectionInFlight = true;
             try {
                 const matches = await detector.detect(video);
-                const gtin = matches.map(match => normaliseGtin(match.rawValue)).find(Boolean);
+                const gtin = matches.map(match => normaliseGtin(match.format === 'upc_e' ? expandUpcE(match.rawValue) : match.rawValue)).find(Boolean);
                 if (gtin) {
                     stop(video);
                     await dotnet.invokeMethodAsync("OnBarcodeDetected", gtin);
@@ -108,7 +108,8 @@ async function startWithZxingFallback(video, dotnet) {
             async (result, _error, controls) => {
                 if (completed) return;
                 if (result) {
-                    const gtin = normaliseGtin(result.getText());
+                    // The pinned ZXing bundle uses BarcodeFormat.UPC_E = 15.
+                    const gtin = normaliseGtin(result.getBarcodeFormat?.() === 15 ? expandUpcE(result.getText()) : result.getText());
                     if (!gtin) return;
 
                     completed = true;
@@ -138,6 +139,14 @@ async function getZxing() {
 function normaliseGtin(value) {
     const gtin = value?.replace(/[\s-]/g, "");
     return /^\d{8,14}$/.test(gtin) ? gtin : undefined;
+}
+export function expandUpcE(value) {
+    if (!/^[01]\d{7}$/.test(value || '')) return value;
+    const [ns,a,b,c,d,e,f,check]=value;
+    if('012'.includes(f))return ns+a+b+f+'0000'+c+d+e+check;
+    if(f==='3')return ns+a+b+c+'00000'+d+e+check;
+    if(f==='4')return ns+a+b+c+d+'00000'+e+check;
+    return ns+a+b+c+d+e+'0000'+f+check;
 }
 
 function cameraErrorStatus(error) {

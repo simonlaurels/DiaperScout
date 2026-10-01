@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 using System.Text;
 using DiaperScout.Application;
 using DiaperScout.Domain;
-using DiaperScout.Infrastructure;
+using DiaperScout.Commerce.Plugins.Awin;
 using Microsoft.Extensions.Options;
 using Xunit;
 

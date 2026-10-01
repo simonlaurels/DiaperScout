@@ -1,0 +1,37 @@
+@inject ProductCatalogueClient Catalogue
+@inject PlaceObservationClient PlacesClient
+<section class="contribution-card">
+    <h2>Barcode belongs to an existing product?</h2><p>Resolve this verified proposal to the exact existing pack. This attaches the barcode and closes the proposal without creating another product.</p>
+    @if (Status == CatalogueSubmissionStatus.ReadyForReview && !approved)
+    {
+        <label for="existing-pack-approval">Approval rationale</label><textarea id="existing-pack-approval" @bind="rationale" maxlength="2000" rows="3"></textarea>
+        <button type="button" class="ds-button ds-button-secondary" @onclick="ApproveAsync" disabled="@busy">Approve for existing-pack resolution</button>
+    }
+    @if (done) { <p role="status">Resolved to the existing pack. No duplicate product was created.</p> }
+    else {
+        @if (error is not null) { <p role="alert">@error</p> }
+        <label for="resolve-query">Search existing products</label><input id="resolve-query" @bind="query" maxlength="150" /><button type="button" class="ds-button ds-button-secondary" @onclick="SearchAsync" disabled="@busy">Find existing product</button>
+        @foreach (var product in products) { <button type="button" class="atlas-place-choice" @onclick="() => SelectAsync(product)">@product.Name</button> }
+        @if (details is not null) {
+            <label for="resolve-pack">Exact existing size and pack</label><select id="resolve-pack" @bind="selectedPack"><option value="">Choose the matching pack</option>@foreach (var size in details.Variants.SelectMany(v => v.Sizes)) { @foreach (var pack in size.Packs) { <option value="@pack.Id">@details.Name · @size.ManufacturerSize · @pack.QuantityPerPack · @pack.PackagingType</option> } }</select>
+            <label for="resolve-rationale">Evidence and editorial rationale</label><textarea id="resolve-rationale" @bind="rationale" maxlength="2000" rows="3"></textarea><p>Confirm the barcode, version, size and quantity against the evidence before resolving.</p>
+            <button type="button" class="ds-button ds-button-primary" @onclick="ResolveAsync" disabled="@(busy || selectedPack is null)">Resolve to existing pack</button>
+        }
+    }
+</section>
+@code {
+    [Parameter] public Guid SubmissionId { get; set; }
+    [Parameter] public CatalogueSubmissionStatus Status { get; set; }
+    [Parameter] public EventCallback Resolved { get; set; }
+    private string query = "", rationale = "";
+    private IReadOnlyList<CatalogueProductListItem> products = [];
+    private CatalogueProductDetails? details;
+    private Guid? selectedPack;
+    private string? error;
+    private bool busy, done, approved;
+    private async Task ApproveAsync() { await Act(async () => { if (string.IsNullOrWhiteSpace(rationale)) throw new ContributionException("Enter the verification and approval rationale."); var result = await Catalogue.ReviewSubmissionAsync(SubmissionId, EditorialOutcome.Accepted, rationale); if (result.Status != CatalogueSubmissionReviewResultStatus.Decided) throw new ContributionException("Approval failed. Complete required verification before continuing."); approved = true; }); }
+    private async Task SearchAsync() { await Act(async () => { var result = await Catalogue.SearchAsync(query); products = result.Catalogue?.Products ?? []; details = null; selectedPack = null; }); }
+    private async Task SelectAsync(CatalogueProductListItem product) { await Act(async () => { var result = await Catalogue.GetAsync(product.Slug, variantId:product.ProductVariantId); details = result.Product; selectedPack = null; }); }
+    private async Task ResolveAsync() { await Act(async () => { if (selectedPack is null) return; if (Status != CatalogueSubmissionStatus.Approved && !approved) throw new ContributionException("Approve the verified proposal before resolving it."); await PlacesClient.ResolveAsync(SubmissionId, new(selectedPack.Value, rationale)); done = true; await Resolved.InvokeAsync(); }); }
+    private async Task Act(Func<Task> action) { if (busy) return; busy = true; error = null; try { await action(); } catch (ContributionException e) { error = e.Message; } catch (Exception e) when (e is HttpRequestException or TaskCanceledException) { error = "The action could not be completed. Check your connection and try again."; } finally { busy = false; } }
+}

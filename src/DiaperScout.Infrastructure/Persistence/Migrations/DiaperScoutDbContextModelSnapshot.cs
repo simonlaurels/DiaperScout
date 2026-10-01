@@ -160,6 +160,9 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                     b.Property<string>("ProposedOfficialWebsiteUrl")
                         .HasColumnType("text");
 
+                    b.Property<int?>("ProposedPackQuantity")
+                        .HasColumnType("integer");
+
                     b.Property<string>("ProposedPackagingType")
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)");
@@ -187,7 +190,13 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<Guid?>("PublicContributionId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("PublishedProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ResolvedPackTypeId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("SharedConstructionNotes")
@@ -245,9 +254,12 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("PublishedProductId");
 
+                    b.HasIndex("ResolvedPackTypeId");
+
                     b.HasIndex("Status");
 
-                    b.HasIndex("SubmittedByUserId");
+                    b.HasIndex("SubmittedByUserId", "PublicContributionId")
+                        .IsUnique();
 
                     b.ToTable("catalogue_submissions", "diaperscout");
                 });
@@ -875,6 +887,15 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("CountryId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTimeOffset?>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsPublicCommercialPlace")
+                        .HasColumnType("boolean");
+
                     b.Property<decimal?>("Latitude")
                         .HasPrecision(9, 6)
                         .HasColumnType("numeric(9,6)");
@@ -893,17 +914,26 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<string>("PlaceIdentity")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
                     b.Property<string>("Postcode")
                         .IsRequired()
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)");
 
-                    b.Property<Guid>("RetailerId")
+                    b.Property<Guid?>("RetailerId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CountryId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("PlaceIdentity")
+                        .IsUnique();
 
                     b.HasIndex("RetailerId", "Postcode", "Name")
                         .IsUnique();
@@ -984,6 +1014,9 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)");
 
+                    b.Property<Guid?>("ContributionId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTimeOffset>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
@@ -995,6 +1028,9 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
 
                     b.Property<DateTimeOffset>("ObservedAtUtc")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("PackTypeId")
+                        .HasColumnType("uuid");
 
                     b.Property<decimal?>("PriceAmount")
                         .HasPrecision(12, 2)
@@ -1014,6 +1050,11 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PackTypeId");
+
+                    b.HasIndex("AuthorUserId", "ContributionId")
+                        .IsUnique();
 
                     b.HasIndex("AuthorUserId", "CreatedAtUtc");
 
@@ -1887,6 +1928,11 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .HasForeignKey("PublishedProductId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("DiaperScout.Domain.PackType", null)
+                        .WithMany()
+                        .HasForeignKey("ResolvedPackTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("DiaperScout.Domain.User", null)
                         .WithMany()
                         .HasForeignKey("SubmittedByUserId")
@@ -2074,11 +2120,15 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("DiaperScout.Domain.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("DiaperScout.Domain.Retailer", null)
                         .WithMany()
                         .HasForeignKey("RetailerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("DiaperScout.Domain.MagicLinkToken", b =>
@@ -2101,6 +2151,11 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                     b.HasOne("DiaperScout.Domain.Location", null)
                         .WithMany()
                         .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("DiaperScout.Domain.PackType", null)
+                        .WithMany()
+                        .HasForeignKey("PackTypeId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("DiaperScout.Domain.Product", null)

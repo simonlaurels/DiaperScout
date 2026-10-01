@@ -1,8 +1,9 @@
 @page "/products/{Slug}"
 @rendermode InteractiveServer
 @inject ProductCatalogueClient Catalogue
+@inject NavigationManager Navigation
 
-<PageTitle>@(product?.Name is null ? "Product · DiaperScout" : $"{(product.BrandName is null ? product.Name : $"{product.BrandName} {product.Name}")} · DiaperScout")</PageTitle>
+<PageTitle>@(product is null ? "Product · DiaperScout" : $"{product.Name} · DiaperScout")</PageTitle>
 
 @if (loading)
 {
@@ -82,7 +83,7 @@ else
 
                 <div class="ds-product-summary">
                     <span class="ds-type-ribbon">@FormatProductTypeLabel(product.ProductType)</span>
-                    <h1>@(string.IsNullOrWhiteSpace(product.BrandName) ? product.Name : $"{product.BrandName} {product.Name}")</h1>
+                    <h1>@product.Name</h1>
                     <div class="ds-product-byline">
                         <strong>@product.ManufacturerName</strong><span>•</span><span>@(product.BrandName ?? "Independent catalogue entry")</span><span>•</span><span>@FormatProductTypeLabel(product.ProductType)</span>
                     </div>
@@ -119,9 +120,9 @@ else
                             <div><dt>Brand</dt><dd>@(product.BrandName ?? "Not recorded")</dd></div>
                             <div><dt>Manufacturer</dt><dd>@product.ManufacturerName</dd></div>
                             <div><dt>Type</dt><dd>@FormatProductTypeLabel(product.ProductType)</dd></div>
-                            <div><dt>Versions</dt><dd>@product.Variants.Count</dd></div>
+                            <div><dt>Variants</dt><dd>@(product.AvailableVariants?.Count ?? product.Variants.Count)</dd></div>
                             <div><dt>Images</dt><dd>@product.Images.Count</dd></div>
-                            <div><dt>Retail destinations</dt><dd>@product.RetailOffers.Count</dd></div>
+                            <div><dt>Retail destinations</dt><dd>@SelectedOffers.Count</dd></div>
                             <div><dt>GTINs</dt><dd>@GtinCount</dd></div>
                         </dl>
                         <span class="ds-card-clip" aria-hidden="true"></span>
@@ -129,6 +130,18 @@ else
                 </aside>
             </section>
 
+            @if (product.AvailableVariants?.Count > 1)
+            {
+                <div class="ds-choice-card">
+                    <label for="public-product-variant">Choose a variant</label>
+                    <select id="public-product-variant" class="ds-pack-select" value="@product.ProductVariantId" @onchange="SelectVariant">
+                        @foreach (var variant in product.AvailableVariants)
+                        {
+                            <option value="@variant.Id">@variant.Name</option>
+                        }
+                    </select>
+                </div>
+            }
             <section class="ds-choice-row" aria-label="Product options">
                 <div class="ds-choice-card ds-choice-size">
                     <div class="ds-choice-heading">
@@ -175,18 +188,18 @@ else
                             <span class="ds-section-icon ds-cart-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 4h2l2.1 10.2a2 2 0 0 0 2 1.6h8.5a2 2 0 0 0 1.9-1.4L21 8H6"/><circle cx="9" cy="19" r="1.5"/><circle cx="18" cy="19" r="1.5"/><path d="M13 6h5M15.5 3.5v5"/></svg></span>
                             <div><p class="ds-product-eyebrow">FIND IT</p><h2 id="where-to-buy">Where to buy</h2></div>
                         </div>
-                        <span>@(product.RetailOffers.Count) known destination@(product.RetailOffers.Count == 1 ? "" : "s")</span>
+                        <span>@(SelectedOffers.Count) known destination@(SelectedOffers.Count == 1 ? "" : "s")</span>
                     </div>
-                    <p class="ds-section-intro">Compare known retailer destinations for this catalogue product. Prices and availability may change at the retailer.</p>
+                    <p class="ds-section-intro">Compare known retailer destinations for this size and pack. Prices and availability may change at the retailer.</p>
 
-                    @if (product.RetailOffers.Count == 0)
+                    @if (SelectedOffers.Count == 0)
                     {
-                        <div class="ds-empty-retail"><strong>No retail destinations yet</strong><span>Places to find this product will appear here as they are added to the Atlas.</span></div>
+                        <div class="ds-empty-retail"><strong>No retail destinations yet</strong><span>We don’t know where to buy this size and pack yet. Places to find it will appear here as they are added to the Atlas.</span></div>
                     }
                     else
                     {
                         <div class="ds-retail-list">
-                            @foreach (var offer in product.RetailOffers)
+                            @foreach (var offer in SelectedOffers)
                             {
                                 <div class="ds-retail-row">
                                     <div class="ds-retailer-mark">@RetailerInitial(offer.RetailerName)</div>
@@ -229,6 +242,10 @@ else
 
 @code {
     [Parameter] public string Slug { get; set; } = string.Empty;
+    [SupplyParameterFromQuery(Name = "variantId")] public string? VariantId { get; set; }
+    [SupplyParameterFromQuery(Name = "packTypeId")] public string? PackTypeId { get; set; }
+    private int selectionRevision;
+    private IReadOnlyList<CatalogueRetailOffer> SelectedOffers = [];
 
     private CatalogueProductDetails? product;
     private bool loading = true;
@@ -240,8 +257,8 @@ else
 
     private CatalogueProductImage CurrentImage => product?.Images[Math.Clamp(currentImageIndex, 0, Math.Max(product.Images.Count - 1, 0))] ?? throw new InvalidOperationException("Current image requested before product images were loaded.");
 
-    private IEnumerable<CatalogueProductSize> AllSizes => product?.Variants.SelectMany(v => v.Sizes).GroupBy(s => s.Id).Select(g => g.First()) ?? Enumerable.Empty<CatalogueProductSize>();
-    private CatalogueProductSize? SelectedSize => AllSizes.FirstOrDefault(s => s.Id == selectedSizeId) ?? AllSizes.FirstOrDefault();
+    private IEnumerable<CatalogueProductSize> AllSizes => product?.Variants.SingleOrDefault()?.Sizes ?? Enumerable.Empty<CatalogueProductSize>();
+    private CatalogueProductSize? SelectedSize => AllSizes.FirstOrDefault(s => s.Id == selectedSizeId);
     private int GtinCount => product?.Variants.SelectMany(v => v.Sizes).SelectMany(s => s.Packs).SelectMany(p => p.Gtins).Distinct(StringComparer.OrdinalIgnoreCase).Count() ?? 0;
 
     private IReadOnlyList<(string Key, string Label)> ProductFeatures
@@ -269,15 +286,37 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
+        var revision = ++selectionRevision;
+        SelectedOffers = [];
+        product = null;
         loading = true; notFound = false; failed = false; currentImageIndex = 0; selectedSizeId = null; selectedPackId = null;
-        var result = await Catalogue.GetAsync(Slug);
+        Guid? requestedVariantId = null;
+        if (VariantId is not null)
+        {
+            if (!Guid.TryParse(VariantId, out var parsedVariantId))
+            {
+                notFound = true;
+                loading = false;
+                return;
+            }
+            requestedVariantId = parsedVariantId;
+        }
+        Guid? requestedPackId = null;
+        if (PackTypeId is not null)
+        {
+            if (!Guid.TryParse(PackTypeId, out var packId)) { notFound = true; loading = false; return; }
+            requestedPackId = packId;
+        }
+        var result = await Catalogue.GetAsync(Slug, variantId: requestedVariantId, packTypeId: requestedPackId);
+        if (revision != selectionRevision) return;
         switch (result.Status)
         {
             case ProductCatalogueDetailStatus.Found:
                 product = result.Product;
                 currentImageIndex = product?.Images.Select((image, index) => new { image, index }).FirstOrDefault(x => x.image.IsPrimary)?.index ?? 0;
-                selectedSizeId = product?.Variants.SelectMany(v => v.Sizes).FirstOrDefault()?.Id;
-                selectedPackId = SelectedSize?.Packs.FirstOrDefault()?.Id;
+                selectedSizeId = product?.Variants.SelectMany(v => v.Sizes).FirstOrDefault(s => !requestedPackId.HasValue || s.Packs.Any(p => p.Id == requestedPackId))?.Id;
+                selectedPackId = requestedPackId ?? SelectedSize?.Packs.FirstOrDefault()?.Id;
+                SelectedOffers = product?.RetailOffers ?? [];
                 break;
             case ProductCatalogueDetailStatus.NotFound: product = null; notFound = true; break;
             default: product = null; failed = true; break;
@@ -288,8 +327,42 @@ else
     private void PreviousImage() { if (product is null || product.Images.Count < 2) return; currentImageIndex = (currentImageIndex - 1 + product.Images.Count) % product.Images.Count; }
     private void NextImage() { if (product is null || product.Images.Count < 2) return; currentImageIndex = (currentImageIndex + 1) % product.Images.Count; }
     private void SelectImage(int index) { if (product is null || index < 0 || index >= product.Images.Count) return; currentImageIndex = index; }
-    private void SelectSize(Guid id) { selectedSizeId = id; selectedPackId = AllSizes.FirstOrDefault(s => s.Id == id)?.Packs.FirstOrDefault()?.Id; }
-    private void SelectPack(ChangeEventArgs args) { if (Guid.TryParse(args.Value?.ToString(), out var id)) selectedPackId = id; }
+    private void SelectVariant(ChangeEventArgs args)
+    {
+        if (Guid.TryParse(args.Value?.ToString(), out var id) && product?.AvailableVariants?.Any(v => v.Id == id) == true)
+        {
+            ++selectionRevision;
+            SelectedOffers = [];
+            selectedSizeId = null;
+            selectedPackId = null;
+            Navigation.NavigateTo(PublicProductIdentity.ProductUrl(Slug, id));
+        }
+    }
+
+    private async Task SelectSize(Guid id)
+    {
+        if (!AllSizes.Any(s => s.Id == id)) return;
+        selectedSizeId = id;
+        selectedPackId = SelectedSize?.Packs.FirstOrDefault()?.Id;
+        await RefreshOffersAsync();
+    }
+
+    private async Task SelectPack(ChangeEventArgs args)
+    {
+        if (!Guid.TryParse(args.Value?.ToString(), out var id) || SelectedSize?.Packs.Any(p => p.Id == id) != true) return;
+        selectedPackId = id;
+        await RefreshOffersAsync();
+    }
+
+    private async Task RefreshOffersAsync()
+    {
+        var revision = ++selectionRevision;
+        SelectedOffers = [];
+        if (!selectedPackId.HasValue || product is null) return;
+        var result = await Catalogue.GetAsync(Slug, variantId: product.ProductVariantId, packTypeId: selectedPackId);
+        if (revision == selectionRevision && result.Status == ProductCatalogueDetailStatus.Found)
+            SelectedOffers = result.Product?.RetailOffers ?? [];
+    }
     private void HandleGalleryKeyDown(KeyboardEventArgs args) { if (args.Key == "ArrowLeft") PreviousImage(); else if (args.Key == "ArrowRight") NextImage(); }
 
     private static string FormatProductTypeLabel(ProductType type)

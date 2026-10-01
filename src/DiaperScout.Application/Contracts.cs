@@ -61,7 +61,8 @@ public sealed record CatalogueProductListItem(
     IReadOnlyList<string> Sizes,
     IReadOnlyList<BackingType> Backings,
     IReadOnlyList<PackagingType> PackagingTypes,
-    IReadOnlyList<CatalogueRetailDestination> RetailDestinations);
+    IReadOnlyList<CatalogueRetailDestination> RetailDestinations,
+    Guid? ProductVariantId = null);
 
 public sealed record CatalogueProductSearch(
     IReadOnlyList<CatalogueProductListItem> Products,
@@ -343,7 +344,11 @@ public sealed record CatalogueProductDetails(
     string? OfficialWebsiteUrl,
     IReadOnlyList<CatalogueProductVariant> Variants,
     IReadOnlyList<CatalogueProductImage> Images,
-    IReadOnlyList<CatalogueRetailOffer> RetailOffers);
+    IReadOnlyList<CatalogueRetailOffer> RetailOffers,
+    Guid? ProductVariantId = null,
+    IReadOnlyList<CatalogueVariantOption>? AvailableVariants = null);
+
+public sealed record CatalogueVariantOption(Guid Id, string Name);
 
 public sealed record ExplorerIdentity(
     Guid UserId,
@@ -647,7 +652,9 @@ public interface IAtlasQueries
 
     Task<CatalogueProductDetails?> GetProductDetailsBySlugAsync(
         string slug,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default,
+        Guid? variantId = null,
+        Guid? packTypeId = null);
 
     Task<CatalogueModeratorProductDetails?> GetProductDetailsForModeratorAsync(
         AuthenticatedUser actor,
@@ -940,7 +947,9 @@ public sealed record CatalogueSubmissionReceipt(
     string? SharedConstructionNotes,
     string? Notes,
     DateTimeOffset CreatedAtUtc,
-    DateTimeOffset UpdatedAtUtc);
+    DateTimeOffset UpdatedAtUtc,
+    int? ProposedPackQuantity = null,
+    Guid? ResolvedPackTypeId = null);
 
 public sealed record UpdateCatalogueSubmissionIdentity(
     string? ProposedGtin,

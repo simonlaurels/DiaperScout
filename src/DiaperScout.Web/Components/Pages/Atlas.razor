@@ -1,0 +1,49 @@
+@page "/atlas"
+@rendermode InteractiveServer
+@inject PlaceObservationClient PlacesClient
+<PageTitle>Atlas · DiaperScout</PageTitle>
+<main class="contribution-page atlas-page">
+    <header><p class="catalogue-kicker">Places and observations</p><h1>Atlas</h1><p>Real places, with dated reports of the packs people found there. An observation is not a guarantee of current stock.</p></header>
+    @if (loading) { <p role="status">Loading observations…</p> }
+    else if (error is not null) { <p role="alert" class="contribution-message">@error</p><button class="ds-button ds-button-secondary" @onclick="LoadAsync">Try again</button> }
+    else if (places.Count == 0) {
+        <h2>The first place is waiting.</h2><p>No qualifying physical observations have been recorded yet. Scan a known pack and record where you found it.</p>
+        <a class="ds-button ds-button-primary" href="/scan">Scan a product</a>
+    } else {
+        <PlaceMap Places="places" PlaceSelected="SelectPlace" />
+        <div class="atlas-place-list">
+            @foreach (var entry in places) {
+                <button type="button" class="atlas-place-choice @(selected?.Place.Id == entry.Place.Id ? "selected" : "")" @onclick="() => SelectPlace(entry.Place.Id)">
+                    <strong>@entry.Place.Name</strong><span>@entry.Place.AddressLine1, @entry.Place.Locality</span><span>@entry.ProductCount @(entry.ProductCount == 1 ? "pack" : "packs") reported · most recent @entry.LatestObservedAtUtc.ToString("d MMM yyyy")</span>
+                </button>
+            }
+        </div>
+        @if (selected is not null) {
+            <section class="contribution-card" aria-live="polite" aria-labelledby="place-heading">
+                <h2 id="place-heading">@selected.Place.Name</h2><p>@selected.Place.AddressLine1, @selected.Place.Locality, @selected.Place.Postcode</p><p>Contributor reports · not verified stock information</p>
+                @foreach (var observation in selected.Observations.Take(50)) {
+                    <article class="atlas-observation"><a href="@observation.ProductUrl"><strong>@observation.Name</strong></a><p>@observation.Size · Pack of @observation.Quantity</p>
+                        <p>Observed <time datetime="@observation.ObservedAtUtc.ToString("O")">@observation.ObservedAtUtc.ToString("d MMM yyyy, HH:mm 'UTC'")</time></p>
+                        @if (observation.PriceAmount.HasValue) { <p>Reported shelf price: @observation.PriceAmount.Value.ToString("0.00") @observation.CurrencyCode</p> }
+                    </article>
+                }
+            </section>
+        }
+    }
+</main>
+@code {
+    [SupplyParameterFromQuery(Name="locationId")] public Guid? LocationId { get; set; }
+    private IReadOnlyList<AtlasPlace> places = [];
+    private AtlasPlace? selected;
+    private bool loading = true;
+    private string? error;
+    protected override Task OnInitializedAsync() => LoadAsync();
+    protected override void OnParametersSet() { if (LocationId.HasValue) selected = places.FirstOrDefault(p => p.Place.Id == LocationId); }
+    private async Task LoadAsync() {
+        loading = true; error = null;
+        try { places = await PlacesClient.AtlasAsync(); selected = places.FirstOrDefault(p => p.Place.Id == LocationId) ?? places.FirstOrDefault(); }
+        catch (Exception e) when (e is HttpRequestException or TaskCanceledException) { error = "We couldn’t load current observations. Check your connection and try again."; }
+        finally { loading = false; }
+    }
+    private void SelectPlace(Guid id) => selected = places.FirstOrDefault(p => p.Place.Id == id);
+}

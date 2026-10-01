@@ -6,7 +6,7 @@ using DiaperScout.Application;
 using DiaperScout.Domain;
 using Microsoft.Extensions.Options;
 
-namespace DiaperScout.Infrastructure;
+namespace DiaperScout.Commerce.Plugins.Awin;
 
 public sealed class AwinAffiliateProgrammeDiscoveryOptions
 {
@@ -111,7 +111,7 @@ public sealed class AwinAffiliateProgrammeDiscoveryProvider(
             ("relationship", relationship));
 
         using var response = await httpClient.GetAsync(url, cancellationToken);
-        await EnsureSuccessAsync(response, "programme discovery", cancellationToken);
+        await EnsureSuccessAsync(response);
 
         return await response.Content.ReadFromJsonAsync<List<AwinProgramme>>(JsonOptions, cancellationToken)
             ?? [];
@@ -128,7 +128,7 @@ public sealed class AwinAffiliateProgrammeDiscoveryProvider(
             ("relationship", relationship));
 
         using var response = await httpClient.GetAsync(url, cancellationToken);
-        await EnsureSuccessAsync(response, "programme details discovery", cancellationToken);
+        await EnsureSuccessAsync(response);
 
         return await response.Content.ReadFromJsonAsync<AwinProgrammeDetails>(JsonOptions, cancellationToken);
     }
@@ -162,16 +162,14 @@ public sealed class AwinAffiliateProgrammeDiscoveryProvider(
     }
 
     private static async Task EnsureSuccessAsync(
-        HttpResponseMessage response,
-        string operation,
-        CancellationToken cancellationToken)
+        HttpResponseMessage response)
     {
         if (response.IsSuccessStatusCode)
             return;
 
-        var body = await response.Content.ReadAsStringAsync(cancellationToken);
-        throw new HttpRequestException(
-            $"Awin {operation} failed with HTTP {(int)response.StatusCode}: {body}");
+        // Response bodies can contain provider credentials or request details. Never include them in exceptions.
+        await Task.CompletedTask;
+        throw new HttpRequestException($"Affiliate programme request failed with HTTP {(int)response.StatusCode}.");
     }
 
     private static bool MatchesRetailer(AwinProgramme programme, string retailerHost)

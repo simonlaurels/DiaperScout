@@ -56,14 +56,15 @@ public sealed class PasskeyBrowserTests(PostgreSqlFixture fixture) : IClassFixtu
         await Assertions.Expect(page.Locator("[data-passkey-message]")).ToHaveTextAsync("Passkey added. You can now use it to sign in.");
         await Assertions.Expect(page.Locator("[data-passkey-list]")).ToContainTextAsync("Browser test passkey");
         await page.GetByRole(AriaRole.Link, new() { Name = "Sign out", Exact = true }).ClickAsync();
-        await page.WaitForURLAsync(origin + "/products");
+        await page.WaitForURLAsync(origin + "/");
         await Assertions.Expect(page.GetByRole(AriaRole.Link, new() { Name = "Sign in", Exact = true })).ToBeVisibleAsync();
         await Assertions.Expect(page.GetByRole(AriaRole.Link, new() { Name = "Sign out", Exact = true })).ToHaveCountAsync(0);
         await Assertions.Expect(page.GetByRole(AriaRole.Link, new() { Name = "Passkeys", Exact = true })).ToHaveCountAsync(0);
-        await page.GotoAsync(origin + "/signin");
+        var contributionTarget = "/contribute/product?gtin=96385074";
+        await page.GotoAsync(origin + "/signin?returnUrl=" + Uri.EscapeDataString(contributionTarget));
         await Assertions.Expect(page.GetByRole(AriaRole.Button, new() { Name = "Email me a sign-in link" })).ToBeVisibleAsync();
         await page.GetByRole(AriaRole.Button, new() { Name = "Sign in with a passkey" }).ClickAsync();
-        await page.WaitForURLAsync(origin + "/products");
+        await page.WaitForURLAsync(origin + contributionTarget);
         await page.GetByRole(AriaRole.Link, new() { Name = "Passkeys", Exact = true }).ClickAsync();
         await Assertions.Expect(page.Locator("[data-passkey-list]")).ToContainTextAsync("Last used");
         await page.SetViewportSizeAsync(390, 844);

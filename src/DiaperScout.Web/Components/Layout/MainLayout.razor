@@ -36,13 +36,23 @@
         </div>
     </header>
 
-    <main class="ds-main">
+    <a class="pwa-skip-link" href="#main-content">Skip to content</a>
+    <main class="ds-main" id="main-content" tabindex="-1">
         @Body
     </main>
+    <nav class="pwa-mobile-nav" aria-label="App navigation">
+        <a href="/"><AppIcon /><span>Explore</span></a>
+        <a href="/products"><AppIcon Name="search" /><span>Products</span></a>
+        <a href="/scan" class="pwa-scan-link" aria-label="Scan a barcode"><AppIcon Name="scan" /><span>Scan</span></a>
+        <a href="/atlas"><AppIcon Name="map" /><span>Atlas</span></a>
+        <a href="/backpack"><AppIcon Name="backpack" /><span>Backpack</span></a>
+    </nav>
+    <p id="pwa-offline-notice" class="pwa-connectivity-notice" role="status" hidden>You’re offline. Current product and retailer information needs a connection.</p>
+    <div id="pwa-update" class="pwa-update" role="status" hidden><span>A fresh map is ready.</span><button type="button" data-pwa-update>Update DiaperScout</button><button type="button" data-pwa-update-dismiss aria-label="Dismiss update">×</button></div>
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>
-    <span>An unexpected error occurred.</span>
+    <span>The page ran into a problem. Reload to continue exploring.</span>
     <a href="." class="reload">Reload</a>
     <button type="button" class="dismiss" aria-label="Dismiss">×</button>
 </div>

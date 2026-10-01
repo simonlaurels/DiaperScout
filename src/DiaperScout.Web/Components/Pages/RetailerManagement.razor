@@ -51,10 +51,6 @@
                             <label for="retailer-name">Retailer name</label>
                             <InputText id="retailer-name" class="ds-input" @bind-Value="createModel.Name" placeholder="e.g. Tesco" />
                         </div>
-                        <div class="retailer-field">
-                            <label for="retailer-slug">Slug</label>
-                            <InputText id="retailer-slug" class="ds-input" @bind-Value="createModel.Slug" placeholder="e.g. tesco" />
-                        </div>
                         <div class="retailer-field retailer-field-wide">
                             <label for="retailer-website">Website</label>
                             <InputText id="retailer-website" class="ds-input" @bind-Value="createModel.WebsiteUrl" placeholder="https://…" />
@@ -89,7 +85,7 @@
             <div class="retailer-toolbar">
                 <div class="retailer-search">
                     <label for="retailer-search">Search</label>
-                    <InputText id="retailer-search" class="ds-input" @bind-Value="query" @bind-Value:event="oninput" placeholder="Name, slug or website…" />
+                    <InputText id="retailer-search" class="ds-input" @bind-Value="query" @bind-Value:event="oninput" placeholder="Name or website…" />
                 </div>
                 <div class="retailer-filter">
                     <label for="retailer-status">Status</label>
@@ -187,7 +183,8 @@
                                                         <InputText class="ds-input" @bind-Value="verificationModel.SourceUrl" placeholder="https://…" />
                                                     </div>
                                                     <div class="retailer-field retailer-field-wide">
-                                                        <label>Discovered listing URL</label>
+                                                        <label>Retailer product URL</label>
+                                                        <small>The retailer page where this exact product and pack can be purchased.</small>
                                                         <InputText class="ds-input" @bind-Value="verificationModel.ListingUrl" placeholder="https://…" />
                                                     </div>
                                                     <div class="retailer-field retailer-field-wide">

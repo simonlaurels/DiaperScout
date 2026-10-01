@@ -1,0 +1,8 @@
+{
+  "webIdentityUnchanged": true,
+  "webScaleUnchanged": true,
+  "webIngressUnchanged": true,
+  "apiUnchanged": true,
+  "apiMinReplicas": 0,
+  "revision": "diaperscout-web-vnet--shared-keys-20261001"
+}

@@ -308,6 +308,8 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
         });
 
 
+        modelBuilder.Entity<CatalogueSubmission>().HasIndex(x => new { x.SubmittedByUserId, x.PublicContributionId }).IsUnique();
+        modelBuilder.Entity<CatalogueSubmission>().HasOne<PackType>().WithMany().HasForeignKey(x => x.ResolvedPackTypeId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Location>(entity =>
         {
             entity.ToTable("locations");
@@ -317,6 +319,9 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
             entity.Property(x => x.Postcode).HasMaxLength(32).IsRequired();
             entity.Property(x => x.Latitude).HasPrecision(9, 6);
             entity.Property(x => x.Longitude).HasPrecision(9, 6);
+            entity.Property(x => x.PlaceIdentity).HasMaxLength(64);
+            entity.HasIndex(x => x.PlaceIdentity).IsUnique();
+            entity.HasOne<User>().WithMany().HasForeignKey(x => x.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
             entity.HasIndex(x => new { x.RetailerId, x.Postcode, x.Name }).IsUnique();
             entity.HasOne<Retailer>()
                 .WithMany()
@@ -782,6 +787,8 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
             entity.Property(x => x.CandidateProductName).HasMaxLength(250);
             entity.Property(x => x.PriceAmount).HasPrecision(12, 2);
             entity.Property(x => x.PriceCurrencyCode).HasMaxLength(3);
+            entity.HasOne<PackType>().WithMany().HasForeignKey(x => x.PackTypeId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasIndex(x => new { x.AuthorUserId, x.ContributionId }).IsUnique();
             entity.HasIndex(x => new { x.ProductId, x.ObservedAtUtc });
             entity.HasIndex(x => new { x.LocationId, x.ObservedAtUtc });
             entity.HasIndex(x => new { x.AuthorUserId, x.CreatedAtUtc });

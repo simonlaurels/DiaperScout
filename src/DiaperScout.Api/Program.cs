@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddDiaperScoutInfrastructure(builder.Configuration);
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("contributions", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "anonymous",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = 30, Window = TimeSpan.FromMinutes(1), QueueLimit = 0, AutoReplenishment = true }));
+});
 
 if (builder.Environment.IsDevelopment() &&
     builder.Configuration.GetValue<bool>("Authentication:Development:Enabled"))
@@ -53,6 +62,8 @@ builder.Services
 
 var app = builder.Build();
 app.MapRetailListingEndpoints();
+app.MapCommercePluginEndpoints();
+app.MapPlaceObservationEndpoints();
 
 if (app.Environment.IsDevelopment() &&
     builder.Configuration.GetValue<bool>("DevelopmentCatalogue:Enabled"))
@@ -69,6 +80,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 
 app.MapUserManagementEndpoints();
 app.MapPasskeyEndpoints();
@@ -608,6 +620,7 @@ app.MapGet(
     async (
         string gtin,
         IAtlasQueries atlasQueries,
+        ILogger<Program> logger,
         CancellationToken cancellationToken) =>
     {
         var normalizedGtin =
@@ -615,22 +628,25 @@ app.MapGet(
                 .Replace(" ", string.Empty)
                 .Replace("-", string.Empty);
 
-        if (!Regex.IsMatch(normalizedGtin, "^[0-9]{8,14}$"))
+        if (RetailGtin.Normalise(normalizedGtin) is null)
         {
             return Results.ValidationProblem(
                 new Dictionary<string, string[]>
                 {
                     ["gtin"] =
                     [
-                        "GTIN must contain 8 to 14 digits."
+                        "Enter a valid GTIN-8, GTIN-12, GTIN-13 or GTIN-14 barcode, including its check digit."
                     ]
                 });
         }
 
-        var identification =
-            await atlasQueries.GetProductByGtinAsync(
-                normalizedGtin,
-                cancellationToken);
+        ProductIdentification? identification;
+        try { identification = await atlasQueries.GetProductByGtinAsync(normalizedGtin, cancellationToken); }
+        catch (CatalogueValidationException)
+        {
+            logger.LogWarning("Canonical barcode {Gtin} resolves to multiple current packs; editorial data-quality review is required", normalizedGtin);
+            return Results.Conflict(new { code = "ambiguous_barcode", message = "This barcode has conflicting catalogue matches. Please try another item; the catalogue needs review." });
+        }
 
         return identification is null
             ? Results.NotFound(
@@ -829,6 +845,8 @@ app.MapGet(
     "/api/v1/products/{slug}",
     async (
         string slug,
+        Guid? variantId,
+        Guid? packTypeId,
         IAtlasQueries atlasQueries,
         CancellationToken cancellationToken) =>
     {
@@ -838,7 +856,7 @@ app.MapGet(
         var product =
             await atlasQueries.GetProductDetailsBySlugAsync(
                 slug.Trim(),
-                cancellationToken);
+                cancellationToken, variantId, packTypeId);
 
         return product is null
             ? Results.NotFound()

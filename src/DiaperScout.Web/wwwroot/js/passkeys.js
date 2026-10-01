@@ -113,7 +113,10 @@ document.addEventListener("click", async event => {
 
 function initialise() {
     document.querySelectorAll("[data-passkey-signin], [data-passkey-account]").forEach(root => {
-        if (root.dataset.initialised) return;
+        // Enhanced navigation can preserve this root while replacing its list with SSR
+        // markup. Rehydrate that list even when the root was initialised previously.
+        const resetList = root.querySelector("[data-passkey-list]")?.textContent.trim() === "Loading your passkeys…";
+        if (root.dataset.initialised && !resetList) return;
         root.dataset.initialised = "true";
         if (!supported()) root.querySelector("[data-passkey-message]").textContent = "Passkeys aren’t supported in this browser. Email sign-in links are still available.";
         if (root.matches("[data-passkey-account]")) loadPasskeys(root).catch(error => {
@@ -123,4 +126,5 @@ function initialise() {
     });
 }
 initialise();
-if (window.Blazor) Blazor.addEventListener("enhancedload", initialise);
+if (typeof window.Blazor?.addEventListener === "function") Blazor.addEventListener("enhancedload", initialise);
+else addEventListener("diaperscout:framework-ready", () => Blazor.addEventListener("enhancedload", initialise), { once: true });

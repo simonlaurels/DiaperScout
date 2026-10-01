@@ -1,0 +1,11 @@
+<div class="scout-state" role="@(Error ? "alert" : "status")">
+    <span class="scout-state-icon"><AppIcon /></span>
+    <h2>@Heading</h2><p>@Description</p>
+    @if (Retry.HasDelegate) { <button type="button" class="ds-button ds-button-secondary" @onclick="Retry">Try again</button> }
+</div>
+@code {
+    [Parameter] public string Heading { get; set; } = "Preparing your map…";
+    [Parameter] public string Description { get; set; } = "Finding your next option.";
+    [Parameter] public bool Error { get; set; }
+    [Parameter] public EventCallback Retry { get; set; }
+}

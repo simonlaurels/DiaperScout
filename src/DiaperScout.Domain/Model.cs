@@ -11,7 +11,7 @@ public enum ProductStatus { Current, Discontinued, Prototype }
 public enum RetailerStatus { Discovered, Verified, NeedsReview, Inactive }
 public enum RetailerIdentityVerificationOutcome { Verified, NeedsReview }
 public enum RetailerProductDiscoveryStatus { Discovered, Verified, NeedsReview, Inactive }
-public enum RetailerProductAvailability { Unknown, InStock, OutOfStock, PreOrder, Discontinued }
+public enum RetailerProductAvailability { Unknown, InStock, OutOfStock, PreOrder, Discontinued, Limited }
 public enum BackingType { Unknown, Plastic, Cloth, Hybrid, Other }
 public enum FastenerType { Unknown, AdhesiveTape, HookAndLoop, Other }
 public enum CatalogueVariantAppearance { Unknown, Plain, Printed }
@@ -741,7 +741,7 @@ public sealed class Location : Entity
     private Location() { Name = null!; AddressLine1 = null!; Locality = null!; Postcode = null!; }
     public Location(Guid retailerId, Guid countryId, string name, string addressLine1, string locality, string postcode)
     { RetailerId = retailerId; CountryId = countryId; Name = name; AddressLine1 = addressLine1; Locality = locality; Postcode = postcode; }
-    public Guid RetailerId { get; private set; }
+    public Guid? RetailerId { get; private set; }
     public Guid CountryId { get; private set; }
     public string Name { get; private set; }
     public string AddressLine1 { get; private set; }
@@ -750,6 +750,22 @@ public sealed class Location : Entity
     public string Postcode { get; private set; }
     public decimal? Latitude { get; private set; }
     public decimal? Longitude { get; private set; }
+    public bool IsPublicCommercialPlace { get; private set; }
+    public Guid? CreatedByUserId { get; private set; }
+    public DateTimeOffset? CreatedAtUtc { get; private set; }
+    public string? PlaceIdentity { get; private set; }
+    public static Location PublicShop(Guid author, Guid country, string name, string address, string locality,
+        string postcode, decimal latitude, decimal longitude, string identity)
+    {
+        if (author == Guid.Empty || country == Guid.Empty || latitude is < -90 or > 90 || longitude is < -180 or > 180)
+            throw new ArgumentException("A contributor, country and valid shop coordinates are required.");
+        var location = new Location(Guid.Empty, country, name, address, locality, postcode)
+        {
+            RetailerId = null, IsPublicCommercialPlace = true, CreatedByUserId = author,
+            CreatedAtUtc = DateTimeOffset.UtcNow, Latitude = latitude, Longitude = longitude, PlaceIdentity = identity
+        };
+        return location;
+    }
 }
 
 public sealed class PlatformSetting : Entity
@@ -1693,6 +1709,27 @@ public sealed class CatalogueSubmission : Entity
     public string? Notes { get; private set; }
 
     public Guid? PublishedProductId { get; private set; }
+    public Guid? ResolvedPackTypeId { get; private set; }
+    public Guid? PublicContributionId { get; private set; }
+    public int? ProposedPackQuantity { get; private set; }
+    public void SetPublicContribution(Guid contributionId)
+    {
+        if (Source != CatalogueSubmissionSource.Explorer || Status != CatalogueSubmissionStatus.Draft || contributionId == Guid.Empty)
+            throw new ArgumentException("A new public proposal requires its contribution identifier.");
+        PublicContributionId = contributionId;
+    }
+    public void SetProposedPackQuantity(int? quantity)
+    {
+        if (Status != CatalogueSubmissionStatus.Draft || quantity is < 1 or > 100000)
+            throw new ArgumentException("Set the proposed pack quantity while preparing the submission.");
+        ProposedPackQuantity = quantity;
+    }
+    public void ResolveToExistingPack(Guid productId, Guid packId)
+    {
+        if (Status != CatalogueSubmissionStatus.Approved || packId == Guid.Empty)
+            throw new InvalidOperationException("Only an approved submission can be resolved to an existing pack.");
+        Publish(productId); ResolvedPackTypeId = packId;
+    }
 
     public DateTimeOffset CreatedAtUtc { get; private set; }
 
@@ -1987,6 +2024,18 @@ public sealed class Observation : Entity
     public string? Narrative { get; private set; }
     public decimal? PriceAmount { get; private set; }
     public string? PriceCurrencyCode { get; private set; }
+    public Guid? PackTypeId { get; private set; }
+    public Guid? ContributionId { get; private set; }
+    public void RecordExactPack(Guid packTypeId, Guid contributionId, decimal? price, string? currency)
+    {
+        if (State != ObservationState.Draft || Type != ObservationType.RetailAvailability || LocationId is null ||
+            packTypeId == Guid.Empty || contributionId == Guid.Empty)
+            throw new ArgumentException("A physical observation requires an exact pack, place and contribution identifier.");
+        if (price is < 0 or > 9999999999.99m || (price.HasValue && string.IsNullOrWhiteSpace(currency)))
+            throw new ArgumentException("Price must be nonnegative and have a currency.");
+        PackTypeId = packTypeId; ContributionId = contributionId; PriceAmount = price;
+        PriceCurrencyCode = price.HasValue ? currency : null;
+    }
     public void Submit() { if (State != ObservationState.Draft) throw new InvalidOperationException("Only drafts can be submitted."); State = ObservationState.Submitted; }
     public ICollection<EvidenceItem> Evidence { get; } = new List<EvidenceItem>();
 }

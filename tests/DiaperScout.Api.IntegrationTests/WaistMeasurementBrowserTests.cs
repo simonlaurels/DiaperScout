@@ -84,6 +84,7 @@ public sealed class WaistMeasurementBrowserTests(PostgreSqlFixture fixture) : IC
         var page = await browser.NewPageAsync(new() { ViewportSize = new() { Width = 1280, Height = 900 } });
         await page.GotoAsync(origin + "/signin/development");
         await page.GotoAsync(origin + $"/catalogue/add/{submission.Id}/3?maxStep=3");
+        await page.WaitForFunctionAsync("() => document.documentElement.dataset.pwaState === 'ready'");
         var sourceCard = page.Locator(".submission-size-variant").Filter(new() { HasText = "Printed" });
         await sourceCard.GetByRole(AriaRole.Button, new() { Name = "＋ Add size", Exact = true }).ClickAsync();
         var waist = page.Locator(".waist-measurements");

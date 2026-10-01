@@ -1,4 +1,5 @@
 using DiaperScout.Infrastructure;
+using DiaperScout.Commerce.Plugins.Awin;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -31,13 +32,7 @@ public sealed class ObservationApiFactory(PostgreSqlFixture fixture) : WebApplic
             }));
         builder.ConfigureTestServices(services =>
         {
-            services.RemoveAll<IAffiliateLinkResolver>();
-            services.AddSingleton<IAffiliateLinkResolver>(_ =>
-                new AwinAffiliateLinkResolver(
-                    Options.Create(new AwinAffiliateProgrammeDiscoveryOptions
-                    {
-                        PublisherId = "999"
-                    })));
+            services.Configure<AwinAffiliateProgrammeDiscoveryOptions>(o => o.PublisherId = "999");
 
             services.RemoveAll<DbContextOptions<DiaperScoutDbContext>>();
             services.RemoveAll<DiaperScoutDbContext>();

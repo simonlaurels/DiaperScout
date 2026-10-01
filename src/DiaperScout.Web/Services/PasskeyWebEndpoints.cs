@@ -42,7 +42,7 @@ public static class PasskeyWebEndpoints
             var authentication = await response.Content.ReadFromJsonAsync<PasswordlessAuthenticationResult>(ct);
             if (authentication is null) return Failure();
             await AuthenticationSession.SignInAsync(context, authentication, app.Environment);
-            return Results.Ok(new { redirect = "/" });
+            return Results.Ok(new { redirect = ContributionReturn.Consume(context) });
         });
 
         var account = app.MapGroup("/account/passkeys").RequireAuthorization().RequireRateLimiting("passkeys").AddEndpointFilter<PasskeyRequestFilter>();

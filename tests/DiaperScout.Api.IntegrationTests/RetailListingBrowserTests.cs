@@ -35,6 +35,7 @@ public sealed class RetailListingBrowserTests(PostgreSqlFixture fixture) : IClas
         var page = await context.NewPageAsync();
         await page.GotoAsync(origin + "/signin/development");
         await page.GotoAsync(origin + "/catalogue/retail-listings");
+        await Assertions.Expect(page.GetByText("Retailer product URL", new() { Exact = true })).ToHaveCountAsync(1);
         await page.Locator("#listing-retailer").SelectOptionAsync(retailer.Id.ToString());
         await page.Locator("#listing-product").SelectOptionAsync(product.Id.ToString());
         await page.Locator("#listing-variant").SelectOptionAsync(variant.Id.ToString());

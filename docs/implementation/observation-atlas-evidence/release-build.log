@@ -1,0 +1,14 @@
+  DiaperScout.Domain -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Domain/bin/Release/net10.0/DiaperScout.Domain.dll
+  DiaperScout.Application -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Application/bin/Release/net10.0/DiaperScout.Application.dll
+  DiaperScout.Commerce.Plugins.Awin -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Commerce.Plugins.Awin/bin/Release/net10.0/DiaperScout.Commerce.Plugins.Awin.dll
+  DiaperScout.Infrastructure -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Infrastructure/bin/Release/net10.0/DiaperScout.Infrastructure.dll
+  DiaperScout.Api -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Api/bin/Release/net10.0/DiaperScout.Api.dll
+  DiaperScout.Web -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Web/bin/Release/net10.0/DiaperScout.Web.dll
+  DiaperScout.Api.IntegrationTests -> /Users/sporter/Documents/Projects/DS/tests/DiaperScout.Api.IntegrationTests/bin/Release/net10.0/DiaperScout.Api.IntegrationTests.dll
+  DiaperScout.Domain.Tests -> /Users/sporter/Documents/Projects/DS/tests/DiaperScout.Domain.Tests/bin/Release/net10.0/DiaperScout.Domain.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:13.03

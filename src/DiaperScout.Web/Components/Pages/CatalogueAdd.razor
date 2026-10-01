@@ -41,6 +41,14 @@
             <div class="submission-message submission-message-success" role="status">@saveMessage</div>
         }
 
+        @if (submission?.ProposedPackQuantity is { } proposedQuantity)
+        {
+            <p class="submission-help">Contributor’s proposed pack quantity: @proposedQuantity</p>
+        }
+        @if (submission?.ProposedGtin is not null && submission.Status is CatalogueSubmissionStatus.Approved or CatalogueSubmissionStatus.ReadyForReview)
+        {
+            <ResolveBarcodeToPack SubmissionId="submission.Id" Status="submission.Status" Resolved="OnParametersSetAsync" />
+        }
         <ol class="submission-steps" aria-label="Product creation progress">
             <li class="@(StepClass(1)) @(IsStepNavigable(1) ? "submission-step-navigable" : "")"
                 @onclick="() => NavigateToStepFromTab(1)"

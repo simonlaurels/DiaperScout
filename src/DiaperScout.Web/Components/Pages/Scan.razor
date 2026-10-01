@@ -10,10 +10,10 @@
     <section class="scan-panel" aria-labelledby="scan-heading">
         <p class="scan-eyebrow">Product identification</p>
         <h1 id="scan-heading">What have you found?</h1>
-        <p class="scan-intro">Enter the barcode number from a pack to check the Atlas.</p>
+        <p class="scan-intro">Scan or enter the barcode on a pack to find its product or record where you found it.</p>
 
         <div class="scan-camera">
-            <button class="ds-button ds-button-secondary" type="button" @onclick="StartScannerAsync" disabled="@(_isScanning || _isLookingUp)">
+            <button class="ds-button ds-button-secondary" type="button" @onclick="StartScannerAsync" disabled="@(!_interactiveReady || _isScanning || _isLookingUp || _result?.Status is ProductLookupStatus.Found or ProductLookupStatus.NotFound)">
                 Scan barcode
             </button>
 
@@ -29,12 +29,12 @@
             }
         </div>
 
-        <EditForm Model="this" OnValidSubmit="LookupAsync">
+        <EditForm Model="this" OnValidSubmit="LookupAsync" FormName="scan-lookup">
             <div class="scan-form">
                 <label for="gtin">Barcode number</label>
                 <div class="scan-input-row">
-                    <InputText id="gtin" class="scan-input" @bind-Value="_gtin" autocomplete="off" inputmode="numeric" placeholder="8–14 digit GTIN" />
-                    <button class="ds-button ds-button-primary" type="submit" disabled="@(_isLookingUp || _isScanning)">
+                    <input id="gtin" class="scan-input" @bind="_gtin" @bind:event="oninput" disabled="@(!_interactiveReady)" autocomplete="off" inputmode="numeric" placeholder="8–14 digit GTIN" />
+                    <button class="ds-button ds-button-primary" type="submit" disabled="@(!_interactiveReady || _isLookingUp || _isScanning)">
                         @(_isLookingUp ? "Searching…" : "Look up")
                     </button>
                 </div>
@@ -44,7 +44,7 @@
         @if (_result is { Status: ProductLookupStatus.Found, Product: { } match })
         {
             <section class="scan-result scan-result-found" aria-live="polite">
-                <p class="scan-result-status">Found in the Atlas</p>
+                <p class="scan-result-status">Exact pack found</p>
                 <h2>@match.Product.Name</h2>
                 <dl>
                     <div><dt>Variant</dt><dd>@match.VariantName</dd></div>
@@ -52,14 +52,21 @@
                     <div><dt>Pack</dt><dd>@match.QuantityPerPack @match.PackagingType</dd></div>
                     <div><dt>GTIN</dt><dd>@match.Gtin</dd></div>
                 </dl>
+                <div class="contribution-actions">
+                    <a class="ds-button ds-button-primary" href="@(PublicProductIdentity.ProductUrl(match.Product.Slug, match.ProductVariantId) + "&packTypeId=" + match.PackTypeId)">View product</a>
+                    <a class="ds-button ds-button-secondary" href="@($"/observations/new?packTypeId={match.PackTypeId}")">Record where you found it</a>
+                </div>
+                <button type="button" class="ds-button ds-button-secondary" @onclick="ResetResult">Scan another item</button>
             </section>
         }
         else if (_result is { Status: ProductLookupStatus.NotFound, Gtin: { } gtin })
         {
             <section class="scan-result" aria-live="polite">
-                <p class="scan-result-status">Not yet in the Atlas</p>
-                <h2>We don’t recognise @gtin yet.</h2>
-                <p>This does not create a product. A documented observation flow will let an Explorer share what they found.</p>
+                <p class="scan-result-status">A missing barcode</p>
+                <h2>We don’t have this one yet.</h2>
+                <p>Share what the pack says. Our moderators will check whether it belongs to an existing product or something new.</p>
+                <a class="ds-button ds-button-primary" href="@($"/contribute/product?gtin={Uri.EscapeDataString(gtin)}")">Add product</a>
+                <button type="button" class="ds-button ds-button-secondary" @onclick="ResetResult">Scan another item</button>
             </section>
         }
         else if (_result is { Message: { } message })
@@ -72,6 +79,8 @@
 @code {
     private string _gtin = string.Empty;
     private bool _isLookingUp;
+    private bool _interactiveReady;
+    protected override Task OnAfterRenderAsync(bool firstRender) { if (firstRender) { _interactiveReady = true; StateHasChanged(); } return Task.CompletedTask; }
     private bool _isScanning;
     private ProductLookupResult? _result;
     private string? _scanMessage;
@@ -91,6 +100,7 @@
             _isLookingUp = false;
         }
     }
+    private void ResetResult() { _result = null; _gtin = ""; _scanMessage = null; }
 
     private async Task StartScannerAsync()
     {
@@ -125,6 +135,7 @@
     [JSInvokable]
     public async Task OnBarcodeDetected(string gtin)
     {
+        if (_isLookingUp || _result?.Status is ProductLookupStatus.Found or ProductLookupStatus.NotFound) return;
         _isScanning = false;
         _scanMessage = null;
         _gtin = gtin;

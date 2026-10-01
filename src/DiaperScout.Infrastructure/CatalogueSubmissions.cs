@@ -2376,7 +2376,9 @@ internal sealed class CatalogueSubmissions(
             submission.SharedConstructionNotes,
             submission.Notes,
             submission.CreatedAtUtc,
-            submission.UpdatedAtUtc);
+            submission.UpdatedAtUtc,
+            submission.ProposedPackQuantity,
+            submission.ResolvedPackTypeId);
 
     private static string GetEditorialOutcomeFieldName(
         string? parameterName)

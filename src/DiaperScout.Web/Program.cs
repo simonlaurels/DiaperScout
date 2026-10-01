@@ -6,8 +6,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddWebDataProtection(builder.Configuration, builder.Environment);
 
 if (builder.Environment.IsDevelopment())
 {
@@ -58,6 +60,12 @@ builder.Services.AddHttpClient<ProductLookupClient>(client =>
             ?? "https+http://api"))
     .AddServiceDiscovery();
 
+builder.Services.AddHttpClient<PlaceObservationClient>(client =>
+        client.BaseAddress = new Uri(builder.Configuration["Api:BaseUrl"] ?? "https+http://api"))
+    .AddHttpMessageHandler<DevelopmentSubjectForwardingHandler>()
+    .AddHttpMessageHandler<ProductionIdentityForwardingHandler>()
+    .AddServiceDiscovery();
+
 builder.Services.AddHttpClient<UserManagementClient>(client =>
         client.BaseAddress = new Uri(
             builder.Configuration["Api:BaseUrl"]
@@ -70,6 +78,12 @@ builder.Services.AddHttpClient<ProductCatalogueClient>(client =>
         client.BaseAddress = new Uri(
             builder.Configuration["Api:BaseUrl"]
             ?? "https+http://api"))
+    .AddHttpMessageHandler<DevelopmentSubjectForwardingHandler>()
+    .AddHttpMessageHandler<ProductionIdentityForwardingHandler>()
+    .AddServiceDiscovery();
+
+builder.Services.AddHttpClient<CommercePluginClient>(client =>
+        client.BaseAddress = new Uri(builder.Configuration["Api:BaseUrl"] ?? "https+http://api"))
     .AddHttpMessageHandler<DevelopmentSubjectForwardingHandler>()
     .AddHttpMessageHandler<ProductionIdentityForwardingHandler>()
     .AddServiceDiscovery();
@@ -92,6 +106,15 @@ builder.Services.AddHttpClient<RetailerManagementClient>(client =>
 
 var app = builder.Build();
 
+if (!app.Environment.IsDevelopment())
+{
+    // Do not advertise a healthy replica until it can read/write the protected shared ring.
+    var protector = app.Services.GetRequiredService<IDataProtectionProvider>()
+        .CreateProtector("DiaperScout.Web.KeyRingReadiness.v1");
+    if (protector.Unprotect(protector.Protect("ready")) != "ready")
+        throw new InvalidOperationException("The shared Data Protection key ring failed its startup check.");
+}
+
 if (app.Environment.IsDevelopment() &&
     app.Configuration.GetValue<bool>("LanTesting:Enabled") &&
     !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("DOTNET_LAUNCH_PROFILE")))
@@ -112,8 +135,20 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+// Worker updates must be checked against network truth; this does not change TLS or ingress configuration.
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path == "/service-worker.js" || context.Request.Path == "/manifest.webmanifest")
+        context.Response.Headers.CacheControl = "no-cache";
+    await next();
+});
 app.UseHttpsRedirection();
 app.UseAuthentication();
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path == "/signin") ContributionReturn.Remember(context);
+    await next();
+});
 app.UseAuthorization();
 app.UseRateLimiter();
 app.UseAntiforgery();
@@ -251,7 +286,7 @@ app.MapGet("/signin/magic-link", async (
 
     await AuthenticationSession.SignInAsync(httpContext, authentication, app.Environment);
 
-    return Results.LocalRedirect("/");
+    return Results.LocalRedirect(ContributionReturn.Consume(httpContext));
 })
     .AllowAnonymous();
 
@@ -290,7 +325,7 @@ if (app.Environment.IsDevelopment())
             principal,
             new AuthenticationProperties { IsPersistent = false });
 
-        return Results.LocalRedirect("/catalogue/products");
+        return Results.LocalRedirect(ContributionReturn.Consume(httpContext, "/catalogue/products"));
     });
 
 }

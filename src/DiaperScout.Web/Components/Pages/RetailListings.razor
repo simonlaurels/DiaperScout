@@ -28,7 +28,7 @@
                         <div class="retailer-field"><label for="listing-size">Size</label><select id="listing-size" class="ds-select" @bind="SizeId" disabled="@(saving || SelectedVariant is null)"><option value="@Guid.Empty">Choose a size…</option>@foreach (var s in SelectedVariant?.Sizes ?? []) { <option value="@s.Id">@s.Name</option> }</select></div>
                         <div class="retailer-field retailer-field-wide"><label for="listing-pack">Pack / sellable item</label><select id="listing-pack" class="ds-select" @bind="packId" disabled="@(saving || SelectedSize is null)"><option value="@Guid.Empty">Choose a pack…</option>@foreach (var p in SelectedSize?.Packs ?? []) { <option value="@p.Id">@PackLabel(p)</option> }</select></div>
                         @if (SelectionEmptyState is not null) { <p class="retailer-field-wide">@SelectionEmptyState</p> }
-                        <div class="retailer-field retailer-field-wide"><label for="manual-listing-url">Retailer product URL</label><input id="manual-listing-url" class="ds-input" type="url" @bind="listingUrl" disabled="@(saving || packId == Guid.Empty)" placeholder="https://retailer.example/product" /></div>
+                        <div class="retailer-field retailer-field-wide"><label for="manual-listing-url">Retailer product URL</label><input id="manual-listing-url" class="ds-input" type="url" @bind="listingUrl" disabled="@(saving || packId == Guid.Empty)" placeholder="https://retailer.example/product" /><small>The retailer page where this exact product and pack can be purchased.</small></div>
                         <div class="retailer-field"><label for="manual-source">Evidence/source URL (optional)</label><input id="manual-source" class="ds-input" type="url" @bind="sourceUrl" disabled="@saving" /></div>
                         <div class="retailer-field"><label for="manual-reference">Retailer listing reference (optional)</label><input id="manual-reference" class="ds-input" maxlength="300" @bind="externalId" disabled="@saving" /></div>
                     </div>
@@ -58,7 +58,7 @@
                         }
                         else
                         {
-                            <p><a href="@item.Listing.ListingUrl" target="_blank" rel="noopener noreferrer">Open retailer product page ↗</a> · <a href="@($"/products/{item.ProductSlug}")" target="_blank" rel="noopener noreferrer">View public product ↗</a></p>
+                            <p><a href="@item.Listing.ListingUrl" target="_blank" rel="noopener noreferrer">Open retailer product page ↗</a> · <a href="@(PublicProductIdentity.ProductUrl(item.ProductSlug, item.ProductVariantId))" target="_blank" rel="noopener noreferrer">View public product ↗</a></p>
                             <div class="retailer-form-actions listing-actions">
                                 <button class="ds-button ds-button-secondary" @onclick="() => BeginEdit(item)" disabled="@saving">Edit listing</button>
                                 <button class="ds-button ds-button-primary" @onclick="() => SetStatusAsync(item, RetailerProductDiscoveryStatus.Verified)" disabled="@(saving || item.Listing.RetailerStatus != RetailerStatus.Verified || item.Listing.Status == RetailerProductDiscoveryStatus.Verified)">Confirm listing</button>

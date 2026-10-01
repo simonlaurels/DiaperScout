@@ -1848,14 +1848,14 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
 
         var catalogue = await response.Content.ReadFromJsonAsync<CatalogueProductSearch>();
         Assert.NotNull(catalogue);
-        Assert.Contains(catalogue.Products, product => product.Name == "Integration Test Product");
+        Assert.Contains(catalogue.Products, product => product.Name == "Integration Test Brand Integration Test Product Integration Test Variant");
         Assert.Contains(catalogue.Facets, facet => facet.Key == "manufacturer");
         Assert.Contains(catalogue.Facets, facet => facet.Key == "productType");
     }
 
 
     [Fact]
-    public async Task SearchCatalogueProducts_AppliesInterdependentFiltersAndReturnsRetailDestinations()
+    public async Task SearchCatalogueProducts_AppliesInterdependentFiltersAndHidesUnverifiedLegacyDestinations()
     {
         using var client = _factory.CreateClient();
 
@@ -1865,11 +1865,9 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
 
         var catalogue = await response.Content.ReadFromJsonAsync<CatalogueProductSearch>();
         Assert.NotNull(catalogue);
-        var product = Assert.Single(catalogue.Products, value => value.Name == "Integration Test Product");
+        var product = Assert.Single(catalogue.Products, value => value.Name == "Integration Test Brand Integration Test Product Integration Test Variant");
         Assert.Contains("Integration Test Size", product.Sizes);
-        var destination = Assert.Single(product.RetailDestinations);
-        Assert.Equal("Integration Test Retailer", destination.RetailerName);
-        Assert.Equal("https://shop.example.test/published-product", destination.ListingUrl);
+        Assert.DoesNotContain(product.RetailDestinations, d => d.ListingUrl == "https://shop.example.test/published-product");
     }
 
     [Fact]
@@ -1882,7 +1880,7 @@ public sealed class CatalogueApiTests : IClassFixture<PostgreSqlFixture>, IDispo
 
         var product = await response.Content.ReadFromJsonAsync<CatalogueProductDetails>();
         Assert.NotNull(product);
-        Assert.Equal("Integration Test Product", product.Name);
+        Assert.Equal("Integration Test Brand Integration Test Product Integration Test Variant", product.Name);
         Assert.NotEmpty(product.Variants);
     }
 

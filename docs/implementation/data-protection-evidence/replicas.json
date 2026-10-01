@@ -1,0 +1,20 @@
+[
+  {
+    "name": "diaperscout-web-vnet--shared-keys-20261001-65dc68bc46-8c2w2",
+    "ready": true,
+    "restarts": 0,
+    "state": "Running"
+  },
+  {
+    "name": "diaperscout-web-vnet--shared-keys-20261001-65dc68bc46-kxmzm",
+    "ready": true,
+    "restarts": 0,
+    "state": "Running"
+  },
+  {
+    "name": "diaperscout-web-vnet--shared-keys-20261001-65dc68bc46-r56mk",
+    "ready": true,
+    "restarts": 0,
+    "state": "Running"
+  }
+]

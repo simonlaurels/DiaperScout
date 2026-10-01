@@ -1,5 +1,6 @@
 @page "/products"
 @rendermode InteractiveServer
+@attribute [StreamRendering]
 @inject ProductCatalogueClient Catalogue
 
 <PageTitle>Products · DiaperScout</PageTitle>
@@ -31,18 +32,16 @@
 
         @if (loading && catalogue is null)
         {
-            <div class="catalogue-state" aria-live="polite">Loading the catalogue…</div>
+            <ScoutState Heading="Preparing your catalogue…" Description="Finding your next option." />
         }
         else if (failed || catalogue is null)
         {
-            <div class="catalogue-state catalogue-state-error" role="alert">
-                We couldn't load the catalogue just now. Please try again.
-            </div>
+            <ScoutState Error="true" Heading="The catalogue is out of reach." Description="Check your connection and try again." Retry="LoadAsync" />
         }
         else
         {
             <div class="catalogue-layout">
-                <aside class="catalogue-filters" aria-label="Catalogue filters">
+                <aside class="catalogue-filters" aria-label="Catalogue filters"><details class="ds-filter-disclosure"><summary>Refine your search</summary><div>
                     <div class="catalogue-filters-heading">
                         <div>
                             <p class="catalogue-kicker">REFINE</p>
@@ -84,9 +83,9 @@
                             }
                         </section>
                     }
-                </aside>
+                </div></details></aside>
 
-                <main class="catalogue-results" aria-live="polite">
+                <div class="catalogue-results" aria-live="polite">
                     @if (HasFilters)
                     {
                         <div class="catalogue-active-filters">
@@ -137,14 +136,14 @@
                             @foreach (var product in catalogue.Products)
                             {
                                 <article class="catalogue-product-row">
-                                    <a class="catalogue-product-image" href="@($"/products/{product.Slug}")" aria-label="View @product.Name">
+                                    <a class="catalogue-product-image" href="@(PublicProductIdentity.ProductUrl(product.Slug, product.ProductVariantId))" aria-label="View @product.Name">
                                         <span>DiaperScout</span>
                                     </a>
 
                                     <div class="catalogue-product-main">
                                         <div class="catalogue-product-identity">
                                             <p class="catalogue-product-manufacturer">@product.ManufacturerName</p>
-                                            <h2><a href="@($"/products/{product.Slug}")">@product.Name</a></h2>
+                                            <h2><a href="@(PublicProductIdentity.ProductUrl(product.Slug, product.ProductVariantId))">@product.Name</a></h2>
                                             @if (!string.IsNullOrWhiteSpace(product.BrandName))
                                             {
                                                 <p class="catalogue-product-brand">@product.BrandName</p>
@@ -192,21 +191,21 @@
                                             }
                                             @if (product.RetailDestinations.Count > 2)
                                             {
-                                                <a class="catalogue-more-retailers" href="@($"/products/{product.Slug}")#where-to-buy">
+                                                <a class="catalogue-more-retailers" href="@(PublicProductIdentity.ProductUrl(product.Slug, product.ProductVariantId))#where-to-buy">
                                                     + @(product.RetailDestinations.Count - 2) more
                                                 </a>
                                             }
                                         }
                                     </div>
 
-                                    <a class="catalogue-product-details" href="@($"/products/{product.Slug}")">
+                                    <a class="catalogue-product-details" href="@(PublicProductIdentity.ProductUrl(product.Slug, product.ProductVariantId))">
                                         View product <span aria-hidden="true">→</span>
                                     </a>
                                 </article>
                             }
                         </div>
                     }
-                </main>
+                </div>
             </div>
         }
     </div>
@@ -237,7 +236,9 @@
         selectedBackings.Count > 0 ||
         selectedPackaging.Count > 0;
 
-    protected override async Task OnInitializedAsync() => await LoadAsync();
+    protected override async Task OnInitializedAsync() { query = InitialQuery ?? string.Empty; await LoadAsync(); }
+
+    [SupplyParameterFromQuery(Name = "q")] public string? InitialQuery { get; set; }
 
     private async Task SearchAsync() => await LoadAsync();
 

@@ -1,0 +1,95 @@
+@page "/contribute/product"
+@rendermode InteractiveServer
+@inject PlaceObservationClient PlacesClient
+@inject AuthenticationStateProvider Authentication
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+@implements IAsyncDisposable
+<PageTitle>Add a missing product · DiaperScout</PageTitle>
+<main class="contribution-page">
+    <header><p class="catalogue-kicker">Help fill a gap</p><h1>Add a missing product</h1><p>Tell us what the pack says. Moderators will check whether this barcode belongs to an existing product or a new one.</p></header>
+    @if (validGtin is null) { <p role="alert">This barcode is not valid. Return to Scan and check the number.</p><a href="/scan">Back to Scan</a> }
+    else if (receipt is not null) {
+        <section class="contribution-card" role="status"><h2>Sent for review</h2><p>Your proposal is in the submission queue. No product has been published automatically.</p><p>Reference: @receipt.SubmissionId</p></section>
+        <a class="ds-button ds-button-primary" href="/scan">Scan another item</a><a class="ds-button ds-button-secondary" href="/products">Explore products</a>
+    } else {
+        <ol class="contribution-progress" aria-label="Submission progress"><li aria-current="@(step == 1 ? "step" : null)">1. Product</li><li aria-current="@(step == 2 ? "step" : null)">2. Pack</li><li aria-current="@(step == 3 ? "step" : null)">3. Review</li></ol>
+        <p class="contribution-barcode">Scanned barcode: <strong>@validGtin</strong></p>
+        @if (error is not null) { <p class="contribution-message" role="alert">@error</p> }
+        @if (step == 1) {
+            <section class="contribution-card contribution-fields"><h2>What is it called?</h2>
+                <label for="proposal-brand">What brand is it?</label><input id="proposal-brand" @bind="form.BrandName" maxlength="200" autocomplete="off" />
+                <label for="proposal-name">What’s the product called?</label><input id="proposal-name" @bind="form.ProductName" maxlength="250" autocomplete="off" />
+                <label for="proposal-version">Which version is this? (optional)</label><input id="proposal-version" @bind="form.Version" maxlength="200" placeholder="For example, Black or Overnight" />
+                <label for="proposal-manufacturer">Who makes it? (optional)</label><input id="proposal-manufacturer" @bind="form.ManufacturerName" maxlength="200" /><p>If you don’t know, leave it empty. A moderator will resolve this before publication.</p>
+                <button type="button" class="ds-button ds-button-primary" @onclick="NextProduct">Continue to pack</button>
+            </section>
+        } else if (step == 2) {
+            <section class="contribution-card contribution-fields"><h2>Read the pack</h2><p>It’s fine to leave these empty if you cannot tell.</p>
+                <label for="proposal-size">What size does the pack say? (optional)</label><input id="proposal-size" @bind="form.Size" maxlength="64" placeholder="For example, Medium or Size 5" />
+                <label for="proposal-quantity">How many are in the pack? (optional)</label><input id="proposal-quantity" type="number" min="1" max="100000" @bind="form.Quantity" inputmode="numeric" />
+                <div class="contribution-actions"><button type="button" class="ds-button ds-button-secondary" @onclick="() => step = 1">Back</button><button type="button" class="ds-button ds-button-primary" @onclick="() => step = 3">Review proposal</button></div>
+            </section>
+        } else {
+            <section class="contribution-card"><h2>Check before sending</h2>
+                <dl class="contribution-review"><dt>Barcode</dt><dd>@validGtin</dd><dt>Brand</dt><dd>@form.BrandName</dd><dt>Product</dt><dd>@form.ProductName</dd><dt>Version</dt><dd>@Shown(form.Version)</dd><dt>Manufacturer</dt><dd>@Shown(form.ManufacturerName)</dd><dt>Size</dt><dd>@Shown(form.Size)</dd><dt>Pack quantity</dt><dd>@(form.Quantity?.ToString() ?? "Not supplied")</dd></dl>
+                <p>This proposes information for moderation. It doesn’t create a product or claim that a shop stocks it.</p>
+                <button type="button" class="ds-button ds-button-secondary" @onclick="() => step = 1">Edit information</button>
+                @if (authenticated) { <button type="button" class="ds-button ds-button-primary" @onclick="SubmitAsync" disabled="@busy">@(busy ? "Sending…" : "Submit for review")</button> }
+                else { <p>Sign in before sending. Your entered product information can be kept in this tab for 30 minutes while you sign in.</p><button type="button" class="ds-button ds-button-primary" @onclick="SignInAsync" disabled="@(busy || module is null)">Sign in to submit</button> }
+            </section>
+        }
+        <p class="contribution-help">Only enter information from this pack. You can cancel without submitting.</p><a href="/scan">Cancel and return to Scan</a>
+    }
+</main>
+@code {
+    [SupplyParameterFromQuery(Name="gtin")] public string? Gtin { get; set; }
+    private string? validGtin, error;
+    private ProposalForm form = new();
+    private int step = 1;
+    private bool authenticated, busy;
+    private PublicProductProposalReceipt? receipt;
+    private IJSObjectReference? module;
+    private string SignInUrl => "/signin?returnUrl=" + Uri.EscapeDataString("/contribute/product?gtin=" + validGtin);
+    protected override async Task OnInitializedAsync() { validGtin = RetailGtin.Normalise(Gtin); authenticated = (await Authentication.GetAuthenticationStateAsync()).User.Identity?.IsAuthenticated == true; }
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (!firstRender || validGtin is null) return;
+        try {
+            module = await JS.InvokeAsync<IJSObjectReference>("import", "/js/contribution-draft.js");
+            var restored = await module.InvokeAsync<ProposalForm?>("loadDraft", validGtin);
+            if (restored is not null && restored.ContributionId != Guid.Empty) { form = restored; step = 3; }
+            StateHasChanged();
+        }
+        catch (Exception e) when (e is JSException or JSDisconnectedException) { error = "Your browser could not restore a draft. You can still enter and submit information while signed in."; StateHasChanged(); }
+    }
+    private void NextProduct() {
+        error = null;
+        if (string.IsNullOrWhiteSpace(form.BrandName) || string.IsNullOrWhiteSpace(form.ProductName)) { error = "Enter the brand and product name from the pack."; return; }
+        step = 2;
+    }
+    private async Task SignInAsync() {
+        if (module is null || validGtin is null) return;
+        if (!await module.InvokeAsync<bool>("saveDraft", validGtin, form)) { error = "This browser has blocked draft storage, so sign-in would lose these details. Your information is still here. Enable session storage for DiaperScout before continuing, or copy the details and sign in before starting again."; return; }
+        Navigation.NavigateTo(SignInUrl, forceLoad:true);
+    }
+    private async Task SubmitAsync() {
+        if (busy || validGtin is null) return; busy = true; error = null;
+        try {
+            receipt = await PlacesClient.ProposeAsync(new(validGtin, form.BrandName, form.ProductName, form.Version, form.ManufacturerName, form.Size, form.Quantity, form.ContributionId));
+            if (module is not null) await module.InvokeVoidAsync("clearDraft", validGtin);
+        } catch (ContributionException e) { error = e.Message; }
+        catch (Exception e) when (e is HttpRequestException or TaskCanceledException or JSException) { error = "We couldn’t confirm the submission. Your information is still here; check your connection and try again."; }
+        finally { busy = false; }
+    }
+    private static string Shown(string? value) => string.IsNullOrWhiteSpace(value) ? "Not supplied" : value;
+    public async ValueTask DisposeAsync() { try { if (module is not null) await module.DisposeAsync(); } catch (JSDisconnectedException) { } }
+    public sealed class ProposalForm {
+        public string BrandName { get; set; } = "";
+        public string ProductName { get; set; } = "";
+        public string? Version { get; set; }
+        public string? ManufacturerName { get; set; }
+        public string? Size { get; set; }
+        public int? Quantity { get; set; }
+        public Guid ContributionId { get; set; } = Guid.NewGuid();
+    }
+}

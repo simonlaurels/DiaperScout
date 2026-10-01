@@ -1,0 +1,79 @@
+@page "/admin/commerce-plugins"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Moderator,Administrator")]
+@rendermode InteractiveServer
+@inject CommercePluginClient Plugins
+
+<PageTitle>Commerce Integrations · DiaperScout</PageTitle>
+<section class="retailer-management-page">
+    <div class="retailer-management-container">
+        <header class="retailer-management-header">
+            <div><p class="catalogue-kicker">SCOUT’S WATCHTOWER</p><h1>Commerce Integrations</h1>
+                <p>Check the installed integrations that help Scout discover, observe and link to places to buy.</p></div>
+            <a class="ds-button ds-button-secondary" href="/admin">Back to Admin</a>
+        </header>
+        @if (error is not null) { <p class="retailer-message retailer-message-error" role="alert">@error</p> }
+        @if (loading) { <p>Loading integrations…</p> }
+        else
+        {
+            @foreach (var family in Enum.GetValues<CommercePluginFamily>())
+            {
+                var installed = plugins.Where(p => p.Plugin.Family == family).ToArray();
+                <section class="retailer-panel">
+                    <div class="retailer-panel-heading"><h2>@FamilyLabel(family)</h2><span>@installed.Length installed</span></div>
+                    @if (installed.Length == 0) { <p>No integrations installed for this capability yet.</p> }
+                    @foreach (var plugin in installed)
+                    {
+                        <article class="commerce-plugin-card" data-plugin-id="@plugin.Plugin.Id">
+                            <div class="retailer-panel-heading"><div><h3>@plugin.Plugin.Name</h3><p>Version @plugin.Plugin.Version</p></div>
+                                <button class="ds-button ds-button-secondary" type="button" disabled="@saving" @onclick="() => ToggleAsync(plugin)">@(plugin.Enabled ? "Disable" : "Enable")</button></div>
+                            <dl class="commerce-plugin-facts">
+                                <div><dt>State</dt><dd>@(plugin.Enabled ? "Enabled" : "Disabled")</dd></div>
+                                <div><dt>Configuration</dt><dd>@ConfigurationLabel(plugin.Configuration)</dd></div>
+                                <div><dt>Health</dt><dd>@plugin.Health</dd></div>
+                                <div><dt>Last successful execution</dt><dd>@TimeLabel(plugin.LastSuccessAtUtc)</dd></div>
+                                <div><dt>Last failure</dt><dd>@TimeLabel(plugin.LastFailureAtUtc) @(plugin.LastFailureCode is null ? "" : $"· {plugin.LastFailureCode}")</dd></div>
+                            </dl>
+                        </article>
+                    }
+                </section>
+            }
+            <p class="retailer-muted">Execution history is for this application instance and resets when it restarts. Credentials are managed through secure deployment configuration and are never shown here.</p>
+        }
+    </div>
+</section>
+@code {
+    private IReadOnlyList<CommercePluginStatus> plugins = [];
+    private bool loading = true;
+    private bool saving;
+    private string? error;
+    protected override async Task OnInitializedAsync() => await LoadAsync();
+    private async Task LoadAsync()
+    {
+        var result = await Plugins.GetAsync();
+        plugins = result.Value ?? [];
+        error = result.Error;
+        loading = false;
+    }
+    private async Task ToggleAsync(CommercePluginStatus plugin)
+    {
+        saving = true;
+        var result = await Plugins.SetEnabledAsync(plugin.Plugin.Id, !plugin.Enabled);
+        error = result.Error;
+        if (result.Value is not null) plugins = plugins.Select(p => p.Plugin.Id == plugin.Plugin.Id ? result.Value : p).ToArray();
+        saving = false;
+    }
+    private static string FamilyLabel(CommercePluginFamily family) => family switch
+    {
+        CommercePluginFamily.RetailDiscovery => "Retail discovery",
+        CommercePluginFamily.Pricing => "Pricing",
+        CommercePluginFamily.Availability => "Availability",
+        _ => "Affiliate destinations"
+    };
+    private static string ConfigurationLabel(CommercePluginConfiguration configuration) => configuration switch
+    {
+        CommercePluginConfiguration.Ready => "Configured",
+        CommercePluginConfiguration.DisabledByConfiguration => "Disabled by configuration",
+        _ => "Missing required configuration"
+    };
+    private static string TimeLabel(DateTimeOffset? time) => time?.ToString("dd MMM yyyy HH:mm 'UTC'") ?? "Not recorded";
+}

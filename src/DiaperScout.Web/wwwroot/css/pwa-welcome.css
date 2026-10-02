@@ -19,3 +19,5 @@ html[data-welcome-active] .ds-app-header, html[data-welcome-active] .pwa-mobile-
 .welcome-signin [data-passkey-message]:empty { display: none; }
 .welcome-signin [data-passkey-message] { font-size: 13px; margin: 6px 0; }
 .welcome-card [data-passkey-fallback] { font-size: 14px; color: #476a43; text-decoration: underline; }
+
+html[data-welcome-active], html[data-welcome-active] body { background-color: #cce7e4; }

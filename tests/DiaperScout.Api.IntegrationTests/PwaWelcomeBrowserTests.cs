@@ -48,6 +48,7 @@ public sealed class PwaWelcomeBrowserTests(PostgreSqlFixture fixture) : IClassFi
         await page.GotoAsync(origin);
         await Assertions.Expect(page.Locator("#pwa-welcome")).ToBeVisibleAsync();
         Assert.Equal("ready", await page.EvaluateAsync<string>("document.documentElement.dataset.pwaState"));
+        await Assertions.Expect(page.Locator("meta[name='apple-mobile-web-app-status-bar-style']")).ToHaveAttributeAsync("content", "black-translucent");
         var background = await page.Locator("#pwa-welcome").EvaluateAsync<string>("element => getComputedStyle(element).backgroundImage");
         Assert.Contains("welcome-sky.webp", background);
         Assert.Contains("welcome-woodland.webp", background);
@@ -76,8 +77,8 @@ public sealed class PwaWelcomeBrowserTests(PostgreSqlFixture fixture) : IClassFi
         await page.Locator("[data-passkey-fallback]").ClickAsync();
         await page.WaitForURLAsync("**/signin");
         await Assertions.Expect(page.Locator("[data-passkey-signin]")).ToBeVisibleAsync();
-        Assert.True(await page.EvaluateAsync<bool>("!!(document.querySelector('[data-passkey-signin]').compareDocumentPosition(document.querySelector('form[action=\"/signin/request\"]')) & Node.DOCUMENT_POSITION_FOLLOWING)"));
         await Assertions.Expect(page.Locator("form[action='/signin/request'] input[type='email']")).ToBeVisibleAsync();
+        Assert.True(await page.EvaluateAsync<bool>("!!(document.querySelector('[data-passkey-signin]').compareDocumentPosition(document.querySelector('form[action=\"/signin/request\"]')) & Node.DOCUMENT_POSITION_FOLLOWING)"));
         await page.GotoAsync(origin);
         await page.Locator("#welcome-continue").ClickAsync();
         await Assertions.Expect(page.Locator("#pwa-welcome")).ToBeHiddenAsync();

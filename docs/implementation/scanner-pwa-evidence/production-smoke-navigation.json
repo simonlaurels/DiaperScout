@@ -1,0 +1,66 @@
+{
+  "started": "2026-10-02T22:30:18.275Z",
+  "productionWrites": 0,
+  "physicalIosProven": false,
+  "sessions": [
+    {
+      "engine": "chromium",
+      "width": 390,
+      "height": 844,
+      "errors": [],
+      "publicGtin": "193183016187",
+      "geometry": {
+        "videoTop": 0,
+        "videoWidth": 390,
+        "videoBottom": 772,
+        "navTop": 771,
+        "navHeight": 73
+      },
+      "actualBrowserMediaStream": true,
+      "exactProductPath": "/products/megamax?variantId=bb3ad9fc-9dea-4f07-b179-5bc3f66b7d7e&packTypeId=d1862959-c74b-4c81-93d2-2f62058d1a59",
+      "failure": "page.waitForFunction: TypeError: Cannot read properties of null (reading 'dataset')\n    at eval (eval at predicate (eval at evaluate (:311:30)), <anonymous>:1:41)\n    at predicate (eval at evaluate (:311:30), <anonymous>:7:27)\n    at next (eval at evaluate (:311:30), <anonymous>:29:33)\n    at eval (eval at evaluate (:311:30), <anonymous>:42:13)\n    at UtilityScript.evaluate (<anonymous>:313:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+      "passed": false,
+      "diagnostic": {
+        "url": "https://diaperscout.app/scan",
+        "state": "ready",
+        "body": "Skip to content\nSearch\n\nFind products, brands and more.\n\nBrowse by Category\nView all\nDiapers\nPull-ups\nAll-in-One\nBoosters\nPads\nBrands\nView all\nRecent Searches\nClear\n\nYour searches on this device will appear here.\n\nSearching the catalogue…\n\nFinding products and brands.\n\nExplore\nProducts\nScan\nAtlas\nBackpack"
+      },
+      "ended": "2026-10-02T22:30:21.833Z"
+    },
+    {
+      "engine": "webkit",
+      "width": 430,
+      "height": 932,
+      "errors": [],
+      "geometry": {
+        "videoTop": 0,
+        "videoWidth": 430,
+        "videoBottom": 860,
+        "navTop": 859,
+        "navHeight": 73
+      },
+      "permissionRecovery": true,
+      "contributionPath": "/contribute/product?gtin=96385074",
+      "passed": true,
+      "ended": "2026-10-02T22:30:25.035Z"
+    },
+    {
+      "engine": "webkit-landscape",
+      "width": 844,
+      "height": 390,
+      "errors": [],
+      "geometry": {
+        "videoTop": 0,
+        "videoWidth": 844,
+        "videoBottom": 318,
+        "navTop": 317,
+        "navHeight": 73
+      },
+      "permissionRecovery": true,
+      "contributionPath": "/contribute/product?gtin=96385074",
+      "passed": true,
+      "ended": "2026-10-02T22:30:27.613Z"
+    }
+  ],
+  "ended": "2026-10-02T22:30:27.652Z"
+}

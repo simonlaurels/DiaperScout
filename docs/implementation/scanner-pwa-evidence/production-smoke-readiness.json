@@ -1,0 +1,56 @@
+{
+  "started": "2026-10-02T22:28:20.883Z",
+  "productionWrites": 0,
+  "physicalIosProven": false,
+  "sessions": [
+    {
+      "engine": "chromium",
+      "width": 390,
+      "height": 844,
+      "errors": [],
+      "failure": "page.waitForFunction: Timeout 90000ms exceeded.",
+      "passed": false,
+      "diagnostic": {
+        "url": "https://diaperscout.app/products/megamax?variantId=bb3ad9fc-9dea-4f07-b179-5bc3f66b7d7e",
+        "state": "ready",
+        "body": "Skip to content\nNorthShore MEGAMAX Black\n\nNot rated yet\n\nNo product image yet\nObserved\n\nNo observations recorded for this pack yet.\n\nAvailable In\nView all\n\nNo locations or listings recorded for this pack yet.\n\nProduct Details\nView all\nVariant\nNorthShore MEGAMAX Black\nNorthShore MEGAMAX Blue\nNorthShore MEGAMAX Pink\nNorthShore MEGAMAX Purple\nNorthShore MEGAMAX Tie-Dye\nNorthShore MEGAMAX White\nSizes\nExtra Large\nLarge\nMedium\nSmall\nPack size\n10 pieces · Bag\nCommunity Photos\nView all\n\nNo community photos recorded for this pack.\n\nObservation History\nView all\n\nNo observation history for this pack yet.\n\nSeen this product?\n\nHelp other Explorers by adding an observation.\n\nAdd Observation\nExplore\nProducts\nScan\nAtlas\nBackpack"
+      },
+      "ended": "2026-10-02T22:29:52.915Z"
+    },
+    {
+      "engine": "webkit",
+      "width": 430,
+      "height": 932,
+      "errors": [],
+      "geometry": {
+        "videoTop": 0,
+        "videoWidth": 430,
+        "videoBottom": 860,
+        "navTop": 859,
+        "navHeight": 73
+      },
+      "permissionRecovery": true,
+      "contributionPath": "/contribute/product?gtin=96385074",
+      "passed": true,
+      "ended": "2026-10-02T22:29:56.829Z"
+    },
+    {
+      "engine": "webkit-landscape",
+      "width": 844,
+      "height": 390,
+      "errors": [],
+      "geometry": {
+        "videoTop": 0,
+        "videoWidth": 844,
+        "videoBottom": 318,
+        "navTop": 317,
+        "navHeight": 73
+      },
+      "permissionRecovery": true,
+      "contributionPath": "/contribute/product?gtin=96385074",
+      "passed": true,
+      "ended": "2026-10-02T22:29:59.588Z"
+    }
+  ],
+  "ended": "2026-10-02T22:29:59.625Z"
+}

@@ -1,5 +1,15 @@
 docs/implementation/pwa-full-screen-scanner.md
+docs/implementation/scanner-pwa-evidence/changed-files.txt
+docs/implementation/scanner-pwa-evidence/config-preservation.json
+docs/implementation/scanner-pwa-evidence/production-camera-chromium.png
+docs/implementation/scanner-pwa-evidence/production-failure-chromium.png
+docs/implementation/scanner-pwa-evidence/production-permission-webkit-landscape.png
+docs/implementation/scanner-pwa-evidence/production-permission-webkit.png
+docs/implementation/scanner-pwa-evidence/production-smoke-initial.json
+docs/implementation/scanner-pwa-evidence/production-smoke-navigation.json
+docs/implementation/scanner-pwa-evidence/production-smoke-readiness.json
 docs/implementation/scanner-pwa-evidence/production-smoke.cjs
+docs/implementation/scanner-pwa-evidence/production-smoke.json
 docs/implementation/scanner-pwa-evidence/scanner-ready-430.png
 docs/implementation/scanner-pwa-evidence/scanner-ready-844.png
 docs/implementation/scanner-pwa-evidence/scanner-startup-390.png
@@ -12,4 +22,3 @@ src/DiaperScout.Web/wwwroot/css/scanner-pwa.css
 tests/DiaperScout.Api.IntegrationTests/PlaceObservationBrowserTests.cs
 tests/DiaperScout.Api.IntegrationTests/PrototypeProductBrowserTests.cs
 tests/DiaperScout.Api.IntegrationTests/PwaScannerBrowserTests.cs
-docs/implementation/scanner-pwa-evidence/changed-files.txt

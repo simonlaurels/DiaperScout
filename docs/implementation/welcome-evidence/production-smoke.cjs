@@ -9,6 +9,11 @@ const assert = require('node:assert/strict');
   await page.goto('https://diaperscout.app/');
   await page.locator('#pwa-welcome:not([hidden])').waitFor({timeout:90000});
   assert.equal(await page.evaluate(() => document.documentElement.dataset.pwaState),'ready');
+  assert.equal(await page.locator('meta[name="apple-mobile-web-app-status-bar-style"]').getAttribute('content'),'black-translucent');
+  assert.equal(await page.locator('.welcome-art').count(),1);
+  assert.equal(await page.locator('.welcome-brand').count(),0);
+  const background=await page.locator('#pwa-welcome').evaluate(el=>getComputedStyle(el).backgroundImage);
+  assert(background.includes('welcome-sky.webp') && background.includes('welcome-woodland.webp'));
   for (const selector of ['.welcome-primary','.welcome-secondary','#welcome-continue']) {
    const box=await page.locator(selector).boundingBox(); assert(box && box.y>=0 && box.y+box.height<=844);
   }

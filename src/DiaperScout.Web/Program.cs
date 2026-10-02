@@ -113,6 +113,7 @@ if (!app.Environment.IsDevelopment())
         .CreateProtector("DiaperScout.Web.KeyRingReadiness.v1");
     if (protector.Unprotect(protector.Protect("ready")) != "ready")
         throw new InvalidOperationException("The shared Data Protection key ring failed its startup check.");
+    app.Logger.LogInformation("Shared Data Protection key ring readiness check passed.");
 }
 
 if (app.Environment.IsDevelopment() &&

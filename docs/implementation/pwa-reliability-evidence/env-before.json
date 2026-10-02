@@ -1,0 +1,24 @@
+{
+  "logs": {
+    "destination": "log-analytics",
+    "logAnalyticsConfiguration": {
+      "customerId": "19c1b42d-4f51-434d-8122-02c54aab7abc",
+      "dynamicJsonColumns": false,
+      "sharedKey": null
+    }
+  },
+  "vnet": {
+    "dockerBridgeCidr": null,
+    "infrastructureSubnetId": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.Network/virtualNetworks/vnet-diaperscout-prod/subnets/snet-containerapps",
+    "internal": false,
+    "platformReservedCidr": null,
+    "platformReservedDnsIP": null
+  },
+  "workloads": [
+    {
+      "enableFips": false,
+      "name": "Consumption",
+      "workloadProfileType": "Consumption"
+    }
+  ]
+}

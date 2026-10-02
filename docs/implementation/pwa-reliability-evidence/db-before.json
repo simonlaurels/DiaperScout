@@ -1,0 +1,9 @@
+{
+  "fqdn": "diaperscout-prod-pg.postgres.database.azure.com",
+  "network": {
+    "delegatedSubnetResourceId": null,
+    "privateDnsZoneArmResourceId": null,
+    "publicNetworkAccess": "Enabled"
+  },
+  "state": "Ready"
+}

@@ -1,0 +1,7 @@
+{
+  "allowBlobPublicAccess": false,
+  "allowSharedKeyAccess": false,
+  "httpsOnly": true,
+  "id": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.Storage/storageAccounts/dsprodwebkeys21a5de71",
+  "minimumTlsVersion": "TLS1_2"
+}

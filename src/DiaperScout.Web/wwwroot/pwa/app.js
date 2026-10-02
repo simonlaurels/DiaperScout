@@ -80,7 +80,12 @@
     connection(); syncChrome();
     const observer = new MutationObserver(() => syncChrome());
     // Only listen for added views; avoid observing attributes we ourselves change.
-    observer.observe(document.querySelector('.ds-main'), {childList: true, subtree: true});
+    function observeMain() {
+        const main = document.querySelector('.ds-main');
+        if (main) observer.observe(main, {childList: true, subtree: true});
+    }
+    observeMain();
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', observeMain, {once: true});
     if ('serviceWorker' in navigator && isSecureContext) {
         navigator.serviceWorker.register('/service-worker.js', {scope: '/', updateViaCache: 'none'}).then(registration => {
             const showWaiting = () => { if (registration.waiting && navigator.serviceWorker.controller) { waitingWorker = registration.waiting; syncChrome(); } };

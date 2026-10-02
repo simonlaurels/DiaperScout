@@ -1,4 +1,4 @@
-﻿<script type="module" src="@Assets["Components/Layout/ReconnectModal.razor.js"]"></script>
+<script type="module" src="@Assets["Components/Layout/ReconnectModal.razor.js"]"></script>
 
 <dialog id="components-reconnect-modal" data-nosnippet>
     <div class="components-reconnect-container">
@@ -17,6 +17,12 @@
         </p>
         <button id="components-reconnect-button" class="components-reconnect-failed-visible">
             Retry
+        </button>
+        <p class="components-reconnect-rejected-visible">
+            This session is no longer available.<br />Reload to open a new map. Unsaved changes may be lost.
+        </p>
+        <button id="components-reload-button" class="components-reconnect-failed-visible components-reconnect-rejected-visible components-resume-failed-visible">
+            Reload
         </button>
         <p class="components-pause-visible">
             Your map is paused. Resume when you’re ready.

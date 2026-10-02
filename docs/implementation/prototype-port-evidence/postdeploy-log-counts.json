@@ -1,0 +1,11 @@
+[
+  {
+    "RevisionName_s": "diaperscout-web-vnet--prototype-c1b2801",
+    "TableName": "PrimaryResult",
+    "circuitRoutingFailures": "0",
+    "cryptographicFailures": "0",
+    "interopFailures": "0",
+    "rows": "354",
+    "unhandledFailures": "0"
+  }
+]

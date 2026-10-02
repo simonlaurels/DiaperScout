@@ -1,0 +1,10 @@
+{
+  "active": true,
+  "createdTime": "2026-10-02T15:32:07+00:00",
+  "healthState": "Healthy",
+  "name": "diaperscout-web-vnet--prototype-c1b2801",
+  "provisioningState": "Provisioned",
+  "replicas": 2,
+  "runningState": "RunningAtMaxScale",
+  "trafficWeight": 100
+}

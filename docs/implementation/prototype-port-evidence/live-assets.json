@@ -1,0 +1,23 @@
+[
+  {
+    "path": "/css/product-prototype.css",
+    "status": 200,
+    "localSha256": "6f1769c109a20a2db8535412b58b210aed39fa6697be18e6e4e4573a5eb232c7",
+    "productionSha256": "6f1769c109a20a2db8535412b58b210aed39fa6697be18e6e4e4573a5eb232c7",
+    "matched": true
+  },
+  {
+    "path": "/js/product-prototype.js",
+    "status": 200,
+    "localSha256": "b97827aeb5c8cddd2576ea58f491b7574692dc54dc145fc9f84852b28fd094ac",
+    "productionSha256": "b97827aeb5c8cddd2576ea58f491b7574692dc54dc145fc9f84852b28fd094ac",
+    "matched": true
+  },
+  {
+    "path": "/service-worker.js",
+    "status": 200,
+    "localSha256": "f92d3f2ddbccd67ae5e88b16cb8ee8d7df6a2a922ec4bdd279b1f0c296fac338",
+    "productionSha256": "f92d3f2ddbccd67ae5e88b16cb8ee8d7df6a2a922ec4bdd279b1f0c296fac338",
+    "matched": true
+  }
+]

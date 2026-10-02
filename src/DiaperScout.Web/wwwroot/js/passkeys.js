@@ -102,6 +102,8 @@ document.addEventListener("click", async event => {
             message.textContent = "Passkey added. You can now use it to sign in.";
         } else window.location.assign(result.redirect);
     } catch (error) {
+        const fallback = root.querySelector("[data-passkey-fallback]");
+        if (fallback) fallback.hidden = false;
         message.textContent = error.name === "NotAllowedError" ? "The passkey request was cancelled or no matching passkey was available. Try again or use an email sign-in link."
             : error.name === "InvalidStateError" ? "This device already has a passkey for your account. Try another device or use your existing passkey."
             : error.message || "Passkey sign-in wasn’t completed. You can use an email sign-in link instead.";
@@ -118,7 +120,11 @@ function initialise() {
         const resetList = root.querySelector("[data-passkey-list]")?.textContent.trim() === "Loading your passkeys…";
         if (root.dataset.initialised && !resetList) return;
         root.dataset.initialised = "true";
-        if (!supported()) root.querySelector("[data-passkey-message]").textContent = "Passkeys aren’t supported in this browser. Email sign-in links are still available.";
+        if (!supported()) {
+            root.querySelector("[data-passkey-message]").textContent = "Passkeys aren’t supported in this browser. Email sign-in links are still available.";
+            const fallback = root.querySelector("[data-passkey-fallback]");
+            if (fallback) fallback.hidden = false;
+        }
         if (root.matches("[data-passkey-account]")) loadPasskeys(root).catch(error => {
             root.querySelector("[data-passkey-list]").textContent = "Your passkeys could not be loaded. Refresh the page to try again.";
             root.querySelector("[data-passkey-message]").textContent = error.message;

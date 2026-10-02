@@ -67,9 +67,12 @@ public sealed class PasskeyBrowserTests(PostgreSqlFixture fixture) : IClassFixtu
         await Assertions.Expect(page.GetByRole(AriaRole.Link, new() { Name = "Passkeys", Exact = true })).ToHaveCountAsync(0);
         var contributionTarget = "/contribute/product?gtin=96385074";
         if (authenticatedFirst) {
-            await page.GotoAsync(origin + "/signin?returnUrl=" + Uri.EscapeDataString(contributionTarget));
-            await page.GetByRole(AriaRole.Button, new() { Name = "Sign in", Exact = true }).ClickAsync();
-            await page.WaitForURLAsync(origin + contributionTarget);
+            await context.AddInitScriptAsync("Object.defineProperty(navigator,'standalone',{value:true});");
+            await page.GotoAsync(origin);
+            await page.Locator("#pwa-welcome [data-passkey-action='signin']").ClickAsync();
+            await Assertions.Expect(page.Locator("a[href='/signout']")).ToHaveCountAsync(1);
+            await Assertions.Expect(page.Locator("#pwa-welcome")).ToHaveCountAsync(0);
+            await page.GotoAsync(origin + contributionTarget);
         } else {
             await page.GotoAsync(origin + "/scan");
             await page.WaitForFunctionAsync("() => document.documentElement.dataset.pwaState === 'ready'");

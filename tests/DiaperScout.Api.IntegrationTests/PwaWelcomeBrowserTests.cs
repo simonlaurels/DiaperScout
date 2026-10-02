@@ -48,7 +48,15 @@ public sealed class PwaWelcomeBrowserTests(PostgreSqlFixture fixture) : IClassFi
         await page.GotoAsync(origin);
         await Assertions.Expect(page.Locator("#pwa-welcome")).ToBeVisibleAsync();
         Assert.Equal("ready", await page.EvaluateAsync<string>("document.documentElement.dataset.pwaState"));
+        var background = await page.Locator("#pwa-welcome").EvaluateAsync<string>("element => getComputedStyle(element).backgroundImage");
+        Assert.Contains("welcome-sky.webp", background);
+        Assert.Contains("welcome-woodland.webp", background);
         await Assertions.Expect(page.Locator("#pwa-startup")).ToBeHiddenAsync();
+        // Desktop engines do not expose an iPhone notch/home-indicator inset.
+        // Exercise their occupied space explicitly without changing app behavior.
+        if (width == 390) await page.AddStyleTagAsync(new() { Content = ".pwa-welcome { --welcome-safe-top: 47px; --welcome-safe-bottom: 34px; }" });
+        await Assertions.Expect(page.Locator(".welcome-art")).ToHaveCountAsync(1);
+        await Assertions.Expect(page.Locator(".welcome-brand")).ToHaveCountAsync(0);
         foreach (var selector in new[] { ".welcome-primary", ".welcome-secondary", "#welcome-continue" })
         {
             var box = await page.Locator(selector).BoundingBoxAsync();
@@ -60,7 +68,12 @@ public sealed class PwaWelcomeBrowserTests(PostgreSqlFixture fixture) : IClassFi
         await page.WaitForURLAsync("**/join");
         await Assertions.Expect(page.Locator("#pwa-welcome")).ToHaveCountAsync(0);
         await page.GotoAsync(origin);
+        await page.EvaluateAsync("Object.defineProperty(window, 'PublicKeyCredential', {value: function(){}, configurable:true}); Object.defineProperty(navigator, 'credentials', {value:{get:async()=>{throw new DOMException('Cancelled','NotAllowedError')}}, configurable:true});");
+        await page.RouteAsync("**/signin/passkey/options", route => route.FulfillAsync(new() { ContentType = "application/json", Body = "{\"requestId\":\"welcome-test\",\"publicKey\":{\"challenge\":\"AQ\",\"allowCredentials\":[]}}" }));
         await page.Locator(".welcome-secondary").ClickAsync();
+        await Assertions.Expect(page.Locator(".welcome-signin [data-passkey-message]")).ToContainTextAsync("cancelled");
+        Assert.Equal(origin + "/", page.Url);
+        await page.Locator("[data-passkey-fallback]").ClickAsync();
         await page.WaitForURLAsync("**/signin");
         await Assertions.Expect(page.Locator("[data-passkey-signin]")).ToBeVisibleAsync();
         Assert.True(await page.EvaluateAsync<bool>("!!(document.querySelector('[data-passkey-signin]').compareDocumentPosition(document.querySelector('form[action=\"/signin/request\"]')) & Node.DOCUMENT_POSITION_FOLLOWING)"));

@@ -5,11 +5,11 @@ The approved 2 October welcome composition is implemented as real accessible HTM
 ## Implementation
 
 - `Components/Pages/Home.razor`: existing server `AuthorizeView` renders `Shared/PwaWelcome.razor` only for an unauthenticated principal. No client authentication state is stored.
-- `Components/Shared/PwaWelcome.razor`: accessible heading, real `/join` registration link, real `/signin` link and guest Continue button.
+- `Components/Shared/PwaWelcome.razor`: accessible heading, real `/join` registration link, direct Sign in passkey button with the existing `/signin` email fallback and guest Continue button.
 - `Components/App.razor`: adds only welcome stylesheet and client module.
 - `wwwroot/pwa/welcome.js`: waits for existing `diaperscout:ready` / genuine `pwaState=ready`; handles existing enhanced navigation. No timers, retries or artificial progress. Explicit guest Continue sets localStorage `ds-welcome-complete-v1=yes`, hides onboarding and focuses Explore. Storage denial still permits entry for the current document; future launches may offer onboarding again.
 - `wwwroot/css/pwa-welcome.css`: illustrated fullscreen standalone composition, stitched parchment card, green primary and cream secondary actions, safe-area padding and short-height layout. Normal Explore and navigation are unchanged after Continue.
-- `wwwroot/pwa/welcome-brand.webp`, `welcome-art.webp`: deterministic crops of the supplied reference (1536×1024, inner artwork rectangles `(509,72)-(1027,276)` and `(509,276)-(1027,708)`). No generated art or map. Splitting the brand from the scene preserves the full logo while the scene adapts to viewport height.
+- `wwwroot/pwa/welcome-art.webp`: one continuous crop of the supplied reference, `(509,72)-(1027,708)`, avoiding seams across clouds/stars below the banner. It fills the available illustration area without cropping the logo horizontally. Small original sky and woodland crops extend the background into the top safe area and around/below the HTML card; no generated artwork or map.
 - `Components/Pages/SignIn.razor`: primary authentication button now says **Sign in**, as requested. Its existing handler still invokes passkey authentication first; the existing email-link form remains the fallback. No credential/security behavior changes.
 
 The original static/pre-framework startup, slow/failure messaging, circuit readiness, service worker and caching policy are untouched. Welcome stays hidden during warmup or failure. Authenticated users receive no welcome markup; returning guests skip it using only the non-sensitive preference.
@@ -37,3 +37,9 @@ ACR run **db1e** succeeded at **2026-10-02 16:02:37 UTC**, producing `diaperscou
 Production browser smoke passed at **16:05:54 UTC Chromium** and **16:05:58 UTC WebKit**: first-run readiness, visible actions, real Sign in page with primary **Sign in** and email fallback, Continue, guest persistence after reload and anonymous Scan with no error banner. No authentication attempts, catalogue writes, submissions or observations were made. Checked evidence includes safe ACR metadata, revision health, sanitized config comparison, smoke script/output and production WebKit screenshot. Raw Azure snapshots containing environment configuration remain outside source control.
 
 Physical installed iPhone acceptance is still pending; no claim is made that desktop WebKit validates physical iOS cold start, actual passkey prompts or installation-local persistence.
+
+## Field feedback corrections
+
+The initial artwork split produced clipped clouds/stars at the banner seam, and plain safe-area/card surroundings did not match the approved full-background composition. The correction uses one continuous artwork image, plus sky/woodland layers from the same supplied image behind safe-area padding and the card. Browser tests explicitly exercise a 47px top / 34px bottom inset and assert continuous artwork and both background layers.
+
+The welcome **Sign in** button now directly invokes the existing `passkeys.js` WebAuthn handler, including the existing antiforgery token and same-origin options/verify endpoints. Successful verification establishes the existing cookie and follows its server redirect; real server authentication then bypasses welcome. No new authentication flow is introduced. Unsupported/cancelled/failed passkeys reveal **Use email instead**, linking to the established sign-in page. No email is sent automatically. A native Chromium virtual-authenticator regression signs in directly from welcome, then continues the established authenticated contribution path; cancellation/fallback is covered in both browser engines.

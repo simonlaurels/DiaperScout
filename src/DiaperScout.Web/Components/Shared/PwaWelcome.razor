@@ -1,11 +1,15 @@
 <section id="pwa-welcome" class="pwa-welcome" aria-labelledby="welcome-title" hidden>
-    <img class="welcome-brand" src="/pwa/welcome-brand.webp" alt="DiaperScout. Find it. Scout it. Share it." />
-    <img class="welcome-art" src="/pwa/welcome-art.webp" alt="The Guide explores a woodland with binoculars and Fox tucked in her backpack." />
+    <img class="welcome-art" src="/pwa/welcome-art.webp" alt="DiaperScout. Find it. Scout it. Share it. The Guide explores a woodland with binoculars and Fox tucked in her backpack." />
     <div class="welcome-card">
         <h1 id="welcome-title" tabindex="-1"><span aria-hidden="true">❧</span> Ready to explore? <span aria-hidden="true">❧</span></h1>
         <p>Create an account to save discoveries<br />and contribute to DiaperScout.</p>
         <a class="welcome-primary" href="/join">Create account</a>
-        <a class="welcome-secondary" href="/signin">Sign in</a>
+        <div class="welcome-signin" data-passkey-signin>
+            <AntiforgeryToken />
+            <button class="welcome-secondary" type="button" data-passkey-action="signin">Sign in</button>
+            <p data-passkey-message role="status" aria-live="polite"></p>
+            <a href="/signin" data-passkey-fallback hidden>Use email instead</a>
+        </div>
         <button id="welcome-continue" type="button">Continue exploring without an account</button>
     </div>
 </section>

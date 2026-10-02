@@ -13,7 +13,8 @@ const assert = require('node:assert/strict');
    const box=await page.locator(selector).boundingBox(); assert(box && box.y>=0 && box.y+box.height<=844);
   }
   await page.screenshot({path:`/tmp/ds-welcome-production/${engine}-welcome.png`});
-  await page.locator('.welcome-secondary').click(); await page.waitForURL('**/signin');
+  assert.equal(await page.locator('.welcome-secondary').getAttribute('data-passkey-action'),'signin');
+  await page.goto('https://diaperscout.app/signin');
   assert.equal(await page.locator('[data-passkey-action="signin"]').innerText(),'Sign in');
   assert.equal(await page.locator('form[action="/signin/request"]').count(),1);
   await page.goto('https://diaperscout.app/'); await page.locator('#welcome-continue').click();

@@ -13,6 +13,6 @@
 .welcome-secondary { margin-top: 7px; color: #50331c; border: 1px solid #795633; background: #fff8e580; }
 .welcome-card button { margin-top: 4px; background: transparent; border: 0; color: #476a43; font-size: 14px; font-weight: 500; cursor: pointer; }
 .welcome-card a:focus-visible, .welcome-card button:focus-visible { outline: 3px solid #174b45; outline-offset: 3px; }
-html[data-welcome-active] .ds-app-header, html[data-welcome-active] .pwa-mobile-nav, html[data-welcome-active] .explore-page, html[data-welcome-active] .ds-skip-link { display: none !important; }
+html[data-welcome-active] .ds-app-header, html[data-welcome-active] .pwa-mobile-nav, html[data-welcome-active] .explore-page, html[data-welcome-active] .pwa-skip-link { display: none !important; }
 @media (min-width: 600px) { .welcome-art { max-width: 520px; } }
 @media (max-height: 700px) { .welcome-card { padding: 14px 17px 10px; } .welcome-card h1 { font-size: 22px; } }

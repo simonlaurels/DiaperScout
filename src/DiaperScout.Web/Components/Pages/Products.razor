@@ -2,10 +2,12 @@
 @rendermode InteractiveServer
 @attribute [StreamRendering]
 @inject ProductCatalogueClient Catalogue
+@inject NavigationManager Navigation
 
 <PageTitle>Products · DiaperScout</PageTitle>
 
-<section class="catalogue-page">
+<PwaSearch Catalogue="catalogue" Loading="loading" Failed="failed" HasFilters="HasFilters" Query="@query" Sort="@sort" IsSelected="IsSelected" Search="SearchPwaAsync" ToggleFilter="@(value => ToggleFilter(value.Key, value.Value))" SortChanged="SortChanged" ClearFilters="ClearFilters" Retry="LoadAsync" More="MoreAsync" Browse="BrowseAllAsync" />
+<section class="catalogue-page website-search">
     <div class="catalogue-container">
         <header class="catalogue-header">
             <div class="catalogue-header-copy">
@@ -219,6 +221,7 @@
     private CatalogueProductSearch? catalogue;
     private bool loading = true;
     private bool failed;
+    private int loadVersion;
 
     private readonly HashSet<Guid> selectedManufacturers = [];
     private readonly HashSet<Guid> selectedBrands = [];
@@ -236,16 +239,59 @@
         selectedBackings.Count > 0 ||
         selectedPackaging.Count > 0;
 
-    protected override async Task OnInitializedAsync() { query = InitialQuery ?? string.Empty; await LoadAsync(); }
+    protected override async Task OnParametersSetAsync()
+    {
+        query = InitialQuery ?? string.Empty;
+        sort = InitialSort ?? "relevance";
+        Restore(selectedManufacturers, InitialManufacturers, Guid.Parse);
+        Restore(selectedBrands, InitialBrands, Guid.Parse);
+        Restore(selectedProductTypes, InitialTypes, value => Enum.Parse<ProductType>(value, true));
+        Restore(selectedSizes, InitialSizes, value => value);
+        Restore(selectedBackings, InitialBackings, value => Enum.Parse<BackingType>(value, true));
+        Restore(selectedPackaging, InitialPackaging, value => Enum.Parse<PackagingType>(value, true));
+        await LoadAsync();
+    }
 
     [SupplyParameterFromQuery(Name = "q")] public string? InitialQuery { get; set; }
+    [SupplyParameterFromQuery(Name = "sort")] public string? InitialSort { get; set; }
+    [SupplyParameterFromQuery(Name = "manufacturer")] public string[]? InitialManufacturers { get; set; }
+    [SupplyParameterFromQuery(Name = "brand")] public string[]? InitialBrands { get; set; }
+    [SupplyParameterFromQuery(Name = "productType")] public string[]? InitialTypes { get; set; }
+    [SupplyParameterFromQuery(Name = "size")] public string[]? InitialSizes { get; set; }
+    [SupplyParameterFromQuery(Name = "backing")] public string[]? InitialBackings { get; set; }
+    [SupplyParameterFromQuery(Name = "packaging")] public string[]? InitialPackaging { get; set; }
 
-    private async Task SearchAsync() => await LoadAsync();
+    private static void Restore<T>(HashSet<T> values, string[]? supplied, Func<string, T> parse)
+    {
+        values.Clear();
+        foreach (var value in supplied ?? [])
+        {
+            try { values.Add(parse(value)); }
+            catch (Exception exception) when (exception is FormatException or ArgumentException) { }
+        }
+    }
+
+    private async Task SearchAsync()
+    {
+        var url = Navigation.GetUriWithQueryParameters(new Dictionary<string, object?>
+        {
+            ["q"] = string.IsNullOrWhiteSpace(query) ? null : query.Trim(), ["sort"] = sort == "relevance" ? null : sort,
+            ["manufacturer"] = selectedManufacturers.Select(x => x.ToString()).ToArray(),
+            ["brand"] = selectedBrands.Select(x => x.ToString()).ToArray(),
+            ["productType"] = selectedProductTypes.Select(x => x.ToString()).ToArray(),
+            ["size"] = selectedSizes.ToArray(), ["backing"] = selectedBackings.Select(x => x.ToString()).ToArray(),
+            ["packaging"] = selectedPackaging.Select(x => x.ToString()).ToArray()
+        });
+        if (url != Navigation.Uri) Navigation.NavigateTo(url); else await LoadAsync();
+    }
+    private async Task SearchPwaAsync(string term) { query = term; await SearchAsync(); }
+    private async Task MoreAsync() => await LoadResultsAsync(append: true);
+    private async Task BrowseAllAsync() { query = string.Empty; await ClearFilters(); }
 
     private async Task SortChanged(ChangeEventArgs args)
     {
         sort = args.Value?.ToString() ?? "relevance";
-        await LoadAsync();
+        await SearchAsync();
     }
 
     private async Task ToggleFilter(string facetKey, string value)
@@ -260,7 +306,7 @@
             case "packaging" when Enum.TryParse<PackagingType>(value, true, out var packaging): Toggle(selectedPackaging, packaging); break;
         }
 
-        await LoadAsync();
+        await SearchAsync();
     }
 
     private async Task RemoveFilter(string facetKey, string value) => await ToggleFilter(facetKey, value);
@@ -273,7 +319,7 @@
         selectedSizes.Clear();
         selectedBackings.Clear();
         selectedPackaging.Clear();
-        await LoadAsync();
+        await SearchAsync();
     }
 
     private void ToggleFacet(string key)
@@ -316,8 +362,11 @@
         foreach (var value in selectedPackaging) yield return ("packaging", value.ToString(), value.ToString());
     }
 
-    private async Task LoadAsync()
+    private Task LoadAsync() => LoadResultsAsync(append: false);
+
+    private async Task LoadResultsAsync(bool append)
     {
+        var version = ++loadVersion;
         loading = true;
         failed = false;
         StateHasChanged();
@@ -330,13 +379,23 @@
             selectedBackings.ToArray(),
             selectedPackaging.ToArray());
 
-        var result = await Catalogue.SearchAsync(query, filters, sort);
-        if (result.Status == ProductCatalogueSearchStatus.Found)
-            catalogue = result.Catalogue;
-        else
-            failed = true;
-
-        loading = false;
+        var previous = catalogue;
+        try
+        {
+            var result = await Catalogue.SearchAsync(query, filters, sort, offset: append ? previous?.Products.Count ?? 0 : 0);
+            if (version != loadVersion) return;
+            if (result.Status == ProductCatalogueSearchStatus.Found && result.Catalogue is { } found)
+                catalogue = append && previous is not null
+                    ? found with { Products = previous.Products.Concat(found.Products).DistinctBy(x => (x.Id, x.ProductVariantId)).ToArray() }
+                    : found;
+            else
+                failed = true;
+        }
+        catch (Exception exception) when (exception is HttpRequestException or TaskCanceledException or System.Text.Json.JsonException)
+        {
+            if (version == loadVersion) failed = true;
+        }
+        finally { if (version == loadVersion) loading = false; }
     }
 
     private static void Toggle<T>(HashSet<T> values, T value)

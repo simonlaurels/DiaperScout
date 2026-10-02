@@ -22,12 +22,12 @@ public sealed class PwaWelcomeBrowserTests(PostgreSqlFixture fixture) : IClassFi
             await page.GotoAsync(client.BaseAddress!.GetLeftPart(UriPartial.Authority), new() { WaitUntil = WaitUntilState.Commit });
             await Assertions.Expect(page.Locator("#pwa-startup")).ToBeVisibleAsync();
             await Assertions.Expect(page.Locator("#pwa-welcome")).ToBeHiddenAsync();
-            Assert.Equal("rgb(183, 231, 237)", await page.Locator("html").EvaluateAsync<string>("el => getComputedStyle(el).backgroundColor"));
-            Assert.Equal("rgb(183, 231, 237)", await page.Locator("#pwa-startup").EvaluateAsync<string>("el => getComputedStyle(el).backgroundColor"));
-            await Assertions.Expect(page.Locator("meta[name=theme-color]")).ToHaveAttributeAsync("content", "#b7e7ed");
+            await Assertions.Expect(page.Locator("html")).ToHaveCSSAsync("background-color", "rgb(250, 245, 236)");
+            await Assertions.Expect(page.Locator("#pwa-startup")).ToHaveCSSAsync("background-color", "rgb(250, 245, 236)");
+            await Assertions.Expect(page.Locator("meta[name=theme-color]")).ToHaveAttributeAsync("content", "#faf5ec");
             using var manifest = System.Text.Json.JsonDocument.Parse(await client.GetStringAsync("/manifest.webmanifest"));
-            Assert.Equal("#b7e7ed", manifest.RootElement.GetProperty("background_color").GetString());
-            Assert.Equal("#b7e7ed", manifest.RootElement.GetProperty("theme_color").GetString());
+            Assert.Equal("#faf5ec", manifest.RootElement.GetProperty("background_color").GetString());
+            Assert.Equal("#faf5ec", manifest.RootElement.GetProperty("theme_color").GetString());
             release.TrySetResult();
             await Assertions.Expect(page.Locator("#pwa-welcome")).ToBeVisibleAsync();
             await page.Locator("#welcome-continue").ClickAsync();

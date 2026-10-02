@@ -63,11 +63,11 @@ public sealed class PwaBrowserTests(PostgreSqlFixture fixture) : IClassFixture<P
         await page.GetByRole(AriaRole.Button, new() { Name = "Search the catalogue", Exact = true }).ClickAsync();
         await Assertions.Expect(page.Locator(".catalogue-product-row")).ToHaveCountAsync(1);
         await Ready(page);
-        Assert.Equal("Integration Test Product", await page.Locator("#catalogue-query").InputValueAsync());
-        if (width <= 700) Assert.False(await page.Locator(".ds-filter-disclosure").EvaluateAsync<bool>("e => e.open"));
+        Assert.Equal("Integration Test Product", await page.Locator(width <= 700 ? "#pwa-search-query" : "#catalogue-query").InputValueAsync());
+        if (width <= 700) await Assertions.Expect(page.Locator(".pwa-search .search-filters")).ToHaveCountAsync(0);
         Assert.True(await Fits(page));
         await Screenshot(page, $"search-{width}");
-        var detailLink = page.Locator(".catalogue-product-identity h2 a");
+        var detailLink = page.Locator(width <= 700 ? ".pwa-search .search-result-card" : ".catalogue-product-identity h2 a");
         await detailLink.ClickAsync();
         await Assertions.Expect(page.Locator(".ds-size-pill")).ToHaveCountAsync(1);
         await Screenshot(page, $"product-{width}");

@@ -1,0 +1,27 @@
+[
+  {
+    "asset": "all-in-one.png",
+    "source": "https://diaperscout-prototype.pages.dev/assets/icons/all-in-one.png",
+    "sha256": "6eb681fbfccdcaf1a13f5bf3420e23fda914b7eefe9047a0b36c10558a127e89"
+  },
+  {
+    "asset": "boosters.png",
+    "source": "https://diaperscout-prototype.pages.dev/assets/icons/boosters.png",
+    "sha256": "999bc09c11b71008fd559dbb63d05331d8474da658a2cc7705f7ccb4fdcdaf1a"
+  },
+  {
+    "asset": "diaper.png",
+    "source": "https://diaperscout-prototype.pages.dev/assets/icons/diaper.png",
+    "sha256": "eef908bc3dbf7e6fb13a06e7702f4dc73f55963a7554cfd24d951d3d5923af73"
+  },
+  {
+    "asset": "pads.png",
+    "source": "https://diaperscout-prototype.pages.dev/assets/icons/pads.png",
+    "sha256": "881c6fc1098edfec4a37d3d5c79b4ccd31de998572a8e5526126dd899db95929"
+  },
+  {
+    "asset": "pullup.png",
+    "source": "https://diaperscout-prototype.pages.dev/assets/icons/pullup.png",
+    "sha256": "76cbf89bde8e50a8c0147730239ec1676e936202dfb8b2e6dedbfb1124e559f6"
+  }
+]

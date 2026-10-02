@@ -50,7 +50,7 @@ public sealed class PublicVariantCatalogueBrowserTests(PostgreSqlFixture fixture
         var blackLink = page.GetByRole(AriaRole.Link, new() { Name = "Integration Test Brand MEGAMAX Black", Exact = true });
         await Assertions.Expect(blackLink).ToHaveAttributeAsync("href", PublicProductIdentity.ProductUrl(managed.Slug, receipt.ProductVariantId));
         await blackLink.ClickAsync();
-        await Assertions.Expect(page.Locator("h1")).ToHaveTextAsync("Integration Test Brand MEGAMAX Black");
+        await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Level = 1 })).ToHaveTextAsync("Integration Test Brand MEGAMAX Black");
         await Assertions.Expect(page.Locator(".ds-size-pill")).ToHaveCountAsync(2);
         await page.WaitForFunctionAsync("() => document.documentElement.dataset.pwaState === 'ready'");
         var medium = page.GetByRole(AriaRole.Button, new() { Name = "Medium", Exact = false });
@@ -70,22 +70,22 @@ public sealed class PublicVariantCatalogueBrowserTests(PostgreSqlFixture fixture
         await Assertions.Expect(retailerLink).ToHaveCountAsync(1);
         await page.Locator("#public-product-variant").SelectOptionAsync(pink.Id.ToString());
         await Assertions.Expect(page).ToHaveURLAsync(origin + PublicProductIdentity.ProductUrl(managed.Slug, pink.Id));
-        await Assertions.Expect(page.Locator("h1")).ToHaveTextAsync("Integration Test Brand MEGAMAX Pink");
+        await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Level = 1 })).ToHaveTextAsync("Integration Test Brand MEGAMAX Pink");
         await Assertions.Expect(page.Locator(".ds-size-pill")).ToHaveCountAsync(1);
         await Assertions.Expect(retailerLink).ToHaveCountAsync(0);
         await Assertions.Expect(packSelect.Locator("option")).ToHaveTextAsync(["20 pieces · Bag"]);
         await page.ReloadAsync();
-        await Assertions.Expect(page.Locator("h1")).ToHaveTextAsync("Integration Test Brand MEGAMAX Pink");
+        await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Level = 1 })).ToHaveTextAsync("Integration Test Brand MEGAMAX Pink");
         await page.WaitForFunctionAsync("() => document.documentElement.dataset.pwaState === 'ready'");
         await page.GoBackAsync();
         await Assertions.Expect(page).ToHaveURLAsync(origin + PublicProductIdentity.ProductUrl(managed.Slug, receipt.ProductVariantId));
-        await Assertions.Expect(page.Locator("h1")).ToHaveTextAsync("Integration Test Brand MEGAMAX Black");
+        await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Level = 1 })).ToHaveTextAsync("Integration Test Brand MEGAMAX Black");
         await page.GoForwardAsync();
-        await Assertions.Expect(page.Locator("h1")).ToHaveTextAsync("Integration Test Brand MEGAMAX Pink");
+        await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Level = 1 })).ToHaveTextAsync("Integration Test Brand MEGAMAX Pink");
         await page.GotoAsync(origin + $"/products/{managed.Slug}?variantId=invalid");
-        await Assertions.Expect(page.Locator("h1")).ToHaveTextAsync("Product not found");
+        await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Level = 1 })).ToHaveTextAsync("Product not found");
         await page.GotoAsync(origin + $"/products/{managed.Slug}?variantId={Guid.NewGuid()}");
-        await Assertions.Expect(page.Locator("h1")).ToHaveTextAsync("Product not found");
+        await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Level = 1 })).ToHaveTextAsync("Product not found");
     }
     [Fact]
     [Trait("Category", "Browser")]

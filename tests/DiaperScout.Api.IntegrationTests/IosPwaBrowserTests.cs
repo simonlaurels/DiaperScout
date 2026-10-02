@@ -30,7 +30,8 @@ public sealed class IosPwaBrowserTests(PostgreSqlFixture fixture) : IClassFixtur
             await Assertions.Expect(page.Locator("#pwa-startup")).ToBeHiddenAsync();
             await Assertions.Expect(page.Locator("#blazor-error-ui")).ToBeHiddenAsync();
         }
-        await page.Locator(".catalogue-product-identity h2 a").First.ClickAsync();
+        await page.Locator(".pwa-search").GetByRole(AriaRole.Button, new() { Name = "View all", Exact = true }).First.ClickAsync();
+        await page.Locator(".pwa-search .search-result-card").First.ClickAsync();
         await Assertions.Expect(page.Locator(".ds-size-pill")).ToHaveCountAsync(1);
         await Assertions.Expect(page.Locator("#blazor-error-ui")).ToBeHiddenAsync();
         Assert.Empty(errors);

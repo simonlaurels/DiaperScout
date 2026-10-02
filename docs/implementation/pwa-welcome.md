@@ -77,3 +77,7 @@ Physical iPhone screenshot IMG_2735.PNG showed a cream status-area strip, exactl
 The existing blocked-framework WebKit test now verifies the document/startup backgrounds and theme/manifest values before releasing startup. Physical iOS must still confirm the native strip takes the new colour; desktop WebKit cannot prove native status-bar sampling or installation metadata refresh. Do not delete an installed app containing an in-progress contribution to refresh its settings.
 
 Application rollback: redeploy the preceding Web image sha256:2e4d2e07ddd1be41d8bfa49ea0c1fa9e3c09f5242516323554f417e1709377c6 with a fresh revision suffix, leaving all ACA configuration intact. This restores the previous colour behaviour.
+
+### Sky-colour experiment reversed — 2 October 2026
+
+The user reports that the blue-background experiment did not change the installed iOS status area and authorizes reversing it. Search restores the pre-experiment cream startup root/panel, theme meta and manifest colours. The Welcome panel retains its existing blue portrait design and welcome-active background. No claim is made that CSS controls the reported native area. The blocked-framework test checks the restored startup colours and metadata; the existing Welcome tests continue to check its blue presentation.

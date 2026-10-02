@@ -1,0 +1,141 @@
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<section class="pwa-prototype search-page pwa-search">
+    <div class="search-shell">
+        <header class="search-header"><h1>Search</h1><p>Find products, brands and more.</p></header>
+        <form class="search-input-wrap" @onsubmit="SubmitAsync" @onsubmit:preventDefault>
+            <div class="search-input">
+                <button class="search-submit" type="submit" aria-label="Search products and brands" disabled="@(!ready)"><PrototypeIcon Name="search" /></button>
+                <input id="pwa-search-query" type="search" aria-label="Search products and brands" placeholder="Search products, brands..." @bind="input" @bind:event="oninput" disabled="@(!ready)" />
+                <button type="button" class="search-filter-button" disabled="@(!ready)" aria-label="Filter search" aria-expanded="@(filtersOpen ? "true" : "false")" aria-controls="pwa-search-filters" @onclick="() => filtersOpen = !filtersOpen"><PrototypeIcon Name="sliders-horizontal" /></button>
+            </div>
+        </form>
+        @if (filtersOpen && Catalogue is not null)
+        {
+            <section class="search-section search-filters" id="pwa-search-filters" aria-label="Catalogue filters">
+                <div class="search-section-heading"><h2>Filters</h2><button class="clear-searches" @onclick="ClearFilters">Clear all</button></div>
+                @foreach (var facet in Catalogue.Facets)
+                {
+                    <fieldset><legend>@facet.Label</legend>
+                    @foreach (var option in facet.Options)
+                    {
+                        <label><input type="checkbox" checked="@IsSelected(facet.Key, option.Value)" @onchange="() => ToggleFilter.InvokeAsync((facet.Key, option.Value))" /><span>@option.Label</span><small>@option.Count</small></label>
+                    }</fieldset>
+                }
+                <label class="search-sort">Sort by<select value="@Sort" @onchange="SortChanged"><option value="relevance">Relevance</option><option value="name">Name</option><option value="manufacturer">Manufacturer</option><option value="newest">Newest</option></select></label>
+            </section>
+        }
+        <section class="search-section" aria-labelledby="pwa-category-heading">
+            <div class="search-section-heading"><h2 id="pwa-category-heading">Browse by Category</h2><button class="search-view-all" disabled="@(!ready)" @onclick="BrowseAllAsync">View all</button></div>
+            <div class="category-scroller">
+                @foreach (var category in Categories)
+                {
+                    <button type="button" class="category-item" disabled="@(!ready)" aria-pressed="@SelectedState("productType", category.Type.ToString())" @onclick="() => ToggleCategoryAsync(category.Type)">
+                        <span class="@("category-icon category-" + category.Colour)"><img src="@("/images/search/" + category.Asset + ".png")" alt="" width="48" height="48" /></span><span>@category.Label</span>
+                    </button>
+                }
+            </div>
+        </section>
+        <section class="search-section" aria-labelledby="pwa-brands-heading">
+            <div class="search-section-heading"><h2 id="pwa-brands-heading">Brands</h2><button class="search-view-all" disabled="@(!ready)" @onclick="() => filtersOpen = true">View all</button></div>
+            <div class="brand-scroller">
+                @foreach (var brand in Catalogue?.Facets.FirstOrDefault(x => x.Key == "brand")?.Options ?? [])
+                {
+                    <button class="brand-chip" type="button" disabled="@(!ready)" aria-pressed="@SelectedState("brand", brand.Value)" @onclick="() => ToggleBrandAsync(brand.Value)">@brand.Label</button>
+                }
+            </div>
+            @if (!Loading && !Failed && !(Catalogue?.Facets.Any(x => x.Key == "brand" && x.Options.Count > 0) ?? false)) { <p class="search-empty-note">No brands recorded for these results yet.</p> }
+        </section>
+        <section class="search-section recent-searches" aria-labelledby="pwa-recent-heading">
+            <div class="search-section-heading"><h2 id="pwa-recent-heading">Recent Searches</h2><button class="clear-searches" type="button" @onclick="ClearRecentAsync" disabled="@(recent.Count == 0)">Clear</button></div>
+            <div class="recent-search-list">
+                @foreach (var term in recent)
+                {
+                    <div class="recent-search-item"><button class="recent-term" type="button" @onclick="() => SearchTermAsync(term)">@term</button><button class="recent-remove" type="button" aria-label="@("Remove " + term + " from recent searches")" @onclick="() => RemoveRecentAsync(term)"><PrototypeIcon Name="x" /></button></div>
+                }
+            </div>
+            @if (recent.Count == 0) { <p class="search-empty-note">Your searches on this device will appear here.</p> }
+        </section>
+        <section class="search-results" aria-live="polite" aria-busy="@(Loading ? "true" : "false")">
+            @if (Loading)
+            {
+                <div class="search-state" role="status"><span class="search-loading" aria-hidden="true"></span><h2>Searching the catalogue…</h2><p>Finding products and brands.</p></div>
+            }
+            else if (Failed)
+            {
+                <div class="search-state" role="alert"><h2>The catalogue is out of reach.</h2><p>Check your connection and try again.</p><button type="button" class="brand-chip" disabled="@(!ready || Loading)" @onclick="Retry">Try again</button></div>
+            }
+            else if (ShowResults && Catalogue is not null)
+            {
+                <div class="search-section-heading"><h2>@Catalogue.TotalCount result@(Catalogue.TotalCount == 1 ? "" : "s")</h2>@if (HasFilters) { <button class="clear-searches" @onclick="ClearFilters">Clear filters</button> }</div>
+                @if (Catalogue.Products.Count == 0)
+                {
+                    <div class="search-state"><h2>No products found</h2><p>Try removing a filter or searching for something else.</p></div>
+                }
+                @foreach (var product in Catalogue.Products)
+                {
+                    <a class="search-result-card" href="@PublicProductIdentity.ProductUrl(product.Slug, product.ProductVariantId)">
+                        <span class="search-result-image">
+                            @if (!string.IsNullOrWhiteSpace(product.ImageUrl)) { <img @key="product.ImageUrl" src="@product.ImageUrl" alt="" loading="lazy" width="88" height="112" @onerror="() => failedImages.Add(product.ImageUrl)" hidden="@failedImages.Contains(product.ImageUrl)" /> }
+                            @if (string.IsNullOrWhiteSpace(product.ImageUrl) || failedImages.Contains(product.ImageUrl)) { <span class="search-image-placeholder"><img src="/images/search/diaper.png" alt="" width="48" height="48" /><small>No image recorded</small></span> }
+                        </span>
+                        <span class="search-result-copy"><small>@(product.BrandName ?? product.ManufacturerName)</small><strong>@product.Name</strong><span class="search-result-metadata"><span>@TypeLabel(product.ProductType)</span>@foreach (var size in product.Sizes.Take(4)) { <span>@size</span> }</span></span>
+                        <PrototypeIcon Name="chevron-right" />
+                    </a>
+                }
+                @if (Catalogue.Products.Count < Catalogue.TotalCount) { <button class="brand-chip search-more" @onclick="More" disabled="@Loading">Show more products</button> }
+            }
+        </section>
+    </div>
+</section>
+
+@code {
+    [Parameter] public CatalogueProductSearch? Catalogue { get; set; }
+    [Parameter] public bool Loading { get; set; }
+    [Parameter] public bool Failed { get; set; }
+    [Parameter] public bool HasFilters { get; set; }
+    [Parameter] public string Query { get; set; } = "";
+    [Parameter] public string Sort { get; set; } = "relevance";
+    [Parameter] public Func<string, string, bool> IsSelected { get; set; } = (_, _) => false;
+    [Parameter] public EventCallback<string> Search { get; set; }
+    [Parameter] public EventCallback<(string Key, string Value)> ToggleFilter { get; set; }
+    [Parameter] public EventCallback<ChangeEventArgs> SortChanged { get; set; }
+    [Parameter] public EventCallback ClearFilters { get; set; }
+    [Parameter] public EventCallback Retry { get; set; }
+    [Parameter] public EventCallback More { get; set; }
+    [Parameter] public EventCallback Browse { get; set; }
+    private string input = "", previousQuery = "";
+    private bool filtersOpen, browseAll, ready;
+    private IJSObjectReference? history;
+    private List<string> recent = [];
+    private readonly HashSet<string> failedImages = [];
+    private string SelectedState(string key, string value) => IsSelected(key, value) ? "true" : "false";
+    private bool ShowResults => browseAll || HasFilters || !string.IsNullOrWhiteSpace(Query);
+    private static readonly (ProductType Type, string Label, string Asset, string Colour)[] Categories = [
+        (ProductType.Tape, "Diapers", "diaper", "teal"), (ProductType.PullUp, "Pull-ups", "pullup", "cream"),
+        (ProductType.AllInOne, "All-in-One", "all-in-one", "blue"), (ProductType.Booster, "Boosters", "boosters", "yellow"),
+        (ProductType.Pad, "Pads", "pads", "pink")];
+    private static string TypeLabel(ProductType type) => Categories.FirstOrDefault(x => x.Type == type).Label ?? "Other";
+    protected override void OnParametersSet() { if (Query != previousQuery) { input = previousQuery = Query; } }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        try { history = await JS.InvokeAsync<IJSObjectReference>("import", "./js/search-history.js"); recent = await history.InvokeAsync<List<string>>("read"); }
+        catch (JSException) { }
+        ready = true; StateHasChanged();
+    }
+    private async Task SubmitAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(input)) { recent.RemoveAll(x => x.Equals(input.Trim(), StringComparison.OrdinalIgnoreCase)); recent.Insert(0, input.Trim()); recent = recent.Take(6).ToList(); await SaveRecentAsync(); }
+        browseAll = true; await Search.InvokeAsync(input);
+    }
+    private async Task SearchTermAsync(string term) { input = term; await SubmitAsync(); }
+    private Task ToggleCategoryAsync(ProductType type) => ToggleFilter.InvokeAsync(("productType", type.ToString()));
+    private Task ToggleBrandAsync(string id) => ToggleFilter.InvokeAsync(("brand", id));
+    private async Task BrowseAllAsync() { browseAll = true; input = ""; await Browse.InvokeAsync(); }
+    private async Task ClearRecentAsync() { recent.Clear(); await SaveRecentAsync(); }
+    private async Task RemoveRecentAsync(string term) { recent.Remove(term); await SaveRecentAsync(); }
+    private async Task SaveRecentAsync() { if (history is not null) { try { await history.InvokeVoidAsync("write", recent); } catch (JSException) { } } }
+    public async ValueTask DisposeAsync() { if (history is not null) { try { await history.DisposeAsync(); } catch (JSDisconnectedException) { } } }
+}

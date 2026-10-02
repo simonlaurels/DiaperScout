@@ -6,7 +6,7 @@
 
 <PageTitle>Scan | DiaperScout</PageTitle>
 
-<main class="scan-page">
+<main class="scan-page" data-capture="@(CaptureStage ? "true" : "false")" data-camera-ready="@(_isScanning && !_cameraStarting ? "true" : "false")">
     <section class="scan-panel" aria-labelledby="scan-heading">
         <p class="scan-eyebrow">Product identification</p>
         <h1 id="scan-heading">What have you found?</h1>
@@ -17,10 +17,26 @@
                 Scan barcode
             </button>
 
-            <div class="scan-camera-preview @(_isScanning ? string.Empty : "scan-camera-hidden")" aria-hidden="@(!_isScanning)">
+            <div class="scan-camera-preview @(_isScanning || (_pwa && CaptureStage) ? string.Empty : "scan-camera-hidden")">
                 <video @ref="_cameraPreview" autoplay playsinline muted aria-label="Camera preview for barcode scanning"></video>
                 <div class="scan-camera-frame" aria-hidden="true"></div>
-                <button class="ds-button ds-button-secondary" type="button" @onclick="StopScannerAsync">Stop scanning</button>
+                <button class="ds-button ds-button-secondary scan-desktop-stop" type="button" @onclick="StopScannerAsync">Stop scanning</button>
+                <div class="scanner-overlay">
+                    <div class="scanner-top"><a href="/" class="scanner-control" aria-label="Cancel scanning"><PrototypeIcon Name="x" /></a><span>Scan a barcode</span>
+                    @if (_torchAvailable) { <button type="button" class="scanner-control" aria-label="Toggle flashlight" aria-pressed="@(_torchOn ? "true" : "false")" @onclick="ToggleTorchAsync"><PrototypeIcon Name="zap" /></button> }
+                    </div>
+                    <div class="scanner-guidance"><div class="scanner-reticle" aria-hidden="true"><i></i><i></i><i></i><i></i></div><p>Point your camera at a barcode</p></div>
+                    @if (!_isScanning || _cameraStarting)
+                    {
+                        <div class="scanner-state" role="status" aria-live="polite">
+                            <AppIcon Name="scan" />
+                            <h2>@(_cameraStarting || !_interactiveReady ? "Opening your camera…" : _scanMessage is null ? "Ready to scan" : "Camera paused")</h2>
+                            <p>@(_cameraStarting ? "Allow camera access when your browser asks." : _scanMessage ?? "Use your camera or enter the number on the pack.")</p>
+                            @if (_interactiveReady && !_cameraStarting) { <button class="scanner-control scanner-retry" type="button" @onclick="StartScannerAsync">Try camera again</button> }
+                        </div>
+                    }
+                    <div class="scanner-bottom"><button type="button" class="scanner-control" disabled="@(!_interactiveReady)" @onclick="EnterManuallyAsync">Enter barcode number</button><p>Keep the barcode inside the frame.</p></div>
+                </div>
             </div>
 
             @if (_scanMessage is not null)
@@ -40,6 +56,8 @@
                 </div>
             </div>
         </EditForm>
+        @if (_manualEntry && _pwa) { <button type="button" class="ds-button ds-button-secondary" @onclick="ReturnToCameraAsync">Use camera instead</button> }
+        @if (_isLookingUp && _pwa && !_manualEntry) { <p class="scan-captured" role="status">Barcode captured. Finding your pack…</p> }
 
         @if (_result is { Status: ProductLookupStatus.Found, Product: { } match })
         {
@@ -80,7 +98,23 @@
     private string _gtin = string.Empty;
     private bool _isLookingUp;
     private bool _interactiveReady;
-    protected override Task OnAfterRenderAsync(bool firstRender) { if (firstRender) { _interactiveReady = true; StateHasChanged(); } return Task.CompletedTask; }
+    private bool _pwa, _manualEntry, _cameraStarting, _captureComplete, _disposed, _torchAvailable, _torchOn, _focusManual;
+    private int _cameraGeneration;
+    private bool CaptureStage => !_manualEntry && !_captureComplete && _result is null;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) { if (_focusManual && _scannerModule is not null) { _focusManual = false; await _scannerModule.InvokeVoidAsync("focusManual"); } return; }
+        try
+        {
+            _scannerModule = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Scan.razor.js");
+            _scannerReference = DotNetObjectReference.Create(this);
+            _pwa = await _scannerModule.InvokeAsync<bool>("mount", _cameraPreview, _scannerReference);
+        }
+        catch (JSException) { _manualEntry = true; _scanMessage = "Camera tools couldn’t load. Enter the barcode number or reload to try again."; }
+        _interactiveReady = true;
+        if (_pwa) await StartScannerAsync();
+        else StateHasChanged();
+    }
     private bool _isScanning;
     private ProductLookupResult? _result;
     private string? _scanMessage;
@@ -90,7 +124,11 @@
 
     private async Task LookupAsync()
     {
+        if (_isLookingUp || _disposed) return;
+        _captureComplete = true;
+        await StopScannerAsync();
         _isLookingUp = true;
+        await InvokeAsync(StateHasChanged);
         try
         {
             _result = await ProductLookup.LookupAsync(_gtin);
@@ -100,32 +138,47 @@
             _isLookingUp = false;
         }
     }
-    private void ResetResult() { _result = null; _gtin = ""; _scanMessage = null; }
+    private async Task ResetResult() { _result = null; _gtin = ""; _scanMessage = null; _captureComplete = false; _manualEntry = false; if (_pwa) await StartScannerAsync(); }
+    private async Task EnterManuallyAsync() { _manualEntry = true; _focusManual = true; await StopScannerAsync(); await InvokeAsync(StateHasChanged); }
+    private async Task ReturnToCameraAsync() { _manualEntry = false; _captureComplete = false; _result = null; await StartScannerAsync(); }
+    private async Task ToggleTorchAsync() { if (_scannerModule is not null) _torchOn = await _scannerModule.InvokeAsync<bool>("toggleTorch"); }
 
     private async Task StartScannerAsync()
     {
+        if (_disposed || _cameraStarting || _isLookingUp) return;
+        if (_result?.Status is ProductLookupStatus.Found or ProductLookupStatus.NotFound) return;
+        var generation = ++_cameraGeneration;
+        _captureComplete = false; _result = null; _manualEntry = false;
         _scanMessage = null;
         _isScanning = true;
+        _cameraStarting = true;
         await InvokeAsync(StateHasChanged);
 
         _scannerModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Scan.razor.js");
         _scannerReference ??= DotNetObjectReference.Create(this);
         var result = await _scannerModule.InvokeAsync<string>("start", _cameraPreview, _scannerReference);
-        if (result == "started") return;
+        if (generation != _cameraGeneration || _disposed) return;
+        _cameraStarting = false;
+        if (_disposed || !_isScanning || _captureComplete) return;
+        if (result == "started") { _torchAvailable = await _scannerModule.InvokeAsync<bool>("canTorch"); await InvokeAsync(StateHasChanged); return; }
 
         _isScanning = false;
         _scanMessage = result switch
         {
-            "denied" => "Camera access was not allowed. You can enter the barcode number manually.",
+            "denied" => "Camera access was not allowed. Enable camera access in your browser or device settings, then try again, or enter the barcode number.",
             "unavailable" => "No camera is available on this device. You can enter the barcode number manually.",
             "unsupported" => "Barcode scanning is not supported by this browser. You can enter the barcode number manually.",
             _ => "We couldn’t start the camera. Please try again or enter the barcode number manually."
         };
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task StopScannerAsync()
     {
+        _cameraGeneration++;
         _isScanning = false;
+        _cameraStarting = false;
+        _torchAvailable = _torchOn = false;
         if (_scannerModule is not null)
         {
             await _scannerModule.InvokeVoidAsync("stop", _cameraPreview);
@@ -135,13 +188,14 @@
     [JSInvokable]
     public async Task OnBarcodeDetected(string gtin)
     {
-        if (_isLookingUp || _result?.Status is ProductLookupStatus.Found or ProductLookupStatus.NotFound) return;
+        if (_disposed || !_isScanning || _captureComplete || _isLookingUp || _result?.Status is ProductLookupStatus.Found or ProductLookupStatus.NotFound) return;
+        _captureComplete = true;
         _isScanning = false;
         _scanMessage = null;
         _gtin = gtin;
         await StopScannerAsync();
         await LookupAsync();
-        await InvokeAsync(StateHasChanged);
+        if (!_disposed) await InvokeAsync(StateHasChanged);
     }
 
     [JSInvokable]
@@ -152,12 +206,23 @@
         await StopScannerAsync();
         await InvokeAsync(StateHasChanged);
     }
+    [JSInvokable]
+    public async Task OnScannerPaused()
+    {
+        if (_disposed || _captureComplete || !_isScanning) return;
+        _cameraGeneration++;
+        _isScanning = false; _cameraStarting = false; _torchAvailable = _torchOn = false;
+        _scanMessage = "Your camera stopped while the app was away. Start the camera again to resume.";
+        await InvokeAsync(StateHasChanged);
+    }
 
     public async ValueTask DisposeAsync()
     {
+        _disposed = true;
         try
         {
             await StopScannerAsync();
+            if (_scannerModule is not null) await _scannerModule.InvokeVoidAsync("unmount", _cameraPreview);
             if (_scannerModule is not null) await _scannerModule.DisposeAsync();
         }
         catch (JSDisconnectedException)

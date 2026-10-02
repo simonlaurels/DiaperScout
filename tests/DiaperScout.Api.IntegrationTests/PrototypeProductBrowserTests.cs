@@ -96,6 +96,8 @@ public sealed class PrototypeProductBrowserTests(PostgreSqlFixture fixture, ITes
         await Assertions.Expect(page.Locator(".retailer-chevron")).ToHaveAttributeAsync("href","/atlas?locationId="+observed.Id);
         await page.GetByRole(AriaRole.Link,new(){Name="Back to TENA Slip Maxi",Exact=true}).ClickAsync();
         await Assertions.Expect(page.GetByRole(AriaRole.Combobox,new(){Name="Pack size",Exact=true})).ToHaveValueAsync(receipt.PackTypeId.ToString());
+        // The restored page's SSR select is visible before its interactive handlers attach.
+        await page.WaitForFunctionAsync("() => document.querySelector('.gallery-viewport')?.dataset.galleryReady === 'true'");
         await page.GetByRole(AriaRole.Combobox,new(){Name="Pack size",Exact=true}).SelectOptionAsync(otherPack.Id.ToString());
         await Assertions.Expect(page.Locator(".observation-card").First).ToContainTextAsync(unrelated.Name);
         await Assertions.Expect(page.Locator($"a[href='{destination}']")).ToHaveCountAsync(0);

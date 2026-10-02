@@ -38,11 +38,11 @@ public sealed class PlaceObservationBrowserTests(PostgreSqlFixture fixture) : IC
         // OSM prohibits headless tile crawling; tests exercise map rendering with local synthetic tiles.
         await context.RouteAsync("https://tile.openstreetmap.org/**",route=>route.FulfillAsync(new(){Status=200,ContentType="image/png",BodyBytes=Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=")}));
         var page=await context.NewPageAsync();await page.GotoAsync(origin+"/scan");await Ready(page);
-        await page.Locator("#gtin").FillAsync("4006381333931");await page.GetByRole(AriaRole.Button,new(){Name="Look up",Exact=true}).ClickAsync();
+        await EnterManual(page);await page.Locator("#gtin").FillAsync("4006381333931");await page.GetByRole(AriaRole.Button,new(){Name="Look up",Exact=true}).ClickAsync();
         await Assertions.Expect(page.GetByRole(AriaRole.Link,new(){Name="View product",Exact=true})).ToHaveAttributeAsync("href",$"/products/integration-test-product?variantId={(await api.CreateClient().GetFromJsonAsync<ProductIdentification>("/api/v1/products/lookup/4006381333931"))!.ProductVariantId}&packTypeId={packId}");
         await page.GetByRole(AriaRole.Link,new(){Name="View product",Exact=true}).ClickAsync();await Ready(page);
         await Assertions.Expect(page.GetByRole(AriaRole.Combobox,new(){Name="Pack size",Exact=true})).ToHaveValueAsync(packId.ToString());
-        await page.GotoAsync(origin+"/scan");await Ready(page);await page.Locator("#gtin").FillAsync("4006381333931");await page.GetByRole(AriaRole.Button,new(){Name="Look up",Exact=true}).ClickAsync();
+        await page.GotoAsync(origin+"/scan");await Ready(page);await EnterManual(page);await page.Locator("#gtin").FillAsync("4006381333931");await page.GetByRole(AriaRole.Button,new(){Name="Look up",Exact=true}).ClickAsync();
         await page.GetByRole(AriaRole.Link,new(){Name="Record where you found it",Exact=true}).ClickAsync();await Ready(page);
         await page.GetByRole(AriaRole.Link,new(){Name="Sign in and continue",Exact=true}).ClickAsync();
         await page.GetByRole(AriaRole.Link,new(){Name="Sign in as development moderator",Exact=true}).ClickAsync();
@@ -85,7 +85,7 @@ public sealed class PlaceObservationBrowserTests(PostgreSqlFixture fixture) : IC
         using var api=new ObservationApiFactory(fixture);using var webBase=new PasskeyWebFactory(api);using var web=webBase.WithWebHostBuilder(builder=>builder.ConfigureAppConfiguration((_,config)=>config.AddInMemoryCollection(new Dictionary<string,string?>{["Authentication:Development:Subject"]=PostgreSqlFixture.ExplorerSubject})).ConfigureServices(services=>{ if(lostResponse) services.AddHttpClient<DiaperScoutWeb::DiaperScout.Web.Services.PlaceObservationClient>().ConfigurePrimaryHttpMessageHandler(()=>new LoseFirstProposalResponse(api.Server.CreateHandler())); }));
         web.UseKestrel(0);using var client=web.CreateClient();var origin=client.BaseAddress!.GetLeftPart(UriPartial.Authority);
         using var playwright=await Playwright.CreateAsync();await using var browser=await (webkit?playwright.Webkit:playwright.Chromium).LaunchAsync(new(){Headless=true});var page=await browser.NewPageAsync(new(){ViewportSize=new(){Width=390,Height=844}});
-        await page.GotoAsync(origin+"/scan");await Ready(page);await page.Locator("#gtin").FillAsync("96385074");await page.GetByRole(AriaRole.Button,new(){Name="Look up",Exact=true}).ClickAsync();
+        await page.GotoAsync(origin+"/scan");await Ready(page);await EnterManual(page);await page.Locator("#gtin").FillAsync("96385074");await page.GetByRole(AriaRole.Button,new(){Name="Look up",Exact=true}).ClickAsync();
         Assert.Equal("042100005264", await page.EvaluateAsync<string>("async () => (await import('/Components/Pages/Scan.razor.js')).expandUpcE('04252614')"));
         await Assertions.Expect(page.GetByRole(AriaRole.Heading,new(){Name="We don’t have this one yet.",Exact=true})).ToBeVisibleAsync();await page.GetByRole(AriaRole.Link,new(){Name="Add product",Exact=true}).ClickAsync();await Ready(page);
         await Assertions.Expect(page.Locator(".contribution-barcode")).ToContainTextAsync("96385074");
@@ -145,5 +145,6 @@ public sealed class PlaceObservationBrowserTests(PostgreSqlFixture fixture) : IC
             }
             """));
     }
+    private static Task EnterManual(IPage page)=>page.GetByRole(AriaRole.Button,new(){Name="Enter barcode number",Exact=true}).ClickAsync();
     private static Task Ready(IPage page)=>page.WaitForFunctionAsync("() => document.documentElement.dataset.pwaState === 'ready'");
 }

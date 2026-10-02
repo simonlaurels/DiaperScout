@@ -11,6 +11,44 @@ namespace DiaperScout.Api.IntegrationTests;
 
 public sealed class PlaceObservationApiTests(PostgreSqlFixture fixture) : IClassFixture<PostgreSqlFixture>
 {
+    [Fact]
+    public async Task Active_authenticated_account_without_optional_explorer_profile_can_propose_exactly_once()
+    {
+        using var api=Factory();
+        var subject="profileless-proposal-"+Guid.NewGuid().ToString("N");
+        var user=new User(subject);
+        using (var scope=api.Services.CreateScope()) {
+            var db=scope.ServiceProvider.GetRequiredService<DiaperScoutDbContext>();
+            db.Users.Add(user); await db.SaveChangesAsync();
+            Assert.False(await db.ExplorerProfiles.AnyAsync(p=>p.UserId==user.Id));
+        }
+        using var client=Actor(api,subject);
+        var request=new PublicProductProposal("96385074","Test Brand","Profileless proposal",null,"Test maker","S",12,Guid.NewGuid());
+        var first=await client.PostAsJsonAsync("/api/v1/public-product-proposals",request);
+        Assert.Equal(HttpStatusCode.OK,first.StatusCode);
+        var receipt=(await first.Content.ReadFromJsonAsync<PublicProductProposalReceipt>())!;
+        var retry=await client.PostAsJsonAsync("/api/v1/public-product-proposals",request);
+        Assert.Equal(receipt,(await retry.Content.ReadFromJsonAsync<PublicProductProposalReceipt>()));
+        using var verification=api.Services.CreateScope();
+        var database=verification.ServiceProvider.GetRequiredService<DiaperScoutDbContext>();
+        Assert.Equal(1,await database.CatalogueSubmissions.CountAsync(s=>s.SubmittedByUserId==user.Id&&s.PublicContributionId==request.ContributionId));
+        Assert.False(await database.ExplorerProfiles.AnyAsync(p=>p.UserId==user.Id));
+    }
+
+    [Theory]
+    [InlineData(UserAccountStatus.Suspended)]
+    [InlineData(UserAccountStatus.Anonymised)]
+    public async Task Authenticated_nonactive_account_without_profile_is_still_forbidden(UserAccountStatus status) {
+        using var api=Factory();var subject="blocked-proposal-"+Guid.NewGuid().ToString("N");var user=new User(subject);
+        using(var scope=api.Services.CreateScope()) {
+            var db=scope.ServiceProvider.GetRequiredService<DiaperScoutDbContext>();db.Users.Add(user);
+            db.Entry(user).Property(u=>u.Status).CurrentValue=status;await db.SaveChangesAsync();
+        }
+        using var client=Actor(api,subject);
+        Assert.Equal(HttpStatusCode.Forbidden,(await client.PostAsJsonAsync("/api/v1/public-product-proposals",Proposal())).StatusCode);
+        using var verification=api.Services.CreateScope();
+        Assert.False(await verification.ServiceProvider.GetRequiredService<DiaperScoutDbContext>().CatalogueSubmissions.AnyAsync(s=>s.SubmittedByUserId==user.Id));
+    }
     private ObservationApiFactory Factory() => new(fixture);
     private static HttpClient Actor(ObservationApiFactory api, string subject = PostgreSqlFixture.ExplorerSubject) {
         var client = api.CreateClient(); client.DefaultRequestHeaders.Add("X-Development-Subject", subject); return client;

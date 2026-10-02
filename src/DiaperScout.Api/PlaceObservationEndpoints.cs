@@ -21,7 +21,7 @@ public static class PlaceObservationEndpoints
             await current.GetAsync(ct) is { } actor ? await Validate(async () => Results.Ok(await places.ObserveAsync(actor, request, ct))) : Results.Forbid())
             .RequireAuthorization("Explorer").RequireRateLimiting("contributions").WithTags("Observations");
         app.MapPost("/api/v1/public-product-proposals", async (PublicProductProposal request,
-            ICurrentExplorer current, IPublicProductContributions proposals, CancellationToken ct) =>
+            ICurrentUser current, IPublicProductContributions proposals, CancellationToken ct) =>
             await current.GetAsync(ct) is { } actor ? await Validate(async () => Results.Ok(await proposals.SubmitAsync(actor, request, ct))) : Results.Forbid())
             .RequireAuthorization("Explorer").RequireRateLimiting("contributions").WithTags("Catalogue Submissions");
         app.MapPost("/api/v1/catalogue-submissions/{id:guid}/resolve-existing-pack", async (Guid id,

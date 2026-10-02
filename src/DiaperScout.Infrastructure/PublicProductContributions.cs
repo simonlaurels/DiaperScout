@@ -10,7 +10,7 @@ namespace DiaperScout.Infrastructure;
 internal sealed class PublicProductContributions(DiaperScoutDbContext db, IEditorialAuthorisation editorial,
     IPlaceObservations places) : IPublicProductContributions
 {
-    public async Task<PublicProductProposalReceipt> SubmitAsync(ExplorerIdentity actor, PublicProductProposal r, CancellationToken ct = default)
+    public async Task<PublicProductProposalReceipt> SubmitAsync(AuthenticatedUser actor, PublicProductProposal r, CancellationToken ct = default)
     {
         var gtin = RetailGtin.Normalise(r.Gtin) ?? throw Invalid("gtin", "Enter a valid retail barcode, including its check digit.");
         if (r.ContributionId == Guid.Empty) throw Invalid("contributionId", "A contribution identifier is required.");

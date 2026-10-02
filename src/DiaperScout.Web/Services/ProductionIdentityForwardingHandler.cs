@@ -11,6 +11,9 @@ public sealed class ProductionIdentityForwardingHandler(
     IConfiguration configuration)
     : DelegatingHandler
 {
+    // Supplied only by server-side contribution clients from their application scope.
+    // Pooled HttpClient handlers do not share the InteractiveServer circuit scope.
+    internal static readonly HttpRequestOptionsKey<ClaimsPrincipal> ContributionUser = new("DiaperScout.ContributionUser");
     private const string HeaderName = "X-DiaperScout-Identity";
     private const int AssertionLifetimeSeconds = 60;
 
@@ -18,7 +21,9 @@ public sealed class ProductionIdentityForwardingHandler(
         HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
-        var user = await GetCurrentUserAsync();
+        var user = request.Options.TryGetValue(ContributionUser, out var contributionUser)
+            ? contributionUser : await GetCurrentUserAsync();
+        request.Headers.Remove(HeaderName);
 
         if (user?.Identity?.IsAuthenticated == true)
         {

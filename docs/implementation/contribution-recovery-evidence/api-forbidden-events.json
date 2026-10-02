@@ -1,0 +1,26 @@
+[
+  {
+    "ContainerGroupName_s": "diaperscout-api-vnet--observations-20261001-5d474655b4-9r7z4",
+    "Log_s": "      AuthenticationScheme: ProductionIdentity was forbidden.",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-01T17:20:40.6483555Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-api-vnet--observations-20261001-5d474655b4-2n97x",
+    "Log_s": "      AuthenticationScheme: ProductionIdentity was forbidden.",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T12:08:09.6322346Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-api-vnet--observations-20261001-5d474655b4-2n97x",
+    "Log_s": "      AuthenticationScheme: ProductionIdentity was forbidden.",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T12:10:23.6962917Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-api-vnet--observations-20261001-5d474655b4-2n97x",
+    "Log_s": "      AuthenticationScheme: ProductionIdentity was forbidden.",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T12:11:22.9235716Z"
+  }
+]

@@ -6,6 +6,6 @@ public sealed record PublicProductProposalReceipt(Guid SubmissionId);
 public sealed record ResolveBarcodeProposal(Guid PackTypeId, string Rationale);
 public interface IPublicProductContributions
 {
-    Task<PublicProductProposalReceipt> SubmitAsync(ExplorerIdentity actor, PublicProductProposal request, CancellationToken ct = default);
+    Task<PublicProductProposalReceipt> SubmitAsync(AuthenticatedUser actor, PublicProductProposal request, CancellationToken ct = default);
     Task ResolveAsync(AuthenticatedUser moderator, Guid submissionId, ResolveBarcodeProposal request, CancellationToken ct = default);
 }

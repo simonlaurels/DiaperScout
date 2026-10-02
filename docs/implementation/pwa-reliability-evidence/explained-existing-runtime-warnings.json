@@ -1,0 +1,86 @@
+[
+  {
+    "Log_s": "      Overriding HTTP_PORTS '8080' and HTTPS_PORTS ''. Binding to values defined by URLS instead 'http://+:8080'.",
+    "RevisionName_s": "diaperscout-web-vnet--app-icon-f9673ac",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T07:13:37.0512328Z"
+  },
+  {
+    "Log_s": "      Failed to determine the https port for redirect.",
+    "RevisionName_s": "diaperscout-web-vnet--app-icon-f9673ac",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T07:16:50.371852Z"
+  },
+  {
+    "Log_s": "      Overriding HTTP_PORTS '8080' and HTTPS_PORTS ''. Binding to values defined by URLS instead 'http://+:8080'.",
+    "RevisionName_s": "diaperscout-web-vnet--app-icon-f9673ac",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T07:28:08.07807Z"
+  },
+  {
+    "Log_s": "      Failed to determine the https port for redirect.",
+    "RevisionName_s": "diaperscout-web-vnet--app-icon-f9673ac",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T07:28:14.9303486Z"
+  },
+  {
+    "Log_s": "      Overriding HTTP_PORTS '8080' and HTTPS_PORTS ''. Binding to values defined by URLS instead 'http://+:8080'.",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-8cf8032",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T07:39:10.7893431Z"
+  },
+  {
+    "Log_s": "      Overriding HTTP_PORTS '8080' and HTTPS_PORTS ''. Binding to values defined by URLS instead 'http://+:8080'.",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-8cf8032",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T07:39:11.2109987Z"
+  },
+  {
+    "Log_s": "      Failed to determine the https port for redirect.",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-8cf8032",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T07:40:44.1198379Z"
+  },
+  {
+    "Log_s": "      Failed to determine the https port for redirect.",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-8cf8032",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T07:40:45.8203278Z"
+  },
+  {
+    "Log_s": "      Overriding HTTP_PORTS '8080' and HTTPS_PORTS ''. Binding to values defined by URLS instead 'http://+:8080'.",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:16:42.1619952Z"
+  },
+  {
+    "Log_s": "      Overriding HTTP_PORTS '8080' and HTTPS_PORTS ''. Binding to values defined by URLS instead 'http://+:8080'.",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:16:42.5841354Z"
+  },
+  {
+    "Log_s": "      Failed to determine the https port for redirect.",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:17:37.5202176Z"
+  },
+  {
+    "Log_s": "      Failed to determine the https port for redirect.",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:18:22.6999416Z"
+  },
+  {
+    "Log_s": "      Overriding HTTP_PORTS '8080' and HTTPS_PORTS ''. Binding to values defined by URLS instead 'http://+:8080'.",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-1-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:25:11.1610489Z"
+  },
+  {
+    "Log_s": "      Failed to determine the https port for redirect.",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-1-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:29:24.4253595Z"
+  }
+]

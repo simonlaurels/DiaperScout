@@ -1,0 +1,12 @@
+[
+  {
+    "connections": [
+      {
+        "service": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.DBforPostgreSQL/flexibleServers/diaperscout-prod-pg",
+        "state": "Approved"
+      }
+    ],
+    "id": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.Network/privateEndpoints/pe-diaperscout-prod-pg",
+    "subnet": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.Network/virtualNetworks/vnet-diaperscout-prod/subnets/snet-private-endpoints"
+  }
+]

@@ -1,0 +1,44 @@
+[
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-1-2b7e35f-85c8c6494-26v8t",
+    "Log_s": "warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-1-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:29:24.4253595Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-rmp6s",
+    "Log_s": "warn: Microsoft.AspNetCore.Hosting.Diagnostics[15]",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:16:42.5841354Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-nzpc2",
+    "Log_s": "warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:18:22.6999416Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-1-2b7e35f-85c8c6494-26v8t",
+    "Log_s": "warn: Microsoft.AspNetCore.Hosting.Diagnostics[15]",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-1-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:25:11.1610489Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-nzpc2",
+    "Log_s": "warn: Microsoft.AspNetCore.Hosting.Diagnostics[15]",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:16:42.1619952Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-rmp6s",
+    "Log_s": "warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:17:37.5202176Z"
+  }
+]

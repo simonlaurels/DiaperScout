@@ -1,12 +1,12 @@
 {
-  "phase": "two-replicas",
-  "started": "2026-10-02T08:17:35.513Z",
+  "phase": "one-replica",
+  "started": "2026-10-02T08:29:21.750Z",
   "sessions": [
     {
       "round": 1,
       "engine": "chromium",
       "standalone": false,
-      "started": "2026-10-02T08:17:35.866Z",
+      "started": "2026-10-02T08:29:22.165Z",
       "steps": [
         "Explore ready",
         "Scan interactive",
@@ -21,103 +21,22 @@
       "consoleErrors": [],
       "transport": [
         {
-          "at": "2026-10-02T08:17:37.344Z",
+          "at": "2026-10-02T08:29:23.528Z",
           "path": "/_blazor/initializers",
           "status": 200
         },
         {
-          "at": "2026-10-02T08:17:37.367Z",
+          "at": "2026-10-02T08:29:23.549Z",
           "path": "/_blazor/negotiate",
           "status": 200
         },
         {
-          "at": "2026-10-02T08:18:41.627Z",
+          "at": "2026-10-02T08:30:00.826Z",
           "path": "/_blazor/initializers",
           "status": 200
         },
         {
-          "at": "2026-10-02T08:18:41.643Z",
-          "path": "/_blazor/negotiate",
-          "status": 200
-        }
-      ],
-      "webSockets": [
-        {
-          "path": "/_blazor",
-          "opened": "2026-10-02T08:17:37.396Z",
-          "received": 41,
-          "sent": 40
-        },
-        {
-          "path": "/_blazor",
-          "opened": "2026-10-02T08:18:41.769Z",
-          "received": 17,
-          "sent": 17
-        }
-      ],
-      "finished": true,
-      "descriptorKeyIds": [
-        "3ab78896-4823-4ed8-bca6-8809146fbb0b"
-      ],
-      "circuitDwellMs": 35004,
-      "authReturnPreserved": true,
-      "affinityCookies": [
-        {
-          "name": "acaAffinity",
-          "secure": true,
-          "httpOnly": true,
-          "sameSite": "None",
-          "cookieValueHash": "08b344d431ef"
-        }
-      ],
-      "cachedPaths": [
-        "/pwa/offline.html",
-        "/pwa/offline.css",
-        "/pwa/offline.js",
-        "/images/brand/DiaperScout.svg",
-        "/pwa/guide-map.webp",
-        "/pwa/icons/icon-192.png",
-        "/pwa/icons/icon-512.png",
-        "/pwa/icons/maskable-512.png",
-        "/pwa/icons/apple-touch-icon.png"
-      ],
-      "ended": "2026-10-02T08:18:42.231Z"
-    },
-    {
-      "round": 1,
-      "engine": "chromium",
-      "standalone": true,
-      "started": "2026-10-02T08:18:42.246Z",
-      "steps": [
-        "Explore ready",
-        "Scan interactive",
-        "Unknown barcode lookup completed",
-        "Proposal step transition handled by live circuit",
-        "Circuit remained interactive after 35 seconds/keepalives",
-        "Existing passkey sign-in reached; no authentication or submission",
-        "Atlas loaded",
-        "Scan lookup still interactive after Atlas navigation"
-      ],
-      "errors": [],
-      "consoleErrors": [],
-      "transport": [
-        {
-          "at": "2026-10-02T08:18:42.851Z",
-          "path": "/_blazor/initializers",
-          "status": 200
-        },
-        {
-          "at": "2026-10-02T08:18:42.872Z",
-          "path": "/_blazor/negotiate",
-          "status": 200
-        },
-        {
-          "at": "2026-10-02T08:19:19.178Z",
-          "path": "/_blazor/initializers",
-          "status": 200
-        },
-        {
-          "at": "2026-10-02T08:19:19.192Z",
+          "at": "2026-10-02T08:30:00.841Z",
           "path": "/_blazor/negotiate",
           "status": 200
         }
@@ -125,14 +44,14 @@
       "webSockets": [
         {
           "path": "/_blazor",
-          "opened": "2026-10-02T08:18:42.896Z",
-          "received": 39,
+          "opened": "2026-10-02T08:29:23.575Z",
+          "received": 38,
           "sent": 39
         },
         {
           "path": "/_blazor",
-          "opened": "2026-10-02T08:19:19.216Z",
-          "received": 17,
+          "opened": "2026-10-02T08:30:00.869Z",
+          "received": 16,
           "sent": 18
         }
       ],
@@ -140,7 +59,7 @@
       "descriptorKeyIds": [
         "3ab78896-4823-4ed8-bca6-8809146fbb0b"
       ],
-      "circuitDwellMs": 35001,
+      "circuitDwellMs": 35012,
       "authReturnPreserved": true,
       "affinityCookies": [
         {
@@ -148,7 +67,7 @@
           "secure": true,
           "httpOnly": true,
           "sameSite": "None",
-          "cookieValueHash": "f823b2d37e06"
+          "cookieValueHash": "8ac8d625ccca"
         }
       ],
       "cachedPaths": [
@@ -162,268 +81,13 @@
         "/pwa/icons/maskable-512.png",
         "/pwa/icons/apple-touch-icon.png"
       ],
-      "ended": "2026-10-02T08:19:19.586Z"
+      "ended": "2026-10-02T08:30:01.229Z"
     },
     {
       "round": 1,
-      "engine": "webkit",
-      "standalone": false,
-      "started": "2026-10-02T08:19:20.594Z",
-      "steps": [
-        "Explore ready",
-        "Scan interactive",
-        "Unknown barcode lookup completed",
-        "Proposal step transition handled by live circuit",
-        "Circuit remained interactive after 35 seconds/keepalives",
-        "Existing passkey sign-in reached; no authentication or submission",
-        "Atlas loaded",
-        "Scan lookup still interactive after Atlas navigation"
-      ],
-      "errors": [],
-      "consoleErrors": [],
-      "transport": [
-        {
-          "at": "2026-10-02T08:19:21.707Z",
-          "path": "/_blazor/initializers",
-          "status": 200
-        },
-        {
-          "at": "2026-10-02T08:19:21.728Z",
-          "path": "/_blazor/negotiate",
-          "status": 200
-        },
-        {
-          "at": "2026-10-02T08:19:57.911Z",
-          "path": "/_blazor/disconnect",
-          "status": 200
-        },
-        {
-          "at": "2026-10-02T08:19:58.072Z",
-          "path": "/_blazor/initializers",
-          "status": 200
-        },
-        {
-          "at": "2026-10-02T08:19:58.088Z",
-          "path": "/_blazor/negotiate",
-          "status": 200
-        }
-      ],
-      "webSockets": [
-        {
-          "path": "/_blazor",
-          "opened": "2026-10-02T08:19:21.776Z",
-          "received": 34,
-          "sent": 39,
-          "closed": "2026-10-02T08:19:57.826Z"
-        },
-        {
-          "path": "/_blazor",
-          "opened": "2026-10-02T08:19:58.174Z",
-          "received": 18,
-          "sent": 17
-        }
-      ],
-      "finished": true,
-      "descriptorKeyIds": [
-        "3ab78896-4823-4ed8-bca6-8809146fbb0b"
-      ],
-      "circuitDwellMs": 35014,
-      "authReturnPreserved": true,
-      "affinityCookies": [
-        {
-          "name": "acaAffinity",
-          "secure": true,
-          "httpOnly": true,
-          "sameSite": "None",
-          "cookieValueHash": "c1f8af86bf39"
-        }
-      ],
-      "cachedPaths": [
-        "/pwa/offline.html",
-        "/pwa/offline.css",
-        "/pwa/offline.js",
-        "/images/brand/DiaperScout.svg",
-        "/pwa/icons/icon-512.png",
-        "/pwa/icons/icon-192.png",
-        "/pwa/guide-map.webp",
-        "/pwa/icons/maskable-512.png",
-        "/pwa/icons/apple-touch-icon.png"
-      ],
-      "ended": "2026-10-02T08:19:58.576Z"
-    },
-    {
-      "round": 1,
-      "engine": "webkit",
-      "standalone": true,
-      "started": "2026-10-02T08:19:58.596Z",
-      "steps": [
-        "Explore ready",
-        "Scan interactive",
-        "Unknown barcode lookup completed",
-        "Proposal step transition handled by live circuit",
-        "Circuit remained interactive after 35 seconds/keepalives",
-        "Existing passkey sign-in reached; no authentication or submission",
-        "Atlas loaded",
-        "Scan lookup still interactive after Atlas navigation"
-      ],
-      "errors": [],
-      "consoleErrors": [],
-      "transport": [
-        {
-          "at": "2026-10-02T08:19:59.504Z",
-          "path": "/_blazor/initializers",
-          "status": 200
-        },
-        {
-          "at": "2026-10-02T08:19:59.522Z",
-          "path": "/_blazor/negotiate",
-          "status": 200
-        },
-        {
-          "at": "2026-10-02T08:20:35.524Z",
-          "path": "/_blazor/disconnect",
-          "status": 200
-        },
-        {
-          "at": "2026-10-02T08:20:35.583Z",
-          "path": "/_blazor/initializers",
-          "status": 200
-        },
-        {
-          "at": "2026-10-02T08:20:35.597Z",
-          "path": "/_blazor/negotiate",
-          "status": 200
-        }
-      ],
-      "webSockets": [
-        {
-          "path": "/_blazor",
-          "opened": "2026-10-02T08:19:59.561Z",
-          "received": 32,
-          "sent": 37,
-          "closed": "2026-10-02T08:20:35.418Z"
-        },
-        {
-          "path": "/_blazor",
-          "opened": "2026-10-02T08:20:35.638Z",
-          "received": 14,
-          "sent": 17
-        }
-      ],
-      "finished": true,
-      "descriptorKeyIds": [
-        "3ab78896-4823-4ed8-bca6-8809146fbb0b"
-      ],
-      "circuitDwellMs": 35009,
-      "authReturnPreserved": true,
-      "affinityCookies": [
-        {
-          "name": "acaAffinity",
-          "secure": true,
-          "httpOnly": true,
-          "sameSite": "None",
-          "cookieValueHash": "f12ff18eb54f"
-        }
-      ],
-      "cachedPaths": [
-        "/pwa/offline.css",
-        "/pwa/offline.html",
-        "/pwa/offline.js",
-        "/images/brand/DiaperScout.svg",
-        "/pwa/guide-map.webp",
-        "/pwa/icons/icon-512.png",
-        "/pwa/icons/icon-192.png",
-        "/pwa/icons/apple-touch-icon.png",
-        "/pwa/icons/maskable-512.png"
-      ],
-      "ended": "2026-10-02T08:20:35.931Z"
-    },
-    {
-      "round": 2,
-      "engine": "chromium",
-      "standalone": false,
-      "started": "2026-10-02T08:20:36.486Z",
-      "steps": [
-        "Explore ready",
-        "Scan interactive",
-        "Unknown barcode lookup completed",
-        "Proposal step transition handled by live circuit",
-        "Circuit remained interactive after 35 seconds/keepalives",
-        "Existing passkey sign-in reached; no authentication or submission",
-        "Atlas loaded",
-        "Scan lookup still interactive after Atlas navigation"
-      ],
-      "errors": [],
-      "consoleErrors": [],
-      "transport": [
-        {
-          "at": "2026-10-02T08:20:37.150Z",
-          "path": "/_blazor/initializers",
-          "status": 200
-        },
-        {
-          "at": "2026-10-02T08:20:37.167Z",
-          "path": "/_blazor/negotiate",
-          "status": 200
-        },
-        {
-          "at": "2026-10-02T08:21:13.091Z",
-          "path": "/_blazor/initializers",
-          "status": 200
-        },
-        {
-          "at": "2026-10-02T08:21:13.104Z",
-          "path": "/_blazor/negotiate",
-          "status": 200
-        }
-      ],
-      "webSockets": [
-        {
-          "path": "/_blazor",
-          "opened": "2026-10-02T08:20:37.190Z",
-          "received": 34,
-          "sent": 39
-        },
-        {
-          "path": "/_blazor",
-          "opened": "2026-10-02T08:21:13.125Z",
-          "received": 16,
-          "sent": 17
-        }
-      ],
-      "finished": true,
-      "descriptorKeyIds": [
-        "3ab78896-4823-4ed8-bca6-8809146fbb0b"
-      ],
-      "circuitDwellMs": 35011,
-      "authReturnPreserved": true,
-      "affinityCookies": [
-        {
-          "name": "acaAffinity",
-          "secure": true,
-          "httpOnly": true,
-          "sameSite": "None",
-          "cookieValueHash": "f3487cf213fd"
-        }
-      ],
-      "cachedPaths": [
-        "/pwa/offline.html",
-        "/pwa/offline.css",
-        "/pwa/offline.js",
-        "/images/brand/DiaperScout.svg",
-        "/pwa/guide-map.webp",
-        "/pwa/icons/icon-192.png",
-        "/pwa/icons/icon-512.png",
-        "/pwa/icons/maskable-512.png",
-        "/pwa/icons/apple-touch-icon.png"
-      ],
-      "ended": "2026-10-02T08:21:13.462Z"
-    },
-    {
-      "round": 2,
       "engine": "chromium",
       "standalone": true,
-      "started": "2026-10-02T08:21:13.471Z",
+      "started": "2026-10-02T08:30:01.252Z",
       "steps": [
         "Explore ready",
         "Scan interactive",
@@ -438,22 +102,22 @@
       "consoleErrors": [],
       "transport": [
         {
-          "at": "2026-10-02T08:21:13.865Z",
+          "at": "2026-10-02T08:30:01.809Z",
           "path": "/_blazor/initializers",
           "status": 200
         },
         {
-          "at": "2026-10-02T08:21:13.879Z",
+          "at": "2026-10-02T08:30:01.848Z",
           "path": "/_blazor/negotiate",
           "status": 200
         },
         {
-          "at": "2026-10-02T08:21:49.863Z",
+          "at": "2026-10-02T08:30:37.858Z",
           "path": "/_blazor/initializers",
           "status": 200
         },
         {
-          "at": "2026-10-02T08:21:49.876Z",
+          "at": "2026-10-02T08:30:37.871Z",
           "path": "/_blazor/negotiate",
           "status": 200
         }
@@ -461,15 +125,15 @@
       "webSockets": [
         {
           "path": "/_blazor",
-          "opened": "2026-10-02T08:21:13.903Z",
-          "received": 34,
+          "opened": "2026-10-02T08:30:01.869Z",
+          "received": 36,
           "sent": 38
         },
         {
           "path": "/_blazor",
-          "opened": "2026-10-02T08:21:49.898Z",
-          "received": 15,
-          "sent": 18
+          "opened": "2026-10-02T08:30:37.892Z",
+          "received": 16,
+          "sent": 17
         }
       ],
       "finished": true,
@@ -484,7 +148,7 @@
           "secure": true,
           "httpOnly": true,
           "sameSite": "None",
-          "cookieValueHash": "4b900e994fef"
+          "cookieValueHash": "d89990c20738"
         }
       ],
       "cachedPaths": [
@@ -498,13 +162,13 @@
         "/pwa/icons/maskable-512.png",
         "/pwa/icons/apple-touch-icon.png"
       ],
-      "ended": "2026-10-02T08:21:50.259Z"
+      "ended": "2026-10-02T08:30:38.203Z"
     },
     {
-      "round": 2,
+      "round": 1,
       "engine": "webkit",
       "standalone": false,
-      "started": "2026-10-02T08:21:51.077Z",
+      "started": "2026-10-02T08:30:39.069Z",
       "steps": [
         "Explore ready",
         "Scan interactive",
@@ -519,27 +183,27 @@
       "consoleErrors": [],
       "transport": [
         {
-          "at": "2026-10-02T08:21:52.144Z",
+          "at": "2026-10-02T08:30:40.279Z",
           "path": "/_blazor/initializers",
           "status": 200
         },
         {
-          "at": "2026-10-02T08:21:52.161Z",
+          "at": "2026-10-02T08:30:40.297Z",
           "path": "/_blazor/negotiate",
           "status": 200
         },
         {
-          "at": "2026-10-02T08:22:28.080Z",
+          "at": "2026-10-02T08:31:16.507Z",
           "path": "/_blazor/disconnect",
           "status": 200
         },
         {
-          "at": "2026-10-02T08:22:28.194Z",
+          "at": "2026-10-02T08:31:16.599Z",
           "path": "/_blazor/initializers",
           "status": 200
         },
         {
-          "at": "2026-10-02T08:22:28.208Z",
+          "at": "2026-10-02T08:31:16.649Z",
           "path": "/_blazor/negotiate",
           "status": 200
         }
@@ -547,14 +211,263 @@
       "webSockets": [
         {
           "path": "/_blazor",
-          "opened": "2026-10-02T08:21:52.210Z",
-          "received": 37,
-          "sent": 39,
-          "closed": "2026-10-02T08:22:28.059Z"
+          "opened": "2026-10-02T08:30:40.343Z",
+          "received": 36,
+          "sent": 38,
+          "closed": "2026-10-02T08:31:16.502Z"
         },
         {
           "path": "/_blazor",
-          "opened": "2026-10-02T08:22:28.257Z",
+          "opened": "2026-10-02T08:31:16.694Z",
+          "received": 15,
+          "sent": 18
+        }
+      ],
+      "finished": true,
+      "descriptorKeyIds": [
+        "3ab78896-4823-4ed8-bca6-8809146fbb0b"
+      ],
+      "circuitDwellMs": 35013,
+      "authReturnPreserved": true,
+      "affinityCookies": [
+        {
+          "name": "acaAffinity",
+          "secure": true,
+          "httpOnly": true,
+          "sameSite": "None",
+          "cookieValueHash": "668ecf0411e4"
+        }
+      ],
+      "cachedPaths": [
+        "/pwa/offline.css",
+        "/pwa/offline.html",
+        "/pwa/icons/apple-touch-icon.png",
+        "/pwa/guide-map.webp",
+        "/pwa/offline.js",
+        "/pwa/icons/icon-512.png",
+        "/pwa/icons/maskable-512.png",
+        "/images/brand/DiaperScout.svg",
+        "/pwa/icons/icon-192.png"
+      ],
+      "ended": "2026-10-02T08:31:16.982Z"
+    },
+    {
+      "round": 1,
+      "engine": "webkit",
+      "standalone": true,
+      "started": "2026-10-02T08:31:16.997Z",
+      "steps": [
+        "Explore ready",
+        "Scan interactive",
+        "Unknown barcode lookup completed",
+        "Proposal step transition handled by live circuit",
+        "Circuit remained interactive after 35 seconds/keepalives",
+        "Existing passkey sign-in reached; no authentication or submission",
+        "Atlas loaded",
+        "Scan lookup still interactive after Atlas navigation"
+      ],
+      "errors": [],
+      "consoleErrors": [],
+      "transport": [
+        {
+          "at": "2026-10-02T08:31:17.870Z",
+          "path": "/_blazor/initializers",
+          "status": 200
+        },
+        {
+          "at": "2026-10-02T08:31:17.886Z",
+          "path": "/_blazor/negotiate",
+          "status": 200
+        },
+        {
+          "at": "2026-10-02T08:31:53.659Z",
+          "path": "/_blazor/disconnect",
+          "status": 200
+        },
+        {
+          "at": "2026-10-02T08:31:53.892Z",
+          "path": "/_blazor/initializers",
+          "status": 200
+        },
+        {
+          "at": "2026-10-02T08:31:53.908Z",
+          "path": "/_blazor/negotiate",
+          "status": 200
+        }
+      ],
+      "webSockets": [
+        {
+          "path": "/_blazor",
+          "opened": "2026-10-02T08:31:17.927Z",
+          "received": 36,
+          "sent": 39,
+          "closed": "2026-10-02T08:31:53.628Z"
+        },
+        {
+          "path": "/_blazor",
+          "opened": "2026-10-02T08:31:53.954Z",
+          "received": 16,
+          "sent": 17
+        }
+      ],
+      "finished": true,
+      "descriptorKeyIds": [
+        "3ab78896-4823-4ed8-bca6-8809146fbb0b"
+      ],
+      "circuitDwellMs": 35002,
+      "authReturnPreserved": true,
+      "affinityCookies": [
+        {
+          "name": "acaAffinity",
+          "secure": true,
+          "httpOnly": true,
+          "sameSite": "None",
+          "cookieValueHash": "c46941846dc5"
+        }
+      ],
+      "cachedPaths": [
+        "/pwa/offline.js",
+        "/pwa/offline.css",
+        "/pwa/offline.html",
+        "/images/brand/DiaperScout.svg",
+        "/pwa/guide-map.webp",
+        "/pwa/icons/icon-512.png",
+        "/pwa/icons/icon-192.png",
+        "/pwa/icons/maskable-512.png",
+        "/pwa/icons/apple-touch-icon.png"
+      ],
+      "ended": "2026-10-02T08:31:54.302Z"
+    },
+    {
+      "round": 2,
+      "engine": "chromium",
+      "standalone": false,
+      "started": "2026-10-02T08:31:54.586Z",
+      "steps": [
+        "Explore ready",
+        "Scan interactive",
+        "Unknown barcode lookup completed",
+        "Proposal step transition handled by live circuit",
+        "Circuit remained interactive after 35 seconds/keepalives",
+        "Existing passkey sign-in reached; no authentication or submission",
+        "Atlas loaded",
+        "Scan lookup still interactive after Atlas navigation"
+      ],
+      "errors": [],
+      "consoleErrors": [],
+      "transport": [
+        {
+          "at": "2026-10-02T08:31:55.096Z",
+          "path": "/_blazor/initializers",
+          "status": 200
+        },
+        {
+          "at": "2026-10-02T08:31:55.148Z",
+          "path": "/_blazor/negotiate",
+          "status": 200
+        },
+        {
+          "at": "2026-10-02T08:32:31.055Z",
+          "path": "/_blazor/initializers",
+          "status": 200
+        },
+        {
+          "at": "2026-10-02T08:32:31.067Z",
+          "path": "/_blazor/negotiate",
+          "status": 200
+        }
+      ],
+      "webSockets": [
+        {
+          "path": "/_blazor",
+          "opened": "2026-10-02T08:31:55.171Z",
+          "received": 33,
+          "sent": 37
+        },
+        {
+          "path": "/_blazor",
+          "opened": "2026-10-02T08:32:31.089Z",
+          "received": 15,
+          "sent": 17
+        }
+      ],
+      "finished": true,
+      "descriptorKeyIds": [
+        "3ab78896-4823-4ed8-bca6-8809146fbb0b"
+      ],
+      "circuitDwellMs": 35001,
+      "authReturnPreserved": true,
+      "affinityCookies": [
+        {
+          "name": "acaAffinity",
+          "secure": true,
+          "httpOnly": true,
+          "sameSite": "None",
+          "cookieValueHash": "862b226bf1c3"
+        }
+      ],
+      "cachedPaths": [
+        "/pwa/offline.html",
+        "/pwa/offline.css",
+        "/pwa/offline.js",
+        "/images/brand/DiaperScout.svg",
+        "/pwa/guide-map.webp",
+        "/pwa/icons/icon-192.png",
+        "/pwa/icons/icon-512.png",
+        "/pwa/icons/maskable-512.png",
+        "/pwa/icons/apple-touch-icon.png"
+      ],
+      "ended": "2026-10-02T08:32:31.438Z"
+    },
+    {
+      "round": 2,
+      "engine": "chromium",
+      "standalone": true,
+      "started": "2026-10-02T08:32:31.446Z",
+      "steps": [
+        "Explore ready",
+        "Scan interactive",
+        "Unknown barcode lookup completed",
+        "Proposal step transition handled by live circuit",
+        "Circuit remained interactive after 35 seconds/keepalives",
+        "Existing passkey sign-in reached; no authentication or submission",
+        "Atlas loaded",
+        "Scan lookup still interactive after Atlas navigation"
+      ],
+      "errors": [],
+      "consoleErrors": [],
+      "transport": [
+        {
+          "at": "2026-10-02T08:32:31.805Z",
+          "path": "/_blazor/initializers",
+          "status": 200
+        },
+        {
+          "at": "2026-10-02T08:32:31.819Z",
+          "path": "/_blazor/negotiate",
+          "status": 200
+        },
+        {
+          "at": "2026-10-02T08:33:07.783Z",
+          "path": "/_blazor/initializers",
+          "status": 200
+        },
+        {
+          "at": "2026-10-02T08:33:07.795Z",
+          "path": "/_blazor/negotiate",
+          "status": 200
+        }
+      ],
+      "webSockets": [
+        {
+          "path": "/_blazor",
+          "opened": "2026-10-02T08:32:31.841Z",
+          "received": 37,
+          "sent": 38
+        },
+        {
+          "path": "/_blazor",
+          "opened": "2026-10-02T08:33:07.818Z",
           "received": 16,
           "sent": 18
         }
@@ -571,27 +484,27 @@
           "secure": true,
           "httpOnly": true,
           "sameSite": "None",
-          "cookieValueHash": "de200a75e590"
+          "cookieValueHash": "89f08fa4167c"
         }
       ],
       "cachedPaths": [
         "/pwa/offline.html",
-        "/pwa/offline.js",
         "/pwa/offline.css",
+        "/pwa/offline.js",
         "/images/brand/DiaperScout.svg",
         "/pwa/guide-map.webp",
         "/pwa/icons/icon-192.png",
-        "/pwa/icons/maskable-512.png",
         "/pwa/icons/icon-512.png",
+        "/pwa/icons/maskable-512.png",
         "/pwa/icons/apple-touch-icon.png"
       ],
-      "ended": "2026-10-02T08:22:28.629Z"
+      "ended": "2026-10-02T08:33:08.170Z"
     },
     {
       "round": 2,
       "engine": "webkit",
-      "standalone": true,
-      "started": "2026-10-02T08:22:28.635Z",
+      "standalone": false,
+      "started": "2026-10-02T08:33:09.084Z",
       "steps": [
         "Explore ready",
         "Scan interactive",
@@ -606,27 +519,27 @@
       "consoleErrors": [],
       "transport": [
         {
-          "at": "2026-10-02T08:22:29.116Z",
+          "at": "2026-10-02T08:33:10.293Z",
           "path": "/_blazor/initializers",
           "status": 200
         },
         {
-          "at": "2026-10-02T08:22:29.131Z",
+          "at": "2026-10-02T08:33:10.311Z",
           "path": "/_blazor/negotiate",
           "status": 200
         },
         {
-          "at": "2026-10-02T08:23:04.830Z",
+          "at": "2026-10-02T08:33:46.551Z",
           "path": "/_blazor/disconnect",
           "status": 200
         },
         {
-          "at": "2026-10-02T08:23:04.946Z",
+          "at": "2026-10-02T08:33:46.654Z",
           "path": "/_blazor/initializers",
           "status": 200
         },
         {
-          "at": "2026-10-02T08:23:04.962Z",
+          "at": "2026-10-02T08:33:46.672Z",
           "path": "/_blazor/negotiate",
           "status": 200
         }
@@ -634,15 +547,15 @@
       "webSockets": [
         {
           "path": "/_blazor",
-          "opened": "2026-10-02T08:22:29.170Z",
-          "received": 35,
+          "opened": "2026-10-02T08:33:10.357Z",
+          "received": 30,
           "sent": 38,
-          "closed": "2026-10-02T08:23:04.795Z"
+          "closed": "2026-10-02T08:33:46.541Z"
         },
         {
           "path": "/_blazor",
-          "opened": "2026-10-02T08:23:05.014Z",
-          "received": 16,
+          "opened": "2026-10-02T08:33:46.723Z",
+          "received": 15,
           "sent": 17
         }
       ],
@@ -650,7 +563,7 @@
       "descriptorKeyIds": [
         "3ab78896-4823-4ed8-bca6-8809146fbb0b"
       ],
-      "circuitDwellMs": 35002,
+      "circuitDwellMs": 35011,
       "authReturnPreserved": true,
       "affinityCookies": [
         {
@@ -658,7 +571,7 @@
           "secure": true,
           "httpOnly": true,
           "sameSite": "None",
-          "cookieValueHash": "9faa34991d14"
+          "cookieValueHash": "75a00410356e"
         }
       ],
       "cachedPaths": [
@@ -672,11 +585,98 @@
         "/pwa/icons/maskable-512.png",
         "/pwa/icons/apple-touch-icon.png"
       ],
-      "ended": "2026-10-02T08:23:05.644Z"
+      "ended": "2026-10-02T08:33:47.028Z"
+    },
+    {
+      "round": 2,
+      "engine": "webkit",
+      "standalone": true,
+      "started": "2026-10-02T08:33:47.048Z",
+      "steps": [
+        "Explore ready",
+        "Scan interactive",
+        "Unknown barcode lookup completed",
+        "Proposal step transition handled by live circuit",
+        "Circuit remained interactive after 35 seconds/keepalives",
+        "Existing passkey sign-in reached; no authentication or submission",
+        "Atlas loaded",
+        "Scan lookup still interactive after Atlas navigation"
+      ],
+      "errors": [],
+      "consoleErrors": [],
+      "transport": [
+        {
+          "at": "2026-10-02T08:33:48.040Z",
+          "path": "/_blazor/initializers",
+          "status": 200
+        },
+        {
+          "at": "2026-10-02T08:33:48.057Z",
+          "path": "/_blazor/negotiate",
+          "status": 200
+        },
+        {
+          "at": "2026-10-02T08:34:23.789Z",
+          "path": "/_blazor/disconnect",
+          "status": 200
+        },
+        {
+          "at": "2026-10-02T08:34:23.908Z",
+          "path": "/_blazor/initializers",
+          "status": 200
+        },
+        {
+          "at": "2026-10-02T08:34:23.926Z",
+          "path": "/_blazor/negotiate",
+          "status": 200
+        }
+      ],
+      "webSockets": [
+        {
+          "path": "/_blazor",
+          "opened": "2026-10-02T08:33:48.094Z",
+          "received": 32,
+          "sent": 38,
+          "closed": "2026-10-02T08:34:23.755Z"
+        },
+        {
+          "path": "/_blazor",
+          "opened": "2026-10-02T08:34:23.987Z",
+          "received": 16,
+          "sent": 17
+        }
+      ],
+      "finished": true,
+      "descriptorKeyIds": [
+        "3ab78896-4823-4ed8-bca6-8809146fbb0b"
+      ],
+      "circuitDwellMs": 35004,
+      "authReturnPreserved": true,
+      "affinityCookies": [
+        {
+          "name": "acaAffinity",
+          "secure": true,
+          "httpOnly": true,
+          "sameSite": "None",
+          "cookieValueHash": "c79ef3e489f0"
+        }
+      ],
+      "cachedPaths": [
+        "/pwa/offline.html",
+        "/pwa/offline.css",
+        "/pwa/offline.js",
+        "/images/brand/DiaperScout.svg",
+        "/pwa/guide-map.webp",
+        "/pwa/icons/icon-192.png",
+        "/pwa/icons/icon-512.png",
+        "/pwa/icons/apple-touch-icon.png",
+        "/pwa/icons/maskable-512.png"
+      ],
+      "ended": "2026-10-02T08:34:24.322Z"
     }
   ],
   "productionWrites": 0,
   "physicalIosProven": false,
-  "ended": "2026-10-02T08:23:05.674Z",
+  "ended": "2026-10-02T08:34:24.359Z",
   "passed": true
 }

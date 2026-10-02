@@ -57,3 +57,32 @@ The CLI account has no Key Vault key data-plane read grant (ForbiddenByRbac). No
 ### Deployment checks before mutation
 
 Changes are limited to static critical startup head, streamed Atlas initialization, guarded chrome observer, explicit reconnect failure UI, a non-secret successful key-ring readiness log, regression tests, a Web-only policy script and diagnostic reports/smoke script. Service worker, authentication/passkeys, canonical catalogue and observation/submission services are unchanged. Private Link, database network/FQDN, API image/scale/env/secret references and existing Web identity/keys were captured for after comparison. No new infrastructure resources are needed.
+
+
+Timeout inspection: no application override for hub keepalive/handshake/client timeouts or disconnected circuit retention; framework defaults apply (15s keepalive/handshake,30s client/server timeout). ACA HTTP ingress documents240s request timeout and supports WebSockets. The existing SW navigation fetch has20s to receive a network response; the startup UI reports slow at8s and failed at45s. None were raised to hide routing failures. See [ACA ingress](https://learn.microsoft.com/en-us/azure/container-apps/ingress-overview) and [Consumption billing](https://learn.microsoft.com/en-us/azure/container-apps/billing). Idle reduced-rate eligibility also depends on actual CPU/network/HTTP activity; a warm Web is not guaranteed free.
+
+The repository has no current Bicep/deployment configuration declaring Web replica limits; `ops/apply-web-reliability-policy.sh` records a repeatable Web-only policy and refuses non-Single mode. Image-only updates preserve it. Existing DP provisioning is preserved.
+
+
+### First two-replica validation findings and justified follow-up
+
+ACR db15 built source8cf8032 to immutable digest1a5b1287d0175d4888484e05871f7202d137b926562a9fc9cae4cea656b7a635. Web affinity enabled, image deployed briefly as reliability-2-8cf8032 with2/2; both replicas ready, zero restarts and independent successful managed-identity key-ring readiness logs.
+
+The first smoke harness attempt incorrectly assumed bundled Playwright core exported @playwright/test expect. All8 attempts stopped on Explore before testing a circuit. Retained harness-failure JSON/log; corrected DOM assertions, not application or transport behavior.
+
+The first actual journey matrix passed4/8. All negotiations200 and WebSockets carried frames; no page errors, connection-ID404, transport failure or red error UI. Four cases failed Continue-to-pack. These failures are retained in first-journeys evidence, not excluded from the report. Successful sessions used both ACA affinity cookie groups and the expected shared DP key.
+
+A single bounded Chromium diagnostic then proved the distinct cause: input trace at964ms shows brand filled, change969ms; by996ms the brand DOM value is empty while the product is entered. The form then reports “Enter the brand and product name from the pack”, with no circuit error. Inputs were usable in prerendered enhanced-navigation HTML before component hydration finished. Global pwa readiness already true from Scan does not imply a newly inserted component is ready. This is not affinity failure.
+
+Small additional application remediation: disable proposal inputs/step/submit controls until its first interactive render has completed async draft restoration, then enable immediately. Preserve all validation/security/canonical submission behavior. No delay, retries, new feature or auth change. New Chromium/WebKit tests hold framework loading and then draft-module loading, verify controls unavailable at both stages, then complete product/pack/review transitions with entered values preserved. Both fail before the fix (enabled prerendered controls); a new full suite/Release precedes replacement image deployment. Existing Scan already uses component readiness gating.
+
+
+Cookie values are opaque: their hashes demonstrate presence/session tracking, **not a reliable mapping to a replica**. The first2-replica run generated4 distinct cookie-value hashes; it does not imply4 replicas. Per-pod Request metrics independently confirm traffic to both9vsng andvxnpb; protected SSR descriptors all use3ab78896-4823-4ed8-bca6-8809146fbb0b. For stronger final circuit proof, the follow-up image logs connection up/down with a12-hex SHA256 fingerprint of the random circuit ID and existing ACA replica/revision metadata. No raw reconnect identifier, connection token, user identity or form data is logged.
+
+All11 targeted reliability cases now pass. The held draft-module regression must match fingerprinted JS URLs from the import map; an initially exact route failed to intercept the actual module and was corrected. New full266-case regression and Release validation are running before any replacement deployment. The confirmed production form failure and original harness failure remain retained separately from corrected final validation.
+
+
+Follow-up suite failure explanation: the new WebKit module-gate test timed out despite pwa state ready and no browser/HTTP errors. Service-worker activation can take ownership of module requests before native Playwright routing intercepts them. An exact fingerprint pattern fix and document-completion wait alone did not make the gate reliable. The module-gate test now explicitly blocks workers, as [Playwright recommends for native request interception](https://playwright.dev/dotnet/docs/network#missing-network-events-and-service-workers). This applies only to the artificial interception test. Worker-enabled regressions and production smoke remain enabled, and production caching code is unchanged. Both failed suite logs are retained. No unsuccessful suite is described as passing.
+
+
+Final follow-up validation before deployment: full266 tests passed (215 API/integration/browser +51 Domain),0 failed/0 skipped; Release0 warnings/0 errors; diff check clean. The module-gate tests are now deterministic while the real SW remains enabled in its own suite. Deployment will replace only the Web image on the temporary2/2 affinity configuration, then repeat all8 journeys on the corrected image before settling1/1.

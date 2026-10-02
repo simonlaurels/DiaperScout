@@ -1,0 +1,45 @@
+  DiaperScout.Domain -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Domain/bin/Debug/net10.0/DiaperScout.Domain.dll
+  DiaperScout.Application -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Application/bin/Debug/net10.0/DiaperScout.Application.dll
+  DiaperScout.Web -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Web/bin/Debug/net10.0/DiaperScout.Web.dll
+  DiaperScout.Commerce.Plugins.Awin -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Commerce.Plugins.Awin/bin/Debug/net10.0/DiaperScout.Commerce.Plugins.Awin.dll
+  DiaperScout.Infrastructure -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Infrastructure/bin/Debug/net10.0/DiaperScout.Infrastructure.dll
+  DiaperScout.Api -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Api/bin/Debug/net10.0/DiaperScout.Api.dll
+  DiaperScout.Api.IntegrationTests -> /Users/sporter/Documents/Projects/DS/tests/DiaperScout.Api.IntegrationTests/bin/Debug/net10.0/DiaperScout.Api.IntegrationTests.dll
+Test run for /Users/sporter/Documents/Projects/DS/tests/DiaperScout.Api.IntegrationTests/bin/Debug/net10.0/DiaperScout.Api.IntegrationTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:13.35]     DiaperScout.Api.IntegrationTests.PwaReliabilityTests.Proposal_does_not_accept_input_until_hydration_and_draft_restore_complete(engine: "chromium") [FAIL]
+  Failed DiaperScout.Api.IntegrationTests.PwaReliabilityTests.Proposal_does_not_accept_input_until_hydration_and_draft_restore_complete(engine: "chromium") [7 s]
+  Error Message:
+   Microsoft.Playwright.PlaywrightException : Locator expected to be disabled 
+Call log:
+  - Expect "ToBeDisabledAsync" Locator("#proposal-brand") with timeout 5000ms
+  - waiting for Locator("#proposal-brand")
+    14 × locator resolved to <input value="" maxlength="200" autocomplete="off" id="proposal-brand"/>
+       - unexpected value "enabled"
+Aria snapshot:
+- textbox "What brand is it?"
+  Stack Trace:
+     at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, FrameExpectOptions expectOptions, Object expected, String message, String title) in /_/src/Playwright/Core/AssertionsBase.cs:line 95
+   at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, ExpectedTextValue[] expectedText, Object expected, String message, String title, FrameExpectOptions options) in /_/src/Playwright/Core/AssertionsBase.cs:line 69
+   at DiaperScout.Api.IntegrationTests.PwaReliabilityTests.Proposal_does_not_accept_input_until_hydration_and_draft_restore_complete(String engine) in /Users/sporter/Documents/Projects/DS/tests/DiaperScout.Api.IntegrationTests/PwaReliabilityTests.cs:line 153
+   at DiaperScout.Api.IntegrationTests.PwaReliabilityTests.Proposal_does_not_accept_input_until_hydration_and_draft_restore_complete(String engine) in /Users/sporter/Documents/Projects/DS/tests/DiaperScout.Api.IntegrationTests/PwaReliabilityTests.cs:line 171
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:21.54]     DiaperScout.Api.IntegrationTests.PwaReliabilityTests.Proposal_does_not_accept_input_until_hydration_and_draft_restore_complete(engine: "webkit") [FAIL]
+  Failed DiaperScout.Api.IntegrationTests.PwaReliabilityTests.Proposal_does_not_accept_input_until_hydration_and_draft_restore_complete(engine: "webkit") [8 s]
+  Error Message:
+   Microsoft.Playwright.PlaywrightException : Locator expected to be disabled 
+Call log:
+  - Expect "ToBeDisabledAsync" Locator("#proposal-brand") with timeout 5000ms
+  - waiting for Locator("#proposal-brand")
+    14 × locator resolved to <input value="" maxlength="200" autocomplete="off" id="proposal-brand"/>
+       - unexpected value "enabled"
+Aria snapshot:
+- textbox "What brand is it?"
+  Stack Trace:
+     at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, FrameExpectOptions expectOptions, Object expected, String message, String title) in /_/src/Playwright/Core/AssertionsBase.cs:line 95
+   at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, ExpectedTextValue[] expectedText, Object expected, String message, String title, FrameExpectOptions options) in /_/src/Playwright/Core/AssertionsBase.cs:line 69
+   at DiaperScout.Api.IntegrationTests.PwaReliabilityTests.Proposal_does_not_accept_input_until_hydration_and_draft_restore_complete(String engine) in /Users/sporter/Documents/Projects/DS/tests/DiaperScout.Api.IntegrationTests/PwaReliabilityTests.cs:line 153
+   at DiaperScout.Api.IntegrationTests.PwaReliabilityTests.Proposal_does_not_accept_input_until_hydration_and_draft_restore_complete(String engine) in /Users/sporter/Documents/Projects/DS/tests/DiaperScout.Api.IntegrationTests/PwaReliabilityTests.cs:line 171
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     2, Passed:     0, Skipped:     0, Total:     2, Duration: 15 s - DiaperScout.Api.IntegrationTests.dll (net10.0)

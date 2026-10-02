@@ -1,7 +1,19 @@
 // Read-only browser interactions. Never submit a proposal/observation or authenticate.
 const fs=require('fs'), crypto=require('crypto'), path=require('path');
 const packagePath=path.resolve('tests/DiaperScout.Api.IntegrationTests/bin/Debug/net10.0/.playwright/package');
-const {chromium,webkit,devices,expect}=require(packagePath);
+const {chromium,webkit,devices}=require(packagePath);
+// The .NET bundle exposes Playwright core, without @playwright/test matchers.
+// Wait for DOM assertions only; do not retry navigation or circuit actions.
+async function waitAssertion(check, message, timeout=5000){
+ const end=Date.now()+timeout;do{if(await check())return;await new Promise(r=>setTimeout(r,100));}while(Date.now()<end);throw new Error(message);
+}
+const expect=locator=>({
+ toBeHidden:options=>locator.waitFor({state:"hidden",timeout:options?.timeout??5000}),
+ toBeVisible:options=>locator.waitFor({state:"visible",timeout:options?.timeout??5000}),
+ toBeEnabled:options=>waitAssertion(()=>locator.isEnabled(),"Control never became interactive",options?.timeout??5000),
+ toHaveCount:(count,options)=>waitAssertion(async()=>await locator.count()===count,"Unexpected DOM count",options?.timeout??5000),
+ toContainText:(text,options)=>waitAssertion(async()=>(await locator.textContent())?.includes(text),"Expected content missing",options?.timeout??5000)
+});
 const phase=process.argv[2];
 if(!['two-replicas','one-replica'].includes(phase)) throw new Error('Explicit phase required');
 const out=path.resolve(`docs/implementation/pwa-reliability-evidence/production-${phase}.json`);
@@ -47,7 +59,7 @@ function descriptorKeys(html){
     await expect(page.locator('#gtin')).toBeEnabled({timeout:45000});await ready(page);await assertHealthy(page);session.steps.push('Scan interactive');
     await page.locator('#gtin').fill('96385074');await page.getByRole('button',{name:'Look up',exact:true}).click();
     await expect(page.getByRole('heading',{name:'We don’t have this one yet.',exact:true})).toBeVisible({timeout:45000});session.steps.push('Unknown barcode lookup completed');
-    await page.getByRole('link',{name:'Add product',exact:true}).click();await expect(page.locator('#proposal-brand')).toBeVisible({timeout:45000});
+    await page.getByRole('link',{name:'Add product',exact:true}).click();await expect(page.locator('#proposal-brand')).toBeEnabled({timeout:45000});
     await expect(page.locator('.contribution-barcode')).toContainText('96385074');await assertHealthy(page);
     // These values exist only in this browser's unsent form/draft.
     await page.locator('#proposal-brand').fill('Unsubmitted reliability check');await page.locator('#proposal-name').fill('Local form only');
@@ -72,7 +84,7 @@ function descriptorKeys(html){
     await page.locator('#gtin').fill('96385074');await page.getByRole('button',{name:'Look up',exact:true}).click();
     await expect(page.getByRole('link',{name:'Add product',exact:true})).toBeVisible({timeout:45000});await assertHealthy(page);session.steps.push('Scan lookup still interactive after Atlas navigation');
     const cookies=(await context.cookies()).filter(c=>/affinity/i.test(c.name));
-    session.affinityCookies=cookies.map(c=>({name:c.name,secure:c.secure,httpOnly:c.httpOnly,sameSite:c.sameSite,replicaGroupHash:crypto.createHash('sha256').update(c.value).digest('hex').slice(0,12)}));
+    session.affinityCookies=cookies.map(c=>({name:c.name,secure:c.secure,httpOnly:c.httpOnly,sameSite:c.sameSite,cookieValueHash:crypto.createHash('sha256').update(c.value).digest('hex').slice(0,12)}));
     if(!cookies.length)throw new Error('ACA affinity cookie absent');
     const cached=await page.evaluate(async()=>{const out=[];for(const k of await caches.keys())for(const r of await(await caches.open(k)).keys())out.push(new URL(r.url).pathname);return out;});
     session.cachedPaths=cached;
@@ -80,7 +92,10 @@ function descriptorKeys(html){
     if(!session.webSockets.some(w=>w.path==='/_blazor'&&w.received>3&&w.sent>3))throw new Error('No usable interactive WebSocket evidence');
     if(session.errors.length||session.transport.some(r=>r.status>=400)||session.webSockets.some(w=>w.error))throw new Error('Browser/circuit failure recorded');
     session.finished=true;
-   }catch(e){session.failure=clean(e.message);process.exitCode=1;}
+   }catch(e){session.failure=clean(e.message);
+    session.failureUi=await page.locator('.contribution-page').innerText().catch(()=>null);
+    session.failureInputs=await page.locator('#proposal-brand,#proposal-name').evaluateAll(es=>es.map(e=>({id:e.id,value:e.value,disabled:e.disabled}))).catch(()=>[]);
+    process.exitCode=1;}
    finally{session.ended=new Date().toISOString();save();console.log(JSON.stringify({phase,round,engine:engineName,standalone,passed:session.finished,failure:session.failure,transport:session.transport,webSockets:session.webSockets,affinity:session.affinityCookies}));await context.close();save();}
   }
   await browser.close();

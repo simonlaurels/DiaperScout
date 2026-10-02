@@ -18,25 +18,25 @@
         @if (error is not null) { <p class="contribution-message" role="alert">@error</p> }
         @if (step == 1) {
             <section class="contribution-card contribution-fields"><h2>What is it called?</h2>
-                <label for="proposal-brand">What brand is it?</label><input id="proposal-brand" @bind="form.BrandName" maxlength="200" autocomplete="off" />
-                <label for="proposal-name">What’s the product called?</label><input id="proposal-name" @bind="form.ProductName" maxlength="250" autocomplete="off" />
-                <label for="proposal-version">Which version is this? (optional)</label><input id="proposal-version" @bind="form.Version" maxlength="200" placeholder="For example, Black or Overnight" />
-                <label for="proposal-manufacturer">Who makes it? (optional)</label><input id="proposal-manufacturer" @bind="form.ManufacturerName" maxlength="200" /><p>If you don’t know, leave it empty. A moderator will resolve this before publication.</p>
-                <button type="button" class="ds-button ds-button-primary" @onclick="NextProduct">Continue to pack</button>
+                <label for="proposal-brand">What brand is it?</label><input id="proposal-brand" @bind="form.BrandName" maxlength="200" autocomplete="off" disabled="@(!interactiveReady)" />
+                <label for="proposal-name">What’s the product called?</label><input id="proposal-name" @bind="form.ProductName" maxlength="250" autocomplete="off" disabled="@(!interactiveReady)" />
+                <label for="proposal-version">Which version is this? (optional)</label><input id="proposal-version" @bind="form.Version" maxlength="200" placeholder="For example, Black or Overnight" disabled="@(!interactiveReady)" />
+                <label for="proposal-manufacturer">Who makes it? (optional)</label><input id="proposal-manufacturer" @bind="form.ManufacturerName" maxlength="200" disabled="@(!interactiveReady)" /><p>If you don’t know, leave it empty. A moderator will resolve this before publication.</p>
+                <button type="button" class="ds-button ds-button-primary" @onclick="NextProduct" disabled="@(!interactiveReady)">Continue to pack</button>
             </section>
         } else if (step == 2) {
             <section class="contribution-card contribution-fields"><h2>Read the pack</h2><p>It’s fine to leave these empty if you cannot tell.</p>
-                <label for="proposal-size">What size does the pack say? (optional)</label><input id="proposal-size" @bind="form.Size" maxlength="64" placeholder="For example, Medium or Size 5" />
-                <label for="proposal-quantity">How many are in the pack? (optional)</label><input id="proposal-quantity" type="number" min="1" max="100000" @bind="form.Quantity" inputmode="numeric" />
-                <div class="contribution-actions"><button type="button" class="ds-button ds-button-secondary" @onclick="() => step = 1">Back</button><button type="button" class="ds-button ds-button-primary" @onclick="() => step = 3">Review proposal</button></div>
+                <label for="proposal-size">What size does the pack say? (optional)</label><input id="proposal-size" @bind="form.Size" maxlength="64" placeholder="For example, Medium or Size 5" disabled="@(!interactiveReady)" />
+                <label for="proposal-quantity">How many are in the pack? (optional)</label><input id="proposal-quantity" type="number" min="1" max="100000" @bind="form.Quantity" inputmode="numeric" disabled="@(!interactiveReady)" />
+                <div class="contribution-actions"><button type="button" class="ds-button ds-button-secondary" @onclick="() => step = 1" disabled="@(!interactiveReady)">Back</button><button type="button" class="ds-button ds-button-primary" @onclick="() => step = 3" disabled="@(!interactiveReady)">Review proposal</button></div>
             </section>
         } else {
             <section class="contribution-card"><h2>Check before sending</h2>
                 <dl class="contribution-review"><dt>Barcode</dt><dd>@validGtin</dd><dt>Brand</dt><dd>@form.BrandName</dd><dt>Product</dt><dd>@form.ProductName</dd><dt>Version</dt><dd>@Shown(form.Version)</dd><dt>Manufacturer</dt><dd>@Shown(form.ManufacturerName)</dd><dt>Size</dt><dd>@Shown(form.Size)</dd><dt>Pack quantity</dt><dd>@(form.Quantity?.ToString() ?? "Not supplied")</dd></dl>
                 <p>This proposes information for moderation. It doesn’t create a product or claim that a shop stocks it.</p>
-                <button type="button" class="ds-button ds-button-secondary" @onclick="() => step = 1">Edit information</button>
-                @if (authenticated) { <button type="button" class="ds-button ds-button-primary" @onclick="SubmitAsync" disabled="@busy">@(busy ? "Sending…" : "Submit for review")</button> }
-                else { <p>Sign in before sending. Your entered product information can be kept in this tab for 30 minutes while you sign in.</p><button type="button" class="ds-button ds-button-primary" @onclick="SignInAsync" disabled="@(busy || module is null)">Sign in to submit</button> }
+                <button type="button" class="ds-button ds-button-secondary" @onclick="() => step = 1" disabled="@(!interactiveReady)">Edit information</button>
+                @if (authenticated) { <button type="button" class="ds-button ds-button-primary" @onclick="SubmitAsync" disabled="@(!interactiveReady || busy)">@(busy ? "Sending…" : "Submit for review")</button> }
+                else { <p>Sign in before sending. Your entered product information can be kept in this tab for 30 minutes while you sign in.</p><button type="button" class="ds-button ds-button-primary" @onclick="SignInAsync" disabled="@(!interactiveReady || busy || module is null)">Sign in to submit</button> }
             </section>
         }
         <p class="contribution-help">Only enter information from this pack. You can cancel without submitting.</p><a href="/scan">Cancel and return to Scan</a>
@@ -47,7 +47,7 @@
     private string? validGtin, error;
     private ProposalForm form = new();
     private int step = 1;
-    private bool authenticated, busy;
+    private bool authenticated, busy, interactiveReady;
     private PublicProductProposalReceipt? receipt;
     private IJSObjectReference? module;
     private string SignInUrl => "/signin?returnUrl=" + Uri.EscapeDataString("/contribute/product?gtin=" + validGtin);
@@ -58,9 +58,12 @@
             module = await JS.InvokeAsync<IJSObjectReference>("import", "/js/contribution-draft.js");
             var restored = await module.InvokeAsync<ProposalForm?>("loadDraft", validGtin);
             if (restored is not null && restored.ContributionId != Guid.Empty) { form = restored; step = 3; }
-            StateHasChanged();
         }
-        catch (Exception e) when (e is JSException or JSDisconnectedException) { error = "Your browser could not restore a draft. You can still enter and submit information while signed in."; StateHasChanged(); }
+        catch (Exception e) when (e is JSException or JSDisconnectedException) { error = "Your browser could not restore a draft. You can still enter and submit information while signed in."; }
+        // Prerendered controls must not accept values that hydration or asynchronous
+        // draft restoration can overwrite. A globally open circuit is not sufficient.
+        interactiveReady = true;
+        StateHasChanged();
     }
     private void NextProduct() {
         error = null;

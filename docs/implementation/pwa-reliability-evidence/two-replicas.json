@@ -1,0 +1,24 @@
+[
+  {
+    "containers": [
+      {
+        "ready": true,
+        "restarts": 0,
+        "state": "Running"
+      }
+    ],
+    "created": "2026-10-02T07:38:52Z",
+    "name": "diaperscout-web-vnet--reliability-2-8cf8032-6b4bb58784-9vsng"
+  },
+  {
+    "containers": [
+      {
+        "ready": true,
+        "restarts": 0,
+        "state": "Running"
+      }
+    ],
+    "created": "2026-10-02T07:38:52Z",
+    "name": "diaperscout-web-vnet--reliability-2-8cf8032-6b4bb58784-vxnpb"
+  }
+]

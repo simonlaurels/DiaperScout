@@ -1,0 +1,24 @@
+  DiaperScout.Domain -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Domain/bin/Debug/net10.0/DiaperScout.Domain.dll
+  DiaperScout.Application -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Application/bin/Debug/net10.0/DiaperScout.Application.dll
+  DiaperScout.Web -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Web/bin/Debug/net10.0/DiaperScout.Web.dll
+  DiaperScout.Commerce.Plugins.Awin -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Commerce.Plugins.Awin/bin/Debug/net10.0/DiaperScout.Commerce.Plugins.Awin.dll
+  DiaperScout.Infrastructure -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Infrastructure/bin/Debug/net10.0/DiaperScout.Infrastructure.dll
+  DiaperScout.Api -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Api/bin/Debug/net10.0/DiaperScout.Api.dll
+  DiaperScout.Api.IntegrationTests -> /Users/sporter/Documents/Projects/DS/tests/DiaperScout.Api.IntegrationTests/bin/Debug/net10.0/DiaperScout.Api.IntegrationTests.dll
+Test run for /Users/sporter/Documents/Projects/DS/tests/DiaperScout.Api.IntegrationTests/bin/Debug/net10.0/DiaperScout.Api.IntegrationTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:02:00.97]     DiaperScout.Api.IntegrationTests.PwaReliabilityTests.Proposal_does_not_accept_input_until_hydration_and_draft_restore_complete(engine: "webkit") [FAIL]
+  Failed DiaperScout.Api.IntegrationTests.PwaReliabilityTests.Proposal_does_not_accept_input_until_hydration_and_draft_restore_complete(engine: "webkit") [11 s]
+  Error Message:
+   System.TimeoutException : The operation has timed out.
+  Stack Trace:
+     at DiaperScout.Api.IntegrationTests.PwaReliabilityTests.Proposal_does_not_accept_input_until_hydration_and_draft_restore_complete(String engine) in /Users/sporter/Documents/Projects/DS/tests/DiaperScout.Api.IntegrationTests/PwaReliabilityTests.cs:line 156
+   at DiaperScout.Api.IntegrationTests.PwaReliabilityTests.Proposal_does_not_accept_input_until_hydration_and_draft_restore_complete(String engine) in /Users/sporter/Documents/Projects/DS/tests/DiaperScout.Api.IntegrationTests/PwaReliabilityTests.cs:line 171
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     1, Passed:   214, Skipped:     0, Total:   215, Duration: 2 m 46 s - DiaperScout.Api.IntegrationTests.dll (net10.0)
+  DiaperScout.Domain.Tests -> /Users/sporter/Documents/Projects/DS/tests/DiaperScout.Domain.Tests/bin/Debug/net10.0/DiaperScout.Domain.Tests.dll
+Test run for /Users/sporter/Documents/Projects/DS/tests/DiaperScout.Domain.Tests/bin/Debug/net10.0/DiaperScout.Domain.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    51, Skipped:     0, Total:    51, Duration: 665 ms - DiaperScout.Domain.Tests.dll (net10.0)

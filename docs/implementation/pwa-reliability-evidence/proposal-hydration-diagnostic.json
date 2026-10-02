@@ -1,0 +1,80 @@
+{
+  "errors": [],
+  "trace": [
+    {
+      "event": "click",
+      "id": "",
+      "text": "Look up",
+      "at": 619.1000000000931,
+      "values": []
+    },
+    {
+      "event": "DOM changed",
+      "at": 956.8000000002794,
+      "values": [
+        "",
+        ""
+      ]
+    },
+    {
+      "event": "input",
+      "id": "proposal-brand",
+      "text": "",
+      "at": 964,
+      "values": [
+        "Unsubmitted reliability check",
+        ""
+      ]
+    },
+    {
+      "event": "change",
+      "id": "proposal-brand",
+      "text": "",
+      "at": 969.7000000001863,
+      "values": [
+        "Unsubmitted reliability check",
+        ""
+      ]
+    },
+    {
+      "event": "input",
+      "id": "proposal-name",
+      "text": "",
+      "at": 996.4000000003725,
+      "values": [
+        "",
+        "Local form only"
+      ]
+    },
+    {
+      "event": "change",
+      "id": "proposal-name",
+      "text": "",
+      "at": 1025.5,
+      "values": [
+        "",
+        "Local form only"
+      ]
+    },
+    {
+      "event": "click",
+      "id": "",
+      "text": "Continue to pack",
+      "at": 1025.8000000002794,
+      "values": [
+        "",
+        "Local form only"
+      ]
+    },
+    {
+      "event": "DOM changed",
+      "at": 1041.5,
+      "values": [
+        "",
+        "Local form only"
+      ]
+    }
+  ],
+  "formText": "Help fill a gap\n\nAdd a missing product\n\nTell us what the pack says. Moderators will check whether this barcode belongs to an existing product or a new one.\n\n1. Product\n2. Pack\n3. Review\n\nScanned barcode: 96385074\n\nEnter the brand and product name from the pack.\n\nWhat is it called?\nWhat brand is it?\nWhat’s the product called?\nWhich version is this? (optional)\nWho makes it? (optional)\n\nIf you don’t know, leave it empty. A moderator will resolve this before publication.\n\nContinue to pack\n\nOnly enter information from this pack. You can cancel without submitting.\n\nCancel and return to Scan",
+  "ready": "ready"
+}

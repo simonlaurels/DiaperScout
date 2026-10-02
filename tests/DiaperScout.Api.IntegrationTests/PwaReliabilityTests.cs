@@ -129,6 +129,59 @@ public sealed class PwaReliabilityTests(PostgreSqlFixture fixture) : IClassFixtu
         await page.WaitForFunctionAsync("typeof reloadSentinel==='undefined' && document.documentElement.dataset.pwaState==='ready'");
     }
 
+    [Theory]
+    [InlineData("chromium")]
+    [InlineData("webkit")]
+    [Trait("Category", "Browser")]
+    public async Task Proposal_does_not_accept_input_until_hydration_and_draft_restore_complete(string engine)
+    {
+        using var api = new ObservationApiFactory(fixture);
+        using var web = new PasskeyWebFactory(api); web.UseKestrel(0);
+        using var client = web.CreateClient(); using var playwright = await Playwright.CreateAsync();
+        await using var browser = await (engine == "webkit" ? playwright.Webkit : playwright.Chromium).LaunchAsync(new() { Headless = true });
+        // Native request gates cannot reliably intercept worker-owned requests.
+        // Worker-enabled behavior is covered by the separate PWA suite and production matrix.
+        var page = await browser.NewPageAsync(new() { ServiceWorkers = ServiceWorkerPolicy.Block });
+        var framework = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var draft = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var draftRequested = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var browserDiagnostics = new List<string>();
+        page.PageError += (_, error) => browserDiagnostics.Add(error);
+        page.RequestFailed += (_, request) => browserDiagnostics.Add(request.Url + ": " + request.Failure);
+        page.Response += (_, response) => { if (response.Status >= 400) browserDiagnostics.Add(response.Url + ": " + response.Status); };
+        await page.RouteAsync("**/_framework/blazor*js", async route => { await framework.Task; await route.ContinueAsync(); });
+        await page.RouteAsync("**/js/contribution-draft*", async route => { draftRequested.TrySetResult(); await draft.Task; await route.ContinueAsync(); });
+        try
+        {
+            await page.GotoAsync(client.BaseAddress!.GetLeftPart(UriPartial.Authority) + "/contribute/product?gtin=96385074", new() { WaitUntil = WaitUntilState.Commit });
+            var brand = page.Locator("#proposal-brand");
+            await Assertions.Expect(brand).ToBeVisibleAsync();
+            await Assertions.Expect(brand).ToBeDisabledAsync();
+            await Assertions.Expect(page.GetByRole(AriaRole.Button, new() { Name = "Continue to pack", Exact = true })).ToBeDisabledAsync();
+            framework.TrySetResult();
+            // Commit only guarantees response headers. Wait for document/state completion,
+            // the same prerequisite as manual Blazor startup, before timing module readiness.
+            await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+            var restored = await Task.WhenAny(draftRequested.Task, Task.Delay(TimeSpan.FromSeconds(30)));
+            Assert.True(restored == draftRequested.Task, "Draft module never requested. State: " +
+                await page.EvaluateAsync<string>("document.documentElement.dataset.pwaState || 'none'") + "; " + string.Join("; ", browserDiagnostics));
+            // A circuit can be open while this component's asynchronous draft restore
+            // is pending. Only component readiness can safely enable its controls.
+            await Assertions.Expect(brand).ToBeDisabledAsync();
+            draft.TrySetResult();
+            await Assertions.Expect(brand).ToBeEnabledAsync();
+            await brand.FillAsync("Hydration brand");
+            await page.Locator("#proposal-name").FillAsync("Hydration product");
+            await page.GetByRole(AriaRole.Button, new() { Name = "Continue to pack", Exact = true }).ClickAsync();
+            await Assertions.Expect(page.Locator("#proposal-size")).ToBeVisibleAsync();
+            await page.GetByRole(AriaRole.Button, new() { Name = "Review proposal", Exact = true }).ClickAsync();
+            await Assertions.Expect(page.Locator(".contribution-review")).ToContainTextAsync("Hydration brand");
+            await Assertions.Expect(page.Locator(".contribution-review")).ToContainTextAsync("Hydration product");
+            await Assertions.Expect(page.Locator("#blazor-error-ui")).ToBeHiddenAsync();
+        }
+        finally { framework.TrySetResult(); draft.TrySetResult(); }
+    }
+
     [Fact]
     public async Task Shared_crypto_does_not_share_SignalR_connection_state_between_two_Web_processes()
     {

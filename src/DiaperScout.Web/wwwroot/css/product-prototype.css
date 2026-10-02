@@ -794,3 +794,5 @@
 /* Real catalogue names can contain long, unbroken identifiers. */
 .pwa-prototype .retailer-details h2,.pwa-prototype .retailer-product-info h2,.pwa-prototype .product-intro h1 {overflow-wrap:anywhere;}
 .pwa-prototype .retailer-product-info {min-width:0;}
+
+.pwa-prototype .retailer-product-image.gallery-empty {width:92px;height:92px;}

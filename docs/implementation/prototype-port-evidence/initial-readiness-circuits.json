@@ -1,0 +1,37 @@
+[
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--prototype-d005d7c-5fbb5d4659-28s6s",
+    "Log_s": "      Shared Data Protection key ring readiness check passed.",
+    "RevisionName_s": "diaperscout-web-vnet--prototype-d005d7c",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T15:16:39.9737057Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--prototype-d005d7c-5fbb5d4659-28s6s",
+    "Log_s": "      Application started. Press Ctrl+C to shut down.",
+    "RevisionName_s": "diaperscout-web-vnet--prototype-d005d7c",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T15:16:39.9737057Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--prototype-d005d7c-5fbb5d4659-28s6s",
+    "Log_s": "      Blazor circuit connection up 50877BEA8AC1",
+    "RevisionName_s": "diaperscout-web-vnet--prototype-d005d7c",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T15:17:19.7834252Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--prototype-d005d7c-5fbb5d4659-tpj65",
+    "Log_s": "      Shared Data Protection key ring readiness check passed.",
+    "RevisionName_s": "diaperscout-web-vnet--prototype-d005d7c",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T15:17:56.242085Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--prototype-d005d7c-5fbb5d4659-tpj65",
+    "Log_s": "      Application started. Press Ctrl+C to shut down.",
+    "RevisionName_s": "diaperscout-web-vnet--prototype-d005d7c",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T15:17:56.242085Z"
+  }
+]

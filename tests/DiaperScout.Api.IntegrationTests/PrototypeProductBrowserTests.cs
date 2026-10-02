@@ -42,7 +42,8 @@ public sealed class PrototypeProductBrowserTests(PostgreSqlFixture fixture, ITes
         using var webBase=new PasskeyWebFactory(api);
         // Local visual fixture only: catalogue, variants, packs, listings and observations remain real.
         // Images are the approved pack asset; no production catalogue data is created by this fixture.
-        using var web=webBase.WithWebHostBuilder(b=>b.ConfigureServices(s=>{s.AddSingleton<IStartupFilter,FixtureImageFilter>();s.Configure<Microsoft.AspNetCore.Components.Server.CircuitOptions>(o=>o.DetailedErrors=true);s.AddHttpClient<CatalogueClient>().ConfigurePrimaryHttpMessageHandler(()=>new GalleryFixtureHandler(api.Server.CreateHandler(),managed.Slug));}));
+        var imageFixture=new ImageFixture();
+        using var web=webBase.WithWebHostBuilder(b=>b.ConfigureServices(s=>{s.AddSingleton<IStartupFilter,FixtureImageFilter>();s.Configure<Microsoft.AspNetCore.Components.Server.CircuitOptions>(o=>o.DetailedErrors=true);s.AddHttpClient<CatalogueClient>().ConfigurePrimaryHttpMessageHandler(()=>new GalleryFixtureHandler(api.Server.CreateHandler(),managed.Slug,imageFixture));}));
         web.UseKestrel(0);using var client=web.CreateClient();var origin=client.BaseAddress!.GetLeftPart(UriPartial.Authority);
         using var playwright=await Playwright.CreateAsync();await using var browser=await(webkit?playwright.Webkit:playwright.Chromium).LaunchAsync(new(){Headless=true});
         await using var context=await browser.NewContextAsync(new(){ViewportSize=new(){Width=width,Height=844},Geolocation=new(){Latitude=51.501f,Longitude=-0.1f},Permissions=["geolocation"],HasTouch=true});
@@ -99,6 +100,13 @@ public sealed class PrototypeProductBrowserTests(PostgreSqlFixture fixture, ITes
         await Assertions.Expect(page.Locator(".observation-card").First).ToContainTextAsync(unrelated.Name);
         await Assertions.Expect(page.Locator($"a[href='{destination}']")).ToHaveCountAsync(0);
         await page.Locator(".availability-card .view-all").ClickAsync();await Assertions.Expect(page.Locator(".retailer-product-meta")).ToContainTextAsync("Pack of 99");
+        // Production also has verified products without images. Their fallback must
+        // keep the approved 92px summary slot rather than stretching the whole row.
+        imageFixture.ShowImages=false;
+        await page.GotoAsync(origin+$"/products/{managed.Slug}/retailers?variantId={receipt.ProductVariantId}&packTypeId={otherPack.Id}");
+        await Assertions.Expect(page.Locator(".retailer-product-image.gallery-empty")).ToHaveCSSAsync("width", "92px");
+        await Assertions.Expect(page.Locator(".retailer-product-meta")).ToBeVisibleAsync();
+        Assert.True(await page.EvaluateAsync<bool>("document.documentElement.scrollWidth <= innerWidth"));
         await page.GetByRole(AriaRole.Link,new(){Name="Add Observation",Exact=true}).ClickAsync();
         await Assertions.Expect(page).ToHaveURLAsync(origin+"/observations/new?packTypeId="+otherPack.Id);
         await Assertions.Expect(page.GetByRole(AriaRole.Link,new(){Name="Sign in and continue",Exact=true})).ToBeVisibleAsync();
@@ -119,12 +127,13 @@ public sealed class PrototypeProductBrowserTests(PostgreSqlFixture fixture, ITes
             next(app);
         };
     }
-    private sealed class GalleryFixtureHandler(HttpMessageHandler inner,string slug):DelegatingHandler(inner) {
+    private sealed class ImageFixture { public bool ShowImages {get;set;} = true; }
+    private sealed class GalleryFixtureHandler(HttpMessageHandler inner,string slug,ImageFixture fixture):DelegatingHandler(inner) {
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,CancellationToken ct) {
             var response=await base.SendAsync(request,ct);
             if(response.IsSuccessStatusCode && request.RequestUri!.AbsolutePath=="/api/v1/products/"+slug) {
                 var product=(await response.Content.ReadFromJsonAsync<CatalogueProductDetails>(ct))!;
-                response.Content.Dispose();response.Content=JsonContent.Create(product with{Name="TENA Slip Maxi",Images=[new(Guid.NewGuid(),CatalogueSubmissionImageRole.PackFront,true,"/reference-pack.png"),new(Guid.NewGuid(),CatalogueSubmissionImageRole.PackBack,false,"/reference-pack.png")]});
+                response.Content.Dispose();response.Content=JsonContent.Create(product with{Name="TENA Slip Maxi",Images=fixture.ShowImages ? [new(Guid.NewGuid(),CatalogueSubmissionImageRole.PackFront,true,"/reference-pack.png"),new(Guid.NewGuid(),CatalogueSubmissionImageRole.PackBack,false,"/reference-pack.png")] : []});
             }
             return response;
         }

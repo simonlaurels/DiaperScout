@@ -13,4 +13,4 @@ Passed!  - Failed:     0, Passed:   230, Skipped:     0, Total:   230, Duration:
 Test run for /Users/sporter/Documents/Projects/DS/tests/DiaperScout.Domain.Tests/bin/Debug/net10.0/DiaperScout.Domain.Tests.dll (.NETCoreApp,Version=v10.0)
 A total of 1 test files matched the specified pattern.
 
-Passed!  - Failed:     0, Passed:    51, Skipped:     0, Total:    51, Duration: 649 ms - DiaperScout.Domain.Tests.dll (net10.0)
+Passed!  - Failed:     0, Passed:    51, Skipped:     0, Total:    51, Duration: 654 ms - DiaperScout.Domain.Tests.dll (net10.0)

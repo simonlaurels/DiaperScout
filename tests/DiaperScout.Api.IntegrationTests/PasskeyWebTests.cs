@@ -44,7 +44,7 @@ public sealed class PasskeyWebTests(PostgreSqlFixture fixture) : IClassFixture<P
         await browser.GetAsync("/signout");
         var signinHtml = await browser.GetStringAsync("/signin");
         Assert.Contains("/signin/request", signinHtml);
-        Assert.Contains("Sign in with a passkey", signinHtml);
+        Assert.Contains("data-passkey-action=\"signin\"", signinHtml);
         csrf = Token(signinHtml);
         var loginOptionsResponse = await Post(browser, "/signin/passkey/options", new { }, csrf);
         loginOptionsResponse.EnsureSuccessStatusCode();

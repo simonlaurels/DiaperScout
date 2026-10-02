@@ -68,7 +68,7 @@ public sealed class PasskeyBrowserTests(PostgreSqlFixture fixture) : IClassFixtu
         var contributionTarget = "/contribute/product?gtin=96385074";
         if (authenticatedFirst) {
             await page.GotoAsync(origin + "/signin?returnUrl=" + Uri.EscapeDataString(contributionTarget));
-            await page.GetByRole(AriaRole.Button, new() { Name = "Sign in with a passkey" }).ClickAsync();
+            await page.GetByRole(AriaRole.Button, new() { Name = "Sign in", Exact = true }).ClickAsync();
             await page.WaitForURLAsync(origin + contributionTarget);
         } else {
             await page.GotoAsync(origin + "/scan");
@@ -100,7 +100,7 @@ public sealed class PasskeyBrowserTests(PostgreSqlFixture fixture) : IClassFixtu
             await page.CloseAsync();
             page = newPage;
             await page.GotoAsync(signInUrl);
-            await page.GetByRole(AriaRole.Button,new(){Name="Sign in with a passkey"}).ClickAsync();
+            await page.GetByRole(AriaRole.Button,new(){Name="Sign in", Exact=true}).ClickAsync();
             await page.WaitForURLAsync(origin + contributionTarget);
         }
         await Assertions.Expect(page.Locator(".contribution-review")).ToContainTextAsync("Passkey regression " + user.Id);

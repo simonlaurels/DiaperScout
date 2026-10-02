@@ -13,7 +13,9 @@ const assert = require('node:assert/strict');
   assert.equal(await page.locator('.welcome-art').count(),1);
   assert.equal(await page.locator('.welcome-brand').count(),0);
   const background=await page.locator('#pwa-welcome').evaluate(el=>getComputedStyle(el).backgroundImage);
-  assert(background.includes('welcome-sky.webp') && background.includes('welcome-woodland.webp'));
+  assert.equal(background,'none');
+  assert.equal(await page.locator('.welcome-art').getAttribute('src'),'/pwa/welcome-portrait.webp');
+  assert.equal(await page.locator('.welcome-art').evaluate(el=>getComputedStyle(el).objectFit),'cover');
   for (const selector of ['.welcome-primary','.welcome-secondary','#welcome-continue']) {
    const box=await page.locator(selector).boundingBox(); assert(box && box.y>=0 && box.y+box.height<=844);
   }

@@ -50,8 +50,10 @@ public sealed class PwaWelcomeBrowserTests(PostgreSqlFixture fixture) : IClassFi
         Assert.Equal("ready", await page.EvaluateAsync<string>("document.documentElement.dataset.pwaState"));
         await Assertions.Expect(page.Locator("meta[name='apple-mobile-web-app-status-bar-style']")).ToHaveAttributeAsync("content", "black-translucent");
         var background = await page.Locator("#pwa-welcome").EvaluateAsync<string>("element => getComputedStyle(element).backgroundImage");
-        Assert.Contains("welcome-sky.webp", background);
-        Assert.Contains("welcome-woodland.webp", background);
+        Assert.Equal("none", background);
+        Assert.Equal("rgb(183, 231, 237)", await page.Locator("#pwa-welcome").EvaluateAsync<string>("element => getComputedStyle(element).backgroundColor"));
+        Assert.Equal("cover", await page.Locator(".welcome-art").EvaluateAsync<string>("element => getComputedStyle(element).objectFit"));
+        await Assertions.Expect(page.Locator(".welcome-art")).ToHaveAttributeAsync("src", "/pwa/welcome-portrait.webp");
         await Assertions.Expect(page.Locator("#pwa-startup")).ToBeHiddenAsync();
         // Desktop engines do not expose an iPhone notch/home-indicator inset.
         // Exercise their occupied space explicitly without changing app behavior.

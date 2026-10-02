@@ -1,6 +1,12 @@
 docs/implementation/pwa-welcome.md
 docs/implementation/search-prototype-evidence/changed-files.txt
+docs/implementation/search-prototype-evidence/config-preservation.json
+docs/implementation/search-prototype-evidence/production-browse-chromium.png
+docs/implementation/search-prototype-evidence/production-browse-webkit.png
+docs/implementation/search-prototype-evidence/production-results-chromium.png
+docs/implementation/search-prototype-evidence/production-results-webkit.png
 docs/implementation/search-prototype-evidence/production-smoke.cjs
+docs/implementation/search-prototype-evidence/production-smoke.json
 docs/implementation/search-prototype-evidence/reference/asset-hashes.json
 docs/implementation/search-prototype-evidence/reference/coastal-explorer.css
 docs/implementation/search-prototype-evidence/reference/reference-390.png
@@ -8,6 +14,9 @@ docs/implementation/search-prototype-evidence/reference/search.html
 docs/implementation/search-prototype-evidence/search-browse-390.png
 docs/implementation/search-prototype-evidence/search-results-320.png
 docs/implementation/search-prototype-evidence/search-results-430.png
+docs/implementation/search-prototype-evidence/size-selection-smoke.cjs
+docs/implementation/search-prototype-evidence/size-selection-smoke.json
+docs/implementation/search-prototype-evidence/startup-reversal.json
 docs/implementation/search-prototype-evidence/test-runs.json
 docs/implementation/search-prototype-evidence/validation.runsettings
 docs/implementation/search-prototype-port.md

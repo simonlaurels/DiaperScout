@@ -1,0 +1,16 @@
+[
+  {
+    "engine": "chromium",
+    "size": "Medium",
+    "packId": "a17f3fa3-a690-4224-9fad-8c84902ebe90",
+    "availablePath": "/products/megamax/retailers?variantId=bb3ad9fc-9dea-4f07-b179-5bc3f66b7d7e&packTypeId=a17f3fa3-a690-4224-9fad-8c84902ebe90",
+    "passed": true
+  },
+  {
+    "engine": "webkit",
+    "size": "Medium",
+    "packId": "a17f3fa3-a690-4224-9fad-8c84902ebe90",
+    "availablePath": "/products/megamax/retailers?variantId=bb3ad9fc-9dea-4f07-b179-5bc3f66b7d7e&packTypeId=a17f3fa3-a690-4224-9fad-8c84902ebe90",
+    "passed": true
+  }
+]

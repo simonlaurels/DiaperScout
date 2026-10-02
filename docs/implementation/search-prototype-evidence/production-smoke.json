@@ -1,0 +1,44 @@
+{
+  "started": "2026-10-02T20:56:46.149Z",
+  "productionWrites": 0,
+  "physicalIosProven": false,
+  "sessions": [
+    {
+      "engine": "chromium",
+      "width": 390,
+      "errors": [],
+      "headingStyle": {
+        "font": "Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "size": "27.2px"
+      },
+      "assetHashesMatch": true,
+      "resultCount": 6,
+      "productPath": "/products/megamax?variantId=bb3ad9fc-9dea-4f07-b179-5bc3f66b7d7e",
+      "productName": "NorthShore MEGAMAX Black",
+      "variantId": "bb3ad9fc-9dea-4f07-b179-5bc3f66b7d7e",
+      "packId": "d1862959-c74b-4c81-93d2-2f62058d1a59",
+      "availablePath": "/products/megamax/retailers?variantId=bb3ad9fc-9dea-4f07-b179-5bc3f66b7d7e&packTypeId=d1862959-c74b-4c81-93d2-2f62058d1a59",
+      "passed": true,
+      "ended": "2026-10-02T20:56:50.905Z"
+    },
+    {
+      "engine": "webkit",
+      "width": 430,
+      "errors": [],
+      "headingStyle": {
+        "font": "Inter, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "size": "27.200001px"
+      },
+      "assetHashesMatch": true,
+      "resultCount": 6,
+      "productPath": "/products/megamax?variantId=bb3ad9fc-9dea-4f07-b179-5bc3f66b7d7e",
+      "productName": "NorthShore MEGAMAX Black",
+      "variantId": "bb3ad9fc-9dea-4f07-b179-5bc3f66b7d7e",
+      "packId": "d1862959-c74b-4c81-93d2-2f62058d1a59",
+      "availablePath": "/products/megamax/retailers?variantId=bb3ad9fc-9dea-4f07-b179-5bc3f66b7d7e&packTypeId=d1862959-c74b-4c81-93d2-2f62058d1a59",
+      "passed": true,
+      "ended": "2026-10-02T20:56:57.184Z"
+    }
+  ],
+  "ended": "2026-10-02T20:56:57.220Z"
+}

@@ -1,0 +1,10 @@
+{
+  "draftModule": {
+    "matchesSource": true,
+    "sha256": "7122655d5d9645b74fd4385c4a67e2f3a8f99963fc46e227398e1dacabc6d516"
+  },
+  "serviceWorker": {
+    "matchesSource": true,
+    "sha256": "f92d3f2ddbccd67ae5e88b16cb8ee8d7df6a2a922ec4bdd279b1f0c296fac338"
+  }
+}

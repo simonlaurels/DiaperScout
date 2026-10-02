@@ -1,0 +1,22 @@
+[
+  {
+    "RevisionName_s": "diaperscout-web-vnet--contribution-32bf159",
+    "TableName": "PrimaryResult",
+    "circuitRoutingFailures": "0",
+    "cryptographicFailures": "0",
+    "rows": "68",
+    "signedIdentityChallenge": "0",
+    "signedIdentityForbidden": "0",
+    "unhandledFailures": "0"
+  },
+  {
+    "RevisionName_s": "diaperscout-api-vnet--contribution-32bf159",
+    "TableName": "PrimaryResult",
+    "circuitRoutingFailures": "0",
+    "cryptographicFailures": "0",
+    "rows": "48",
+    "signedIdentityChallenge": "0",
+    "signedIdentityForbidden": "0",
+    "unhandledFailures": "0"
+  }
+]

@@ -1,6 +1,6 @@
-@page "/products/{Slug}"
+@page "/products/{Slug}/retailers"
 @rendermode InteractiveServer
-<ProductCatalogueScreen Slug="@Slug" VariantId="@VariantId" PackTypeId="@PackTypeId" />
+<ProductCatalogueScreen Slug="@Slug" VariantId="@VariantId" PackTypeId="@PackTypeId" AvailableIn="true" />
 @code {
     [Parameter] public string Slug {get;set;} = "";
     [SupplyParameterFromQuery(Name="variantId")] public string? VariantId {get;set;}

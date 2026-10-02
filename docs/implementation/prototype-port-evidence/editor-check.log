@@ -1,0 +1,4 @@
+Test run for /Users/sporter/Documents/Projects/DS/tests/DiaperScout.Api.IntegrationTests/bin/Debug/net10.0/DiaperScout.Api.IntegrationTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     2, Skipped:     0, Total:     2, Duration: 9 s - DiaperScout.Api.IntegrationTests.dll (net10.0)

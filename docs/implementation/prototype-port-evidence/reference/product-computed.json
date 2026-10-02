@@ -1,0 +1,418 @@
+{
+  "fonts": true,
+  "body": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+  "styles": [
+    {
+      "selector": "product-shell",
+      "tag": "MAIN",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 1532.84375,
+        "top": 0,
+        "right": 390,
+        "bottom": 1532.84375,
+        "left": 0
+      },
+      "font": "16px / 24px Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontFamily": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "color": "rgb(23, 56, 65)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "selector": "product-nav",
+      "tag": "HEADER",
+      "rect": {
+        "x": 20,
+        "y": 14,
+        "width": 350,
+        "height": 48,
+        "top": 14,
+        "right": 370,
+        "bottom": 62,
+        "left": 20
+      },
+      "font": "16px / 24px Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontFamily": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "color": "rgb(23, 56, 65)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "selector": "",
+      "tag": "H1",
+      "rect": {
+        "x": 24,
+        "y": 77,
+        "width": 342,
+        "height": 30.875,
+        "top": 77,
+        "right": 366,
+        "bottom": 107.875,
+        "left": 24
+      },
+      "font": "600 28.08px / 30.888px Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontFamily": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "color": "rgb(23, 56, 65)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "selector": "gallery-slide",
+      "tag": "FIGURE",
+      "rect": {
+        "x": 20,
+        "y": 143.0625,
+        "width": 350,
+        "height": 390,
+        "top": 143.0625,
+        "right": 370,
+        "bottom": 533.0625,
+        "left": 20
+      },
+      "font": "16px / 24px Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontFamily": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "color": "rgb(23, 56, 65)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "selector": "gallery-slide",
+      "tag": "FIGURE",
+      "rect": {
+        "x": 370,
+        "y": 143.0625,
+        "width": 350,
+        "height": 390,
+        "top": 143.0625,
+        "right": 720,
+        "bottom": 533.0625,
+        "left": 370
+      },
+      "font": "16px / 24px Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontFamily": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "color": "rgb(23, 56, 65)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "selector": "gallery-slide",
+      "tag": "FIGURE",
+      "rect": {
+        "x": 720,
+        "y": 143.0625,
+        "width": 350,
+        "height": 390,
+        "top": 143.0625,
+        "right": 1070,
+        "bottom": 533.0625,
+        "left": 720
+      },
+      "font": "16px / 24px Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontFamily": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "color": "rgb(23, 56, 65)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "selector": "gallery-slide",
+      "tag": "FIGURE",
+      "rect": {
+        "x": 1070,
+        "y": 143.0625,
+        "width": 350,
+        "height": 390,
+        "top": 143.0625,
+        "right": 1420,
+        "bottom": 533.0625,
+        "left": 1070
+      },
+      "font": "16px / 24px Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontFamily": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "color": "rgb(23, 56, 65)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "selector": "gallery-slide",
+      "tag": "FIGURE",
+      "rect": {
+        "x": 1420,
+        "y": 143.0625,
+        "width": 350,
+        "height": 390,
+        "top": 143.0625,
+        "right": 1770,
+        "bottom": 533.0625,
+        "left": 1420
+      },
+      "font": "16px / 24px Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontFamily": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "color": "rgb(23, 56, 65)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "selector": "gallery-slide",
+      "tag": "FIGURE",
+      "rect": {
+        "x": 1770,
+        "y": 143.0625,
+        "width": 350,
+        "height": 390,
+        "top": 143.0625,
+        "right": 2120,
+        "bottom": 533.0625,
+        "left": 1770
+      },
+      "font": "16px / 24px Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontFamily": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "color": "rgb(23, 56, 65)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "selector": "gallery-slide",
+      "tag": "FIGURE",
+      "rect": {
+        "x": 2120,
+        "y": 143.0625,
+        "width": 350,
+        "height": 390,
+        "top": 143.0625,
+        "right": 2470,
+        "bottom": 533.0625,
+        "left": 2120
+      },
+      "font": "16px / 24px Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontFamily": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "color": "rgb(23, 56, 65)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "selector": "observation-card",
+      "tag": "ARTICLE",
+      "rect": {
+        "x": 20,
+        "y": 551.0625,
+        "width": 350,
+        "height": 131.03125,
+        "top": 551.0625,
+        "right": 370,
+        "bottom": 682.09375,
+        "left": 20
+      },
+      "font": "16px / 24px Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontFamily": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "color": "rgb(23, 56, 65)",
+      "background": "rgb(255, 253, 249)"
+    },
+    {
+      "selector": "",
+      "tag": "H2",
+      "rect": {
+        "x": 39,
+        "y": 570.0625,
+        "width": 312,
+        "height": 23.03125,
+        "top": 570.0625,
+        "right": 351,
+        "bottom": 593.09375,
+        "left": 39
+      },
+      "font": "600 15.36px / 23.04px Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontFamily": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "color": "rgb(23, 56, 65)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "selector": "observation-card availability-card",
+      "tag": "ARTICLE",
+      "rect": {
+        "x": 20,
+        "y": 700.09375,
+        "width": 350,
+        "height": 109.03125,
+        "top": 700.09375,
+        "right": 370,
+        "bottom": 809.125,
+        "left": 20
+      },
+      "font": "16px / 24px Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontFamily": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "color": "rgb(23, 56, 65)",
+      "background": "rgb(255, 253, 249)"
+    },
+    {
+      "selector": "",
+      "tag": "H2",
+      "rect": {
+        "x": 39,
+        "y": 719.09375,
+        "width": 81.234375,
+        "height": 23.03125,
+        "top": 719.09375,
+        "right": 120.234375,
+        "bottom": 742.125,
+        "left": 39
+      },
+      "font": "600 15.36px / 23.04px Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontFamily": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "color": "rgb(23, 56, 65)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "selector": "product-details-card",
+      "tag": "ARTICLE",
+      "rect": {
+        "x": 20,
+        "y": 829.125,
+        "width": 350,
+        "height": 110.390625,
+        "top": 829.125,
+        "right": 370,
+        "bottom": 939.515625,
+        "left": 20
+      },
+      "font": "16px / 24px Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontFamily": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "color": "rgb(23, 56, 65)",
+      "background": "rgb(255, 255, 255)"
+    },
+    {
+      "selector": "",
+      "tag": "H2",
+      "rect": {
+        "x": 40,
+        "y": 849.125,
+        "width": 123.390625,
+        "height": 26.390625,
+        "top": 849.125,
+        "right": 163.390625,
+        "bottom": 875.515625,
+        "left": 40
+      },
+      "font": "700 17.6px / 26.4px Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontFamily": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "color": "rgb(23, 56, 65)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "selector": "community-photos-card",
+      "tag": "ARTICLE",
+      "rect": {
+        "x": 20,
+        "y": 959.515625,
+        "width": 350,
+        "height": 183.0625,
+        "top": 959.515625,
+        "right": 370,
+        "bottom": 1142.578125,
+        "left": 20
+      },
+      "font": "16px / 24px Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontFamily": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "color": "rgb(23, 56, 65)",
+      "background": "rgb(255, 255, 255)"
+    },
+    {
+      "selector": "",
+      "tag": "H2",
+      "rect": {
+        "x": 40,
+        "y": 979.515625,
+        "width": 155.859375,
+        "height": 26.390625,
+        "top": 979.515625,
+        "right": 195.859375,
+        "bottom": 1005.90625,
+        "left": 40
+      },
+      "font": "700 17.6px / 26.4px Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontFamily": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "color": "rgb(23, 56, 65)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "selector": "observation-history-card",
+      "tag": "ARTICLE",
+      "rect": {
+        "x": 20,
+        "y": 1162.578125,
+        "width": 350,
+        "height": 142.703125,
+        "top": 1162.578125,
+        "right": 370,
+        "bottom": 1305.28125,
+        "left": 20
+      },
+      "font": "16px / 24px Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontFamily": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "color": "rgb(23, 56, 65)",
+      "background": "rgb(255, 255, 255)"
+    },
+    {
+      "selector": "",
+      "tag": "H2",
+      "rect": {
+        "x": 40,
+        "y": 1182.578125,
+        "width": 163.03125,
+        "height": 26.390625,
+        "top": 1182.578125,
+        "right": 203.03125,
+        "bottom": 1208.96875,
+        "left": 40
+      },
+      "font": "700 17.6px / 26.4px Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontFamily": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "color": "rgb(23, 56, 65)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "selector": "",
+      "tag": "H2",
+      "rect": {
+        "x": 40,
+        "y": 1345.28125,
+        "width": 97.640625,
+        "height": 48,
+        "top": 1345.28125,
+        "right": 137.640625,
+        "bottom": 1393.28125,
+        "left": 40
+      },
+      "font": "600 16px / 24px Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontFamily": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "color": "rgb(37, 42, 41)",
+      "background": "rgba(0, 0, 0, 0)"
+    }
+  ],
+  "icons": [
+    {
+      "name": "arrow-left",
+      "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-lucide=\"arrow-left\" aria-hidden=\"true\" class=\"lucide lucide-arrow-left\"><path d=\"m12 19-7-7 7-7\"></path><path d=\"M19 12H5\"></path></svg>"
+    },
+    {
+      "name": "share-2",
+      "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-lucide=\"share-2\" aria-hidden=\"true\" class=\"lucide lucide-share-2\"><circle cx=\"18\" cy=\"5\" r=\"3\"></circle><circle cx=\"6\" cy=\"12\" r=\"3\"></circle><circle cx=\"18\" cy=\"19\" r=\"3\"></circle><line x1=\"8.59\" x2=\"15.42\" y1=\"13.51\" y2=\"17.49\"></line><line x1=\"15.41\" x2=\"8.59\" y1=\"6.51\" y2=\"10.49\"></line></svg>"
+    },
+    {
+      "name": "heart",
+      "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-lucide=\"heart\" aria-hidden=\"true\" class=\"lucide lucide-heart\"><path d=\"M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5\"></path></svg>"
+    },
+    {
+      "name": "calendar-days",
+      "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-lucide=\"calendar-days\" aria-hidden=\"true\" class=\"lucide lucide-calendar-days\"><path d=\"M8 2v3\"></path><path d=\"M16 2v3\"></path><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\"></rect><path d=\"M3 9h18\"></path><path d=\"M8 13h.01\"></path><path d=\"M12 13h.01\"></path><path d=\"M16 13h.01\"></path><path d=\"M8 17h.01\"></path><path d=\"M12 17h.01\"></path><path d=\"M16 17h.01\"></path></svg>"
+    },
+    {
+      "name": "map-pin",
+      "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-lucide=\"map-pin\" aria-hidden=\"true\" class=\"lucide lucide-map-pin\"><path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg>"
+    },
+    {
+      "name": "store",
+      "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-lucide=\"store\" aria-hidden=\"true\" class=\"lucide lucide-store\"><path d=\"M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5\"></path><path d=\"M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244\"></path><path d=\"M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05\"></path></svg>"
+    },
+    {
+      "name": "ruler",
+      "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-lucide=\"ruler\" aria-hidden=\"true\" class=\"lucide lucide-ruler\"><path d=\"M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z\"></path><path d=\"m14.5 12.5 2-2\"></path><path d=\"m11.5 9.5 2-2\"></path><path d=\"m8.5 6.5 2-2\"></path><path d=\"m17.5 15.5 2-2\"></path></svg>"
+    },
+    {
+      "name": "plus",
+      "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-lucide=\"plus\" aria-hidden=\"true\" class=\"lucide lucide-plus\"><path d=\"M5 12h14\"></path><path d=\"M12 5v14\"></path></svg>"
+    }
+  ]
+}

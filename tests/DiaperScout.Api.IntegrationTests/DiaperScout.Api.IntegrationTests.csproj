@@ -22,4 +22,5 @@
     <ProjectReference Include="..\..\src\DiaperScout.Domain\DiaperScout.Domain.csproj" />
     <ProjectReference Include="..\..\src\DiaperScout.Infrastructure\DiaperScout.Infrastructure.csproj" />
   </ItemGroup>
+  <ItemGroup><Content Include="Fixtures/prototype-tena1.png" CopyToOutputDirectory="PreserveNewest" /></ItemGroup>
 </Project>

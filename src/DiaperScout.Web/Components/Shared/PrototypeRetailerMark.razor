@@ -1,0 +1,7 @@
+@if (Logo is { } logo) { <img src="@logo" alt="@Name" /> }
+else { <span class="retailer-initial" aria-label="@Name">@(string.IsNullOrWhiteSpace(Name) ? "?" : Name.Trim()[0].ToString())</span> }
+@code {
+    [Parameter] public string Name {get;set;} = "";
+    private string? Logo => new[] {("Tesco","tesco"),("Boots","boots"),("Sainsbury","sainsburys"),("Morrisons","morrisons"),("Asda","asda")}
+        .Where(pair=>Name.StartsWith(pair.Item1,StringComparison.OrdinalIgnoreCase)).Select(pair=>"/images/retailers/"+pair.Item2+".svg").FirstOrDefault();
+}

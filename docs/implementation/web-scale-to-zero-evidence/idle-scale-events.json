@@ -1,0 +1,58 @@
+[
+  {
+    "Log_s": "Deactivated apps/v1.Deployment k8se-apps/diaperscout-web-vnet--scale-policy-20261002092936 from 1 to 0",
+    "Reason_s": "KEDAScaleTargetDeactivated",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:45:16.2188031Z"
+  },
+  {
+    "Log_s": "Container 'diaperscout-web-vnet' was terminated with exit code '' and reason 'ManuallyStopped'",
+    "Reason_s": "ContainerTerminated",
+    "RevisionName_s": "diaperscout-web-vnet--scale",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:45:16.2188031Z"
+  },
+  {
+    "Log_s": "Replica 'diaperscout-web-vnet--scale-policy-20261002092936-6d57c794n6hz6' has been scheduled to run on a node.",
+    "Reason_s": "AssigningReplica",
+    "RevisionName_s": "diaperscout-web-vnet--scale",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:47:04.4101612Z"
+  },
+  {
+    "Log_s": "Pulling image 'diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-web@sha256:5e86abc43fb532bd0ba5c90371c657683d951fe8f9787ff99e2e4438879a569f'",
+    "Reason_s": "PullingImage",
+    "RevisionName_s": "diaperscout-web-vnet--scale",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:47:18.3580033Z"
+  },
+  {
+    "Log_s": "Successfully pulled image \"diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-web@sha256:5e86abc43fb532bd0ba5c90371c657683d951fe8f9787ff99e2e4438879a569f\" in 2.59s. Image size: 117440512 bytes.",
+    "Reason_s": "PulledImage",
+    "RevisionName_s": "diaperscout-web-vnet--scale",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:47:19.2417197Z"
+  },
+  {
+    "Log_s": "Created container 'diaperscout-web-vnet'",
+    "Reason_s": "ContainerCreated",
+    "RevisionName_s": "diaperscout-web-vnet--scale",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:47:20.2390864Z"
+  },
+  {
+    "Log_s": "Started container 'diaperscout-web-vnet'",
+    "Reason_s": "ContainerStarted",
+    "RevisionName_s": "diaperscout-web-vnet--scale",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:47:23.2821443Z"
+  },
+  {
+    "Log_s": "Probe of StartUp failed with timeout in 1 seconds.",
+    "Reason_s": "ProbeFailed",
+    "RevisionName_s": "diaperscout-web-vnet--scale",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:47:23.2821443Z"
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "affinity": {
+    "affinity": "sticky"
+  },
+  "ready": "diaperscout-web-vnet--scale-policy-20261002092936",
+  "revision": "diaperscout-web-vnet--scale-policy-20261002092936",
+  "scale": {
+    "cooldownPeriod": 600,
+    "maxReplicas": 2,
+    "minReplicas": 0,
+    "pollingInterval": 30,
+    "rules": null
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "health": "Healthy",
+  "name": "diaperscout-web-vnet--scale-policy-20261002092936",
+  "replicas": 1,
+  "state": "Running",
+  "traffic": 100
+}

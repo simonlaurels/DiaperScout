@@ -1,8 +1,10 @@
+> Operating-policy update, 2026-10-02: the user subsequently chose Web scale-to-zero. The current policy is **min0/max2, cooldown600s, sticky affinity**. See [current policy and cold-start validation](web-scale-to-zero.md). The 1/1 results below remain the proven warm rollback baseline.
+
 # Production PWA reliability — 2 October 2026
 
 ## Outcome and scope
 
-The proven multi-replica routing defect is remediated with ACA cookie affinity. The corrected image passed eight real interactive journeys with **two** Web replicas, including both replicas hosting circuits. The final operating policy is one warm Web replica for the current commercial-validation stage. Final one-replica acceptance also passed8/8 journeys; all captured configuration-preservation checks pass.
+The proven multi-replica routing defect is remediated with ACA cookie affinity. The corrected image passed eight real interactive journeys with **two** Web replicas, including both replicas hosting circuits. The operating policy at this acceptance checkpoint was one warm Web replica; it is now the rollback baseline, superseded by the scale-to-zero policy linked above. Final one-replica acceptance also passed8/8 journeys; all captured configuration-preservation checks pass.
 
 Three application reliability gaps were fixed: startup depended on body-end JavaScript for visibility; Atlas buffered its initial document behind API loading; proposal controls accepted input before hydration/draft restoration and could erase that input. Circuit rejection now presents an explicit recovery choice rather than automatically discarding the page.
 
@@ -88,7 +90,7 @@ Source8cf8032: ACR db15/digest`sha256:1a5b1287d0175d4888484e05871f7202d137b92656
 
 Corrected source2b7e35f: ACR db16/digest`sha256:5e86abc43fb532bd0ba5c90371c657683d951fe8f9787ff99e2e4438879a569f`, validated revisionreliability-2-2b7e35f; final revisionreliability-1-2b7e35f. Source/app code was fully tested before each image. Deployment used the established Web-only ACR/immutable-image process. No migration/API deployment occurred.
 
-`ops/apply-web-reliability-policy.sh` records a repeatable Web-only1/1+sticky policy, refuses non-Single mode, and preserves images/env/secrets/identity/networking. Normal image-only deployments preserve the operating policy.
+`ops/apply-web-reliability-policy.sh --rollback-warm` now restores the repeatable Web-only1/1+sticky policy, refuses non-Single mode, and preserves images/env/secrets/identity/networking. Normal image-only deployments preserve the operating policy.
 
 ### Data Protection and preserved infrastructure
 
@@ -135,7 +137,7 @@ Before genuine multi-replica scale, measure concurrent circuits, CPU/memory and 
 
 No DB rollback/migration is required. For an application regression, restore previous immutable Web image`sha256:a4cf752d97de970779350e66114512d911772f945171f9b7990a965be578f647` with min1/max1 and sticky retained. Confirm ready/100% traffic; recheck representative circuit/auth journeys. API, database, DP and networking remain untouched.
 
-Exact baseline rollback to min0/max10/no affinity is technically possible, but reintroduces the proven routing defect and is not a reliability solution. Image rollback restores old startup/auto-reload/proposal race behavior; use only when its tradeoff is justified.
+Never remove sticky affinity in a scaling rollback: doing so reintroduces the proven routing defect. The current authorized scale-to-zero policy retains affinity and uses max2; the proven warm rollback is min1/max1+sticky. Image rollback restores old startup/auto-reload/proposal race behavior; use only when its tradeoff is justified.
 
 ## Simon's physical iPhone27.0.1 acceptance
 

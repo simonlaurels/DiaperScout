@@ -1,0 +1,30 @@
+[
+  {
+    "Log_s": "Scaler external-push is built",
+    "Reason_s": "KEDAScalersStarted",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:46.26858Z"
+  },
+  {
+    "Log_s": "Scaler external-push is built",
+    "Reason_s": "KEDAScalersStarted",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:46.26858Z"
+  },
+  {
+    "Log_s": "KEDA is starting a watch for revision 'diaperscout-web-vnet--scale-policy-20261002092936' to monitor scale operations for this revision",
+    "Reason_s": "KEDAScalersStarted",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:46.26858Z"
+  },
+  {
+    "Log_s": "Revision 'diaperscout-web-vnet--scale-policy-20261002092936' updated. No new revision was provisioned.",
+    "Reason_s": "RevisionUpdate",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:47.2124161Z"
+  }
+]

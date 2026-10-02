@@ -1,0 +1,13 @@
+[
+  {
+    "containers": [
+      {
+        "ready": true,
+        "restarts": 0,
+        "state": "Running"
+      }
+    ],
+    "created": "2026-10-02T09:29:45Z",
+    "name": "diaperscout-web-vnet--scale-policy-20261002092936-6d57c7948gqfj"
+  }
+]

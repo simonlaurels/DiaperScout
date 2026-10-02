@@ -1,0 +1,276 @@
+{
+  "cost": 59,
+  "interval": "PT1M",
+  "namespace": "Microsoft.App/containerApps",
+  "resourceregion": "uksouth",
+  "timespan": "2026-10-02T09:29:00Z/2026-10-02T10:29:00Z",
+  "value": [
+    {
+      "displayDescription": "Requests processed",
+      "errorCode": "Success",
+      "id": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.App/containerApps/diaperscout-web-vnet/providers/Microsoft.Insights/metrics/Requests",
+      "name": {
+        "localizedValue": "Requests",
+        "value": "Requests"
+      },
+      "resourceGroup": "rg-diaperscout-prod",
+      "timeseries": [
+        {
+          "data": [
+            {
+              "timeStamp": "2026-10-02T09:29:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:30:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:31:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:32:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:33:00Z",
+              "total": 2.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:34:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:35:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:36:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:37:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:38:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:39:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:40:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:41:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:42:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:43:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:44:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:45:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:46:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:47:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:48:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:49:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:50:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:51:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:52:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:53:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:54:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:55:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:56:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:57:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:58:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T09:59:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:00:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:01:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:02:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:03:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:04:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:05:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:06:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:07:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:08:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:09:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:10:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:11:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:12:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:13:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:14:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:15:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:16:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:17:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:18:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:19:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:20:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:21:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:22:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:23:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:24:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:25:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:26:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:27:00Z",
+              "total": 0.0
+            },
+            {
+              "timeStamp": "2026-10-02T10:28:00Z",
+              "total": 0.0
+            }
+          ],
+          "metadatavalues": [
+            {
+              "name": {
+                "localizedValue": "revisionname",
+                "value": "revisionname"
+              },
+              "value": "diaperscout-web-vnet--scale-policy-20261002092936"
+            }
+          ]
+        }
+      ],
+      "type": "Microsoft.Insights/metrics",
+      "unit": "Count"
+    }
+  ]
+}

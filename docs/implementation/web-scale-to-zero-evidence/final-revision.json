@@ -1,7 +1,7 @@
 {
   "health": "Healthy",
   "name": "diaperscout-web-vnet--scale-policy-20261002092936",
-  "replicas": 0,
-  "state": "ScaledToZero",
+  "replicas": 2,
+  "state": "RunningAtMaxScale",
   "traffic": 100
 }

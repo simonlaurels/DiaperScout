@@ -1,0 +1,86 @@
+[
+  {
+    "Log_s": "Replica 'diaperscout-web-vnet--scale-policy-20261002092936-6d57c794dcnjz' has been scheduled to run on a node.",
+    "Reason_s": "AssigningReplica",
+    "RevisionName_s": "diaperscout-web-vnet--scale",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:48:37.3150136Z"
+  },
+  {
+    "Log_s": "diaperscout-web-vnet has been scaled to 2 by the scaler: http-scaler.",
+    "Reason_s": "SuccessfulRescale",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:48:37.3150136Z"
+  },
+  {
+    "Log_s": "Started container 'diaperscout-web-vnet'",
+    "Reason_s": "ContainerStarted",
+    "RevisionName_s": "diaperscout-web-vnet--scale",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:49:03.2583283Z"
+  },
+  {
+    "Log_s": "Scale down to 1 as all metrics below target",
+    "Reason_s": "SuccessfulRescale",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:56:27.2808264Z"
+  },
+  {
+    "Log_s": "Container 'diaperscout-web-vnet' was terminated with exit code '' and reason 'ManuallyStopped'",
+    "Reason_s": "ContainerTerminated",
+    "RevisionName_s": "diaperscout-web-vnet--scale",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:56:28.2620484Z"
+  },
+  {
+    "Log_s": "Deactivated apps/v1.Deployment k8se-apps/diaperscout-web-vnet--scale-policy-20261002092936 from 1 to 0",
+    "Reason_s": "KEDAScaleTargetDeactivated",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T10:08:16.2751379Z"
+  },
+  {
+    "Log_s": "Container 'diaperscout-web-vnet' was terminated with exit code '' and reason 'ManuallyStopped'",
+    "Reason_s": "ContainerTerminated",
+    "RevisionName_s": "diaperscout-web-vnet--scale",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T10:08:17.3215052Z"
+  },
+  {
+    "Log_s": "Replica 'diaperscout-web-vnet--scale-policy-20261002092936-6d57c7949g6n4' has been scheduled to run on a node.",
+    "Reason_s": "AssigningReplica",
+    "RevisionName_s": "diaperscout-web-vnet--scale",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T10:09:27.4717294Z"
+  },
+  {
+    "Log_s": "Started container 'diaperscout-web-vnet'",
+    "Reason_s": "ContainerStarted",
+    "RevisionName_s": "diaperscout-web-vnet--scale",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T10:09:46.2022282Z"
+  },
+  {
+    "Log_s": "Replica 'diaperscout-web-vnet--scale-policy-20261002092936-6d57c7947xgbm' has been scheduled to run on a node.",
+    "Reason_s": "AssigningReplica",
+    "RevisionName_s": "diaperscout-web-vnet--scale",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T10:10:05.3118386Z"
+  },
+  {
+    "Log_s": "diaperscout-web-vnet has been scaled to 2 by the scaler: http-scaler.",
+    "Reason_s": "SuccessfulRescale",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T10:10:05.3118386Z"
+  },
+  {
+    "Log_s": "Started container 'diaperscout-web-vnet'",
+    "Reason_s": "ContainerStarted",
+    "RevisionName_s": "diaperscout-web-vnet--scale",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T10:10:21.2386949Z"
+  }
+]

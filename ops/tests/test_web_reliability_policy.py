@@ -14,6 +14,13 @@ from pathlib import Path
 p=Path(os.environ['POLICY_TEST_STATE'])
 s=json.loads(p.read_text()); args=sys.argv[1:]; s['commands'].append(args)
 if args[:2]==['containerapp','show']:
+    if s.get('pending'):
+        body=s.pop('pending')
+        s['resource']['properties']['template'].update(body['properties']['template'])
+        suffix=body['properties']['template']['revisionSuffix']
+        for k in ['latestRevisionName','latestReadyRevisionName']:
+            s['resource']['properties'][k]='diaperscout-web-vnet--'+suffix
+        s['resource']['properties']['provisioningState']='Succeeded'
     out=s['resource']
 elif args[:2]==['rest','--method'] and args[2]=='get':
     out=s['resource']
@@ -25,6 +32,10 @@ elif args[:2]==['rest','--method'] and args[2]=='patch':
     for k in ['latestRevisionName','latestReadyRevisionName']:
         s['resource']['properties'][k]='diaperscout-web-vnet--'+suffix
     s['resource']['properties']['provisioningState']='Succeeded'
+    if s.get('asyncPatch'):
+        s['pending']=body
+        s['resource']['properties']['latestReadyRevisionName']='existing'
+        s['resource']['properties']['provisioningState']='Updating'
     out=None
 elif args[:4]==['containerapp','ingress','sticky-sessions','set']:
     assert args[args.index('--affinity')+1]=='sticky'
@@ -108,6 +119,21 @@ class PolicyTests(unittest.TestCase):
                          'cooldownPeriod': 300, 'pollingInterval': 30, 'rules': None})
         self.assertEqual(props['configuration']['ingress']['stickySessions']['affinity'], 'sticky')
         self.assertEqual(props['template']['containers'], self.resource['properties']['template']['containers'])
+
+    def test_accepted_patch_waits_for_new_ready_revision(self):
+        state = self.saved()
+        state['asyncPatch'] = True
+        self.state.write_text(json.dumps(state))
+        result = self.run_policy()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        state = self.saved()
+        self.assertNotIn('pending', state)
+        props = state['resource']['properties']
+        self.assertEqual(props['provisioningState'], 'Succeeded')
+        self.assertEqual(props['latestReadyRevisionName'], props['latestRevisionName'])
+        self.assertNotEqual(props['latestReadyRevisionName'], 'existing')
+        patch_index = next(i for i,c in enumerate(state['commands']) if c[:3] == ['rest', '--method', 'patch'])
+        self.assertGreater(len([c for c in state['commands'][patch_index+1:] if c[:2] == ['containerapp', 'show']]), 1)
 
     def test_multiple_revision_mode_refuses_mutation(self):
         self.resource['properties']['configuration']['activeRevisionsMode'] = 'Multiple'

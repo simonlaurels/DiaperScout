@@ -47,7 +47,7 @@ Remaining differences are deliberate consequences of available assets/data: cano
 * Tests: `ExploreApiTests.cs`, `ExploreBrowserTests.cs`; installed-page selectors in `PwaWelcomeBrowserTests.cs` now target `.pwa-explore` instead of the shared `.explore-page` class on both responsive views.
 * This report and Explore visual/validation evidence.
 
-Search, Product Details, Available In, Scan, Atlas qualification, canonical assets, fonts and bottom-nav implementation were not modified. No production writes, deployment or infrastructure changes are part of this implementation request.
+Search, Product Details, Available In, Scan, Atlas qualification, canonical assets, fonts and bottom-nav implementation were not modified. The implementation phase made no production writes or infrastructure changes; subsequent deployment was explicitly authorized and is recorded below.
 
 ## Verification
 
@@ -70,6 +70,27 @@ Inspected fixture captures (synthetic TEST PACK is explicitly labelled and never
 * [No recently dated products](explore-evidence/explore-no-recent-products.png)
 * [Short WebKit landscape, retained responsive behavior](explore-evidence/explore-populated-844.png)
 
-The result is a tested repository implementation. No production deployment, GitHub push, production data changes or infrastructure changes were performed for this request.
+The implementation was initially delivered as tested local commit `6f530135e0a6943558a1374da0913d0aa9e60bdd`. The user then explicitly requested “commit and deploy please”, authorizing the GitHub push and deployment below.
+
+## Production deployment
+
+On 3 October 2026, runtime commit **6f53013** was pushed to `origin/fix/product-submission-recovery`. An immutable archive of that commit supplied both successful ACR builds: API `db1r`, Web `db1s`, tag `explore-6f53013`. No database migration was needed or run.
+
+API was deployed and verified healthy before Web. Both revisions are Healthy/Provisioned with 100% traffic:
+
+| App | Revision | Immutable digest |
+| --- | --- | --- |
+| API | `diaperscout-api-vnet--explore-6f53013` | `sha256:9ae4cd9a89cadfa619375f98e5c9470461178afaf6c137d544b35c7ba12c16e1` |
+| Web | `diaperscout-web-vnet--explore-6f53013` | `sha256:b15219705e5f84a986d156538f8c79eb76dadfc340b3a49e3c396e0bb1f883ca` |
+
+Images use `diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-api` and `/diaperscout-web`. [Before/after configuration comparison](explore-evidence/config-comparison.json) confirms all checks true: configuration, identity, environment, scaling, secret references and template fields other than image/revision suffix remain unchanged. Networking/authentication settings were preserved. Private baseline snapshots remain on D: and are not committed.
+
+Read-only production smoke passed **2/2**, Chromium 390×844 and WebKit 430×932, from **23:29:24 to 23:29:40 BST**. Each loaded two real recent products, a 205px hero, canonical Guide, no conventional installed header, one unchanged navigation with Explore active, no page overflow, no automatic location call, and a healthy existing MEGAMAX variant destination. Explicit mocked permission denial preserved the product section without repeat prompts. Both had zero page errors. No accounts, observations, category changes or other production records were written. Populated/quiet nearby states remain covered by isolated fixtures; live location was not collected. WebKit is emulation, not physical iPhone verification.
+
+* [Production results](explore-evidence/production-smoke.json) and [read-only smoke script](explore-evidence/production-smoke.cjs)
+* [Production WebKit capture](explore-evidence/production-explore-webkit.png)
+* [Production Chromium capture](explore-evidence/production-explore-chromium.png)
+
+Rollback is an image-only restore to the prior Atlas digests recorded in the configuration comparison. There is no schema rollback. Deployment evidence is committed separately from the tested runtime source.
 
 Reproduction: `dotnet test DiaperScout.slnx --configuration Release --no-restore --settings docs/implementation/search-prototype-evidence/validation.runsettings`; `dotnet build DiaperScout.slnx --configuration Release --no-restore`. Use existing Docker/PostgreSQL and Playwright runtime, TEMP/TMP on D:, Docker Linux-engine endpoint, and optional `DIAPERSCOUT_BROWSER_EVIDENCE` output directory.

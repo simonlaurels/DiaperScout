@@ -1,0 +1,23 @@
+{
+  "distinctCasesCovered": 348,
+  "fullRunRepeatedAfterTestOnlyCorrections": false,
+  "domain": {
+    "passed": 61,
+    "skipped": 0,
+    "failed": 0
+  },
+  "allInitialFailuresConfirmedPassing": true,
+  "initialFullIntegration": {
+    "duration": "15m10s",
+    "passed": 279,
+    "skipped": 0,
+    "failed": 8
+  },
+  "productionDeployment": false,
+  "finalTargeted": {
+    "duration": "2m4s",
+    "passed": 31,
+    "skipped": 0,
+    "failed": 0
+  }
+}

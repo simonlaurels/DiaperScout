@@ -190,7 +190,7 @@ public sealed class PwaWelcomeBrowserTests(PostgreSqlFixture fixture) : IClassFi
             release.TrySetResult();
             await Assertions.Expect(page.Locator("#pwa-welcome")).ToBeVisibleAsync();
             await page.Locator("#welcome-continue").ClickAsync();
-            await Assertions.Expect(page.Locator(".explore-page")).ToBeVisibleAsync();
+            await Assertions.Expect(page.Locator(".pwa-explore")).ToBeVisibleAsync();
         }
         finally { release.TrySetResult(); }
     }
@@ -252,7 +252,7 @@ public sealed class PwaWelcomeBrowserTests(PostgreSqlFixture fixture) : IClassFi
         await page.GotoAsync(origin);
         await page.Locator("#welcome-continue").ClickAsync();
         await Assertions.Expect(page.Locator("#pwa-welcome")).ToBeHiddenAsync();
-        await Assertions.Expect(page.Locator(".explore-page")).ToBeVisibleAsync();
+        await Assertions.Expect(page.Locator(".pwa-explore")).ToBeVisibleAsync();
         await page.ReloadAsync();
         await page.WaitForFunctionAsync("document.documentElement.dataset.pwaState==='ready'");
         await Assertions.Expect(page.Locator("#pwa-welcome")).ToBeHiddenAsync();
@@ -277,7 +277,7 @@ public sealed class PwaWelcomeBrowserTests(PostgreSqlFixture fixture) : IClassFi
         await page.WaitForFunctionAsync("document.documentElement.dataset.pwaState==='ready'");
         await Assertions.Expect(page.Locator("a[href='/signout']")).ToHaveCountAsync(1);
         await Assertions.Expect(page.Locator("#pwa-welcome")).ToHaveCountAsync(0);
-        await Assertions.Expect(page.Locator(".explore-page")).ToBeVisibleAsync();
+        await Assertions.Expect(page.Locator(".pwa-explore")).ToBeVisibleAsync();
         Assert.Null(await page.EvaluateAsync<string?>("localStorage.getItem('ds-welcome-complete-v1')"));
     }
 }

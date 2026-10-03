@@ -1,0 +1,93 @@
+@inject ProductCatalogueClient Catalogue
+@inject PlaceObservationClient Places
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<section class="explore-page pwa-explore" aria-label="Explore DiaperScout">
+    <header class="explore-intro">
+        <div class="explore-paper"><h1><AppIcon />Explore</h1><p>Discover what’s new<br />and what’s happening<br />around you.</p></div>
+        <img src="/pwa/guide-map.webp" alt="" width="210" height="210" />
+    </header>
+    <section class="explore-panel" aria-labelledby="explore-new-heading">
+        <div class="explore-panel-heading"><h2 id="explore-new-heading"><span class="explore-star" aria-hidden="true">★</span>New to DiaperScout</h2><a href="/products">View all <PrototypeIcon Name="chevron-right" /></a></div>
+        <p class="explore-description">Recently added to the catalogue.</p>
+        @if (loadingProducts) { <p class="explore-message" role="status">Finding what’s new…</p> }
+        else if (productError) { <div class="explore-message" role="status"><p>New arrivals are out of reach for a moment.</p><button @onclick="LoadProductsAsync">Try again</button></div> }
+        else if (products.Count == 0) { <p class="explore-message">Fresh discoveries will appear here as the catalogue grows. <a href="/products">Explore the catalogue</a>.</p> }
+        else {
+            <div class="explore-product-scroll" tabindex="0" aria-label="Recently added catalogue products">
+                @foreach (var product in products) {
+                    <a class="explore-product" href="@($"/products/{Uri.EscapeDataString(product.Slug)}?variantId={product.ProductVariantId}")">
+                        <div class="explore-product-image">
+                            @if (product.ImageUrl is not null) { <img src="@product.ImageUrl" alt="" width="160" height="160" loading="lazy" /> }
+                            else { <span class="explore-image-placeholder"><PrototypeIcon Name="store" /><small>Image to come</small></span> }
+                        </div>
+                        <strong>@product.Name</strong><span>@(product.BrandName ?? product.ManufacturerName)<PrototypeIcon Name="chevron-right" /></span>
+                    </a>
+                }
+            </div>
+        }
+    </section>
+    <section class="explore-panel explore-nearby" aria-labelledby="explore-nearby-heading">
+        <div class="explore-panel-heading"><h2 id="explore-nearby-heading"><PrototypeIcon Name="map-pin" />Nearby discoveries</h2><a href="/atlas">View on Atlas <PrototypeIcon Name="chevron-right" /></a></div>
+        <p class="explore-description">Recent finds from the community near you.</p>
+        @if (locating) { <p class="explore-message" role="status">Finding your area…</p> }
+        else if (position is null) {
+            <div class="explore-location" role="status"><p>@locationNotice</p><button @onclick="LocateAsync">Use my location</button><small>Only when you choose. Your position is not saved.</small></div>
+        }
+        else if (loadingPlaces) { <p class="explore-message" role="status">Looking for nearby discoveries…</p> }
+        else if (placeError) { <div class="explore-message" role="status"><p>Discoveries are out of reach for a moment.</p><button @onclick="LoadPlacesAsync">Try again</button></div> }
+        else if (discoveries.Count == 0) {
+            <div class="explore-quiet"><PrototypeIcon Name="map" /><div><h3>It’s quiet around here…</h3><p>No discoveries within 25 miles in the current Atlas reports yet. Scan a pack you find and help put your area on the map.</p></div><a href="/scan">Scan a product <PrototypeIcon Name="chevron-right" /></a></div>
+        }
+        else {
+            <div class="explore-discoveries">
+                @foreach (var discovery in discoveries) {
+                    <a class="explore-discovery" href="@($"/atlas?locationId={discovery.Place.Id}")">
+                        <span class="explore-discovery-icon"><PrototypeIcon Name="map-pin" /></span>
+                        <div><strong>@discovery.Observation.Name</strong><span>@discovery.Place.Name</span><small>@($"About {discovery.Miles:0.0} miles away") · <time datetime="@discovery.Observation.ObservedAtUtc.ToString("O")">@discovery.Observation.ObservedAtUtc.ToString("d MMM yyyy")</time></small></div><PrototypeIcon Name="chevron-right" />
+                    </a>
+                }
+            </div>
+            <p class="explore-discovery-caveat">Approximate straight-line distance. Dated reports don’t guarantee current stock.</p>
+        }
+    </section>
+</section>
+@code {
+    private IReadOnlyList<RecentCatalogueProduct> products = [];
+    private IReadOnlyList<ExploreDiscovery> discoveries = [];
+    private ExplorePosition? position;
+    private IJSObjectReference? module;
+    private bool loadingProducts = true, productError, locating, loadingPlaces, placeError;
+    private string locationNotice = "Use your location to see discoveries around you. The catalogue is ready to explore either way.";
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (!firstRender) return;
+        module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/explore.js");
+        if (await module.InvokeAsync<bool>("isStandalone")) await LoadProductsAsync();
+        else { loadingProducts = false; await InvokeAsync(StateHasChanged); }
+    }
+    private async Task LoadProductsAsync() {
+        loadingProducts = true; productError = false; await InvokeAsync(StateHasChanged);
+        try { products = await Catalogue.RecentAsync(); }
+        catch (Exception e) when (e is HttpRequestException or TaskCanceledException or System.Text.Json.JsonException) { productError = true; }
+        finally { loadingProducts = false; await InvokeAsync(StateHasChanged); }
+    }
+    private async Task LocateAsync() {
+        if (locating || module is null) return;
+        locating = true; await InvokeAsync(StateHasChanged);
+        try {
+            position = await module.InvokeAsync<ExplorePosition>("locate");
+            if (!position.IsUsable) { position = null; locationNotice = "Your location is too approximate to show nearby distances. Try again when a clearer position is available."; }
+            else await LoadPlacesAsync();
+        } catch (JSException) { position = null; locationNotice = "Location is unavailable or wasn’t allowed. You can enable it in your device settings and try again, or explore Atlas."; }
+        finally { locating = false; await InvokeAsync(StateHasChanged); }
+    }
+    private async Task LoadPlacesAsync() {
+        if (position is null) return;
+        loadingPlaces = true; placeError = false; await InvokeAsync(StateHasChanged);
+        try { discoveries = ExploreDiscovery.Select(await Places.AtlasAsync(), position); }
+        catch (Exception e) when (e is HttpRequestException or TaskCanceledException or System.Text.Json.JsonException) { placeError = true; }
+        finally { loadingPlaces = false; await InvokeAsync(StateHasChanged); }
+    }
+    public async ValueTask DisposeAsync() { if (module is not null) try { await module.DisposeAsync(); } catch (JSDisconnectedException) { } }
+}

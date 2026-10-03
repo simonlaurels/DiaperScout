@@ -9,6 +9,8 @@ namespace DiaperScout.Web.Services;
 
 public sealed class ProductCatalogueClient(HttpClient client)
 {
+    public async Task<IReadOnlyList<RecentCatalogueProduct>> RecentAsync(CancellationToken ct = default) =>
+        await client.GetFromJsonAsync<RecentCatalogueProduct[]>("api/v1/explore/recent-products", ct) ?? [];
 
     public async Task<HttpResponseMessage> GetProductImageAsync(
         Guid productId,

@@ -663,6 +663,9 @@ app.MapGet(
     .Produces(StatusCodes.Status404NotFound)
     .ProducesValidationProblem();
 
+app.MapGet("/api/v1/explore/recent-products", async (IAtlasQueries queries, CancellationToken ct) =>
+    Results.Ok(await queries.RecentProductsAsync(ct))).WithTags("Products");
+
 app.MapGet(
     "/api/v1/products",
     async (

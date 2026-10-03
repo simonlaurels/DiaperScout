@@ -621,6 +621,8 @@ public interface IRetailerManagement
 
 public interface IAtlasQueries
 {
+    Task<IReadOnlyList<RecentCatalogueProduct>> RecentProductsAsync(CancellationToken cancellationToken = default);
+
     Task<ProductSummary?> GetProductBySlugAsync(
         string slug,
         CancellationToken cancellationToken = default);

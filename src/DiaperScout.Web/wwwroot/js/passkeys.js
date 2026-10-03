@@ -71,6 +71,7 @@ document.addEventListener("click", async event => {
     root.dataset.busy = "true";
     root.querySelectorAll("button").forEach(item => item.disabled = true);
     message.textContent = "";
+    let navigating = false;
     try {
         if (action === "remove") {
             await request(root, `/account/passkeys/${button.dataset.passkeyId}`, undefined, "DELETE");
@@ -100,7 +101,7 @@ document.addEventListener("click", async event => {
             await loadPasskeys(root);
             root.querySelector("#passkey-name").value = "";
             message.textContent = "Passkey added. You can now use it to sign in.";
-        } else window.location.assign(result.redirect);
+        } else { window.location.assign(result.redirect); navigating = true; }
     } catch (error) {
         const fallback = root.querySelector("[data-passkey-fallback]");
         if (fallback) fallback.hidden = false;
@@ -110,6 +111,7 @@ document.addEventListener("click", async event => {
     } finally {
         delete root.dataset.busy;
         root.querySelectorAll("button").forEach(item => item.disabled = false);
+        if (root.closest('#pwa-welcome')) root.dispatchEvent(new CustomEvent('diaperscout:welcome-auth-settled', { bubbles: true, detail: { navigating } }));
     }
 });
 

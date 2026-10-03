@@ -736,6 +736,8 @@ public sealed class CatalogueSubmissionRetailDestination : Entity
     public DateTimeOffset AddedAtUtc { get; private set; }
 }
 
+public enum PlaceCategory { Pharmacy = 1, Supermarket = 2, SpecialistRetailer = 3, GeneralRetailer = 4, ConvenienceStore = 5, Other = 6 }
+
 public sealed class Location : Entity
 {
     private Location() { Name = null!; AddressLine1 = null!; Locality = null!; Postcode = null!; }
@@ -754,8 +756,13 @@ public sealed class Location : Entity
     public Guid? CreatedByUserId { get; private set; }
     public DateTimeOffset? CreatedAtUtc { get; private set; }
     public string? PlaceIdentity { get; private set; }
+    public PlaceCategory? Category { get; private set; }
+    public void SetCategory(PlaceCategory? category) {
+        if (category.HasValue && !Enum.IsDefined(category.Value)) throw new ArgumentException("Choose a supported place type.", nameof(category));
+        Category = category;
+    }
     public static Location PublicShop(Guid author, Guid country, string name, string address, string locality,
-        string postcode, decimal latitude, decimal longitude, string identity)
+        string postcode, decimal latitude, decimal longitude, string identity, PlaceCategory? category = null)
     {
         if (author == Guid.Empty || country == Guid.Empty || latitude is < -90 or > 90 || longitude is < -180 or > 180)
             throw new ArgumentException("A contributor, country and valid shop coordinates are required.");
@@ -764,6 +771,7 @@ public sealed class Location : Entity
             RetailerId = null, IsPublicCommercialPlace = true, CreatedByUserId = author,
             CreatedAtUtc = DateTimeOffset.UtcNow, Latitude = latitude, Longitude = longitude, PlaceIdentity = identity
         };
+        location.SetCategory(category);
         return location;
     }
 }

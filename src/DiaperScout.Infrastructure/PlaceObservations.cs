@@ -9,7 +9,7 @@ using System.Text;
 
 namespace DiaperScout.Infrastructure;
 
-internal sealed class PlaceObservations(DiaperScoutDbContext db) : IPlaceObservations
+internal sealed class PlaceObservations(DiaperScoutDbContext db, IEditorialAuthorisation authorisation) : IPlaceObservations
 {
     private static readonly HashSet<string> Currencies = CultureInfo.GetCultures(CultureTypes.SpecificCultures)
         .Select(c => new RegionInfo(c.Name).ISOCurrencySymbol).ToHashSet(StringComparer.Ordinal);
@@ -21,7 +21,7 @@ internal sealed class PlaceObservations(DiaperScoutDbContext db) : IPlaceObserva
     private IQueryable<PlaceItem> Project(IQueryable<Location> locations) => from l in locations
         join c in db.Countries on l.CountryId equals c.Id
         where l.IsPublicCommercialPlace && l.Latitude != null && l.Longitude != null
-        select new PlaceItem(l.Id, l.Name, l.AddressLine1, l.Locality, l.Postcode, c.IsoCode, l.Latitude!.Value, l.Longitude!.Value);
+        select new PlaceItem(l.Id, l.Name, l.AddressLine1, l.Locality, l.Postcode, c.IsoCode, l.Latitude!.Value, l.Longitude!.Value, l.Category);
 
     public async Task<IReadOnlyList<PlaceItem>> SearchAsync(string? query, CancellationToken ct = default)
     {
@@ -35,6 +35,7 @@ internal sealed class PlaceObservations(DiaperScoutDbContext db) : IPlaceObserva
 
     public async Task<PlaceItem> CreateShopAsync(ExplorerIdentity actor, CreatePublicShopRequest r, CancellationToken ct = default)
     {
+        ValidateCategory(r.Category);
         if (!r.ConfirmPublicShop || !r.ConfirmShopPosition)
             throw Invalid("confirmation", "Confirm this is a public shop and the selected position belongs to that shop, not your home or current location.");
         if (r.Latitude is null or < -90 or > 90 || r.Longitude is null or < -180 or > 180)
@@ -49,7 +50,7 @@ internal sealed class PlaceObservations(DiaperScoutDbContext db) : IPlaceObserva
         var existing = await db.Locations.AsNoTracking().SingleOrDefaultAsync(l => l.PlaceIdentity == identity, ct);
         if (existing is not null) return await Project(QualifyingPlaces.Where(l => l.Id == existing.Id)).SingleAsync(ct);
         var shop = Location.PublicShop(actor.UserId, country.Id, name, address, locality, postcode,
-            decimal.Round(r.Latitude.Value, 6), decimal.Round(r.Longitude.Value, 6), identity);
+            decimal.Round(r.Latitude.Value, 6), decimal.Round(r.Longitude.Value, 6), identity, r.Category);
         db.Locations.Add(shop);
         try { await db.SaveChangesAsync(ct); }
         catch (DbUpdateException e) when (e.InnerException is PostgresException { SqlState: "23505" })
@@ -62,6 +63,18 @@ internal sealed class PlaceObservations(DiaperScoutDbContext db) : IPlaceObserva
         return await Project(QualifyingPlaces.Where(l => l.Id == shop.Id)).SingleAsync(ct);
     }
 
+    public async Task<PlaceItem> UpdateCategoryAsync(AuthenticatedUser actor, Guid id, UpdatePlaceCategoryRequest request, CancellationToken ct = default)
+    {
+        if (!await authorisation.CanManageCatalogueAsync(actor, ct)) throw new UnauthorizedAccessException();
+        ValidateCategory(request.Category);
+        var place = await db.Locations.SingleOrDefaultAsync(l => l.Id == id && l.IsPublicCommercialPlace && l.Latitude != null && l.Longitude != null, ct)
+            ?? throw new KeyNotFoundException();
+        place.SetCategory(request.Category); await db.SaveChangesAsync(ct);
+        return await Project(QualifyingPlaces.Where(l => l.Id == id)).SingleAsync(ct);
+    }
+    private static void ValidateCategory(PlaceCategory? category) {
+        if (category.HasValue && !Enum.IsDefined(category.Value)) throw Invalid("category", "Choose a supported place type or leave it unspecified.");
+    }
     public async Task<ProductIdentification?> PackAsync(Guid id, CancellationToken ct = default)
     {
         var result = await (from p in db.PackTypes.AsNoTracking()

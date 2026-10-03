@@ -16,6 +16,13 @@ public static class PlaceObservationEndpoints
         reads.MapPost("/", async (CreatePublicShopRequest request, ICurrentExplorer current, IPlaceObservations places, CancellationToken ct) =>
             await current.GetAsync(ct) is { } actor ? await Validate(async () => Results.Ok(await places.CreateShopAsync(actor, request, ct))) : Results.Forbid())
             .RequireAuthorization("Explorer").RequireRateLimiting("contributions");
+        reads.MapPost("/{id:guid}/category", async (Guid id, UpdatePlaceCategoryRequest request, ICurrentUser current, IPlaceObservations places, CancellationToken ct) =>
+        {
+            var actor = await current.GetAsync(ct); if (actor is null) return Results.Forbid();
+            try { return await Validate(async () => Results.Ok(await places.UpdateCategoryAsync(actor, id, request, ct))); }
+            catch (UnauthorizedAccessException) { return Results.Forbid(); }
+            catch (KeyNotFoundException) { return Results.NotFound(); }
+        }).RequireAuthorization("PublishAtlas");
         app.MapPost("/api/v1/physical-observations", async (CreatePhysicalObservationRequest request,
             ICurrentExplorer current, IPlaceObservations places, CancellationToken ct) =>
             await current.GetAsync(ct) is { } actor ? await Validate(async () => Results.Ok(await places.ObserveAsync(actor, request, ct))) : Results.Forbid())

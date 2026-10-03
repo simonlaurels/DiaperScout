@@ -133,5 +133,98 @@ public sealed class PlaceObservationApiTests(PostgreSqlFixture fixture) : IClass
         Assert.True(await db.CatalogueAuditRecords.AnyAsync(a=>a.ProductId==fixture.ProductId&&a.CorrelationId==receipt.SubmissionId.ToString()));
         var identified=await actor.GetFromJsonAsync<ProductIdentification>("/api/v1/products/lookup/"+proposal.Gtin);Assert.Equal(resolution.PackTypeId,identified!.PackTypeId);
     }
+    [Fact]
+    public async Task Atlas_requires_actual_exact_pack_evidence_and_preserves_public_state_rules() {
+        using var api = Factory(); using var actor = Actor(api); using var anonymous = api.CreateClient();
+        var pack = await Pack(api);
+        async Task<PlaceItem> AddShop(string name) {
+            var response = await actor.PostAsJsonAsync("/api/v1/places/", Shop(name + Guid.NewGuid().ToString("N")));
+            response.EnsureSuccessStatusCode(); return (await response.Content.ReadFromJsonAsync<PlaceItem>())!;
+        }
+        var candidate = await AddShop("Unobserved pharmacy ");
+        var one = await AddShop("One discovery "); var many = await AddShop("Repeated discovery ");
+        using var scope = api.Services.CreateScope(); var db = scope.ServiceProvider.GetRequiredService<DiaperScoutDbContext>();
+        var expected = new List<Guid>();
+        foreach (var state in Enum.GetValues<ObservationState>()) {
+            var observation = new Observation(fixture.ExplorerUserId, ObservationType.RetailAvailability, DateTimeOffset.UtcNow.AddHours(-1), fixture.ProductId, locationId: many.Id);
+            observation.RecordExactPack(pack, Guid.NewGuid(), null, null);
+            db.Observations.Add(observation); db.Entry(observation).Property(o => o.State).CurrentValue = state;
+            if (state is ObservationState.Submitted or ObservationState.Accepted) expected.Add(observation.Id);
+        }
+        // Submitted observations without an exact pack cannot qualify through the pack join.
+        var inexact = new Observation(fixture.ExplorerUserId, ObservationType.RetailAvailability, DateTimeOffset.UtcNow, fixture.ProductId, locationId: candidate.Id);
+        inexact.Submit(); db.Observations.Add(inexact);
+        var historical = new Product(fixture.ManufacturerId, fixture.BrandId, "Historical Atlas fixture", "historical-atlas-" + Guid.NewGuid().ToString("N"), ProductType.Tape);
+        var variant = new ProductVariant(historical.Id, "Historic variant");
+        var size = new SizeVariant(variant.Id, "Large"); var historicalPack = new PackType(size.Id, 12, PackagingType.Bag);
+        db.Products.Add(historical); db.Entry(historical).Property(p => p.Status).CurrentValue = ProductStatus.Discontinued;
+        db.ProductVariants.Add(variant); db.SizeVariants.Add(size); db.PackTypes.Add(historicalPack);
+        var old = new Observation(fixture.ExplorerUserId, ObservationType.RetailAvailability, DateTimeOffset.UtcNow, historical.Id, locationId: candidate.Id);
+        old.RecordExactPack(historicalPack.Id, Guid.NewGuid(), null, null); old.Submit(); db.Observations.Add(old);
+        var privatePlace = new Observation(fixture.ExplorerUserId, ObservationType.RetailAvailability, DateTimeOffset.UtcNow, fixture.ProductId, locationId: fixture.LocationId);
+        privatePlace.RecordExactPack(pack, Guid.NewGuid(), null, null); privatePlace.Submit(); db.Observations.Add(privatePlace);
+        await db.SaveChangesAsync();
+        var request = new CreatePhysicalObservationRequest(pack, one.Id, DateTimeOffset.UtcNow.AddMinutes(-1), null, null, Guid.NewGuid());
+        (await actor.PostAsJsonAsync("/api/v1/physical-observations", request)).EnsureSuccessStatusCode();
+        var atlas = (await anonymous.GetFromJsonAsync<AtlasPlace[]>("/api/v1/places/atlas"))!;
+        Assert.DoesNotContain(atlas, p => p.Place.Id == candidate.Id || p.Place.Id == fixture.LocationId);
+        Assert.Single(Assert.Single(atlas, p => p.Place.Id == one.Id).Observations);
+        var repeated = Assert.Single(atlas, p => p.Place.Id == many.Id);
+        Assert.Equal(expected.Order(), repeated.Observations.Select(o => o.ObservationId).Order());
+        Assert.Equal(1, repeated.ProductCount); // Distinct exact packs, not observation count.
+    }
+    [Theory]
+    [InlineData(PlaceCategory.Pharmacy)] [InlineData(PlaceCategory.Supermarket)]
+    [InlineData(PlaceCategory.SpecialistRetailer)] [InlineData(PlaceCategory.GeneralRetailer)]
+    [InlineData(PlaceCategory.ConvenienceStore)] [InlineData(PlaceCategory.Other)]
+    public async Task Explicit_categories_survive_creation_search_and_deduplication_without_earning_a_pin(PlaceCategory category) {
+        using var api = Factory(); using var actor = Actor(api); using var anonymous = api.CreateClient();
+        var request = Shop("Category " + Guid.NewGuid().ToString("N")) with { Category = category };
+        var response = await actor.PostAsJsonAsync("/api/v1/places/", request); response.EnsureSuccessStatusCode();
+        var place = (await response.Content.ReadFromJsonAsync<PlaceItem>())!; Assert.Equal(category, place.Category);
+        var retry = await actor.PostAsJsonAsync("/api/v1/places/", request with { Category = null }); retry.EnsureSuccessStatusCode();
+        Assert.Equal(place, await retry.Content.ReadFromJsonAsync<PlaceItem>());
+        var conflicting = await actor.PostAsJsonAsync("/api/v1/places/", request with { Category = category == PlaceCategory.Other ? PlaceCategory.Pharmacy : PlaceCategory.Other });
+        conflicting.EnsureSuccessStatusCode(); Assert.Equal(place, await conflicting.Content.ReadFromJsonAsync<PlaceItem>());
+        Assert.Equal(category, Assert.Single((await anonymous.GetFromJsonAsync<PlaceItem[]>("/api/v1/places/?query=" + request.Name))!).Category);
+        Assert.DoesNotContain((await anonymous.GetFromJsonAsync<AtlasPlace[]>("/api/v1/places/atlas"))!, p => p.Place.Id == place.Id);
+    }
+    [Theory]
+    [InlineData(PostgreSqlFixture.ModeratorSubject)] [InlineData(PostgreSqlFixture.AdministratorSubject)]
+    public async Task Only_privileged_active_users_can_reclassify_or_clear_an_existing_shop_without_changing_evidence(string subject) {
+        using var api = Factory(); using var actor = Actor(api); using var privileged = Actor(api, subject); using var anonymous = api.CreateClient();
+        var created = await actor.PostAsJsonAsync("/api/v1/places/", Shop("Shared category " + Guid.NewGuid().ToString("N")) with { Category = PlaceCategory.Pharmacy });
+        created.EnsureSuccessStatusCode(); var place = (await created.Content.ReadFromJsonAsync<PlaceItem>())!;
+        var observed = await actor.PostAsJsonAsync("/api/v1/physical-observations", new CreatePhysicalObservationRequest(await Pack(api), place.Id, DateTimeOffset.UtcNow.AddMinutes(-1), 18.25m, "GBP", Guid.NewGuid()));
+        observed.EnsureSuccessStatusCode(); var receipt = (await observed.Content.ReadFromJsonAsync<PhysicalObservationReceipt>())!;
+        var path = $"/api/v1/places/{place.Id}/category";
+        Assert.Equal(HttpStatusCode.Unauthorized, (await anonymous.PostAsJsonAsync(path, new UpdatePlaceCategoryRequest(PlaceCategory.Other))).StatusCode);
+        actor.DefaultRequestHeaders.Add("X-Development-Role", "Administrator"); // Role claims cannot bypass saved privilege assignments.
+        Assert.Equal(HttpStatusCode.Forbidden, (await actor.PostAsJsonAsync(path, new UpdatePlaceCategoryRequest(PlaceCategory.Other))).StatusCode);
+        var invalid = await privileged.PostAsJsonAsync(path, new UpdatePlaceCategoryRequest((PlaceCategory)999));
+        Assert.Equal(HttpStatusCode.BadRequest, invalid.StatusCode); Assert.Contains("category", await invalid.Content.ReadAsStringAsync());
+        var changed = await privileged.PostAsJsonAsync(path, new UpdatePlaceCategoryRequest(PlaceCategory.Other)); changed.EnsureSuccessStatusCode();
+        Assert.Equal(place with { Category = PlaceCategory.Other }, await changed.Content.ReadFromJsonAsync<PlaceItem>());
+        var atlas = Assert.Single((await anonymous.GetFromJsonAsync<AtlasPlace[]>("/api/v1/places/atlas"))!, p => p.Place.Id == place.Id);
+        Assert.Equal(PlaceCategory.Other, atlas.Place.Category); Assert.Equal(receipt.Id, Assert.Single(atlas.Observations).ObservationId);
+        Assert.Equal(18.25m, atlas.Observations[0].PriceAmount); Assert.Equal(1, atlas.ProductCount);
+        var cleared = await privileged.PostAsJsonAsync(path, new UpdatePlaceCategoryRequest(null)); cleared.EnsureSuccessStatusCode();
+        Assert.Equal(place with { Category = null }, await cleared.Content.ReadFromJsonAsync<PlaceItem>());
+        Assert.Equal(HttpStatusCode.NotFound, (await privileged.PostAsJsonAsync($"/api/v1/places/{fixture.LocationId}/category", new UpdatePlaceCategoryRequest(PlaceCategory.Other))).StatusCode);
+    }
+    [Fact]
+    public async Task Legacy_json_without_category_remains_valid_and_unsupported_values_are_rejected() {
+        using var api = Factory(); using var actor = Actor(api);
+        var options = new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web);
+        var body = System.Text.Json.JsonSerializer.SerializeToNode(Shop("Legacy category " + Guid.NewGuid().ToString("N")), options)!.AsObject(); body.Remove("category");
+        var response = await actor.PostAsJsonAsync("/api/v1/places/", body); response.EnsureSuccessStatusCode();
+        var place = (await response.Content.ReadFromJsonAsync<PlaceItem>())!; Assert.Null(place.Category);
+        var oldResponse = System.Text.Json.JsonSerializer.SerializeToNode(place, options)!.AsObject(); oldResponse.Remove("category");
+        Assert.Null(System.Text.Json.JsonSerializer.Deserialize<PlaceItem>(oldResponse, options)!.Category);
+        foreach (var value in new[] { 0, -1, 999 }) {
+            var invalid = await actor.PostAsJsonAsync("/api/v1/places/", Shop("Invalid category") with { Category = (PlaceCategory)value });
+            Assert.Equal(HttpStatusCode.BadRequest, invalid.StatusCode); Assert.Contains("category", await invalid.Content.ReadAsStringAsync());
+        }
+    }
     private static PublicProductProposal Proposal() => new("4006381333931","Observed Brand","Observed Product",null,null,null,12,Guid.NewGuid());
 }

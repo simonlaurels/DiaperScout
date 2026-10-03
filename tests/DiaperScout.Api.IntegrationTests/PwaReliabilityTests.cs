@@ -69,14 +69,22 @@ public sealed class PwaReliabilityTests(PostgreSqlFixture fixture) : IClassFixtu
         using var playwright = await Playwright.CreateAsync();
         await using var browser = await playwright.Webkit.LaunchAsync(new() { Headless = true });
         var page = await browser.NewPageAsync();
+        await AtlasBrowserTests.UseTestTiles(page.Context);
         await page.AddInitScriptAsync("Object.defineProperty(navigator,'standalone',{value:true});");
         try
         {
             var navigation = page.GotoAsync(client.BaseAddress!.GetLeftPart(UriPartial.Authority) + path, new() { WaitUntil = WaitUntilState.Commit });
             await entered.Task.WaitAsync(TimeSpan.FromSeconds(10));
             await navigation.WaitAsync(TimeSpan.FromSeconds(10));
-            await Assertions.Expect(page.Locator("#pwa-startup")).ToBeVisibleAsync();
-            await Assertions.Expect(page.Locator("#pwa-startup-title")).ToHaveTextAsync("Preparing your map…");
+            if (path == "/atlas") {
+                // Atlas starts independently of discovery data; the usable map replaces the startup cover.
+                await Assertions.Expect(page.Locator(".place-map[data-map-ready='true']")).ToBeVisibleAsync();
+                await Assertions.Expect(page.Locator(".atlas-status")).ToContainTextAsync("Loading product discoveries");
+                await Assertions.Expect(page.Locator("#pwa-startup")).ToBeHiddenAsync();
+            } else {
+                await Assertions.Expect(page.Locator("#pwa-startup")).ToBeVisibleAsync();
+                await Assertions.Expect(page.Locator("#pwa-startup-title")).ToHaveTextAsync("Preparing your map…");
+            }
             Assert.False(release.Task.IsCompleted);
             release.TrySetResult();
             await page.WaitForFunctionAsync("document.documentElement.dataset.pwaState==='ready'");

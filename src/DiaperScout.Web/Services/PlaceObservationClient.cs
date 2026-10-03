@@ -17,6 +17,7 @@ public sealed class PlaceObservationClient(HttpClient client, AuthenticationStat
         return await response.Content.ReadFromJsonAsync<ProductIdentification>();
     }
     public Task<PlaceItem> CreateShopAsync(CreatePublicShopRequest request) => PostAsync<PlaceItem>("api/v1/places/", request);
+    public Task<PlaceItem> UpdateCategoryAsync(Guid id, UpdatePlaceCategoryRequest request) => PostAsync<PlaceItem>($"api/v1/places/{id}/category", request);
     public Task<PhysicalObservationReceipt> ObserveAsync(CreatePhysicalObservationRequest request) => PostAsync<PhysicalObservationReceipt>("api/v1/physical-observations", request);
     public Task<PublicProductProposalReceipt> ProposeAsync(PublicProductProposal request) => PostAsync<PublicProductProposalReceipt>("api/v1/public-product-proposals", request);
     public async Task ResolveAsync(Guid id, ResolveBarcodeProposal request)

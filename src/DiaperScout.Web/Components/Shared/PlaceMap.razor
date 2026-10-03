@@ -3,11 +3,14 @@
 @implements IAsyncDisposable
 <div class="place-map-shell">
     <div class="place-map" @ref="element" aria-label="@(PickPosition ? "Select the physical shop position on the map" : "Map of reported product observations")"></div>
-    @if (mapError) { <p class="contribution-message" role="status">The map background is unavailable. You can still use the location list or enter the shop coordinates below.</p> }
+    @if (mapError) { <p class="contribution-message" role="status">The map background is unavailable. @(AtlasCanvas ? "You can still browse the discoveries list." : "You can still use the location list or enter the shop coordinates below.")</p> }
     <p class="map-attribution">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> · <a href="https://www.openstreetmap.org/fixthemap" target="_blank" rel="noopener">Report a map issue</a></p>
 </div>
 @code {
     [Parameter] public bool PickPosition { get; set; }
+    [Parameter] public bool AtlasCanvas { get; set; }
+    [Parameter] public Guid? SelectedPlaceId { get; set; }
+    [Parameter] public EventCallback<int> VisiblePlacesChanged { get; set; }
     [Parameter] public IReadOnlyList<AtlasPlace> Places { get; set; } = [];
     [Parameter] public EventCallback<Guid> PlaceSelected { get; set; }
     [Parameter] public EventCallback<PlacePosition> PositionSelected { get; set; }
@@ -15,19 +18,32 @@
     private IJSObjectReference? module;
     private DotNetObjectReference<PlaceMap>? reference;
     private bool mapError, disposed;
+    private IReadOnlyList<AtlasPlace>? renderedPlaces;
+    private Guid? renderedSelection;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender) return;
+        if (!firstRender) {
+            if (!disposed && module is not null && AtlasCanvas && (!ReferenceEquals(renderedPlaces, Places) || renderedSelection != SelectedPlaceId)) {
+                renderedPlaces = Places; renderedSelection = SelectedPlaceId;
+                try { await module.InvokeVoidAsync("update", element, Places, SelectedPlaceId); }
+                catch (JSDisconnectedException) { }
+            }
+            return;
+        }
         try {
             module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Shared/PlaceMap.razor.js");
             reference = DotNetObjectReference.Create(this);
-            await module.InvokeVoidAsync("create", element, reference, PickPosition, Places, Configuration["Maps:TileUrl"] ?? "https://tile.openstreetmap.org/{z}/{x}/{y}.png");
+            await module.InvokeVoidAsync("create", element, reference, PickPosition, Places, Configuration["Maps:TileUrl"] ?? "https://tile.openstreetmap.org/{z}/{x}/{y}.png", AtlasCanvas);
+            if (disposed) { await module.InvokeVoidAsync("destroy", element); return; }
+            renderedPlaces = Places; renderedSelection = SelectedPlaceId;
+            if (AtlasCanvas) await module.InvokeVoidAsync("update", element, Places, SelectedPlaceId);
         }
         catch (Exception e) when (e is JSException or JSDisconnectedException) { if (!disposed) { mapError = true; StateHasChanged(); } }
     }
     [JSInvokable] public Task SelectPlace(string id) => Guid.TryParse(id, out var parsed) ? PlaceSelected.InvokeAsync(parsed) : Task.CompletedTask;
     [JSInvokable] public Task SelectPosition(decimal latitude, decimal longitude) => PositionSelected.InvokeAsync(new(latitude, longitude));
     [JSInvokable] public Task MapUnavailable() { if (!disposed) { mapError = true; StateHasChanged(); } return Task.CompletedTask; }
+    [JSInvokable] public Task ViewportChanged(int count) => disposed ? Task.CompletedTask : VisiblePlacesChanged.InvokeAsync(count);
     public async ValueTask DisposeAsync() {
         disposed = true;
         try { if (module is not null) { await module.InvokeVoidAsync("destroy", element); await module.DisposeAsync(); } }

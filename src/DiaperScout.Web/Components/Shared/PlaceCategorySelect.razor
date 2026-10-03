@@ -1,0 +1,11 @@
+<select id="@Id" value="@(Value.HasValue ? ((int)Value.Value).ToString() : "")" @onchange="Changed" disabled="@Disabled">
+    <option value="">Unspecified</option>
+    @foreach (var category in Enum.GetValues<PlaceCategory>()) { <option value="@((int)category)">@PlaceCategoryPresentation.Label(category)</option> }
+</select>
+@code {
+    [Parameter, EditorRequired] public string Id { get; set; } = "";
+    [Parameter] public PlaceCategory? Value { get; set; }
+    [Parameter] public EventCallback<PlaceCategory?> ValueChanged { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    private Task Changed(ChangeEventArgs e) => ValueChanged.InvokeAsync(int.TryParse(e.Value?.ToString(), out var value) && Enum.IsDefined((PlaceCategory)value) ? (PlaceCategory)value : null);
+}

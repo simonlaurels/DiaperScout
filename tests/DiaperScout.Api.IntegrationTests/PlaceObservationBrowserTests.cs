@@ -49,6 +49,7 @@ public sealed class PlaceObservationBrowserTests(PostgreSqlFixture fixture) : IC
         await Assertions.Expect(page).ToHaveURLAsync(origin+$"/observations/new?packTypeId={packId}");await Ready(page);
         await page.GetByRole(AriaRole.Button,new(){Name="Add a physical shop",Exact=true}).ClickAsync();
         await page.Locator("#shop-name").FillAsync("Browser evidence shop "+width);await page.Locator("#shop-address").FillAsync("1 Browser Street");await page.Locator("#shop-town").FillAsync("Testville");await page.Locator("#shop-postcode").FillAsync("ZZ2 3ZZ");await page.Locator("#shop-country").SelectOptionAsync("ZZ");
+        if (width == 430) await page.Locator("#shop-category").SelectOptionAsync("1");
         await page.Locator("#shop-latitude").FillAsync((width == 390 ? 51 : width == 430 ? 52 : width == 768 ? 53 : 54).ToString());await page.Locator("#shop-longitude").FillAsync("-2.1");
         await page.GetByLabel("This is a public commercial shop, not a home or private place.").CheckAsync();await page.GetByLabel("The position is the shop itself. I understand it will be public.").CheckAsync();
         await page.GetByRole(AriaRole.Button,new(){Name="Use this shop",Exact=true}).ClickAsync();
@@ -57,6 +58,7 @@ public sealed class PlaceObservationBrowserTests(PostgreSqlFixture fixture) : IC
         await Assertions.Expect(page.GetByRole(AriaRole.Heading,new(){Name="Observation saved",Exact=true})).ToBeVisibleAsync();
         await page.GetByRole(AriaRole.Link,new(){Name="View in Atlas",Exact=true}).ClickAsync();await Ready(page);
         await Assertions.Expect(page.Locator("#place-heading")).ToHaveTextAsync("Browser evidence shop "+width);
+        if (width == 430) await Assertions.Expect(page.Locator(".atlas-place-type")).ToHaveTextAsync("Pharmacy");
         var marker=page.Locator($".leaflet-marker-icon[title='Browser evidence shop {width}']");
         await page.Locator(".place-map").EvaluateAsync("element => element.scrollIntoView({block:'center'})");
         await Assertions.Expect(marker).ToBeVisibleAsync();

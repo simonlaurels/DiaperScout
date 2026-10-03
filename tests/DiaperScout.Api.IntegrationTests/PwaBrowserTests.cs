@@ -49,6 +49,7 @@ public sealed class PwaBrowserTests(PostgreSqlFixture fixture) : IClassFixture<P
         using var playwright = await Playwright.CreateAsync();
         await using var browser = await playwright.Chromium.LaunchAsync(new() { Headless = true });
         await using var context = await browser.NewContextAsync(new() { ViewportSize = new() { Width = width, Height = 900 } });
+        await AtlasBrowserTests.UseTestTiles(context);
         var page = await context.NewPageAsync();
         page.PageError += (_, error) => System.Console.WriteLine("PWA browser error: " + error);
         await page.GotoAsync(origin);
@@ -73,7 +74,9 @@ public sealed class PwaBrowserTests(PostgreSqlFixture fixture) : IClassFixture<P
         await Screenshot(page, $"product-{width}");
         Assert.True(await Fits(page), await page.EvaluateAsync<string>("JSON.stringify([...document.querySelectorAll('*')].filter(e=>e.getBoundingClientRect().right>innerWidth+1).map(e=>({tag:e.tagName,class:e.className,width:e.getBoundingClientRect().width})).slice(0,20))"));
         await page.GotoAsync(origin + "/atlas");
-        await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Name = "The first place is waiting.", Exact = true })).ToBeVisibleAsync();
+        await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Name = "Uncharted territory", Exact = true })).ToBeVisibleAsync();
+        await Assertions.Expect(page.Locator(".place-map[data-map-ready='true']")).ToBeVisibleAsync();
+        await Assertions.Expect(page.Locator(".atlas-discovery-marker")).ToHaveCountAsync(0);
         Assert.True(await Fits(page));
         await page.GotoAsync(origin + "/backpack");
         await Assertions.Expect(page.Locator(".pwa-coming-soon")).ToHaveTextAsync("Coming soon");
@@ -93,6 +96,7 @@ public sealed class PwaBrowserTests(PostgreSqlFixture fixture) : IClassFixture<P
         using var playwright = await Playwright.CreateAsync();
         await using var browser = await playwright.Chromium.LaunchAsync(new() { Headless = true });
         await using var context = await browser.NewContextAsync();
+        await AtlasBrowserTests.UseTestTiles(context);
         var page = await context.NewPageAsync();
         page.PageError += (_, error) => System.Console.WriteLine("PWA browser error: " + error);
         await page.GotoAsync(origin + "/products"); await Ready(page);

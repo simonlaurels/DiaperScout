@@ -54,7 +54,7 @@ const bounds = page => page.evaluate(() => [...document.querySelectorAll('.welco
             check(joinCount === 1 && optionsCount === 1, 'No conflicting registration request');
             await page.screenshot({ path: `${out}/join-busy-${name}.png` });
             releaseJoin(); await click; await page.waitForURL('**/join');
-            await page.goBack(); await page.locator('#pwa-welcome').waitFor({ state: 'visible' });
+            await page.goBack(); await page.locator('#pwa-welcome').waitFor({ state: 'visible' });await page.waitForFunction(()=>document.querySelector('.welcome-primary')?.textContent==='Create account' && !document.querySelector('.welcome-primary').hasAttribute('aria-busy'),{},{timeout:10000});
             check(await page.locator('.welcome-primary').innerText() === 'Create account', 'Revisit clears busy state');
             result.createAccount = { immediateFeedback: true, existingDestination: '/join', repeatedActivationPrevented: true, layoutStable: true, revisitReset: true };
             await page.locator('#welcome-continue').click(); await page.locator('#pwa-welcome').waitFor({ state: 'hidden' });

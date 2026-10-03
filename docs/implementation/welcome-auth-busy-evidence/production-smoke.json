@@ -1,0 +1,54 @@
+{
+  "started": "2026-10-03T09:40:01.347Z",
+  "productionAuthWrites": 0,
+  "physicalIphoneProven": false,
+  "sessions": [
+    {
+      "engine": "chromium",
+      "width": 390,
+      "height": 844,
+      "errors": [],
+      "deterministicColdRequest": true,
+      "signin": {
+        "immediateFeedback": true,
+        "repeatedActivationPrevented": true,
+        "errorRestored": true,
+        "existingEmailDestination": "/signin",
+        "layoutStable": true
+      },
+      "createAccount": {
+        "immediateFeedback": true,
+        "existingDestination": "/join",
+        "repeatedActivationPrevented": true,
+        "layoutStable": true,
+        "revisitReset": true
+      },
+      "passed": true,
+      "ended": "2026-10-03T09:40:04.049Z"
+    },
+    {
+      "engine": "webkit",
+      "width": 375,
+      "height": 667,
+      "errors": [],
+      "deterministicColdRequest": true,
+      "signin": {
+        "immediateFeedback": true,
+        "repeatedActivationPrevented": true,
+        "errorRestored": true,
+        "existingEmailDestination": "/signin",
+        "layoutStable": true
+      },
+      "createAccount": {
+        "immediateFeedback": true,
+        "existingDestination": "/join",
+        "repeatedActivationPrevented": true,
+        "layoutStable": true,
+        "revisitReset": true
+      },
+      "passed": true,
+      "ended": "2026-10-03T09:40:07.608Z"
+    }
+  ],
+  "ended": "2026-10-03T09:40:07.637Z"
+}

@@ -1,0 +1,42 @@
+{
+  "started": "2026-10-03T09:37:55.798Z",
+  "productionAuthWrites": 0,
+  "physicalIphoneProven": false,
+  "sessions": [
+    {
+      "engine": "chromium",
+      "width": 390,
+      "height": 844,
+      "errors": [],
+      "deterministicColdRequest": true,
+      "signin": {
+        "immediateFeedback": true,
+        "repeatedActivationPrevented": true,
+        "errorRestored": true,
+        "existingEmailDestination": "/signin",
+        "layoutStable": true
+      },
+      "failure": "Revisit clears busy state",
+      "passed": false,
+      "ended": "2026-10-03T09:38:08.302Z"
+    },
+    {
+      "engine": "webkit",
+      "width": 375,
+      "height": 667,
+      "errors": [],
+      "deterministicColdRequest": true,
+      "signin": {
+        "immediateFeedback": true,
+        "repeatedActivationPrevented": true,
+        "errorRestored": true,
+        "existingEmailDestination": "/signin",
+        "layoutStable": true
+      },
+      "failure": "Revisit clears busy state",
+      "passed": false,
+      "ended": "2026-10-03T09:38:11.814Z"
+    }
+  ],
+  "ended": "2026-10-03T09:38:11.851Z"
+}

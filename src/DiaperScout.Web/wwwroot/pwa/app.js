@@ -40,7 +40,7 @@
         for (const hint of document.querySelectorAll('[data-pwa-ios]'))
             hint.hidden = standalone() || !(/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
         for (const link of document.querySelectorAll('.pwa-mobile-nav a')) {
-            const active = link.pathname === '/' ? location.pathname === '/' : location.pathname.startsWith(link.pathname);
+            const active = link.pathname === '/' ? location.pathname === '/' : link.pathname === '/scan' ? location.pathname.startsWith('/scan') || location.pathname.startsWith('/observations/new') || location.pathname.startsWith('/contribute/product') : location.pathname.startsWith(link.pathname);
             if (active) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');
         }
         for (const details of document.querySelectorAll('.ds-filter-disclosure:not([data-sized])')) {

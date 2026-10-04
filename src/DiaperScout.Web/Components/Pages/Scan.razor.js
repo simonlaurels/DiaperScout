@@ -56,6 +56,7 @@ export function unmount(video) {
     if (video && mountedVideo !== video) return;
     stop(); cleanup?.(); cleanup = undefined; mountedVideo = undefined;
 }
+export function isInstalled() { return navigator.standalone === true || matchMedia('(display-mode: standalone)').matches; }
 export function focusManual() { requestAnimationFrame(() => document.querySelector('#gtin')?.focus()); }
 export function canTorch() { try { return stream?.getVideoTracks()[0]?.getCapabilities?.().torch === true; } catch { return false; } }
 export async function toggleTorch() {

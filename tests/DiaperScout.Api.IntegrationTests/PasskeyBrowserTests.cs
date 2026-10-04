@@ -80,6 +80,23 @@ public sealed class PasskeyBrowserTests(PostgreSqlFixture fixture) : IClassFixtu
             await page.GetByRole(AriaRole.Button,new(){Name="Look up",Exact=true}).ClickAsync();
             await page.GetByRole(AriaRole.Link,new(){Name="Add product",Exact=true}).ClickAsync();
         }
+        if (authenticatedFirst) {
+            await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Name = "Take photos of the pack", Exact = true })).ToBeVisibleAsync();
+            await page.Locator("#proposal-library-photo").SetInputFilesAsync(new FilePayload { Name = "pack.png", MimeType = "image/png", Buffer = Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aN1sAAAAASUVORK5CYII=") });
+            await Assertions.Expect(page.Locator(".proposal-photos img")).ToHaveCountAsync(1);
+            await page.GetByRole(AriaRole.Button, new() { Name = "Continue", Exact = true }).ClickAsync();
+            await page.Locator("#proposal-brand").FillAsync("Passkey regression brand");
+            await page.Locator("#proposal-name").FillAsync("Passkey regression " + user.Id);
+            await page.GetByRole(AriaRole.Button, new() { Name = "Continue", Exact = true }).ClickAsync();
+            await page.GetByRole(AriaRole.Button, new() { Name = "No, this is a new product", Exact = true }).ClickAsync();
+            await page.GetByRole(AriaRole.Button, new() { Name = "Submit for review", Exact = true }).ClickAsync();
+            await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Name = "Product submitted!", Exact = true })).ToBeVisibleAsync();
+            await using var db = fixture.CreateDbContext();
+            var submission = await db.CatalogueSubmissions.SingleAsync(s => s.SubmittedByUserId == user.Id);
+            Assert.Null(submission.PublishedProductId); Assert.Equal("96385074", submission.ProposedGtin);
+            Assert.Single(await db.CatalogueSubmissionImages.Where(i => i.SubmissionId == submission.Id && i.IsExplorerEvidence).ToListAsync());
+            Assert.False(await db.ExplorerProfiles.AnyAsync(p => p.UserId == user.Id));
+        } else {
         await page.Locator("#proposal-brand").FillAsync("Passkey regression brand");
         await page.Locator("#proposal-name").FillAsync("Passkey regression " + user.Id);
         await page.Locator("#proposal-manufacturer").FillAsync("Regression manufacturer");
@@ -125,7 +142,8 @@ public sealed class PasskeyBrowserTests(PostgreSqlFixture fixture) : IClassFixtu
             Assert.Equal(1,await db.CatalogueSubmissions.CountAsync(s=>s.SubmittedByUserId==user.Id));
         }
         Assert.Null(await page.EvaluateAsync<string?>("localStorage.getItem('diaperscout-product-draft:96385074')"));
-        await page.GetByRole(AriaRole.Link, new() { Name = "Passkeys", Exact = true }).ClickAsync();
+        }
+        await page.GotoAsync(origin + "/account/passkeys");
         await Assertions.Expect(page.Locator("[data-passkey-list]")).ToContainTextAsync("Last used");
         await page.SetViewportSizeAsync(390, 844);
         await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Name = "Passkeys", Exact = true })).ToBeVisibleAsync();

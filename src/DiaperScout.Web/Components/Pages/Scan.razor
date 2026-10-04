@@ -62,6 +62,16 @@
         @if (_result is { Status: ProductLookupStatus.Found, Product: { } match })
         {
             <section class="scan-result scan-result-found" aria-live="polite">
+                <div class="scan-mobile-result">
+                    <button type="button" class="scan-back" aria-label="Back to scanner" @onclick="ResetResult">‹</button>
+                    <header><span class="scan-positive" aria-hidden="true">✓</span><div><h1>Barcode recognised</h1><p>We found a match for this product.</p></div></header>
+                    <ScanPackCard Pack="match" />
+                    <a class="scan-action primary" aria-label="Record a discovery" href="@($"/observations/new?packTypeId={match.PackTypeId}")"><PrototypeIcon Name="map-pin" /><span><strong>Record a discovery</strong><small>Found this in a shop? Add it to the Atlas.</small></span><b aria-hidden="true">›</b></a>
+                    <a class="scan-action" aria-label="View product details" href="@(PublicProductIdentity.ProductUrl(match.Product.Slug, match.ProductVariantId) + "&packTypeId=" + match.PackTypeId)"><AppIcon Name="book" /><span><strong>View product details</strong><small>See full details, images and information.</small></span><b aria-hidden="true">›</b></a>
+                    <a class="scan-action" aria-label="Where to buy" href="@($"/products/{match.Product.Slug}/retailers?variantId={match.ProductVariantId}&packTypeId={match.PackTypeId}")"><AppIcon Name="cart" /><span><strong>Where to buy</strong><small>See online retailers and availability reports.</small></span><b aria-hidden="true">›</b></a>
+                    <details class="scan-correction"><summary>Not the right product?</summary><p>Try scanning again or search the catalogue manually.</p><button class="ds-button ds-button-secondary" @onclick="ResetResult">Scan again</button><a href="/products">Search products</a></details>
+                </div>
+                <div class="scan-legacy-result">
                 <p class="scan-result-status">Exact pack found</p>
                 <h2>@match.Product.Name</h2>
                 <dl>
@@ -75,15 +85,18 @@
                     <a class="ds-button ds-button-secondary" href="@($"/observations/new?packTypeId={match.PackTypeId}")">Record where you found it</a>
                 </div>
                 <button type="button" class="ds-button ds-button-secondary" @onclick="ResetResult">Scan another item</button>
+                </div>
             </section>
         }
         else if (_result is { Status: ProductLookupStatus.NotFound, Gtin: { } gtin })
         {
             <section class="scan-result" aria-live="polite">
-                <p class="scan-result-status">A missing barcode</p>
-                <h2>We don’t have this one yet.</h2>
+                <p class="scan-result-status">No match found</p>
+                <h2>@(_installed ? "We don’t recognise this barcode yet." : "We don’t have this one yet.")</h2>
+                <p class="contribution-barcode">@gtin</p>
                 <p>Share what the pack says. Our moderators will check whether it belongs to an existing product or something new.</p>
-                <a class="ds-button ds-button-primary" href="@($"/contribute/product?gtin={Uri.EscapeDataString(gtin)}")">Add product</a>
+                <a class="ds-button ds-button-primary" href="@($"/contribute/product?gtin={Uri.EscapeDataString(gtin)}")">@(_installed ? "Add this product" : "Add product")</a>
+                <a href="/products">Search manually instead</a>
                 <button type="button" class="ds-button ds-button-secondary" @onclick="ResetResult">Scan another item</button>
             </section>
         }
@@ -98,7 +111,7 @@
     private string _gtin = string.Empty;
     private bool _isLookingUp;
     private bool _interactiveReady;
-    private bool _pwa, _manualEntry, _cameraStarting, _captureComplete, _disposed, _torchAvailable, _torchOn, _focusManual;
+    private bool _pwa, _installed, _manualEntry, _cameraStarting, _captureComplete, _disposed, _torchAvailable, _torchOn, _focusManual;
     private int _cameraGeneration;
     private bool CaptureStage => !_manualEntry && !_captureComplete && _result is null;
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -109,6 +122,7 @@
             _scannerModule = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Scan.razor.js");
             _scannerReference = DotNetObjectReference.Create(this);
             _pwa = await _scannerModule.InvokeAsync<bool>("mount", _cameraPreview, _scannerReference);
+            _installed = await _scannerModule.InvokeAsync<bool>("isInstalled");
         }
         catch (JSException) { _manualEntry = true; _scanMessage = "Camera tools couldn’t load. Enter the barcode number or reload to try again."; }
         _interactiveReady = true;

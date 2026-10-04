@@ -773,7 +773,7 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db, IEditorialAuth
         Validate(command);
 
         await using var transaction =
-            await db.Database.BeginTransactionAsync(cancellationToken);
+            db.Database.CurrentTransaction is null ? await db.Database.BeginTransactionAsync(cancellationToken) : null;
 
         var manufacturerExists = await db.Manufacturers.AnyAsync(
             manufacturer => manufacturer.Id == command.ManufacturerId,
@@ -911,7 +911,7 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db, IEditorialAuth
 
         db.CatalogueAuditRecords.Add(audit);
         await db.SaveChangesAsync(cancellationToken);
-        await transaction.CommitAsync(cancellationToken);
+        if (transaction is not null) await transaction.CommitAsync(cancellationToken);
 
         var firstVariantId = createdVariantIds[0];
         var firstSizeId = await db.SizeVariants

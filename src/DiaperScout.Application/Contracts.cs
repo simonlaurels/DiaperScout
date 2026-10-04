@@ -951,7 +951,10 @@ public sealed record CatalogueSubmissionReceipt(
     DateTimeOffset CreatedAtUtc,
     DateTimeOffset UpdatedAtUtc,
     int? ProposedPackQuantity = null,
-    Guid? ResolvedPackTypeId = null);
+    Guid? ResolvedPackTypeId = null,
+    Guid? SuggestedExistingProductId = null,
+    PendingPhysicalDiscovery? PendingDiscovery = null,
+    Guid? ResultingObservationId = null);
 
 public sealed record UpdateCatalogueSubmissionIdentity(
     string? ProposedGtin,

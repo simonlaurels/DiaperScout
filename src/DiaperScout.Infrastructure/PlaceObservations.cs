@@ -33,6 +33,25 @@ internal sealed class PlaceObservations(DiaperScoutDbContext db, IEditorialAutho
         return await Project(q.OrderBy(l => l.Name).ThenBy(l => l.Id).Take(50)).ToListAsync(ct);
     }
 
+    public async Task<IReadOnlyList<NearbyPlace>> NearbyAsync(NearbyPlaceRequest r, CancellationToken ct = default)
+    {
+        if (r.Latitude is < -90 or > 90 || r.Longitude is < -180 or > 180) throw Invalid("position", "Choose a valid location for nearby shop search.");
+        var lat = r.Latitude; var lon = r.Longitude;
+        var cos = (decimal)Math.Max(.000001, Math.Cos((double)lat * Math.PI / 180));
+        var span = .18m / cos; var min = lon - span; var max = lon + span;
+        var q = QualifyingPlaces.Where(l => l.Latitude >= lat - .18m && l.Latitude <= lat + .18m);
+        if (span >= 180) { /* At the poles the search circle can span every longitude. */ }
+        else if (min < -180) q = q.Where(l => l.Longitude >= min + 360 || l.Longitude <= max);
+        else if (max > 180) q = q.Where(l => l.Longitude >= min || l.Longitude <= max - 360);
+        else q = q.Where(l => l.Longitude >= min && l.Longitude <= max);
+        var candidates = await Project(q.OrderBy(l => (l.Latitude - lat) * (l.Latitude - lat) +
+            Math.Min(Math.Abs(l.Longitude!.Value - lon), 360 - Math.Abs(l.Longitude.Value - lon)) *
+            Math.Min(Math.Abs(l.Longitude.Value - lon), 360 - Math.Abs(l.Longitude.Value - lon)) * cos * cos).Take(100)).ToListAsync(ct);
+        return candidates.Select(p => { var dlat = (double)(p.Latitude - lat) * Math.PI / 180; var dlon = (double)(p.Longitude - lon) * Math.PI / 180;
+            var a = Math.Pow(Math.Sin(dlat / 2), 2) + Math.Cos((double)lat * Math.PI / 180) * Math.Cos((double)p.Latitude * Math.PI / 180) * Math.Pow(Math.Sin(dlon / 2), 2);
+            return new NearbyPlace(p, 6371000 * 2 * Math.Asin(Math.Sqrt(Math.Clamp(a, 0, 1)))); }).Where(p => p.DistanceMetres <= 20000).OrderBy(p => p.DistanceMetres).ThenBy(p => p.Place.Id).Take(50).ToArray();
+    }
+
     public async Task<PlaceItem> CreateShopAsync(ExplorerIdentity actor, CreatePublicShopRequest r, CancellationToken ct = default)
     {
         ValidateCategory(r.Category);

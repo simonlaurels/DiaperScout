@@ -4,6 +4,8 @@ namespace DiaperScout.Application;
 public sealed record PlaceItem(Guid Id, string Name, string AddressLine1, string Locality, string Postcode,
     string CountryCode, decimal Latitude, decimal Longitude, PlaceCategory? Category = null);
 public sealed record PlaceCountry(string Code, string Name);
+public sealed record NearbyPlaceRequest(decimal Latitude, decimal Longitude);
+public sealed record NearbyPlace(PlaceItem Place, double DistanceMetres);
 public sealed record CreatePublicShopRequest(string Name, string AddressLine1, string Locality, string Postcode,
     string CountryCode, decimal? Latitude, decimal? Longitude, bool ConfirmPublicShop, bool ConfirmShopPosition, PlaceCategory? Category = null);
 public sealed record UpdatePlaceCategoryRequest(PlaceCategory? Category);
@@ -19,6 +21,7 @@ public interface IPlaceObservations
 {
     Task<IReadOnlyList<PlaceCountry>> CountriesAsync(CancellationToken ct = default);
     Task<IReadOnlyList<PlaceItem>> SearchAsync(string? query, CancellationToken ct = default);
+    Task<IReadOnlyList<NearbyPlace>> NearbyAsync(NearbyPlaceRequest request, CancellationToken ct = default);
     Task<PlaceItem> CreateShopAsync(ExplorerIdentity actor, CreatePublicShopRequest request, CancellationToken ct = default);
     Task<PlaceItem> UpdateCategoryAsync(AuthenticatedUser actor, Guid id, UpdatePlaceCategoryRequest request, CancellationToken ct = default);
     Task<PhysicalObservationReceipt> ObserveAsync(ExplorerIdentity actor, CreatePhysicalObservationRequest request, CancellationToken ct = default);

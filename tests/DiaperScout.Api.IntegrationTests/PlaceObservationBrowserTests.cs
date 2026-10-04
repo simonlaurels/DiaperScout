@@ -39,11 +39,11 @@ public sealed class PlaceObservationBrowserTests(PostgreSqlFixture fixture) : IC
         await context.RouteAsync("https://tile.openstreetmap.org/**",route=>route.FulfillAsync(new(){Status=200,ContentType="image/png",BodyBytes=Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=")}));
         var page=await context.NewPageAsync();await page.GotoAsync(origin+"/scan");await Ready(page);
         await EnterManual(page);await page.Locator("#gtin").FillAsync("4006381333931");await page.GetByRole(AriaRole.Button,new(){Name="Look up",Exact=true}).ClickAsync();
-        await Assertions.Expect(page.GetByRole(AriaRole.Link,new(){Name="View product",Exact=true})).ToHaveAttributeAsync("href",$"/products/integration-test-product?variantId={(await api.CreateClient().GetFromJsonAsync<ProductIdentification>("/api/v1/products/lookup/4006381333931"))!.ProductVariantId}&packTypeId={packId}");
-        await page.GetByRole(AriaRole.Link,new(){Name="View product",Exact=true}).ClickAsync();await Ready(page);
+        await Assertions.Expect(page.GetByRole(AriaRole.Link,new(){Name="View product details",Exact=true})).ToHaveAttributeAsync("href",$"/products/integration-test-product?variantId={(await api.CreateClient().GetFromJsonAsync<ProductIdentification>("/api/v1/products/lookup/4006381333931"))!.ProductVariantId}&packTypeId={packId}");
+        await page.GetByRole(AriaRole.Link,new(){Name="View product details",Exact=true}).ClickAsync();await Ready(page);
         await Assertions.Expect(page.GetByRole(AriaRole.Combobox,new(){Name="Pack size",Exact=true})).ToHaveValueAsync(packId.ToString());
         await page.GotoAsync(origin+"/scan");await Ready(page);await EnterManual(page);await page.Locator("#gtin").FillAsync("4006381333931");await page.GetByRole(AriaRole.Button,new(){Name="Look up",Exact=true}).ClickAsync();
-        await page.GetByRole(AriaRole.Link,new(){Name="Record where you found it",Exact=true}).ClickAsync();await Ready(page);
+        await page.GetByRole(AriaRole.Link,new(){Name="Record a discovery",Exact=true}).ClickAsync();await Ready(page);
         await page.GetByRole(AriaRole.Link,new(){Name="Sign in and continue",Exact=true}).ClickAsync();
         await page.GetByRole(AriaRole.Link,new(){Name="Sign in as development moderator",Exact=true}).ClickAsync();
         await Assertions.Expect(page).ToHaveURLAsync(origin+$"/observations/new?packTypeId={packId}");await Ready(page);
@@ -53,9 +53,10 @@ public sealed class PlaceObservationBrowserTests(PostgreSqlFixture fixture) : IC
         await page.Locator("#shop-latitude").FillAsync((width == 390 ? 51 : width == 430 ? 52 : width == 768 ? 53 : 54).ToString());await page.Locator("#shop-longitude").FillAsync("-2.1");
         await page.GetByLabel("This is a public commercial shop, not a home or private place.").CheckAsync();await page.GetByLabel("The position is the shop itself. I understand it will be public.").CheckAsync();
         await page.GetByRole(AriaRole.Button,new(){Name="Use this shop",Exact=true}).ClickAsync();
+        await page.GetByRole(AriaRole.Button,new(){Name="Continue",Exact=true}).ClickAsync();
         await page.Locator("#observed-price").FillAsync("18.25");await page.Locator("#observed-currency").FillAsync("GBP");
-        await page.GetByRole(AriaRole.Button,new(){Name="Save observation",Exact=true}).ClickAsync();
-        await Assertions.Expect(page.GetByRole(AriaRole.Heading,new(){Name="Observation saved",Exact=true})).ToBeVisibleAsync();
+        await page.GetByRole(AriaRole.Button,new(){Name="Review discovery",Exact=true}).ClickAsync();await page.GetByRole(AriaRole.Button,new(){Name="Record discovery",Exact=true}).ClickAsync();
+        await Assertions.Expect(page.GetByRole(AriaRole.Heading,new(){Name="Discovery recorded!",Exact=true})).ToBeVisibleAsync();
         await page.GetByRole(AriaRole.Link,new(){Name="View in Atlas",Exact=true}).ClickAsync();await Ready(page);
         await Assertions.Expect(page.Locator("#place-heading")).ToHaveTextAsync("Browser evidence shop "+width);
         if (width == 430) await Assertions.Expect(page.Locator(".atlas-place-type")).ToHaveTextAsync("Pharmacy");

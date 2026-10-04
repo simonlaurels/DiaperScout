@@ -45,6 +45,8 @@
         {
             <p class="submission-help">Contributor’s proposed pack quantity: @proposedQuantity</p>
         }
+        @if (submission?.SuggestedExistingProductId is { } suggestedProduct) { <p class="submission-help">Explorer’s suggested existing product: @suggestedProduct. This is an unverified moderation hint; the barcode has not been attached.</p> }
+        @if (submission?.PendingDiscovery is { } discovery) { <p class="submission-help">Private pending shop evidence: location @discovery.LocationId, @discovery.ObservedAtUtc.ToString("u"), @(discovery.PriceAmount.HasValue ? $"{discovery.PriceAmount:0.00} {discovery.CurrencyCode}" : "no shelf price"). Publishing or resolving the verified exact pack reconciles this evidence into one observation. Rejection creates no observation.</p> }
         @if (submission?.ProposedGtin is not null && submission.Status is CatalogueSubmissionStatus.Approved or CatalogueSubmissionStatus.ReadyForReview)
         {
             <ResolveBarcodeToPack SubmissionId="submission.Id" Status="submission.Status" Resolved="OnParametersSetAsync" />

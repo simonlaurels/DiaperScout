@@ -10,7 +10,8 @@ internal sealed class CatalogueSubmissions(
     DiaperScoutDbContext db,
     IEditorialAuthorisation editorialAuthorisation,
     ICanonicalCatalogue canonicalCatalogue,
-    ICatalogueSubmissionImageStorage imageStorage) : ICatalogueSubmissions
+    ICatalogueSubmissionImageStorage imageStorage,
+    IPublicProductContributions publicContributions) : ICatalogueSubmissions
 {
     public async Task<IReadOnlyList<CatalogueSubmissionQueueItem>> GetSubmissionsAsync(
         AuthenticatedUser actor,
@@ -1769,6 +1770,9 @@ internal sealed class CatalogueSubmissions(
     {
         await RequireModeratorAsync(actor, cancellationToken);
 
+        await using var publicationTransaction = await db.Database.BeginTransactionAsync(cancellationToken);
+        await db.Database.ExecuteSqlInterpolatedAsync($"SELECT pg_advisory_xact_lock(hashtextextended({submissionId.ToString()}, 0))", cancellationToken);
+
         var submission = await GetSubmissionAsync(
             submissionId,
             cancellationToken);
@@ -1959,7 +1963,7 @@ internal sealed class CatalogueSubmissions(
             cancellationToken);
 
         var submissionImages = await db.CatalogueSubmissionImages
-            .Where(value => value.SubmissionId == submission.Id && value.ProductId == null)
+            .Where(value => value.SubmissionId == submission.Id && value.ProductId == null && !value.IsExplorerEvidence)
             .ToListAsync(cancellationToken);
 
         foreach (var image in submissionImages)
@@ -1968,8 +1972,19 @@ internal sealed class CatalogueSubmissions(
         submission.Publish(
             canonicalReceipt.ProductId);
 
+        if (submission.PendingLocationId.HasValue) {
+            var barcode = submission.ProposedGtin?.TrimStart('0');
+            var exactPacks = await (from i in db.ProductIdentifiers join p in db.PackTypes on i.PackTypeId equals p.Id
+                join s in db.SizeVariants on p.SizeVariantId equals s.Id join v in db.ProductVariants on s.ProductVariantId equals v.Id
+                where v.ProductId == canonicalReceipt.ProductId && i.Type == IdentifierType.Gtin && i.Value.TrimStart('0') == barcode select p.Id).Distinct().ToListAsync(cancellationToken);
+            if (exactPacks.Count != 1) throw new CatalogueValidationException("gtin", "The proposal barcode must identify one verified exact pack before its pending discovery can be reconciled.");
+            await publicContributions.ReconcileAsync(submission.Id, exactPacks[0], cancellationToken);
+        }
+
         await db.SaveChangesAsync(
             cancellationToken);
+
+        await publicationTransaction.CommitAsync(cancellationToken);
 
         return new CataloguePublicationReceipt(
             submission.Id,
@@ -2378,7 +2393,10 @@ internal sealed class CatalogueSubmissions(
             submission.CreatedAtUtc,
             submission.UpdatedAtUtc,
             submission.ProposedPackQuantity,
-            submission.ResolvedPackTypeId);
+            submission.ResolvedPackTypeId,
+            submission.SuggestedExistingProductId,
+            submission.PendingLocationId.HasValue && submission.PendingObservedAtUtc.HasValue ? new PendingPhysicalDiscovery(submission.PendingLocationId.Value, submission.PendingObservedAtUtc.Value, submission.PendingPriceAmount, submission.PendingCurrencyCode) : null,
+            submission.ResultingObservationId);
 
     private static string GetEditorialOutcomeFieldName(
         string? parameterName)

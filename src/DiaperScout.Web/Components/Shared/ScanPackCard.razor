@@ -1,0 +1,29 @@
+@inject ProductCatalogueClient Catalogue
+<section class="scan-pack-card">
+    <div class="scan-pack-image">
+        @if (image is not null) { <img src="@image" alt="@Pack.Product.Name packaging" /> }
+        else { <AppIcon Name="scan" /><span>Pack image unavailable</span> }
+    </div>
+    <div class="scan-pack-copy"><p class="scan-pack-brand">@details?.BrandName</p><h2>@(details?.Name ?? Pack.Product.Name)</h2>
+        <strong>@Pack.ManufacturerSize · @Pack.QuantityPerPack pack</strong>
+        @if (!string.IsNullOrWhiteSpace(details?.Description)) { <p>@details.Description</p> }
+        <dl><div><dt>Manufacturer</dt><dd>@(details?.ManufacturerName ?? "Not supplied")</dd></div>
+            <div><dt>Product type</dt><dd>@ProductTypeLabel</dd></div>
+            @if (!string.IsNullOrWhiteSpace(Pack.VariantName)) { <div><dt>Variant</dt><dd>@Pack.VariantName</dd></div> }
+            <div><dt>Size</dt><dd>@Pack.ManufacturerSize</dd></div><div><dt>Pack size</dt><dd>@Pack.QuantityPerPack pack</dd></div></dl>
+    </div>
+</section>
+@code {
+    [Parameter, EditorRequired] public ProductIdentification Pack { get; set; } = default!;
+    private CatalogueProductDetails? details;
+    private string? image;
+    private string ProductTypeLabel => Pack.Product.ProductType switch {
+        ProductType.Tape => "Diapers", ProductType.PullUp => "Pull-ups", ProductType.AllInOne => "All-in-One",
+        ProductType.Booster => "Boosters", ProductType.Pad => "Pads", _ => Pack.Product.ProductType.ToString()
+    };
+    protected override async Task OnParametersSetAsync() {
+        try { details = (await Catalogue.GetAsync(Pack.Product.Slug, variantId: Pack.ProductVariantId, packTypeId: Pack.PackTypeId)).Product;
+            image = (details?.Images.FirstOrDefault(i => i.IsPrimary) ?? details?.Images.FirstOrDefault())?.ContentUrl;
+        } catch (Exception e) when (e is HttpRequestException or TaskCanceledException) { details = null; image = null; }
+    }
+}

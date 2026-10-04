@@ -157,6 +157,7 @@ app.UseRateLimiter();
 app.UseAntiforgery();
 app.MapPasskeyWebEndpoints();
 app.MapBackpackAccountWebEndpoints();
+app.MapProposalEvidenceWebEndpoints();
 
 app.MapGet(
     "/catalogue/import-template",

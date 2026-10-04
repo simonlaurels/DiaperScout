@@ -1,12 +1,45 @@
 using DiaperScout.Application;
+using DiaperScout.Domain;
 using System.Net;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Components.Forms;
 namespace DiaperScout.Web.Services;
 public sealed class PlaceObservationClient(HttpClient client, AuthenticationStateProvider authentication)
 {
     public Task<IReadOnlyList<PlaceCountry>> CountriesAsync() => ReadAsync<PlaceCountry>("api/v1/places/countries");
     public Task<IReadOnlyList<PlaceItem>> SearchAsync(string? query) => ReadAsync<PlaceItem>("api/v1/places/?query=" + Uri.EscapeDataString(query ?? ""));
+    public async Task<IReadOnlyList<NearbyPlace>> NearbyAsync(NearbyPlaceRequest request) {
+        using var response = await client.PostAsJsonAsync("api/v1/places/nearby", request); await CheckAsync(response);
+        return await response.Content.ReadFromJsonAsync<NearbyPlace[]>() ?? [];
+    }
+    public Task<PublicProductProposalReceipt> BeginProposalAsync(string gtin, Guid contributionId) => PostAsync<PublicProductProposalReceipt>("api/v1/public-product-proposals/draft", new {gtin, contributionId});
+    public async Task AttachDiscoveryAsync(Guid id, PendingPhysicalDiscovery request) {
+        using var message = await CreatePostAsync($"api/v1/public-product-proposals/{id}/discovery", request);
+        using var response = await client.SendAsync(message); await CheckAsync(response);
+    }
+    private async Task<HttpResponseMessage> PrivateGetAsync(string path) {
+        using var message = new HttpRequestMessage(HttpMethod.Get, path);
+        message.Options.Set(ProductionIdentityForwardingHandler.ContributionUser, (await authentication.GetAuthenticationStateAsync()).User);
+        var response = await client.SendAsync(message);
+        try { await CheckAsync(response); return response; }
+        catch { response.Dispose(); throw; }
+    }
+    public async Task<PublicProposalIdentity?> ProposalIdentityAsync(Guid id) {
+        using var response = await PrivateGetAsync($"api/v1/public-product-proposals/{id}"); return await response.Content.ReadFromJsonAsync<PublicProposalIdentity>();
+    }
+    public async Task<IReadOnlyList<CatalogueSubmissionImageReceipt>> ProposalImagesAsync(Guid id) {
+        using var response = await PrivateGetAsync($"api/v1/public-product-proposals/{id}/images"); return await response.Content.ReadFromJsonAsync<CatalogueSubmissionImageReceipt[]>() ?? [];
+    }
+    public async Task<CatalogueSubmissionImageReceipt> UploadProposalImageAsync(Guid id, Guid uploadId, CatalogueSubmissionImageRole role, IBrowserFile file) {
+        using var message = new HttpRequestMessage(HttpMethod.Post, $"api/v1/public-product-proposals/{id}/images");
+        message.Options.Set(ProductionIdentityForwardingHandler.ContributionUser, (await authentication.GetAuthenticationStateAsync()).User);
+        using var form = new MultipartFormDataContent(); await using var stream = file.OpenReadStream(15 * 1024 * 1024);
+        var content = new StreamContent(stream); content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+        form.Add(content, "file", Path.GetFileName(file.Name)); form.Add(new StringContent(role.ToString()), "role"); form.Add(new StringContent(uploadId.ToString()), "uploadId"); message.Content = form;
+        using var response = await client.SendAsync(message); await CheckAsync(response);
+        return await response.Content.ReadFromJsonAsync<CatalogueSubmissionImageReceipt>() ?? throw new ContributionException("The photograph could not be confirmed. Retry before continuing.");
+    }
     public Task<IReadOnlyList<AtlasPlace>> AtlasAsync() => ReadAsync<AtlasPlace>("api/v1/places/atlas");
     private async Task<IReadOnlyList<T>> ReadAsync<T>(string path) => await client.GetFromJsonAsync<T[]>(path) ?? [];
     public async Task<ProductIdentification?> PackAsync(Guid id)

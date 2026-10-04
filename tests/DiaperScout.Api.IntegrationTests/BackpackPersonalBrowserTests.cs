@@ -41,6 +41,10 @@ public sealed class BackpackPersonalBrowserTests(PostgreSqlFixture fixture) : IC
         await Assertions.Expect(page.Locator("[data-personal-content]")).Not.ToContainTextAsync("Foreign recovery");
         await Assertions.Expect(page.Locator("[data-personal-content]")).Not.ToContainTextAsync("Expired recovery");
         await page.Locator(".backpack-personal-item a").ClickAsync();
+        await Assertions.Expect(page.GetByRole(AriaRole.Heading,new(){Name="Take photos of the pack",Exact=true})).ToBeVisibleAsync();
+        await page.Locator("#proposal-library-photo").SetInputFilesAsync(new FilePayload {Name="pack.png",MimeType="image/png",Buffer=Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aN1sAAAAASUVORK5CYII=")});
+        await Assertions.Expect(page.Locator(".proposal-photos img")).ToHaveCountAsync(1);
+        await page.GetByRole(AriaRole.Button,new(){Name="Continue",Exact=true}).ClickAsync();
         await Assertions.Expect(page.Locator("#proposal-name")).ToHaveValueAsync("Owned recovery draft");
         await page.GotoAsync(client.BaseAddress+"backpack/discoveries");
         await Assertions.Expect(page.Locator("[data-personal-content]")).ToContainTextAsync("Personal test shop");

@@ -310,6 +310,13 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
 
         modelBuilder.Entity<CatalogueSubmission>().HasIndex(x => new { x.SubmittedByUserId, x.PublicContributionId }).IsUnique();
         modelBuilder.Entity<CatalogueSubmission>().HasOne<PackType>().WithMany().HasForeignKey(x => x.ResolvedPackTypeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<CatalogueSubmission>().HasOne<Product>().WithMany().HasForeignKey(x => x.SuggestedExistingProductId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<CatalogueSubmission>().HasOne<Location>().WithMany().HasForeignKey(x => x.PendingLocationId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<CatalogueSubmission>().HasOne<Observation>().WithMany().HasForeignKey(x => x.ResultingObservationId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<CatalogueSubmission>().Property(x => x.PendingPriceAmount).HasPrecision(12, 2);
+        modelBuilder.Entity<CatalogueSubmission>().Property(x => x.PendingCurrencyCode).HasMaxLength(3);
+        modelBuilder.Entity<CatalogueSubmissionImage>().HasIndex(x => new { x.SubmissionId, x.EvidenceUploadId }).IsUnique();
+        modelBuilder.Entity<CatalogueSubmissionImage>().Property(x => x.EvidenceContentHash).HasMaxLength(64);
         modelBuilder.Entity<Location>(entity =>
         {
             entity.ToTable("locations");

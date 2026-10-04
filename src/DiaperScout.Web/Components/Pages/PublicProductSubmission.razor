@@ -6,6 +6,8 @@
 @inject NavigationManager Navigation
 @implements IAsyncDisposable
 <PageTitle>Add a missing product · DiaperScout</PageTitle>
+@if (pwa && validGtin is not null) { <ExplorerProductFlow Gtin="@validGtin" /> }
+else {
 <main class="contribution-page">
     <header><p class="catalogue-kicker">Help fill a gap</p><h1>Add a missing product</h1><p>Tell us what the pack says. Moderators will check whether this barcode belongs to an existing product or a new one.</p></header>
     @if (validGtin is null) { <p role="alert">This barcode is not valid. Return to Scan and check the number.</p><a href="/scan">Back to Scan</a> }
@@ -42,12 +44,13 @@
         <p class="contribution-help">Only enter information from this pack. You can cancel without submitting.</p><a href="/scan">Cancel and return to Scan</a>
     }
 </main>
+}
 @code {
     [SupplyParameterFromQuery(Name="gtin")] public string? Gtin { get; set; }
     private string? validGtin, error, draftOwner;
     private ProposalForm form = new();
     private int step = 1;
-    private bool authenticated, busy, interactiveReady;
+    private bool authenticated, busy, interactiveReady, pwa;
     private PublicProductProposalReceipt? receipt;
     private IJSObjectReference? module;
     private string SignInUrl => "/signin?returnUrl=" + Uri.EscapeDataString("/contribute/product?gtin=" + validGtin);
@@ -61,6 +64,8 @@
         if (!firstRender || validGtin is null) return;
         try {
             module = await JS.InvokeAsync<IJSObjectReference>("import", "/js/contribution-draft.js");
+            pwa = await module.InvokeAsync<bool>("isInstalled");
+            if (pwa) { interactiveReady = true; StateHasChanged(); return; }
             var restored = await module.InvokeAsync<ProposalForm?>("loadDraft", validGtin, draftOwner);
             if (restored is not null && restored.ContributionId != Guid.Empty) { form = restored; step = await module.InvokeAsync<int>("draftStep", validGtin); await PersistDraftAsync(); }
         }

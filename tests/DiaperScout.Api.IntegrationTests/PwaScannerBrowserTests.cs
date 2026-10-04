@@ -53,6 +53,7 @@ public sealed class PwaScannerBrowserTests(PostgreSqlFixture fixture) : IClassFi
         var nav = page.Locator(".pwa-mobile-nav");
         await Assertions.Expect(nav).ToBeVisibleAsync();
         await Assertions.Expect(nav.Locator("a[href='/scan']")).ToHaveAttributeAsync("aria-current", "page");
+        await page.EvaluateAsync("async () => { await document.fonts.ready; }");
         var navigation = await nav.BoundingBoxAsync();
         var video = await page.Locator("video").BoundingBoxAsync();
         Assert.NotNull(navigation); Assert.NotNull(video);
@@ -68,13 +69,13 @@ public sealed class PwaScannerBrowserTests(PostgreSqlFixture fixture) : IClassFi
         await page.WaitForFunctionAsync("() => camera.lights.includes(true)");
         await CaptureAsync(page, $"scanner-ready-{width}.png");
         await page.EvaluateAsync("camera.code='96385074';");
-        await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Name = "We don’t have this one yet." })).ToBeVisibleAsync();
+        await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Name = "We don’t recognise this barcode yet." })).ToBeVisibleAsync();
         await Assertions.Expect(page.Locator(".scan-page")).ToHaveAttributeAsync("data-capture", "false");
         await page.WaitForFunctionAsync("() => camera.active===0 && camera.stops===1");
         await Assertions.Expect(nav).ToHaveCSSAsync("height", $"{navigation.Height}px");
-        await Assertions.Expect(page.GetByRole(AriaRole.Link, new() { Name = "Add product", Exact = true })).ToHaveAttributeAsync("href", "/contribute/product?gtin=96385074");
-        await page.GetByRole(AriaRole.Link, new() { Name = "Add product", Exact = true }).ClickAsync();
-        await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Name = "Add a Missing Product" })).ToBeVisibleAsync();
+        await Assertions.Expect(page.GetByRole(AriaRole.Link, new() { Name = "Add this product", Exact = true })).ToHaveAttributeAsync("href", "/contribute/product?gtin=96385074");
+        await page.GetByRole(AriaRole.Link, new() { Name = "Add this product", Exact = true }).ClickAsync();
+        await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Name = "Take photos of the pack" })).ToBeVisibleAsync();
         await Assertions.Expect(page.Locator(".scanner-overlay")).ToHaveCountAsync(0);
         Assert.Equal(1, await page.EvaluateAsync<int>("camera.maxActive"));
         Assert.Empty(errors);
@@ -105,7 +106,7 @@ public sealed class PwaScannerBrowserTests(PostgreSqlFixture fixture) : IClassFi
         Assert.Equal(0, await page.EvaluateAsync<int>("camera.active"));
         await page.Locator("#gtin").FillAsync("96385074");
         await page.GetByRole(AriaRole.Button, new() { Name = "Look up", Exact = true }).ClickAsync();
-        await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Name = "We don’t have this one yet." })).ToBeVisibleAsync();
+        await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Name = "We don’t recognise this barcode yet." })).ToBeVisibleAsync();
     }
 
     [Fact]
@@ -141,12 +142,12 @@ public sealed class PwaScannerBrowserTests(PostgreSqlFixture fixture) : IClassFi
         await page.WaitForFunctionAsync("() => camera.requests===3 && camera.active===1");
         await page.EvaluateAsync("camera.code='036000291452';");
         await Assertions.Expect(page.Locator(".scan-result-found")).ToContainTextAsync("Exact pack found");
-        var href = await page.GetByRole(AriaRole.Link, new() { Name = "View product", Exact = true }).GetAttributeAsync("href");
+        var href = await page.GetByRole(AriaRole.Link, new() { Name = "View product details", Exact = true }).GetAttributeAsync("href");
         Assert.Contains("variantId=", href); Assert.Contains("packTypeId=", href);
         await page.WaitForFunctionAsync("() => camera.active===0");
         Assert.Equal(1, await page.EvaluateAsync<int>("camera.maxActive"));
         await page.EvaluateAsync("camera.code=null;");
-        await page.GetByRole(AriaRole.Button, new() { Name = "Scan another item" }).ClickAsync();
+        await page.GetByRole(AriaRole.Button, new() { Name = "Back to scanner" }).ClickAsync();
         await page.WaitForFunctionAsync("() => camera.requests===4 && camera.active===1");
         await page.Locator(".pwa-mobile-nav a[href='/']").ClickAsync();
         await page.WaitForFunctionAsync("() => camera.active===0");
@@ -253,8 +254,8 @@ public sealed class PwaScannerBrowserTests(PostgreSqlFixture fixture) : IClassFi
             await context.AddInitScriptAsync("Object.defineProperty(navigator,'standalone',{value:true});delete window.BarcodeDetector;window.scannerTracks=[];window.cameraRequests=0;const get=navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);navigator.mediaDevices.getUserMedia=async c=>{cameraRequests++;const stream=await get(c);scannerTracks.push(...stream.getTracks());return stream;};");
             var page = await context.NewPageAsync();
             await page.GotoAsync(client.BaseAddress!.GetLeftPart(UriPartial.Authority) + "/scan");
-            await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Name = "We don’t have this one yet." })).ToBeVisibleAsync(new() { Timeout = 15000 });
-            await Assertions.Expect(page.GetByRole(AriaRole.Link, new() { Name = "Add product", Exact = true })).ToHaveAttributeAsync("href", "/contribute/product?gtin=96385074");
+            await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Name = "We don’t recognise this barcode yet." })).ToBeVisibleAsync(new() { Timeout = 15000 });
+            await Assertions.Expect(page.GetByRole(AriaRole.Link, new() { Name = "Add this product", Exact = true })).ToHaveAttributeAsync("href", "/contribute/product?gtin=96385074");
             await page.WaitForFunctionAsync("() => scannerTracks.length===1 && scannerTracks.every(t=>t.readyState==='ended')");
             Assert.Equal(1, await page.EvaluateAsync<int>("cameraRequests"));
             await Assertions.Expect(page.Locator(".scan-page")).ToHaveAttributeAsync("data-capture", "false");

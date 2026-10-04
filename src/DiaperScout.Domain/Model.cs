@@ -1112,6 +1112,10 @@ public sealed class CatalogueSubmissionImage : Entity
 
     public Guid SubmissionId { get; private set; }
     public Guid? ProductId { get; private set; }
+    public bool IsExplorerEvidence { get; private set; }
+    public Guid? EvidenceUploadId { get; private set; }
+    public string? EvidenceContentHash { get; private set; }
+    public void MarkExplorerEvidence(Guid uploadId, string contentHash) { IsExplorerEvidence = true; EvidenceUploadId = uploadId; EvidenceContentHash = contentHash; }
     public CatalogueSubmissionImageRole Role { get; private set; }
     public string StorageKey { get; private set; }
     public string OriginalFileName { get; private set; }
@@ -1719,6 +1723,40 @@ public sealed class CatalogueSubmission : Entity
     public Guid? PublishedProductId { get; private set; }
     public Guid? ResolvedPackTypeId { get; private set; }
     public Guid? PublicContributionId { get; private set; }
+    public Guid? SuggestedExistingProductId { get; private set; }
+    public void UpdateProductType(ProductType? productType)
+    {
+        if (Status != CatalogueSubmissionStatus.Draft || (productType.HasValue && !Enum.IsDefined(productType.Value)))
+            throw new InvalidOperationException("Set a valid proposed product type while preparing the draft.");
+        ProposedProductType = productType; Touch();
+    }
+    public Guid? PendingLocationId { get; private set; }
+    public DateTimeOffset? PendingObservedAtUtc { get; private set; }
+    public decimal? PendingPriceAmount { get; private set; }
+    public string? PendingCurrencyCode { get; private set; }
+    public Guid? ResultingObservationId { get; private set; }
+    public void AttachPendingDiscovery(Guid locationId, DateTimeOffset observedAt, decimal? price, string? currency)
+    {
+        if (Source != CatalogueSubmissionSource.Explorer || PublicContributionId is null || Status is CatalogueSubmissionStatus.Published or CatalogueSubmissionStatus.Rejected || PendingLocationId.HasValue)
+            throw new InvalidOperationException("Add pending discovery evidence once, before the proposal has been resolved or rejected.");
+        PendingLocationId = locationId; PendingObservedAtUtc = observedAt; PendingPriceAmount = price;
+        PendingCurrencyCode = price.HasValue ? currency : null; Touch();
+    }
+    public void SetExplorerEvidence(Guid? suggestedProductId, Guid? locationId, DateTimeOffset? observedAt, decimal? price, string? currency)
+    {
+        if (Source != CatalogueSubmissionSource.Explorer || Status != CatalogueSubmissionStatus.Draft)
+            throw new InvalidOperationException("Only an Explorer proposal draft can change its proposed evidence.");
+        SuggestedExistingProductId = suggestedProductId; PendingLocationId = locationId;
+        PendingObservedAtUtc = observedAt; PendingPriceAmount = price;
+        PendingCurrencyCode = price.HasValue ? currency : null; Touch();
+    }
+    public void LinkResolvedDiscovery(Guid packId, Guid observationId)
+    {
+        if (Status != CatalogueSubmissionStatus.Published || packId == Guid.Empty || observationId == Guid.Empty ||
+            (ResultingObservationId.HasValue && (ResultingObservationId != observationId || ResolvedPackTypeId != packId)))
+            throw new InvalidOperationException("Discovery reconciliation requires the published exact pack and a stable observation.");
+        ResolvedPackTypeId = packId; ResultingObservationId = observationId; Touch();
+    }
     public int? ProposedPackQuantity { get; private set; }
     public void SetPublicContribution(Guid contributionId)
     {

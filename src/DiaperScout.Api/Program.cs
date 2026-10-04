@@ -64,6 +64,7 @@ var app = builder.Build();
 app.MapRetailListingEndpoints();
 app.MapCommercePluginEndpoints();
 app.MapPlaceObservationEndpoints();
+app.MapBackpackAccountEndpoints();
 
 if (app.Environment.IsDevelopment() &&
     builder.Configuration.GetValue<bool>("DevelopmentCatalogue:Enabled"))

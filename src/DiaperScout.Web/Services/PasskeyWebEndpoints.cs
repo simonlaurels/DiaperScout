@@ -28,6 +28,15 @@ public static class PasskeyWebEndpoints
 
     public static void MapPasskeyWebEndpoints(this WebApplication app)
     {
+        app.MapGet("/backpack/identity", async (HttpContext context, IHttpClientFactory clients, CancellationToken ct) =>
+        {
+            context.Response.Headers.CacheControl = "no-store";
+            using var response = await clients.CreateClient("PasskeyApi").GetAsync("/api/v1/me/explorer", ct);
+            if (response.StatusCode == System.Net.HttpStatusCode.Forbidden) return Results.Ok(new { displayName = (string?)null });
+            if (!response.IsSuccessStatusCode) return Results.StatusCode(503);
+            var identity = await response.Content.ReadFromJsonAsync<ExplorerIdentity>(ct);
+            return Results.Ok(new { displayName = identity?.DisplayName });
+        }).RequireAuthorization();
         var login = app.MapGroup("/signin/passkey").AllowAnonymous().RequireRateLimiting("passkeys").AddEndpointFilter<PasskeyRequestFilter>();
         login.MapPost("/options", (HttpContext context, IHttpClientFactory clients, CancellationToken ct) =>
             Begin(context, clients, false, ct));

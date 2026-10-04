@@ -34,6 +34,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRetailerDiscovery, RetailerDiscovery>();
         services.AddScoped<IObservationSubmissions, ObservationSubmissions>();
         services.AddScoped<IPlaceObservations, PlaceObservations>();
+        services.AddScoped<IBackpackAccount, BackpackAccount>();
         services.AddScoped<IPublicProductContributions, PublicProductContributions>();
         services.AddScoped<ICatalogueSubmissions, CatalogueSubmissions>();
         services.AddSingleton<ICatalogueSubmissionImageStorage, CatalogueSubmissionImageStorage>();

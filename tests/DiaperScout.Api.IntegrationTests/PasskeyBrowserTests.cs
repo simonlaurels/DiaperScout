@@ -128,7 +128,7 @@ public sealed class PasskeyBrowserTests(PostgreSqlFixture fixture) : IClassFixtu
         await page.GetByRole(AriaRole.Link, new() { Name = "Passkeys", Exact = true }).ClickAsync();
         await Assertions.Expect(page.Locator("[data-passkey-list]")).ToContainTextAsync("Last used");
         await page.SetViewportSizeAsync(390, 844);
-        await Assertions.Expect(page.GetByRole(AriaRole.Link, new() { Name = "Passkeys", Exact = true })).ToBeVisibleAsync();
+        await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Name = "Passkeys", Exact = true })).ToBeVisibleAsync();
         Assert.True(await page.EvaluateAsync<bool>("document.documentElement.scrollWidth <= window.innerWidth"), "Passkey management should fit a mobile viewport.");
         var artifactDirectory = Environment.GetEnvironmentVariable("DIAPERSCOUT_TEST_ARTIFACTS");
         if (!string.IsNullOrWhiteSpace(artifactDirectory))

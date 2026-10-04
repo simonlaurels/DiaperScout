@@ -38,6 +38,11 @@ async function loadPasskeys(root) {
     const list = root.querySelector("[data-passkey-list]");
     const passkeys = await request(root, "/account/passkeys/list", undefined, "GET");
     list.replaceChildren();
+    if (root.hasAttribute('data-backpack-account')) {
+        const {renderBackpackPasskeys} = await import('./backpack.js');
+        renderBackpackPasskeys(list, passkeys ?? []);
+        return;
+    }
     if (!passkeys?.length) { list.textContent = "You haven’t added a passkey yet."; return; }
     for (const passkey of passkeys) {
         const row = document.createElement("div");
@@ -117,6 +122,7 @@ document.addEventListener("click", async event => {
 
 function initialise() {
     document.querySelectorAll("[data-passkey-signin], [data-passkey-account]").forEach(root => {
+        if (root.hasAttribute('data-backpack-account') && !(matchMedia('(display-mode: standalone)').matches || navigator.standalone === true)) return;
         // Enhanced navigation can preserve this root while replacing its list with SSR
         // markup. Rehydrate that list even when the root was initialised previously.
         const resetList = root.querySelector("[data-passkey-list]")?.textContent.trim() === "Loading your passkeys…";

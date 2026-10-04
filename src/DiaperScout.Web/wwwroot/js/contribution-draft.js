@@ -3,8 +3,31 @@ export function localNow() {const date=new Date();date.setMinutes(date.getMinute
 export function toUtc(value) {const date=new Date(value);return Number.isNaN(date.getTime())?'':date.toISOString();}
 // No authentication material is stored. Keep the stable contribution ID for retry deduplication.
 export function saveDraft(gtin, draft, owner=null, step=3) {
+    try { if(localStorage.getItem('ds-keep-product-drafts-v1')==='no')return false; } catch {}
     try {localStorage.setItem(prefix+gtin,JSON.stringify({expires:Date.now()+30*60*1000,draft,owner,step}));return true;}
     catch {return false;}
+}
+// Enumerate the same recovery copies without extending expiry or exposing another owner's draft.
+export async function listOwnedDrafts(ownerTag) {
+    const keys=new Set();
+    for(const storage of [localStorage,sessionStorage]) {
+        for(let i=0;i<storage.length;i++){const key=storage.key(i);if(key?.startsWith(prefix))keys.add(key);}
+    }
+    const results=[];
+    for(const key of keys) {
+        try {
+            const item=JSON.parse(localStorage.getItem(key)||sessionStorage.getItem(key)||'null');
+            const gtin=key.slice(prefix.length);
+            if(!item || !Number.isFinite(item.expires) || item.expires<=Date.now() || !/^(?:\d{8}|\d{12,14})$/.test(gtin) || !item.draft?.contributionId)continue;
+            if(item.owner){
+                const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(item.owner));
+                const tag=Array.from(new Uint8Array(hash),n=>n.toString(16).padStart(2,'0')).join('').toUpperCase();
+                if(tag!==ownerTag)continue;
+            }
+            results.push({gtin,name:item.draft.productName || 'Unfinished product',brand:item.draft.brandName || '',expires:item.expires});
+        } catch { /* A damaged entry must not hide the other recovery copies. */ }
+    }
+    return results.sort((a,b)=>b.expires-a.expires);
 }
 export function loadDraft(gtin, owner=null) {
     try {

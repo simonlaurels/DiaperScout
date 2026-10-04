@@ -1981,6 +1981,12 @@ public sealed class ExplorerProfile : Entity
 {
     private ExplorerProfile() { DisplayName = null!; }
     public ExplorerProfile(Guid userId, string displayName) { UserId = userId; DisplayName = displayName; }
+    public void Rename(string displayName)
+    {
+        if (string.IsNullOrWhiteSpace(displayName) || displayName.Trim().Length > 100)
+            throw new ArgumentException("Enter an Explorer name of 1 to 100 characters.", nameof(displayName));
+        DisplayName = displayName.Trim();
+    }
     public Guid UserId { get; private set; }
     public string DisplayName { get; private set; }
     public Backpack? Backpack { get; private set; }

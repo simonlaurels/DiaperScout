@@ -68,4 +68,4 @@ Availability choices are deliberately omitted per approval. Nearby results use k
 
 ## 16. Decisions/next actions
 
-All required material domain/privacy decisions were resolved by the approval document. No further approval is needed for this repository implementation. This task has not committed, pushed, migrated production or deployed; those are separate next actions.
+All required material domain/privacy decisions were resolved by the approval document. The user subsequently authorised commit and deployment. Implementation commit `3fd804d0d762a6e7a1186fe418dc343841036d76` was pushed to `fix/product-submission-recovery` and deployed on 4 October 2026. See [production deployment evidence](scan-discovery-evidence/deployment.md).

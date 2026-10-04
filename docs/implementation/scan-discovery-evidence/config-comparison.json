@@ -1,0 +1,26 @@
+[
+  {
+    "resource": "api",
+    "identityPreserved": true,
+    "configurationPreserved": true,
+    "templatePreserved": true,
+    "environmentPreserved": true,
+    "workloadProfilePreserved": true
+  },
+  {
+    "resource": "web",
+    "identityPreserved": true,
+    "configurationPreserved": true,
+    "templatePreserved": true,
+    "environmentPreserved": true,
+    "workloadProfilePreserved": true
+  },
+  {
+    "resource": "job",
+    "identityPreserved": true,
+    "configurationPreserved": true,
+    "templatePreserved": true,
+    "environmentPreserved": true,
+    "workloadProfilePreserved": true
+  }
+]

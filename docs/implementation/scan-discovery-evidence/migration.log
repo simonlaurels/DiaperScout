@@ -1,0 +1,7 @@
+2026-10-04T10:19:06.59480  Connecting to the container 'ds-bootstrap-admin'...
+2026-10-04T10:19:06.69548  Successfully Connected to container: 'ds-bootstrap-admin' [Execution: 'ds-bootstrap-admin-33laro0', Replica: 'ds-bootstrap-admin-33laro0-rvkw8']
+2026-10-04T10:18:55.6144545Z stderr F Cannot load library libgssapi_krb5.so.2 
+2026-10-04T10:18:55.6144911Z stderr F Error: libgssapi_krb5.so.2: cannot open shared object file: No such file or directory
+2026-10-04T10:18:56.2000404Z stdout F Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2026-10-04T10:18:56.2105131Z stdout F Applying migration '20261004085541_ExplorerProposalEvidence'.
+2026-10-04T10:18:56.3484549Z stdout F Done.

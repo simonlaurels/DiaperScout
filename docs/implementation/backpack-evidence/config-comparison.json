@@ -1,0 +1,25 @@
+{
+  "applicationImageOnly": true,
+  "apps": {
+    "api": {
+      "afterImage": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-api@sha256:766c7d588508da19b8fb5812c97812e00a6cfed25999cefac610a35dd4c94abb",
+      "latestRevision": "diaperscout-api-vnet--backpack-a7dfaf8",
+      "checks": {
+        "identity": true,
+        "configuration": true,
+        "templateExceptImageAndRevisionSuffix": true
+      },
+      "beforeImage": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-api@sha256:9ae4cd9a89cadfa619375f98e5c9470461178afaf6c137d544b35c7ba12c16e1"
+    },
+    "web": {
+      "afterImage": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-web@sha256:4b93b157cea80b2f22b125909c68d0b1e3bbcc4c920aa58bd9bf0199ee017261",
+      "latestRevision": "diaperscout-web-vnet--backpack-aecf707",
+      "checks": {
+        "identity": true,
+        "templateExceptImageAndRevisionSuffix": true,
+        "configuration": true
+      },
+      "beforeImage": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-web@sha256:b15219705e5f84a986d156538f8c79eb76dadfc340b3a49e3c396e0bb1f883ca"
+    }
+  }
+}

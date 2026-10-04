@@ -67,7 +67,7 @@ html[data-standalone=true] .backpack-page {
 .backpack-encouragement h2 { font: 700 17px var(--font-body); margin: 0 0 5px; }
 .backpack-encouragement p { font-size: 13px; line-height: 1.5; margin: 0; }
 .backpack-encouragement a { min-height: 44px; display: flex; align-items: center; font-weight: 600; font-size: 14px; }
-.backpack-page:has(.backpack-guest) { padding-top: calc(env(safe-area-inset-top) + 155px); }
+html[data-standalone=true] .backpack-page:has(.backpack-guest) { padding-top: calc(env(safe-area-inset-top) + 155px); }
 .backpack-guest { background: #f5efdf; padding: 22px; border: 1px dashed #c9b899; border-radius: 20px; }
 .backpack-guest > svg { width: 60px; height: 60px; }
 .backpack-guest h2 { font: 700 23px var(--font-body); }

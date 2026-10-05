@@ -4,23 +4,23 @@
 @implements IAsyncDisposable
 
 <section class="explore-page pwa-explore" aria-label="Explore DiaperScout">
-    <header class="explore-intro">
-        <div class="explore-paper"><h1><AppIcon />Explore</h1><p>Discover what’s new<br />and what’s happening<br />around you.</p></div>
-        <img src="/pwa/guide-map.webp" alt="" width="210" height="210" />
-    </header>
+    <header class="explore-heading"><h1>Explore</h1></header>
+    <div class="explore-intro">
+        <img src="/pwa/explore-products-v1.webp" alt="The Guide discovering an absorbent-product pack, with her plush Fox tucked in her backpack." width="1200" height="400" fetchpriority="high" />
+    </div>
     <section class="explore-panel" aria-labelledby="explore-new-heading">
-        <div class="explore-panel-heading"><h2 id="explore-new-heading"><span class="explore-star" aria-hidden="true">★</span>New to DiaperScout</h2><a href="/products">View all <PrototypeIcon Name="chevron-right" /></a></div>
+        <div class="explore-panel-heading"><h2 id="explore-new-heading"><span class="explore-star" aria-hidden="true">★</span>New to DiaperScout</h2><a href="/products?sort=newest">View all <PrototypeIcon Name="chevron-right" /></a></div>
         <p class="explore-description">Recently added to the catalogue.</p>
         @if (loadingProducts) { <p class="explore-message" role="status">Finding what’s new…</p> }
         else if (productError) { <div class="explore-message" role="status"><p>New arrivals are out of reach for a moment.</p><button @onclick="LoadProductsAsync">Try again</button></div> }
-        else if (products.Count == 0) { <p class="explore-message">Fresh discoveries will appear here as the catalogue grows. <a href="/products">Explore the catalogue</a>.</p> }
+        else if (products.Count == 0) { <p class="explore-message">Fresh discoveries will appear here as the catalogue grows. <a href="/products?sort=newest">Explore the catalogue</a>.</p> }
         else {
             <div class="explore-product-scroll" tabindex="0" aria-label="Recently added catalogue products">
                 @foreach (var product in products) {
                     <a class="explore-product" href="@($"/products/{Uri.EscapeDataString(product.Slug)}?variantId={product.ProductVariantId}")">
                         <div class="explore-product-image">
-                            @if (product.ImageUrl is not null) { <img src="@product.ImageUrl" alt="" width="160" height="160" loading="lazy" /> }
-                            else { <span class="explore-image-placeholder"><PrototypeIcon Name="store" /><small>Image to come</small></span> }
+                            @if (product.ImageUrl is not null) { <img src="@product.ImageUrl" alt="" width="160" height="160" loading="lazy" @onerror="() => failedImages.Add(product.ImageUrl)" hidden="@failedImages.Contains(product.ImageUrl)" /> }
+                            @if (product.ImageUrl is null || failedImages.Contains(product.ImageUrl)) { <span class="explore-image-placeholder"><PrototypeIcon Name="store" /><small>Image to come</small></span> }
                         </div>
                         <strong>@product.Name</strong><span>@(product.BrandName ?? product.ManufacturerName)<PrototypeIcon Name="chevron-right" /></span>
                     </a>
@@ -55,6 +55,7 @@
 </section>
 @code {
     private IReadOnlyList<RecentCatalogueProduct> products = [];
+    private readonly HashSet<string> failedImages = [];
     private IReadOnlyList<ExploreDiscovery> discoveries = [];
     private ExplorePosition? position;
     private IJSObjectReference? module;

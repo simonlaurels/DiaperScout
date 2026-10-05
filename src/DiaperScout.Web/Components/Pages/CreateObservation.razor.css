@@ -8,3 +8,5 @@
 .discovery-review {border:1px solid #e4d9c7;border-radius:1rem;padding:1rem;background:#fffdf6;}
 .discovery-flow input {max-width:100%;box-sizing:border-box;}
 .discovery-flow .contribution-actions {display:flex;flex-direction:column;gap:.65rem;}
+
+.discovery-flow .contribution-actions .ds-button {flex:0 0 auto;min-height:48px;}

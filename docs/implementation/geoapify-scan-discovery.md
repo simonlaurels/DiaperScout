@@ -1,6 +1,6 @@
 # Geoapify Scan / Record a Discovery implementation
 
-Work in progress, 5 October 2026. No production release is claimed by this document until explicit deployment evidence is appended.
+Implementation and production release record, 5 October 2026. Final deployment evidence is linked below.
 
 Starting checkout: `/Users/sporter/Documents/Projects/DS`, branch `fix/product-submission-recovery`, HEAD `1bf717d099de160c98d784e0b78af1c9eff07583`. HTTPS read verified the branch matches GitHub; `main` is an older ancestor. Original untracked Google assessment/ADR preserved and ADR updated under this task. No unfinished importer work was present or included.
 
@@ -20,10 +20,34 @@ Five single-category queries with limit 20 (five provider requests per search, n
 
 Public licensed-place export at `/places/open-data` contains only sourced snapshots attached to qualifying public observations. Accounts, product data, observation details and pending private evidence are excluded. OSM/Geoapify attribution and ODbL source links appear alongside Atlas/picker. See ADR-0012 for boundary and rollback policy.
 
-## Validation status
+## Automated and live integration validation
 
-Initial API/Web compilation passed. Targeted original observation/native/proposal tests and five provider mapping/selection tests passed before the expanded provider-selected fixture run. Further automated/browser/live validation is in progress; no final success claim yet.
+The full serialized suite passed **389/389**: 64 domain and 325 integration/browser, no failures or skips. The initial concurrent suite had six browser hydration/navigation timeouts; assertions were preserved and the complete serialized rerun passed. Subsequent checks passed: 26 provider/browser tests; four final snapshot-history/mobile checks; two action-spacing checks; nine permanent-attribution/observation browser checks. These are overlapping verification runs, not extra unique test counts. Release build: zero warnings/errors. [Summary](geoapify-discovery-evidence/test-summary.json).
 
-A direct integration-protocol check of the implemented POST/header shape succeeded for all five categories around the public Yate reference: HTTP 200, respectively 3, 2, 1, 5 and 20 results, all reported OSM source. This validates the protocol, not production UI or current retail identity.
+Coverage includes individual queries, source-identity deduplication, distinct neighbours, unsupported/malformed records, safe provider failure/cancellation, expired/forged selections, read-only nearby search, immutable historical snapshots when a provider place moves, unpublished snapshot export exclusion, existing native places/admin management, authenticated observation/retry/optional price/immediate Atlas, denied-location UX, camera/manual capture and unknown evidence/moderation/approval/merge/rejection/idempotence. Existing auth/catalogue/Atlas tests remain intact.
 
-Rollback: restore prior API/Web image revisions; retain added schema/data and existing secrets. Do not drop snapshots or alter networking, TLS, identity, affinity or Data Protection settings.
+A protocol check of POST/header requests succeeded for all five categories around public Yate coordinates. A second bounded integration check ran the actual committed mapper/selection code: **30 mapped candidates**, five requests, **2,105 ms**, ODbL provenance and all signed selections verified. Neither check wrote database data or used a private device position. This was implementation validation, not another provider benchmark. [Evidence](geoapify-discovery-evidence/live-client-validation.json).
+
+## Release and production
+
+Implementation commit `f5ae02e`; compact mobile completion correction `6307fdc`; permanent Atlas attribution correction `abbb333`. Built from immutable archives of those commits. API/migration use `f5ae02e`; final Web uses `abbb333`. ACR builds: API `db2h`, migrations `db2j`, final Web `db2p`, temporary read-only verification `db2m`. An earlier Web build `db2k` was superseded; the spacing-only deployment `db2n` was superseded by the permanent-attribution correction.
+
+Only application image/revision updates and API-only Geoapify secret/reference were added. Public Web/internal API, existing credentials, identity, networking, Npgsql VerifyFull, shared Web Data Protection, sticky affinity, resources and scaling were preserved. No provider key enters Web configuration. [Configuration comparison](geoapify-discovery-evidence/configuration-comparison.json) and [revision health](geoapify-discovery-evidence/revision-health.json) confirm preservation and healthy, provisioned revisions: API `diaperscout-api-vnet--geo-f5ae02e`, Web `diaperscout-web-vnet--geo-abbb333`, both receiving latest-revision traffic. [Image digests](geoapify-discovery-evidence/images.json).
+
+Migration execution `ds-bootstrap-admin-hmcvphz` succeeded at 15:55:00–15:55:34 UTC. Logs show only `20261005150341_ProviderPlaceSnapshots` applied and `Done.`. One nullable JSONB column was added; no historical Location or Observation was rewritten. The execution override preserved the persistent job configuration. [Migration](geoapify-discovery-evidence/migration-summary.log), [job preservation](geoapify-discovery-evidence/job-preservation.json).
+
+Read-only execution `ds-bootstrap-admin-f2uicl5` succeeded at 15:56:49–15:57:24 UTC: fresh authenticated connection, **VerifyFull**, **TLS 1.3**, new migration confirmed, initially zero provider snapshots. [Database evidence](geoapify-discovery-evidence/database-verification.log). Catalogue/product requests after API restart also exercise the new API's database path.
+
+Simon confirmed on his physical iPhone that the production nearby-shop list works. This verifies the authenticated production provider route/configuration. No production observation, product proposal, photo upload or account was fabricated by automated smoke checks. Native camera permission behaviour, native passkey prompts, a genuine final observation submission and real unknown-product moderation remain separate human acceptance checks; automated isolated tests cover their application semantics.
+
+Screenshot review caught stretched completion buttons and corrected them before final acceptance. The first live smoke caught provider attribution incorrectly limited to the map-error paragraph; the final Web correction moves it to the permanent footer and nine browser tests verify its visibility. These findings are retained rather than treating the initial checks as clean. [Known success](geoapify-discovery-evidence/discovery-success-430.png), [private product evidence success](geoapify-discovery-evidence/proposal-success-430.png), [review](geoapify-discovery-evidence/discovery-review-430.png).
+
+Final read-only [production checks](geoapify-discovery-evidence/production-smoke.json): **21 passed** across Chromium 390×844 and WebKit 430×844, including public catalogue/product access, Atlas/attribution, sign-in and Backpack, manual unknown-barcode/photo-entry, licensed-place export and exact artwork hashes. No browser errors or horizontal overflow were observed. Production Atlas returned an empty discovery set during automated checks; existing native/history compatibility was verified in isolated tests rather than claiming real historical pins were observed. [Sampled logs](geoapify-discovery-evidence/log-summary.json) contained zero detected DNS/TLS/database failures.
+
+Commits are local; HTTPS push lacks credentials and SSH needs Simon’s passphrase. GitHub still pointed to starting HEAD at final verification. No source or deployment change was withheld because of that independent GitHub-authentication limitation. The working tree contains only the earlier untracked Google assessment material after the evidence commit; it was preserved and excluded from release.
+
+## Limits and rollback
+
+Geoapify/OSM can miss specialist shops and retain stale POIs, including the corrected historical Bush Healthcare Yate record. The bounded nearby list is not exhaustive; availability claims are dated Explorer evidence, not guaranteed inventory. An outage blocks choosing new places, while historical Atlas and catalogue views remain stored-data backed. Five category requests are a deliberate low-usage trade-off; monitor credits before increasing request volume.
+
+Rollback restores prior API/Web image revisions recorded in [rollback images](geoapify-discovery-evidence/rollback-images.json); retain the additive snapshot column/data and secret. Do not run Down, remove historical snapshots, change networking/TLS or alter authentication/affinity/Data Protection to roll back this application release.

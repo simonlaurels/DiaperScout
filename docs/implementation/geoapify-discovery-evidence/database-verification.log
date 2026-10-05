@@ -1,0 +1,3 @@
+2026-10-05T15:57:14.5644753Z stdout F {"verifyFull":true,"ssl":true,"tls":"TLSv1.3","freshConnection":true,"readOnly":true}
+2026-10-05T15:57:14.5739449Z stdout F Latest migration: 20261005150341_ProviderPlaceSnapshots
+2026-10-05T15:57:14.5799910Z stdout F Provider snapshots: 0

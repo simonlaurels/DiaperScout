@@ -1,0 +1,6 @@
+{
+  "api": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-api@sha256:c4a99c82d7bb6f053171419e0bf5706e40a27c376b78ca5614c008ce2093aa66",
+  "web": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-web@sha256:dc7a80cbbd8f7650d825ea7d4bd361875608a765062d16ed1d99f8e7374edb87",
+  "migrations": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-migrations@sha256:89091e560be95e1329748496d3d301fd61748ebb5128ef60ea42278149cae62e",
+  "verification": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-verification@sha256:e892f152acb190bba4b23381a5f02d19489e9cbf37523a941d098f6053bb93fe"
+}

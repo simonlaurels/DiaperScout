@@ -5,16 +5,17 @@
 @inject NavigationManager Navigation
 <PageTitle>Create your Explorer ID · DiaperScout</PageTitle>
 <section class="explorer-card" data-onboarding-public>
-    <a class="explorer-back" href="@(Details ? "/join" : "/")">‹ Back</a>
+    <a class="explorer-back" href="@(Waiting ? "/join/details" : Details ? "/join" : "/")">‹ Back</a>
     @if (Waiting)
     {
-        <span class="explorer-seal" aria-hidden="true">✉</span>
+        <p class="explorer-kicker">YOUR EXPLORER ID · VERIFY YOUR EMAIL</p>
         <h1>Check your email</h1>
         <p>We sent a secure sign-in link to <strong data-onboarding-email>your email address</strong>.</p>
-        <p>Open it to confirm this email belongs to you. The link brings you back here to finish your Explorer ID.</p>
-        <p class="explorer-note">It expires in 15 minutes and works once. If you opened it in your browser, finish there; your account will also work in the installed app.</p>
+        <img class="explorer-scene explorer-scene-email" src="/images/onboarding/email.webp" width="768" height="512" alt="The Guide sends your verification letter from a woodland postbox, with her stuffed Fox tucked into her Backpack." />
+        <p class="explorer-note">Open the email and tap the link to confirm this email belongs to you.</p>
+        <p class="explorer-note">The link works once and expires in 15 minutes. It may open in your browser; finish there and your account will also work in the installed app.</p>
         <AntiforgeryToken />
-        <button class="ds-button ds-button-primary" type="button" data-onboarding-resend>Send again</button>
+        <button class="explorer-secondary" type="button" data-onboarding-resend>Send again</button>
         <a class="explorer-secondary" href="/join/details">Use a different email</a>
         <a class="explorer-secondary" href="/join/continue" data-enhance-nav="false">I’ve verified my email</a>
         <p class="explorer-message" role="status" aria-live="polite" data-onboarding-message></p>
@@ -24,26 +25,27 @@
     {
         <p class="explorer-kicker">YOUR EXPLORER ID</p>
         <h1>Tell us about you</h1>
-        <p>Just a name or nickname and your email. No password needed.</p>
+        <p>A few details to prepare your Explorer ID. No password needed.</p>
         <form class="explorer-form" method="post" action="/join/request" data-onboarding-form data-enhance="false">
             <AntiforgeryToken />
             <label for="displayName">Name or nickname <span aria-hidden="true">*</span></label>
             <input id="displayName" name="displayName" type="text" autocomplete="nickname" required maxlength="100" aria-describedby="name-help" />
-            <small id="name-help">This is how DiaperScout will know you. You can change it later.</small>
+            <small id="name-help">This is how we’ll address you in DiaperScout. You can change it later.</small>
             <label for="email">Email address <span aria-hidden="true">*</span></label>
             <input id="email" name="email" type="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" maxlength="320" required aria-describedby="email-help" />
             <small id="email-help">We’ll send you a link to verify it. We won’t send spam.</small>
             <p class="explorer-message" role="status" aria-live="polite" data-onboarding-message>@(Error ? "We couldn’t verify or send that link. It may have expired or already been used. Request a fresh link to continue." : "")</p>
+            <img class="explorer-scene explorer-scene-details" src="/images/onboarding/details-van.webp" width="768" height="512" alt="Inside Wanderer, the Guide fills in an Explorer tag at the dinette, with her stuffed Fox beside the notebook." />
             <button class="ds-button ds-button-primary" type="submit">Continue</button>
         </form>
     }
     else
     {
         <img class="explorer-brand" src="/images/brand/DiaperScout.svg" alt="DiaperScout" />
-        <img class="explorer-guide" src="/pwa/guide-map.webp" alt="The Guide explores a map, with Fox tucked in her backpack." />
+        <img class="explorer-scene explorer-scene-welcome" src="/images/onboarding/welcome.webp" width="768" height="512" alt="The Guide offers you a new Explorer ID, with her stuffed Fox beside the map." />
         <h1>Create your Explorer ID</h1>
         <p>Keep your discoveries, submissions and everything you pick up along the way.</p>
-        <ul class="explorer-benefits"><li>Save your discoveries</li><li>Submit new products and places</li><li>Keep your sign-in secure</li></ul>
+        <ul class="explorer-benefits"><li>Save your discoveries</li><li>Submit new products and places</li><li>Plan future adventures</li><li>Keep your sign-in secure</li></ul>
         <a class="ds-button ds-button-primary" href="/join/details">Get started</a>
         <p class="explorer-footnote">Already exploring with us? <a href="/signin" data-enhance-nav="false">Sign in</a></p>
     }

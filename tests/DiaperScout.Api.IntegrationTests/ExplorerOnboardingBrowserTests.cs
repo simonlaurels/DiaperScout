@@ -50,7 +50,12 @@ public sealed class ExplorerOnboardingBrowserTests(PostgreSqlFixture fixture) : 
         var cdp=await context.NewCDPSessionAsync(page);await cdp.SendAsync("WebAuthn.enable",new Dictionary<string,object>{["enableUI"]=false});
         await cdp.SendAsync("WebAuthn.addVirtualAuthenticator",new Dictionary<string,object>{["options"]=new{protocol="ctap2",transport="internal",hasResidentKey=true,hasUserVerification=true,isUserVerified=true,automaticPresenceSimulation=true}});
         } else await page.AddInitScriptAsync("window.PublicKeyCredential=undefined;");
-        await page.GotoAsync(origin+mail.Link(email));await Assertions.Expect(page.Locator("[data-onboarding-setup]")).ToBeVisibleAsync();
+        await page.GotoAsync(origin+mail.Link(email));await Assertions.Expect(page.Locator("[data-onboarding-verified]")).ToBeVisibleAsync();
+        await page.ReloadAsync();await Assertions.Expect(page.Locator("[data-onboarding-verified]")).ToBeVisibleAsync();
+        await Assertions.Expect(page.Locator("[data-onboarding-setup]")).ToBeHiddenAsync();
+        await AtlasBrowserTests.Evidence(page,"onboarding-verified-"+engine+"-"+createPasskey);
+        await page.GetByRole(AriaRole.Link,new(){Name="Continue",Exact=true}).ClickAsync();
+        await Assertions.Expect(page.Locator("[data-onboarding-setup]")).ToBeVisibleAsync();
         await Assertions.Expect(page.Locator("[data-onboarding-name]")).ToHaveTextAsync(name);
         await Assertions.Expect(page.Locator("[data-onboarding-key]")).ToBeHiddenAsync();
         await page.ReloadAsync();await Assertions.Expect(page.Locator("[data-onboarding-setup]")).ToBeVisibleAsync();
@@ -71,6 +76,12 @@ public sealed class ExplorerOnboardingBrowserTests(PostgreSqlFixture fixture) : 
         try { await page.WaitForURLAsync("**/join/ready",new(){Timeout=15000}); } catch { throw new Xunit.Sdk.XunitException(await page.Locator("[data-passkey-message]").InnerTextAsync()+"; "+string.Join("; ",responseStatuses)); } await Assertions.Expect(page.Locator("[data-onboarding-success]")).ToBeVisibleAsync();
         Assert.Equal(createPasskey,await page.Locator("[data-onboarding-key]").IsVisibleAsync());
         Assert.True(await page.EvaluateAsync<bool>("document.documentElement.scrollWidth<=innerWidth"));
+        await Assertions.Expect(page.Locator("[data-onboarding-success-name]")).ToHaveTextAsync(name);
+        Assert.Equal(!createPasskey,await page.Locator("[data-onboarding-skipped-id]").IsVisibleAsync());
+        Assert.Equal(createPasskey,await page.Locator("[data-onboarding-key-confirmed]").IsVisibleAsync());
+        await page.WaitForFunctionAsync("Array.from(document.querySelectorAll('img[src^=\"/images/onboarding/\"]')).filter(img => img.offsetParent !== null).every(img => img.complete && img.naturalWidth > 0)");
+        foreach(var image in await page.Locator("img[src^='/images/onboarding/']:visible").AllAsync())
+            Assert.True(await image.EvaluateAsync<bool>("img => img.complete && img.naturalWidth > 0"));
         await AtlasBrowserTests.Evidence(page,"onboarding-ready-"+engine+"-"+createPasskey);
         await page.GetByRole(AriaRole.Link,new(){Name="Go to my Backpack",Exact=true}).ClickAsync();
         await Assertions.Expect(page.Locator("[data-backpack-name]")).ToHaveTextAsync(name);

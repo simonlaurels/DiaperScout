@@ -60,6 +60,7 @@ public sealed class PlaceObservationBrowserTests(PostgreSqlFixture fixture) : IC
         var marker=page.Locator($".leaflet-marker-icon.atlas-marker-selected[title='Nearby pharmacy']");
         await page.Locator(".place-map").EvaluateAsync("element => element.scrollIntoView({block:'center'})");
         await Assertions.Expect(marker).ToBeVisibleAsync();
+        await Assertions.Expect(page.Locator(".map-attribution a[href='/places/open-data']")).ToBeVisibleAsync();
         await marker.ClickAsync();await Assertions.Expect(page.Locator(".leaflet-popup-content")).ToContainTextAsync("reported");
         await Assertions.Expect(page.Locator(".atlas-observation").First).ToContainTextAsync("18.25 GBP");
         var overflow = await page.EvaluateAsync<string>("JSON.stringify([...document.querySelectorAll('body *')].filter(e=>e.getBoundingClientRect().right>innerWidth+1 && getComputedStyle(e).position!=='absolute').map(e=>({tag:e.tagName,cls:e.className,right:e.getBoundingClientRect().right})).slice(0,15))");

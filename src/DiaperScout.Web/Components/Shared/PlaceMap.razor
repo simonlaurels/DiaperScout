@@ -3,8 +3,8 @@
 @implements IAsyncDisposable
 <div class="place-map-shell">
     <div class="place-map" @ref="element" aria-label="@(PickPosition ? "Select the physical shop position on the map" : "Map of reported product observations")"></div>
-    @if (mapError) { <p class="contribution-message" role="status">The map background is unavailable. @(AtlasCanvas ? "You can still browse the discoveries list." : "You can still use the location list or enter the shop coordinates below.") · Places powered by <a href="https://www.geoapify.com/">Geoapify</a> · <a href="/places/open-data">OSM-derived place data (ODbL)</a></p> }
-    <p class="map-attribution">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> · <a href="https://www.openstreetmap.org/fixthemap" target="_blank" rel="noopener">Report a map issue</a></p>
+    @if (mapError) { <p class="contribution-message" role="status">The map background is unavailable. @(AtlasCanvas ? "You can still browse the discoveries list." : "You can still use the location list or enter the shop coordinates below.")</p> }
+    <p class="map-attribution">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> · <a href="https://www.openstreetmap.org/fixthemap" target="_blank" rel="noopener">Report a map issue</a> · Places powered by <a href="https://www.geoapify.com/">Geoapify</a> · <a href="/places/open-data">OSM-derived place data (ODbL)</a></p>
 </div>
 @code {
     [Parameter] public bool PickPosition { get; set; }

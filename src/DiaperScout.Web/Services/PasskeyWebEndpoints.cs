@@ -19,6 +19,9 @@ public static class PasskeyWebEndpoints
         services.AddRateLimiter(options =>
         {
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+            options.AddPolicy("onboarding-email", context => RateLimitPartition.GetFixedWindowLimiter(
+                context.Connection.RemoteIpAddress?.ToString() ?? "unknown", _ => new FixedWindowRateLimiterOptions
+                { PermitLimit = 8, Window = TimeSpan.FromMinutes(10), QueueLimit = 0, AutoReplenishment = true }));
             options.AddPolicy("passkeys", context => RateLimitPartition.GetFixedWindowLimiter(
                 context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
                     ?? context.Connection.RemoteIpAddress?.ToString() ?? "unknown", _ => new FixedWindowRateLimiterOptions

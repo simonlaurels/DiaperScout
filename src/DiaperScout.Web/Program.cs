@@ -157,6 +157,7 @@ app.UseRateLimiter();
 app.UseAntiforgery();
 app.MapPasskeyWebEndpoints();
 app.MapBackpackAccountWebEndpoints();
+app.MapExplorerOnboardingEndpoints();
 app.MapProposalEvidenceWebEndpoints();
 
 app.MapGet(
@@ -239,59 +240,53 @@ app.MapPost("/signin/request", async (
     .DisableAntiforgery();
 
 app.MapPost("/join/request", async (
-    IHttpClientFactory httpClientFactory,
-    [FromForm] string email,
-    [FromForm] string displayName,
-    CancellationToken cancellationToken) =>
+    HttpContext context, IHttpClientFactory clients,
+    [FromForm] string email, [FromForm] string displayName, CancellationToken ct) =>
 {
-    var client = httpClientFactory.CreateClient("DiaperScoutApi");
-
-    using var response = await client.PostAsJsonAsync(
-        "/api/v1/auth/registration-link",
-        new
-        {
-            Email = email,
-            DisplayName = displayName
-        },
-        cancellationToken);
-
-    return Results.LocalRedirect(
-        response.IsSuccessStatusCode
-            ? "/join?sent=true"
-            : "/join?error=true");
-})
-    .AllowAnonymous()
-    .DisableAntiforgery();
+    var sent = await ExplorerOnboardingEndpoints.SendAsync(context, clients, new(displayName, email), ct);
+    return Results.LocalRedirect(sent ? "/join/check-email" : "/join/details?error=true");
+}).AllowAnonymous().RequireRateLimiting("onboarding-email");
 
 app.MapGet("/signin/magic-link", async (
     HttpContext httpContext,
     IHttpClientFactory httpClientFactory,
     string token,
+    [FromQuery] string? flow,
     CancellationToken cancellationToken) =>
 {
+    // This query only selects a fixed local error screen. Verified continuation comes
+    // exclusively from the consumed, server-held registration token's result.
+    var failureUrl = flow == "explorer" ? "/join/details?error=true" : "/signin?error=true";
+    httpContext.Response.Headers.CacheControl = "no-store";
+    httpContext.Response.Headers["Referrer-Policy"] = "no-referrer";
     if (string.IsNullOrWhiteSpace(token))
-        return Results.LocalRedirect("/signin?error=true");
+        return Results.LocalRedirect(failureUrl);
 
     var client = httpClientFactory.CreateClient("DiaperScoutApi");
 
-    using var response = await client.PostAsync(
-        $"/api/v1/auth/magic-link/consume?token={Uri.EscapeDataString(token)}",
-        content: null,
-        cancellationToken);
+    HttpResponseMessage response;
+    // Keep the token out of HttpClient request-URL diagnostics. The API retains its
+    // legacy query contract during rollout; all current Web consumption uses the body.
+    try { response = await client.PostAsJsonAsync(
+        "/api/v1/auth/magic-link/consume", new { Token = token }, cancellationToken); }
+    catch (HttpRequestException) { return Results.LocalRedirect(failureUrl); }
+    catch (TaskCanceledException) { return Results.LocalRedirect(failureUrl); }
+    using var consumedResponse = response;
 
     if (!response.IsSuccessStatusCode)
-        return Results.LocalRedirect("/signin?error=true");
+        return Results.LocalRedirect(failureUrl);
 
     var authentication =
         await response.Content.ReadFromJsonAsync<PasswordlessAuthenticationResult>(
             cancellationToken);
 
     if (authentication is null)
-        return Results.LocalRedirect("/signin?error=true");
+        return Results.LocalRedirect(failureUrl);
 
     await AuthenticationSession.SignInAsync(httpContext, authentication, app.Environment);
 
-    return Results.LocalRedirect(ContributionReturn.Consume(httpContext));
+    return Results.LocalRedirect(authentication.ContinueOnboarding
+        ? "/join/continue" : ContributionReturn.Consume(httpContext));
 })
     .AllowAnonymous();
 

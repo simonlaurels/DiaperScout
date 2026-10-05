@@ -945,6 +945,14 @@ public sealed class PendingRegistration : Entity
     public string DisplayName { get; private set; }
     public DateTimeOffset CreatedAtUtc { get; private set; }
     public DateTimeOffset ExpiresAtUtc { get; private set; }
+
+    public void Renew(string displayName, DateTimeOffset now, DateTimeOffset expiresAtUtc)
+    {
+        if (string.IsNullOrWhiteSpace(displayName) || displayName.Trim().Length > 100)
+            throw new ArgumentException("Enter a name or nickname of 1 to 100 characters.", nameof(displayName));
+        if (expiresAtUtc <= now) throw new ArgumentException("The link must expire in the future.", nameof(expiresAtUtc));
+        DisplayName = displayName.Trim(); CreatedAtUtc = now; ExpiresAtUtc = expiresAtUtc;
+    }
 }
 
 public sealed class PendingRegistrationToken : Entity

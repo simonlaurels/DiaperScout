@@ -1,0 +1,45 @@
+@page "/join/continue"
+@page "/join/ready"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@layout OnboardingLayout
+<PageTitle>Your Explorer ID · DiaperScout</PageTitle>
+<section class="explorer-card" data-onboarding-private data-passkey-account data-onboarding-passkey>
+    <AntiforgeryToken />
+    <p class="explorer-message" role="status" aria-live="polite" data-onboarding-loading>Opening your Explorer ID…</p>
+    <div data-onboarding-setup hidden>
+        <p class="explorer-verified"><span aria-hidden="true">✓</span> Email verified</p>
+        <h1>Create your passkey</h1>
+        <p class="explorer-recommended">Highly recommended · optional</p>
+        <p>Sign in quickly and securely using Face ID, Touch ID, your device PIN, or another method your device supports.</p>
+        <div class="explorer-id-preview"><p>EXPLORER ID</p><strong data-onboarding-name></strong><span>DiaperScout Explorer</span></div>
+        <ul class="explorer-benefits"><li>Your device’s built-in security</li><li>No password to remember</li><li>Add more devices later in Backpack</li></ul>
+        <p class="explorer-note">Your verified email sign-in links will still work.</p>
+        <button class="ds-button ds-button-primary" type="button" data-passkey-action="register">Create passkey</button>
+        <button class="explorer-secondary" type="button" data-onboarding-skip>Maybe later</button>
+        <button class="explorer-secondary" type="button" data-onboarding-existing hidden>Continue with my existing passkey</button>
+        <a class="explorer-secondary" href="/join/details" data-onboarding-reverify hidden>Verify your email again to add a passkey</a>
+    </div>
+    <div data-onboarding-name-needed hidden>
+        <p class="explorer-verified">✓ Email verified</p><h1>Choose your Explorer name</h1>
+        <p>Your email is verified. Choose a name or nickname to finish your Explorer ID.</p>
+        <form class="explorer-form" data-onboarding-name-form>
+            <label for="explorer-name">Name or nickname</label><input id="explorer-name" name="displayName" required maxlength="100" autocomplete="nickname" />
+            <button class="ds-button ds-button-primary" type="submit">Save name</button>
+        </form>
+    </div>
+    <div data-onboarding-success hidden>
+        <p class="explorer-verified">✓ Explorer ID ready</p>
+        <h1 data-onboarding-success-title>Your Explorer ID is ready!</h1>
+        <div class="explorer-completion-key" data-onboarding-key hidden aria-label="Your registered passkey">
+            <span class="explorer-physical-key" aria-hidden="true"><svg viewBox="0 0 80 140" fill="none" stroke="currentColor" stroke-width="9" stroke-linejoin="round"><circle cx="40" cy="30" r="22"/><circle cx="40" cy="30" r="5"/><path d="M40 52v72h23v-16H48V91h13"/></svg></span>
+            <div class="explorer-key-tag"><strong data-onboarding-key-name></strong><span>Explorer · DiaperScout</span><small>Passkey ready</small></div>
+        </div>
+        <p data-onboarding-success-copy></p>
+        <p class="explorer-note" data-onboarding-reminder hidden>Add a passkey later from Backpack for quicker, more secure sign-in.</p>
+        <a class="ds-button ds-button-primary" href="/">Start exploring</a>
+        <a class="explorer-secondary" href="/backpack">Go to my Backpack</a>
+    </div>
+    <p class="explorer-message" data-passkey-message role="status" aria-live="polite"></p>
+    <button class="explorer-secondary" type="button" data-onboarding-retry hidden>Try again</button>
+    <noscript>Enable JavaScript to finish onboarding and set up a passkey. Your email sign-in links remain available.</noscript>
+</section>

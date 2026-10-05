@@ -167,9 +167,11 @@ public sealed class PwaReliabilityTests(PostgreSqlFixture fixture) : IClassFixtu
             await Assertions.Expect(brand).ToBeDisabledAsync();
             await Assertions.Expect(page.GetByRole(AriaRole.Button, new() { Name = "Continue to pack", Exact = true })).ToBeDisabledAsync();
             framework.TrySetResult();
-            // Commit only guarantees response headers. Wait for document/state completion,
-            // the same prerequisite as manual Blazor startup, before timing module readiness.
-            await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+            // Wait for the parsed document, not DOMContentLoaded: Backpack's global
+            // module now statically imports the deliberately gated draft module, so
+            // DOMContentLoaded cannot fire until this test releases that same gate.
+            // The existing before/after hydration and draft-restoration assertions remain.
+            await page.WaitForFunctionAsync("document.readyState !== 'loading'");
             var restored = await Task.WhenAny(draftRequested.Task, Task.Delay(TimeSpan.FromSeconds(30)));
             Assert.True(restored == draftRequested.Task, "Draft module never requested. State: " +
                 await page.EvaluateAsync<string>("document.documentElement.dataset.pwaState || 'none'") + "; " + string.Join("; ", browserDiagnostics));

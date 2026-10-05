@@ -33,6 +33,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRetailerManagement, RetailerManagement>();
         services.AddScoped<IRetailerDiscovery, RetailerDiscovery>();
         services.AddScoped<IObservationSubmissions, ObservationSubmissions>();
+        services.AddHttpClient<GeoapifyPlaces>().RemoveAllLoggers();
         services.AddScoped<IPlaceObservations, PlaceObservations>();
         services.AddScoped<IBackpackAccount, BackpackAccount>();
         services.AddScoped<IPublicProductContributions, PublicProductContributions>();

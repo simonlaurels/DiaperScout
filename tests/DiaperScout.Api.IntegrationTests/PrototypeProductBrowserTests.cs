@@ -30,7 +30,7 @@ public sealed class PrototypeProductBrowserTests(PostgreSqlFixture fixture, ITes
         var otherPack=new PackType(receipt.SizeVariantId,99,PackagingType.Case);
         await using(var db=fixture.CreateDbContext()){db.PackTypes.Add(otherPack);await db.SaveChangesAsync();}
         using var explorer=api.CreateClient();explorer.DefaultRequestHeaders.Add("X-Development-Subject",PostgreSqlFixture.ExplorerSubject);
-        async Task<PlaceItem> Shop(string name){var response=await explorer.PostAsJsonAsync("/api/v1/places/",new CreatePublicShopRequest(name+Guid.NewGuid(),"1 High Street","Testville","ZZ1 1ZZ","ZZ",51.501m,-0.1m,true,true));response.EnsureSuccessStatusCode();return(await response.Content.ReadFromJsonAsync<PlaceItem>())!;}
+        async Task<PlaceItem> Shop(string name){var response=await NativePlaceFixtures.CreateAsync(api,new CreatePublicShopRequest(name+Guid.NewGuid(),"1 High Street","Testville","ZZ1 1ZZ","ZZ",51.501m,-0.1m,true,true));response.EnsureSuccessStatusCode();return(await response.Content.ReadFromJsonAsync<PlaceItem>())!;}
         var observed=await Shop("Boots ");var unrelated=await Shop("Wrong pack ");
         foreach(var entry in new[]{(observed.Id,receipt.PackTypeId),(unrelated.Id,otherPack.Id)}) {
             var saved=await explorer.PostAsJsonAsync("/api/v1/physical-observations",new CreatePhysicalObservationRequest(entry.Item2,entry.Item1,DateTimeOffset.UtcNow.AddDays(-1),null,null,Guid.NewGuid()));saved.EnsureSuccessStatusCode();

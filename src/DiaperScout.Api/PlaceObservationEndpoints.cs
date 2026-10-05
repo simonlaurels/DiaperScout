@@ -13,11 +13,18 @@ public static class PlaceObservationEndpoints
         reads.MapGet("/atlas", async (IPlaceObservations places, CancellationToken ct) => Results.Ok(await places.AtlasAsync(ct)));
         reads.MapPost("/nearby", async (NearbyPlaceRequest request, HttpResponse response, IPlaceObservations places, CancellationToken ct) => {
             response.Headers.CacheControl = "no-store"; return await Validate(async () => Results.Ok(await places.NearbyAsync(request, ct)));
-        }).RequireRateLimiting("contributions");
+        }).RequireAuthorization("Explorer").RequireRateLimiting("contributions");
         reads.MapGet("/packs/{id:guid}", async (Guid id, IPlaceObservations places, CancellationToken ct) =>
             await places.PackAsync(id, ct) is { } pack ? Results.Ok(pack) : Results.NotFound());
-        reads.MapPost("/", async (CreatePublicShopRequest request, ICurrentExplorer current, IPlaceObservations places, CancellationToken ct) =>
-            await current.GetAsync(ct) is { } actor ? await Validate(async () => Results.Ok(await places.CreateShopAsync(actor, request, ct))) : Results.Forbid())
+        reads.MapGet("/open-data", async (IPlaceObservations places, CancellationToken ct) =>
+            Results.Json((await places.PublicPlaceSnapshotsAsync(ct)).Select(s => System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(s))));
+        app.MapPost("/api/v1/admin/places", async (CreatePublicShopRequest request, ICurrentUser current, IEditorialAuthorisation authorisation, IPlaceObservations places, CancellationToken ct) => {
+            var actor = await current.GetAsync(ct);
+            if (actor is null || !await authorisation.CanManageCatalogueAsync(actor, ct)) return Results.Forbid();
+            return await Validate(async () => Results.Ok(await places.CreateShopAsync(new ExplorerIdentity(actor.UserId, Guid.Empty, actor.Subject, "Administrator"), request, ct)));
+        }).RequireAuthorization("PublishAtlas").RequireRateLimiting("contributions");
+        reads.MapPost("/select", async (SelectProviderPlaceRequest request, ICurrentExplorer current, IPlaceObservations places, CancellationToken ct) =>
+            await current.GetAsync(ct) is { } actor ? await Validate(async () => Results.Ok(await places.SelectProviderPlaceAsync(actor, request, ct))) : Results.Forbid())
             .RequireAuthorization("Explorer").RequireRateLimiting("contributions");
         reads.MapPost("/{id:guid}/category", async (Guid id, UpdatePlaceCategoryRequest request, ICurrentUser current, IPlaceObservations places, CancellationToken ct) =>
         {

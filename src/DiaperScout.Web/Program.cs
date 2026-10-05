@@ -66,6 +66,7 @@ builder.Services.AddHttpClient<PlaceObservationClient>(client =>
         client.BaseAddress = new Uri(builder.Configuration["Api:BaseUrl"] ?? "https+http://api"))
     .AddHttpMessageHandler<DevelopmentSubjectForwardingHandler>()
     .AddHttpMessageHandler<ProductionIdentityForwardingHandler>()
+    .RemoveAllLoggers()
     .AddServiceDiscovery();
 
 builder.Services.AddHttpClient<UserManagementClient>(client =>
@@ -329,6 +330,12 @@ if (app.Environment.IsDevelopment())
     });
 
 }
+
+app.MapGet("/places/open-data", async (IHttpClientFactory clients, CancellationToken ct) => {
+    using var response = await clients.CreateClient("DiaperScoutApi").GetAsync("api/v1/places/open-data", ct);
+    if (!response.IsSuccessStatusCode) return Results.StatusCode(503);
+    return Results.Text(await response.Content.ReadAsStringAsync(ct), "application/json");
+});
 
 app.Run();
 

@@ -1,0 +1,10 @@
+.discovery-flow {max-width:42rem;margin:auto;padding:1.2rem 1rem calc(6rem + env(safe-area-inset-bottom));background:#fcf8ef;}
+.discovery-place-picker {padding:1rem 0;}
+.discovery-note {background:#eaf5fc;border:1px solid #d1e7f2;border-radius:1rem;padding:1rem;margin:1rem 0;color:#19475a;}
+.discovery-missing {margin:1.2rem 0;padding:1rem;border:1px solid #dbcdb5;border-radius:1rem;}
+.discovery-missing summary {font-weight:700;cursor:pointer;}
+.discovery-missing a {display:block;margin-top:1rem;}
+.discovery-completion {text-align:center;background:transparent;border:0;}
+.discovery-review {border:1px solid #e4d9c7;border-radius:1rem;padding:1rem;background:#fffdf6;}
+.discovery-flow input {max-width:100%;box-sizing:border-box;}
+.discovery-flow .contribution-actions {display:flex;flex-direction:column;gap:.65rem;}

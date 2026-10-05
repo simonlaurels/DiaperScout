@@ -14,7 +14,7 @@
             <a href="/" class="ds-button ds-button-primary">Done</a></section>
     }
     else if (submitted) {
-        <section class="discovery-completion"><div class="discovery-artwork-slot" aria-hidden="true"><AppIcon Name="map" /></div><h1>Product submitted!</h1><p>Thank you. Your packaging evidence has been sent for review.</p><p>Moderators will identify the product and exact pack before it becomes public catalogue data.</p></section>
+        <section class="discovery-completion"><img class="discovery-illustration" src="/pwa/product-evidence-recorded.webp" alt="The Guide noting your packaging evidence inside Wanderer, with her plush Fox in the backpack." /><h1>Product submitted!</h1><p>Thank you. Your packaging evidence has been sent for review.</p><p>Moderators will identify the product and exact pack before it becomes public catalogue data.</p></section>
         <section class="contribution-card"><h2>Did you find this in a shop?</h2><p>Keep where you found it with this proposal while it awaits identification.</p><a class="ds-button ds-button-primary" href="@($"/contribute/product/discovery?submissionId={form.SubmissionId}")">Record where I found it</a></section><a href="/" class="ds-button ds-button-secondary">Done</a>
     } else {
         <h1>@(form.UiStep switch { 1 => "Take photos of the pack", 2 => "Tell us about this product", 3 => "Could it be one of these?", _ => "Review your submission" })</h1>

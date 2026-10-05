@@ -756,6 +756,11 @@ public sealed class Location : Entity
     public Guid? CreatedByUserId { get; private set; }
     public DateTimeOffset? CreatedAtUtc { get; private set; }
     public string? PlaceIdentity { get; private set; }
+    public string? ProviderSnapshotJson { get; private set; }
+    public void RecordProviderSnapshot(string snapshot) {
+        if (ProviderSnapshotJson is not null) throw new InvalidOperationException("Historical place snapshots are immutable.");
+        ProviderSnapshotJson = snapshot;
+    }
     public PlaceCategory? Category { get; private set; }
     public void SetCategory(PlaceCategory? category) {
         if (category.HasValue && !Enum.IsDefined(category.Value)) throw new ArgumentException("Choose a supported place type.", nameof(category));

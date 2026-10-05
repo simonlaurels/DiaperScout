@@ -32,4 +32,19 @@ Release solution build passed with zero warnings and errors. All 15 focused onbo
 
 Mobile screenshots were reviewed for introduction, details, email waiting, email confirmation, passkey setup and both completion paths. The writing/handover scenes use Wanderer’s interior. Text fits the real tag artwork and the browser checks found no horizontal overflow at 375/390 px. Native device prompts remain device-owned and are not replaced by illustration or a simulated dialog. The final art browser checks ran against isolated test databases, not production.
 
-This presentation pass is prepared for an image-only Web release; production deployment evidence will be recorded after verification. The earlier authentication release remains the unchanged API baseline. The prior 380-test / 24-production-check release results describe that baseline, not a rerun for this art pass.
+This presentation pass was released as an image-only Web update. The earlier authentication release remains the unchanged API baseline. The prior 380-test / 24-production-check release results describe that baseline, not a rerun for this art pass.
+
+
+## Production release — 5 October 2026
+
+Runtime commit `1635a6b` was pushed to `fix/product-submission-recovery`. ACR build `db2g` succeeded from its committed source archive. Only Web was deployed: revision `diaperscout-web-vnet--art-1635a6b` is Healthy, Provisioned, Running and receives 100% traffic.
+
+Web image: `diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-web@sha256:4e26430299abcfbde94b67bd080a99c5b2a08a68d020e2a9365de7e263db738e`.
+
+[Configuration comparison](explorer-id-art-evidence/config-comparison.json) confirms preservation of application identities, environment, configuration and container template except Web image/revision suffix. API remains on its previous image/revision with internal ingress; Web remains public. No database migration, deployment job, secret, networking or scale change was made.
+
+[Production validation](explorer-id-art-evidence/production-smoke.json) passed 36 checks: mobile Chromium/WebKit public pages, required-input validation, catalogue/product detail, Explore, Atlas, Scan, sign-in and Backpack entry points, anonymous rejection for private onboarding, plus delivery and SHA-256 verification of all eight illustration files. Browser checks reported no page errors. Screenshots confirm the bespoke welcome and Wanderer writing scene are live. No registration emails or synthetic production records were created.
+
+[Recent console-log summary](explorer-id-art-evidence/log-summary.json) found no TLS/DNS/database failure or exception lines in the sampled Web/API logs. This is a sampled check, not continuous monitoring. Authenticated registration/passkey/skip/email-returning flows were verified in isolated tests; native-device authentication and the authenticated production completion screen were not re-exercised during this presentation deployment.
+
+Rollback is a Web image-only update to `diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-web@sha256:191755436b06b3c7418c25a0fa5cd825c4923ca4190d3e6ed44cdbcc5f27ae2c`.

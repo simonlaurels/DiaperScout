@@ -51,3 +51,9 @@ Commits are local; HTTPS push lacks credentials and SSH needs Simon’s passphra
 Geoapify/OSM can miss specialist shops and retain stale POIs, including the corrected historical Bush Healthcare Yate record. The bounded nearby list is not exhaustive; availability claims are dated Explorer evidence, not guaranteed inventory. An outage blocks choosing new places, while historical Atlas and catalogue views remain stored-data backed. Five category requests are a deliberate low-usage trade-off; monitor credits before increasing request volume.
 
 Rollback restores prior API/Web image revisions recorded in [rollback images](geoapify-discovery-evidence/rollback-images.json); retain the additive snapshot column/data and secret. Do not run Down, remove historical snapshots, change networking/TLS or alter authentication/affinity/Data Protection to roll back this application release.
+
+## Approved indoor artwork style correction — 5 October 2026
+
+Simon approved a revised indoor Wanderer illustration that matches the outdoor Guide's anime facial proportions, linework, hair and pullover hoodie. The stationary plush Fox and private packaging-evidence scene remain. Runtime commit `fa1da98` changes only `product-evidence-recorded.webp`; no application logic, API image/configuration or migration changed. ACR build `db2q` succeeded; Web revision `diaperscout-web-vnet--art-fa1da98` is Healthy/Provisioned.
+
+[Release](geoapify-discovery-evidence/guide-art-release.json), [configuration preservation](geoapify-discovery-evidence/guide-art-configuration-comparison.json), and [five live checks](geoapify-discovery-evidence/guide-art-live-checks.json): public Explore, Products, sign-in and place-data export returned 200, and the production WebP exactly matched the approved release. The PWA service worker does not cache this illustration. The original outdoor artwork is unchanged. GitHub push still requires local SSH authentication.

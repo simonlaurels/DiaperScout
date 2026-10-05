@@ -1,0 +1,25 @@
+[
+  {
+    "path": "/",
+    "status": 200
+  },
+  {
+    "path": "/products",
+    "status": 200
+  },
+  {
+    "path": "/signin",
+    "status": 200
+  },
+  {
+    "path": "/places/open-data",
+    "status": 200
+  },
+  {
+    "path": "/pwa/product-evidence-recorded.webp",
+    "status": 200,
+    "matchesApprovedRelease": true,
+    "cacheControl": "max-age=3600, must-revalidate",
+    "sha256": "c5b4699810c658398167747827ff4ab28ba591d898bd0ac23eb7ca45417a53cb"
+  }
+]

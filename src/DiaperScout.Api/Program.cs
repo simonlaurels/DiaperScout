@@ -3360,15 +3360,23 @@ app.MapPost(
         IPasswordlessAuthentication authentication,
         CancellationToken cancellationToken) =>
     {
-        await authentication.RequestRegistrationLinkAsync(
-            request.Email,
-            request.DisplayName,
-            cancellationToken);
-
-        return Results.Ok(new
+        try
         {
-            message = "If that email address can receive DiaperScout registration links, one has been sent."
-        });
+            await authentication.RequestRegistrationLinkAsync(request.Email, request.DisplayName, cancellationToken);
+            return Results.Ok(new { message = "Check your email for a secure DiaperScout link." });
+        }
+        catch (ArgumentException e)
+        {
+            return Results.ValidationProblem(new Dictionary<string, string[]> { [e.ParamName ?? "details"] = [e.Message.Split(" (Parameter")[0]] });
+        }
+        catch (Exception e) when (e is HttpRequestException or Resend.ResendException)
+        {
+            return Results.Json(new { message = "The email service is temporarily unavailable. Please try again." }, statusCode: 503);
+        }
+        catch (InvalidOperationException e) when (e.Message == "Registrations are currently closed. Please check back later.")
+        {
+            return Results.Json(new { message = "Account creation is unavailable right now. Please try again later." }, statusCode: 503);
+        }
     })
     .AllowAnonymous();
 
@@ -3393,12 +3401,13 @@ app.MapPost(
 app.MapPost(
     "/api/v1/auth/magic-link/consume",
     async (
-        [FromQuery] string token,
+        [FromQuery] string? token,
+        [FromBody(EmptyBodyBehavior = Microsoft.AspNetCore.Mvc.ModelBinding.EmptyBodyBehavior.Allow)] MagicLinkConsumptionRequest? request,
         IPasswordlessAuthentication authentication,
         CancellationToken cancellationToken) =>
     {
         var result = await authentication.ConsumeMagicLinkAsync(
-            token,
+            request?.Token ?? token ?? "",
             cancellationToken);
 
         return result is null
@@ -3415,6 +3424,8 @@ app.Run();
 public sealed record RegistrationLinkRequest(
     string Email,
     string DisplayName);
+
+public sealed record MagicLinkConsumptionRequest(string Token);
 
 public sealed record SignInLinkRequest(
     string Email);

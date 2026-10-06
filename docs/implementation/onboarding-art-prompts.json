@@ -1,0 +1,44 @@
+{
+  "mode": "Built-in image_gen; transparent background",
+  "references": [
+    "Approved Explorer ID onboarding storyboard",
+    "Canonical Guide character sheet",
+    "Canonical Fox stuffed-toy character sheet",
+    "Canonical Wanderer camper van sheet (interior scenes)",
+    "Earlier generated key/tag illustration (one-sided key correction)"
+  ],
+  "scenes": [
+    {
+      "asset": "welcome.webp",
+      "prompt": "Create ONE new DiaperScout storybook illustration for the account-onboarding introduction. Use the attached Guide and Fox character sheets as the canonical character references. Preserve the Guide's short dark-brown bob, warm brown eyes, tan explorer hat with brown band, badges and stars, teal hoodie and cream canvas backpack. She smiles warmly at an explorer's desk and offers a tangible blank cream Explorer ID luggage tag on her open palm, with a brass eyelet and leather strap. Fox is her SMALL INANIMATE STUFFED TOY: orange plush, cream muzzle/tummy, black bead eyes, tiny stitched smile, visible seams, worn bent ear, patched paw and green scarf. Fox is placed motionless beside a notebook, a quiet secondary detail, never a live animal or active helper. Delicate ink and watercolor texture, muted teal, sage, cream and gold, compact landscape vignette with a small lantern and subtle flowers. Match the supplied character sheets and approved storyboard style. No text, no interface, no physical key, no watermark. Transparent background."
+    },
+    {
+      "asset": "details-van.webp",
+      "prompt": "Create ONE NEW DiaperScout onboarding illustration. Use image 1 for the Guide, image 2 for her INANIMATE Fox plush, image 3 for Wanderer's INTERIOR. The Guide sits INSIDE Wanderer at the cozy wooden camper dinette, carefully writing with a pencil on a blank cream Explorer luggage tag. Teal hoodie, short brown bob, tan explorer hat. Fox stuffed toy rests motionless beside her notebook: orange fabric, cream muzzle, bead eyes, fixed stitched smile, seams, patched paw, worn ear, green scarf. Warm wood cabinetry, sage plaid bench upholstery, tiny van window with mountains. Intimate inside-the-camper viewpoint, not an exterior vehicle shot. Personal tag preparation is the focus. Match watercolor/ink character style, compact landscape3:2 vignette, transparent edges. No text, keys or UI."
+    },
+    {
+      "asset": "email.webp",
+      "prompt": "Create one NEW DiaperScout onboarding illustration. Image 1 is the canonical Guide, image 2 her Fox STUFFED TOY. Preserve their exact designs and watercolor/ink storybook style. The Guide, in tan explorer hat, short brown bob, teal hoodie and cream backpack, stands beside a small woodland postbox and holds up a cream sealed verification envelope with a small compass wax seal. Fox is a small motionless plush tucked in the backpack pocket: orange fabric, cream muzzle, black bead eyes, stitched smile/seams, worn ear, patched paw and green scarf. Fox is NOT alive and performs no action. Soft path, flowers and distant mountains, compact landscape 3:2 vignette. Guide is the focus, Fox secondary. No letters, no text, no keys, no UI. Transparent background."
+    },
+    {
+      "asset": "verified.webp",
+      "prompt": "Create ONE NEW DiaperScout storybook illustration for the email-verified moment. Reference 1 supplies the warm ink-and-watercolor style; reference 2 shows the approved storyboard's owl carrying an envelope. A small cheerful brown-and-cream owl flies carrying a cream sealed letter with a compass wax seal, over a winding path to a tiny timber explorer outpost among mountains, trees and flowers. Gentle celebratory mood, soft teal, sage and gold palette. Compact landscape 3:2 vignette with transparent background. No Guide or Fox, no text or signs, no UI, no keys."
+    },
+    {
+      "asset": "passkey.webp",
+      "prompt": "Create ONE NEW DiaperScout onboarding illustration. Use the two supplied character sheets exactly for the Guide and her small Fox STUFFED TOY. The Guide kneels beside her cream canvas explorer backpack, carefully attaching a blank cream luggage tag to its strap, preparing it for adventure. Teal hoodie, tan explorer hat, short brown bob, beige cargo trousers. Fox is a motionless plush tucked securely into the bag pocket: orange fabric, cream muzzle, black bead eyes, stitched smile, seams, worn ear, patched paw and green scarf. No living animal actions. A folded map and wildflowers nearby, warm ink/watercolor, compact landscape 3:2, transparent background. No physical key yet, no text, no security icons, no UI."
+    },
+    {
+      "asset": "key-v2.webp",
+      "prompt": "Edit this DiaperScout watercolor key-and-luggage-tag illustration. Change ONLY the physical key's bit at the lower-left end. It must be a plausible classic ONE-SIDED key: one side of the shaft has a smooth continuous edge, and the teeth/bit project from ONLY the other side. Remove the mirrored protrusions/notches on the side toward the image's lower-left; keep the teeth projecting toward the lower-right of the shaft. No double-sided teeth, no cross-shaped bit, no two opposing wings. Keep the key's round bow, brass ring, tag, blank cream tag face, leather border, leaves, sparkles, palette, texture, orientation and framing exactly the same. Preserve transparency. No text."
+    },
+    {
+      "asset": "ready-van.webp",
+      "prompt": "Create ONE NEW DiaperScout completion illustration. Image1: canonical Guide. Image2: her stationary Fox STUFFED TOY. Image3: Wanderer's interior. The Guide is SEATED INSIDE Wanderer's cozy wooden dinette, smiling warmly and HANDING a substantial blank cream Explorer luggage tag directly toward the viewer in her open hand, as a personal handover before their adventure. Fox plush rests motionless on the sage plaid bench beside her, with bead eyes, stitched smile, seams, green scarf and worn ear. Teal hoodie, short brown bob, tan explorer hat; warm wood cabinetry, small window, prepared cream backpack beside the seat. Tag and gesture clearly visible, Guide is main subject. Intimate camper-interior view, no outside parked-van backdrop. Warm ink/watercolor, landscape3:2 vignette, transparent edges. No printed names or text, no physical key, no UI."
+    },
+    {
+      "asset": "id.webp",
+      "prompt": "Create ONE NEW tangible Explorer ID luggage-tag illustration in the warm ink/watercolor style of the supplied DiaperScout references. Object only, no characters. A cream canvas/leather-edged luggage tag, horizontal and almost exactly front-facing, completely BLANK cream central face. Brass eyelet and short brown leather loop on the LEFT. Tag body occupies x18%\u201386%, y24%\u201380% of a landscape3:2 canvas; rightward middle is clear for the app's real-name text overlay. A few delicate green leaves and gold sparkles around the edge. No physical key, no names, no text, no UI. Transparent background."
+    }
+  ]
+}

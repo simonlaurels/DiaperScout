@@ -1,0 +1,6 @@
+{
+  "commit": "1e0b6ef",
+  "build": "db2r",
+  "image": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-web@sha256:3f435eaab16446d31fbdbba15199d76c0cb9505b3bf0537f5bca3064bc9e3b6e",
+  "revision": "diaperscout-web-vnet--art-1e0b6ef"
+}

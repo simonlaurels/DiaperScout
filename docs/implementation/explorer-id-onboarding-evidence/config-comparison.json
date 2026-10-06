@@ -1,0 +1,16 @@
+{
+  "diaperscout-api-vnet": {
+    "configurationPreserved": true,
+    "image": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-api@sha256:3d2528b9f57b4b51ce54cd48bd0c585e2d1d54fa28de2e32a226ce3077bc19af",
+    "readyRevision": "diaperscout-api-vnet--onboard-3f7fd05",
+    "latestRevision": "diaperscout-api-vnet--onboard-3f7fd05",
+    "external": false
+  },
+  "diaperscout-web-vnet": {
+    "configurationPreserved": true,
+    "image": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-web@sha256:191755436b06b3c7418c25a0fa5cd825c4923ca4190d3e6ed44cdbcc5f27ae2c",
+    "readyRevision": "diaperscout-web-vnet--onboard-3f7fd05",
+    "latestRevision": "diaperscout-web-vnet--onboard-3f7fd05",
+    "external": true
+  }
+}

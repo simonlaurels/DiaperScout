@@ -337,6 +337,7 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
             entity.Property(x => x.Latitude).HasPrecision(9, 6);
             entity.Property(x => x.Longitude).HasPrecision(9, 6);
             entity.Property(x => x.PlaceIdentity).HasMaxLength(64);
+            entity.Property(x => x.ProviderSnapshotJson).HasColumnType("jsonb");
             entity.HasIndex(x => x.PlaceIdentity).IsUnique();
             entity.HasOne<User>().WithMany().HasForeignKey(x => x.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
             entity.HasIndex(x => new { x.RetailerId, x.Postcode, x.Name }).IsUnique();

@@ -34,7 +34,7 @@ public sealed class PlaceObservationBrowserTests(PostgreSqlFixture fixture) : IC
         web.UseKestrel(0);using var client=web.CreateClient();var origin=client.BaseAddress!.GetLeftPart(UriPartial.Authority);
         using var playwright=await Playwright.CreateAsync();await using var browser=await (webkit?playwright.Webkit:playwright.Chromium).LaunchAsync(new(){Headless=true});
         var context=await browser.NewContextAsync(new(){ViewportSize=new(){Width=width,Height=900},ServiceWorkers=ServiceWorkerPolicy.Allow});
-        await context.AddInitScriptAsync("Object.defineProperty(navigator,'standalone',{value:true});");
+        await context.AddInitScriptAsync("Object.defineProperty(navigator,'standalone',{value:true});Object.defineProperty(navigator,'geolocation',{value:{getCurrentPosition:s=>s({coords:{latitude:51.9,longitude:-2.1}})},configurable:true});");
         // OSM prohibits headless tile crawling; tests exercise map rendering with local synthetic tiles.
         await context.RouteAsync("https://tile.openstreetmap.org/**",route=>route.FulfillAsync(new(){Status=200,ContentType="image/png",BodyBytes=Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=")}));
         var page=await context.NewPageAsync();await page.GotoAsync(origin+"/scan");await Ready(page);
@@ -47,34 +47,32 @@ public sealed class PlaceObservationBrowserTests(PostgreSqlFixture fixture) : IC
         await page.GetByRole(AriaRole.Link,new(){Name="Sign in and continue",Exact=true}).ClickAsync();
         await page.GetByRole(AriaRole.Link,new(){Name="Sign in as development moderator",Exact=true}).ClickAsync();
         await Assertions.Expect(page).ToHaveURLAsync(origin+$"/observations/new?packTypeId={packId}");await Ready(page);
-        await page.GetByRole(AriaRole.Button,new(){Name="Add a physical shop",Exact=true}).ClickAsync();
-        await page.Locator("#shop-name").FillAsync("Browser evidence shop "+width);await page.Locator("#shop-address").FillAsync("1 Browser Street");await page.Locator("#shop-town").FillAsync("Testville");await page.Locator("#shop-postcode").FillAsync("ZZ2 3ZZ");await page.Locator("#shop-country").SelectOptionAsync("ZZ");
-        if (width == 430) await page.Locator("#shop-category").SelectOptionAsync("1");
-        await page.Locator("#shop-latitude").FillAsync((width == 390 ? 51 : width == 430 ? 52 : width == 768 ? 53 : 54).ToString());await page.Locator("#shop-longitude").FillAsync("-2.1");
-        await page.GetByLabel("This is a public commercial shop, not a home or private place.").CheckAsync();await page.GetByLabel("The position is the shop itself. I understand it will be public.").CheckAsync();
-        await page.GetByRole(AriaRole.Button,new(){Name="Use this shop",Exact=true}).ClickAsync();
+        await Assertions.Expect(page.GetByRole(AriaRole.Button,new(){Name="Add a physical shop",Exact=true})).ToHaveCountAsync(0);
+        await page.GetByRole(AriaRole.Button,new(){Name="Find nearby shops",Exact=true}).ClickAsync();
+        await page.GetByRole(AriaRole.Button,new(){Name="Nearby pharmacy",Exact=false}).ClickAsync();
         await page.GetByRole(AriaRole.Button,new(){Name="Continue",Exact=true}).ClickAsync();
         await page.Locator("#observed-price").FillAsync("18.25");await page.Locator("#observed-currency").FillAsync("GBP");
         await page.GetByRole(AriaRole.Button,new(){Name="Review discovery",Exact=true}).ClickAsync();await page.GetByRole(AriaRole.Button,new(){Name="Record discovery",Exact=true}).ClickAsync();
         await Assertions.Expect(page.GetByRole(AriaRole.Heading,new(){Name="Discovery recorded!",Exact=true})).ToBeVisibleAsync();
         await page.GetByRole(AriaRole.Link,new(){Name="View in Atlas",Exact=true}).ClickAsync();await Ready(page);
-        await Assertions.Expect(page.Locator("#place-heading")).ToHaveTextAsync("Browser evidence shop "+width);
+        await Assertions.Expect(page.Locator("#place-heading")).ToHaveTextAsync("Nearby pharmacy");
         if (width == 430) await Assertions.Expect(page.Locator(".atlas-place-type")).ToHaveTextAsync("Pharmacy");
-        var marker=page.Locator($".leaflet-marker-icon[title='Browser evidence shop {width}']");
+        var marker=page.Locator($".leaflet-marker-icon.atlas-marker-selected[title='Nearby pharmacy']");
         await page.Locator(".place-map").EvaluateAsync("element => element.scrollIntoView({block:'center'})");
         await Assertions.Expect(marker).ToBeVisibleAsync();
+        await Assertions.Expect(page.Locator(".map-attribution a[href='/places/open-data']")).ToBeVisibleAsync();
         await marker.ClickAsync();await Assertions.Expect(page.Locator(".leaflet-popup-content")).ToContainTextAsync("reported");
         await Assertions.Expect(page.Locator(".atlas-observation").First).ToContainTextAsync("18.25 GBP");
         var overflow = await page.EvaluateAsync<string>("JSON.stringify([...document.querySelectorAll('body *')].filter(e=>e.getBoundingClientRect().right>innerWidth+1 && getComputedStyle(e).position!=='absolute').map(e=>({tag:e.tagName,cls:e.className,right:e.getBoundingClientRect().right})).slice(0,15))");
         Assert.True(await page.EvaluateAsync<bool>("document.documentElement.scrollWidth <= innerWidth"), overflow);
-        await page.ReloadAsync();await Ready(page);await Assertions.Expect(page.Locator("#place-heading")).ToHaveTextAsync("Browser evidence shop "+width);
+        await page.ReloadAsync();await Ready(page);await Assertions.Expect(page.Locator("#place-heading")).ToHaveTextAsync("Nearby pharmacy");
         await using var failedMapContext = await browser.NewContextAsync(new(){ViewportSize=new(){Width=width,Height=900},ServiceWorkers=ServiceWorkerPolicy.Block});
         await failedMapContext.RouteAsync("https://tile.openstreetmap.org/**", route => route.FulfillAsync(new(){Status=503,Body="Unavailable"}));
         if (webkit) await failedMapContext.RouteAsync("**/lib/leaflet/leaflet.js", route => route.AbortAsync());
         var failedMapPage = await failedMapContext.NewPageAsync();
         await failedMapPage.GotoAsync(page.Url);await Ready(failedMapPage);
         await Assertions.Expect(failedMapPage.GetByRole(AriaRole.Status).Filter(new(){HasText="map background is unavailable"})).ToBeVisibleAsync();
-        await Assertions.Expect(failedMapPage.Locator("#place-heading")).ToHaveTextAsync("Browser evidence shop "+width);
+        await Assertions.Expect(failedMapPage.Locator("#place-heading")).ToHaveTextAsync("Nearby pharmacy");
         var evidence=Environment.GetEnvironmentVariable("DIAPERSCOUT_BROWSER_EVIDENCE");if(!string.IsNullOrEmpty(evidence)){Directory.CreateDirectory(evidence);await page.ScreenshotAsync(new(){Path=Path.Combine(evidence,$"atlas-{width}.png"),FullPage=true});}
         await context.CloseAsync();
     }

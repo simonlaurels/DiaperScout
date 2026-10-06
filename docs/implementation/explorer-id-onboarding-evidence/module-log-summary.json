@@ -1,0 +1,28 @@
+[
+  {
+    "time": "2026-10-05T08:51:50.0254249+00:00",
+    "type": "module-import-failed",
+    "methods": []
+  },
+  {
+    "time": "2026-10-05T08:51:50.0254291+00:00",
+    "type": "stack",
+    "methods": [
+      "DiaperScout.Web.Components.Shared.PwaExplore.OnAfterRenderAsync",
+      "DiaperScout.Web"
+    ]
+  },
+  {
+    "time": "2026-10-05T08:51:50.0316818+00:00",
+    "type": "module-import-failed",
+    "methods": []
+  },
+  {
+    "time": "2026-10-05T08:51:50.0316892+00:00",
+    "type": "stack",
+    "methods": [
+      "DiaperScout.Web.Components.Shared.PwaExplore.OnAfterRenderAsync",
+      "DiaperScout.Web"
+    ]
+  }
+]

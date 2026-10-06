@@ -2,9 +2,10 @@ using DiaperScout.Domain;
 namespace DiaperScout.Application;
 
 public sealed record PlaceItem(Guid Id, string Name, string AddressLine1, string Locality, string Postcode,
-    string CountryCode, decimal Latitude, decimal Longitude, PlaceCategory? Category = null);
+    string CountryCode, decimal Latitude, decimal Longitude, PlaceCategory? Category = null, string? SelectionToken = null, string? Attribution = null);
 public sealed record PlaceCountry(string Code, string Name);
-public sealed record NearbyPlaceRequest(decimal Latitude, decimal Longitude);
+public sealed record NearbyPlaceRequest(decimal Latitude, decimal Longitude, int RadiusMetres = 1000);
+public sealed record SelectProviderPlaceRequest(string SelectionToken);
 public sealed record NearbyPlace(PlaceItem Place, double DistanceMetres);
 public sealed record CreatePublicShopRequest(string Name, string AddressLine1, string Locality, string Postcode,
     string CountryCode, decimal? Latitude, decimal? Longitude, bool ConfirmPublicShop, bool ConfirmShopPosition, PlaceCategory? Category = null);
@@ -22,9 +23,11 @@ public interface IPlaceObservations
     Task<IReadOnlyList<PlaceCountry>> CountriesAsync(CancellationToken ct = default);
     Task<IReadOnlyList<PlaceItem>> SearchAsync(string? query, CancellationToken ct = default);
     Task<IReadOnlyList<NearbyPlace>> NearbyAsync(NearbyPlaceRequest request, CancellationToken ct = default);
+    Task<PlaceItem> SelectProviderPlaceAsync(ExplorerIdentity actor, SelectProviderPlaceRequest request, CancellationToken ct = default);
     Task<PlaceItem> CreateShopAsync(ExplorerIdentity actor, CreatePublicShopRequest request, CancellationToken ct = default);
     Task<PlaceItem> UpdateCategoryAsync(AuthenticatedUser actor, Guid id, UpdatePlaceCategoryRequest request, CancellationToken ct = default);
     Task<PhysicalObservationReceipt> ObserveAsync(ExplorerIdentity actor, CreatePhysicalObservationRequest request, CancellationToken ct = default);
+    Task<IReadOnlyList<string>> PublicPlaceSnapshotsAsync(CancellationToken ct = default);
     Task<IReadOnlyList<AtlasPlace>> AtlasAsync(CancellationToken ct = default);
     Task<ProductIdentification?> PackAsync(Guid id, CancellationToken ct = default);
 }

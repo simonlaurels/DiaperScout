@@ -62,3 +62,5 @@ html[data-standalone=true] .discovery-flow .contribution-card h2 { font:700 20px
 .proposal-flow textarea { width:100%; min-height:95px; padding:12px; border:1px solid #c9cbbd; border-radius:10px; font:16px var(--font-body); }
 .ds-button[disabled] { cursor:wait; }
 @media(prefers-reduced-motion:no-preference) { .ds-button[disabled]:has(.scan-busy) .scan-busy { animation:scan-pulse 1s infinite alternate; } @keyframes scan-pulse { to { opacity:.5; } } }
+
+.discovery-illustration{display:block;width:100%;height:auto;max-height:20rem;object-fit:contain;margin:0 auto 1rem}.discovery-flow .scan-pack-card{grid-template-columns:minmax(5rem,30%) 1fr}.discovery-flow .scan-pack-copy dl,.discovery-flow .scan-pack-copy>p:not(.scan-pack-brand){display:none}

@@ -10,7 +10,8 @@ public sealed class PlaceObservationClient(HttpClient client, AuthenticationStat
     public Task<IReadOnlyList<PlaceCountry>> CountriesAsync() => ReadAsync<PlaceCountry>("api/v1/places/countries");
     public Task<IReadOnlyList<PlaceItem>> SearchAsync(string? query) => ReadAsync<PlaceItem>("api/v1/places/?query=" + Uri.EscapeDataString(query ?? ""));
     public async Task<IReadOnlyList<NearbyPlace>> NearbyAsync(NearbyPlaceRequest request) {
-        using var response = await client.PostAsJsonAsync("api/v1/places/nearby", request); await CheckAsync(response);
+        using var message = await CreatePostAsync("api/v1/places/nearby", request);
+        using var response = await client.SendAsync(message); await CheckAsync(response);
         return await response.Content.ReadFromJsonAsync<NearbyPlace[]>() ?? [];
     }
     public Task<PublicProductProposalReceipt> BeginProposalAsync(string gtin, Guid contributionId) => PostAsync<PublicProductProposalReceipt>("api/v1/public-product-proposals/draft", new {gtin, contributionId});
@@ -49,7 +50,7 @@ public sealed class PlaceObservationClient(HttpClient client, AuthenticationStat
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<ProductIdentification>();
     }
-    public Task<PlaceItem> CreateShopAsync(CreatePublicShopRequest request) => PostAsync<PlaceItem>("api/v1/places/", request);
+    public Task<PlaceItem> SelectProviderPlaceAsync(string token) => PostAsync<PlaceItem>("api/v1/places/select", new SelectProviderPlaceRequest(token));
     public Task<PlaceItem> UpdateCategoryAsync(Guid id, UpdatePlaceCategoryRequest request) => PostAsync<PlaceItem>($"api/v1/places/{id}/category", request);
     public Task<PhysicalObservationReceipt> ObserveAsync(CreatePhysicalObservationRequest request) => PostAsync<PhysicalObservationReceipt>("api/v1/physical-observations", request);
     public Task<PublicProductProposalReceipt> ProposeAsync(PublicProductProposal request) => PostAsync<PublicProductProposalReceipt>("api/v1/public-product-proposals", request);

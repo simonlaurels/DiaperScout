@@ -64,7 +64,7 @@ public sealed class PlaceObservationApiTests(PostgreSqlFixture fixture) : IClass
         Assert.Equal(HttpStatusCode.OK, (await anonymous.GetAsync("/api/v1/places/atlas")).StatusCode);
         Assert.Equal(HttpStatusCode.OK, (await anonymous.GetAsync("/api/v1/places/countries")).StatusCode);
         Assert.Equal(HttpStatusCode.OK, (await anonymous.GetAsync("/api/v1/places/packs/" + await Pack(api))).StatusCode);
-        Assert.Equal(HttpStatusCode.Unauthorized, (await anonymous.PostAsJsonAsync("/api/v1/places/", Shop())).StatusCode);
+        Assert.Equal(HttpStatusCode.MethodNotAllowed, (await anonymous.PostAsJsonAsync("/api/v1/places/", Shop())).StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, (await anonymous.PostAsJsonAsync("/api/v1/physical-observations", new CreatePhysicalObservationRequest(await Pack(api), fixture.LocationId, DateTimeOffset.UtcNow, null, null, Guid.NewGuid()))).StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, (await anonymous.PostAsJsonAsync("/api/v1/public-product-proposals", Proposal())).StatusCode);
     }
@@ -75,7 +75,7 @@ public sealed class PlaceObservationApiTests(PostgreSqlFixture fixture) : IClass
         using var scope = api.Services.CreateScope(); var db = scope.ServiceProvider.GetRequiredService<DiaperScoutDbContext>();
         var before = await db.Products.SingleAsync(p => p.Id == fixture.ProductId); var name = before.Name;
         var listings = await db.RetailerProductListings.CountAsync();
-        var placeResponse = await actor.PostAsJsonAsync("/api/v1/places/", Shop("Evidence shop")); placeResponse.EnsureSuccessStatusCode();
+        var placeResponse = await NativePlaceFixtures.CreateAsync(api, Shop("Evidence shop")); placeResponse.EnsureSuccessStatusCode();
         var shop = (await placeResponse.Content.ReadFromJsonAsync<PlaceItem>())!;
         var when = DateTimeOffset.UtcNow.AddMinutes(-10).AddTicks(1);
         var request = new CreatePhysicalObservationRequest(pack, shop.Id, when, 17.25m, "GBP", Guid.NewGuid());
@@ -100,9 +100,9 @@ public sealed class PlaceObservationApiTests(PostgreSqlFixture fixture) : IClass
     public async Task Coordinates_public_confirmation_duplicate_shop_and_observation_validation_are_enforced() {
         using var api = Factory(); using var actor = Actor(api);
         foreach (var invalid in new[] {Shop() with {Latitude = 91}, Shop() with {Longitude = -181}, Shop() with {Latitude = null}, Shop() with {ConfirmPublicShop = false}, Shop() with {ConfirmShopPosition = false}, Shop() with {CountryCode = "XX"}})
-            Assert.Equal(HttpStatusCode.BadRequest, (await actor.PostAsJsonAsync("/api/v1/places/", invalid)).StatusCode);
-        var one = await actor.PostAsJsonAsync("/api/v1/places/", Shop("Duplicate Shop"));one.EnsureSuccessStatusCode();var shop = (await one.Content.ReadFromJsonAsync<PlaceItem>())!;
-        var duplicate = await actor.PostAsJsonAsync("/api/v1/places/", Shop(" duplicate   shop "));duplicate.EnsureSuccessStatusCode();Assert.Equal(shop.Id,(await duplicate.Content.ReadFromJsonAsync<PlaceItem>())!.Id);
+            Assert.Equal(HttpStatusCode.BadRequest, (await NativePlaceFixtures.CreateAsync(api, invalid)).StatusCode);
+        var one = await NativePlaceFixtures.CreateAsync(api, Shop("Duplicate Shop"));one.EnsureSuccessStatusCode();var shop = (await one.Content.ReadFromJsonAsync<PlaceItem>())!;
+        var duplicate = await NativePlaceFixtures.CreateAsync(api, Shop(" duplicate   shop "));duplicate.EnsureSuccessStatusCode();Assert.Equal(shop.Id,(await duplicate.Content.ReadFromJsonAsync<PlaceItem>())!.Id);
         var valid = new CreatePhysicalObservationRequest(await Pack(api),shop.Id,DateTimeOffset.UtcNow,null,null,Guid.NewGuid());
         foreach(var invalid in new[] {valid with {PackTypeId=Guid.NewGuid()},valid with {LocationId=fixture.LocationId},valid with {ObservedAtUtc=DateTimeOffset.UtcNow.AddDays(1)},valid with {PriceAmount=-1,CurrencyCode="GBP"},valid with {PriceAmount=1,CurrencyCode="ZZZ"},valid with {PriceAmount=1.234m,CurrencyCode="GBP"},valid with {ContributionId=Guid.Empty}})
             Assert.Equal(HttpStatusCode.BadRequest,(await actor.PostAsJsonAsync("/api/v1/physical-observations",invalid)).StatusCode);
@@ -138,7 +138,7 @@ public sealed class PlaceObservationApiTests(PostgreSqlFixture fixture) : IClass
         using var api = Factory(); using var actor = Actor(api); using var anonymous = api.CreateClient();
         var pack = await Pack(api);
         async Task<PlaceItem> AddShop(string name) {
-            var response = await actor.PostAsJsonAsync("/api/v1/places/", Shop(name + Guid.NewGuid().ToString("N")));
+            var response = await NativePlaceFixtures.CreateAsync(api, Shop(name + Guid.NewGuid().ToString("N")));
             response.EnsureSuccessStatusCode(); return (await response.Content.ReadFromJsonAsync<PlaceItem>())!;
         }
         var candidate = await AddShop("Unobserved pharmacy ");
@@ -180,11 +180,11 @@ public sealed class PlaceObservationApiTests(PostgreSqlFixture fixture) : IClass
     public async Task Explicit_categories_survive_creation_search_and_deduplication_without_earning_a_pin(PlaceCategory category) {
         using var api = Factory(); using var actor = Actor(api); using var anonymous = api.CreateClient();
         var request = Shop("Category " + Guid.NewGuid().ToString("N")) with { Category = category };
-        var response = await actor.PostAsJsonAsync("/api/v1/places/", request); response.EnsureSuccessStatusCode();
+        var response = await NativePlaceFixtures.CreateAsync(api, request); response.EnsureSuccessStatusCode();
         var place = (await response.Content.ReadFromJsonAsync<PlaceItem>())!; Assert.Equal(category, place.Category);
-        var retry = await actor.PostAsJsonAsync("/api/v1/places/", request with { Category = null }); retry.EnsureSuccessStatusCode();
+        var retry = await NativePlaceFixtures.CreateAsync(api, request with { Category = null }); retry.EnsureSuccessStatusCode();
         Assert.Equal(place, await retry.Content.ReadFromJsonAsync<PlaceItem>());
-        var conflicting = await actor.PostAsJsonAsync("/api/v1/places/", request with { Category = category == PlaceCategory.Other ? PlaceCategory.Pharmacy : PlaceCategory.Other });
+        var conflicting = await NativePlaceFixtures.CreateAsync(api, request with { Category = category == PlaceCategory.Other ? PlaceCategory.Pharmacy : PlaceCategory.Other });
         conflicting.EnsureSuccessStatusCode(); Assert.Equal(place, await conflicting.Content.ReadFromJsonAsync<PlaceItem>());
         Assert.Equal(category, Assert.Single((await anonymous.GetFromJsonAsync<PlaceItem[]>("/api/v1/places/?query=" + request.Name))!).Category);
         Assert.DoesNotContain((await anonymous.GetFromJsonAsync<AtlasPlace[]>("/api/v1/places/atlas"))!, p => p.Place.Id == place.Id);
@@ -193,7 +193,7 @@ public sealed class PlaceObservationApiTests(PostgreSqlFixture fixture) : IClass
     [InlineData(PostgreSqlFixture.ModeratorSubject)] [InlineData(PostgreSqlFixture.AdministratorSubject)]
     public async Task Only_privileged_active_users_can_reclassify_or_clear_an_existing_shop_without_changing_evidence(string subject) {
         using var api = Factory(); using var actor = Actor(api); using var privileged = Actor(api, subject); using var anonymous = api.CreateClient();
-        var created = await actor.PostAsJsonAsync("/api/v1/places/", Shop("Shared category " + Guid.NewGuid().ToString("N")) with { Category = PlaceCategory.Pharmacy });
+        var created = await NativePlaceFixtures.CreateAsync(api, Shop("Shared category " + Guid.NewGuid().ToString("N")) with { Category = PlaceCategory.Pharmacy });
         created.EnsureSuccessStatusCode(); var place = (await created.Content.ReadFromJsonAsync<PlaceItem>())!;
         var observed = await actor.PostAsJsonAsync("/api/v1/physical-observations", new CreatePhysicalObservationRequest(await Pack(api), place.Id, DateTimeOffset.UtcNow.AddMinutes(-1), 18.25m, "GBP", Guid.NewGuid()));
         observed.EnsureSuccessStatusCode(); var receipt = (await observed.Content.ReadFromJsonAsync<PhysicalObservationReceipt>())!;
@@ -217,12 +217,12 @@ public sealed class PlaceObservationApiTests(PostgreSqlFixture fixture) : IClass
         using var api = Factory(); using var actor = Actor(api);
         var options = new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web);
         var body = System.Text.Json.JsonSerializer.SerializeToNode(Shop("Legacy category " + Guid.NewGuid().ToString("N")), options)!.AsObject(); body.Remove("category");
-        var response = await actor.PostAsJsonAsync("/api/v1/places/", body); response.EnsureSuccessStatusCode();
+        var response = await NativePlaceFixtures.CreateAsync(api, body); response.EnsureSuccessStatusCode();
         var place = (await response.Content.ReadFromJsonAsync<PlaceItem>())!; Assert.Null(place.Category);
         var oldResponse = System.Text.Json.JsonSerializer.SerializeToNode(place, options)!.AsObject(); oldResponse.Remove("category");
         Assert.Null(System.Text.Json.JsonSerializer.Deserialize<PlaceItem>(oldResponse, options)!.Category);
         foreach (var value in new[] { 0, -1, 999 }) {
-            var invalid = await actor.PostAsJsonAsync("/api/v1/places/", Shop("Invalid category") with { Category = (PlaceCategory)value });
+            var invalid = await NativePlaceFixtures.CreateAsync(api, Shop("Invalid category") with { Category = (PlaceCategory)value });
             Assert.Equal(HttpStatusCode.BadRequest, invalid.StatusCode); Assert.Contains("category", await invalid.Content.ReadAsStringAsync());
         }
     }

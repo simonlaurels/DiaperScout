@@ -1,98 +1,58 @@
 @page "/join"
-@inject DiaperScout.Web.Services.UserManagementClient UserManagementClient
-
-<PageTitle>Join DiaperScout</PageTitle>
-
-<section class="ds-auth-page">
-    <div class="ds-auth-card">
-        <p class="catalogue-kicker">DIAPERSCOUT</p>
-        <h1>Join DiaperScout</h1>
-
-        @if (_loading)
-        {
-            <p>
-                Checking registration availability...
-            </p>
-        }
-        else if (!_registrationEnabled)
-        {
-            <div class="ds-auth-message">
-                <strong>Registrations are currently closed</strong>
-                <p>
-                    We're not accepting new Explorer registrations right now.
-                    Please check back later.
-                </p>
-            </div>
-        }
-        else if (Sent)
-        {
-            <div class="ds-auth-message ds-auth-message-success">
-                <strong>Check your email</strong>
-                <p>
-                    If registration is currently available, we've sent a link to complete your DiaperScout account.
-                    It expires in 15 minutes and can only be used once.
-                </p>
-            </div>
-        }
-        else
-        {
-            <p>
-                Create your DiaperScout account to contribute to the catalogue and access tools available to your role.
-            </p>
-
-            <form class="ds-auth-form" method="post" action="/join/request">
-                <label for="email">Email address</label>
-                <input id="email"
-                       name="email"
-                       type="email"
-                       autocomplete="email"
-                       required
-                       placeholder="you@example.com" />
-
-                <label for="displayName">Explorer Display Name</label>
-                <input id="displayName"
-                       name="displayName"
-                       type="text"
-                       autocomplete="nickname"
-                       maxlength="100"
-                       required
-                       placeholder="How you'd like to appear on DiaperScout" />
-
-                <button class="ds-button ds-button-primary" type="submit">
-                    Email me a registration link
-                </button>
-            </form>
-
-            @if (Error)
-            {
-                <p class="ds-auth-error">
-                    We couldn't start your registration. Please check the details provided and try again.
-                </p>
-            }
-        }
-
-        <p>
-            Already have a DiaperScout account?
-            <a href="/signin">Sign in</a>
-        </p>
-    </div>
-</section>
-
-@code {
-    [SupplyParameterFromQuery(Name = "sent")]
-    private bool Sent { get; set; }
-
-    [SupplyParameterFromQuery(Name = "error")]
-    private bool Error { get; set; }
-
-    private bool _registrationEnabled;
-    private bool _loading = true;
-
-    protected override async Task OnInitializedAsync()
+@page "/join/details"
+@page "/join/check-email"
+@layout OnboardingLayout
+@inject NavigationManager Navigation
+<PageTitle>Create your Explorer ID · DiaperScout</PageTitle>
+<section class="explorer-card" data-onboarding-public>
+    <a class="explorer-back" href="@(Waiting ? "/join/details" : Details ? "/join" : "/")">‹ Back</a>
+    @if (Waiting)
     {
-        var settings = await UserManagementClient.GetRegistrationSettingsAsync();
-
-        _registrationEnabled = settings?.RegistrationEnabled ?? false;
-        _loading = false;
+        <p class="explorer-kicker">YOUR EXPLORER ID · VERIFY YOUR EMAIL</p>
+        <h1>Check your email</h1>
+        <p>We sent a secure sign-in link to <strong data-onboarding-email>your email address</strong>.</p>
+        <img class="explorer-scene explorer-scene-email" src="/images/onboarding/email.webp" width="768" height="512" alt="The Guide sends your verification letter from a woodland postbox, with her stuffed Fox tucked into her Backpack." />
+        <p class="explorer-note">Open the email and tap the link to confirm this email belongs to you.</p>
+        <p class="explorer-note">The link works once and expires in 15 minutes. It may open in your browser; finish there and your account will also work in the installed app.</p>
+        <AntiforgeryToken />
+        <button class="explorer-secondary" type="button" data-onboarding-resend>Send again</button>
+        <a class="explorer-secondary" href="/join/details">Use a different email</a>
+        <a class="explorer-secondary" href="/join/continue" data-enhance-nav="false">I’ve verified my email</a>
+        <p class="explorer-message" role="status" aria-live="polite" data-onboarding-message></p>
+        <noscript>Open the email link to continue. Enable JavaScript to resend it here.</noscript>
     }
+    else if (Details)
+    {
+        <p class="explorer-kicker">YOUR EXPLORER ID</p>
+        <h1>Tell us about you</h1>
+        <p>A few details to prepare your Explorer ID. No password needed.</p>
+        <form class="explorer-form" method="post" action="/join/request" data-onboarding-form data-enhance="false">
+            <AntiforgeryToken />
+            <label for="displayName">Name or nickname <span aria-hidden="true">*</span></label>
+            <input id="displayName" name="displayName" type="text" autocomplete="nickname" required maxlength="100" aria-describedby="name-help" />
+            <small id="name-help">This is how we’ll address you in DiaperScout. You can change it later.</small>
+            <label for="email">Email address <span aria-hidden="true">*</span></label>
+            <input id="email" name="email" type="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" maxlength="320" required aria-describedby="email-help" />
+            <small id="email-help">We’ll send you a link to verify it. We won’t send spam.</small>
+            <p class="explorer-message" role="status" aria-live="polite" data-onboarding-message>@(Error ? "We couldn’t verify or send that link. It may have expired or already been used. Request a fresh link to continue." : "")</p>
+            <img class="explorer-scene explorer-scene-details" src="/images/onboarding/details-van.webp" width="768" height="512" alt="Inside Wanderer, the Guide fills in an Explorer tag at the dinette, with her stuffed Fox beside the notebook." />
+            <button class="ds-button ds-button-primary" type="submit">Continue</button>
+        </form>
+    }
+    else
+    {
+        <img class="explorer-brand" src="/images/brand/DiaperScout.svg" alt="DiaperScout" />
+        <img class="explorer-scene explorer-scene-welcome" src="/images/onboarding/welcome.webp" width="768" height="512" alt="The Guide offers you a new Explorer ID, with her stuffed Fox beside the map." />
+        <h1>Create your Explorer ID</h1>
+        <p>Keep your discoveries, submissions and everything you pick up along the way.</p>
+        <ul class="explorer-benefits"><li>Save your discoveries</li><li>Submit new products and places</li><li>Plan future adventures</li><li>Keep your sign-in secure</li></ul>
+        <a class="ds-button ds-button-primary" href="/join/details">Get started</a>
+        <p class="explorer-footnote">Already exploring with us? <a href="/signin" data-enhance-nav="false">Sign in</a></p>
+    }
+</section>
+@code {
+    private string Path => new Uri(Navigation.Uri).AbsolutePath;
+    private bool Details => Path == "/join/details";
+    private bool Waiting => Path == "/join/check-email";
+    [SupplyParameterFromQuery(Name = "error")] public bool Error { get; set; }
 }

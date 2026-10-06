@@ -372,7 +372,8 @@ public sealed record AuthenticatedUser(
 public sealed record PasswordlessAuthenticationResult(
     Guid UserId,
     string Subject,
-    IReadOnlyList<PrivilegedRole> Roles);
+    IReadOnlyList<PrivilegedRole> Roles,
+    bool ContinueOnboarding = false);
 
 public interface IPasswordlessAuthentication
 {

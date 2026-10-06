@@ -54,7 +54,7 @@ public sealed class AtlasCategoryBrowserTests(PostgreSqlFixture fixture) : IClas
     public async Task Moderator_can_save_and_clear_category_on_a_real_shared_place_while_preserving_observation() {
         using var api = new ObservationApiFactory(fixture); using var actor = api.CreateClient();
         actor.DefaultRequestHeaders.Add("X-Development-Subject", PostgreSqlFixture.ExplorerSubject);
-        var response = await actor.PostAsJsonAsync("/api/v1/places/", new CreatePublicShopRequest("Moderator editable shop", "1 Test Street", "Testville", "ZZ3 3ZZ", "ZZ", 51.5m, -2m, true, true, PlaceCategory.Pharmacy));
+        var response = await NativePlaceFixtures.CreateAsync(api, new CreatePublicShopRequest("Moderator editable shop", "1 Test Street", "Testville", "ZZ3 3ZZ", "ZZ", 51.5m, -2m, true, true, PlaceCategory.Pharmacy));
         response.EnsureSuccessStatusCode(); var place = (await response.Content.ReadFromJsonAsync<PlaceItem>())!;
         var observation = await actor.PostAsJsonAsync("/api/v1/physical-observations", new CreatePhysicalObservationRequest(fixture.PackTypeId, place.Id, DateTimeOffset.UtcNow.AddMinutes(-1), 18.25m, "GBP", Guid.NewGuid())); observation.EnsureSuccessStatusCode();
         var receipt = (await observation.Content.ReadFromJsonAsync<PhysicalObservationReceipt>())!;

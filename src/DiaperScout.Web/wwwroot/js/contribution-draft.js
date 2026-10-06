@@ -1,11 +1,8 @@
 const prefix='diaperscout-product-draft:';
 export function isInstalled() { return navigator.standalone === true || matchMedia('(display-mode: standalone)').matches; }
-let locationDenied = false;
 export async function nearbyPosition() {
-    if (locationDenied) return {status:'denied'};
     if (!navigator.geolocation) return {status:'unavailable'};
     return await new Promise(resolve => navigator.geolocation.getCurrentPosition(p => resolve({status:'found',latitude:p.coords.latitude,longitude:p.coords.longitude}), e => {
-        if (e.code === 1) locationDenied = true;
         resolve({status:e.code === 1 ? 'denied' : 'unavailable'});
     }, {timeout:12000,maximumAge:60000,enableHighAccuracy:false}));
 }

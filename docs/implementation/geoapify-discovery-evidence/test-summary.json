@@ -1,0 +1,29 @@
+{
+  "completeSerializedSuite": {
+    "domainPassed": 64,
+    "integrationBrowserPassed": 325,
+    "failed": 0,
+    "skipped": 0
+  },
+  "initialConcurrentSuite": {
+    "domainPassed": 64,
+    "integrationBrowserPassed": 318,
+    "integrationBrowserFailed": 6,
+    "finding": "Browser hydration/navigation timeouts; preserved test assertions; full serialized rerun passed"
+  },
+  "targetedChecks": {
+    "providerAndBrowser": 26,
+    "finalHistoryAndMobileEvidence": 4,
+    "mobileActionSpacing": 2,
+    "permanentAttributionAndObservationBrowser": 9
+  },
+  "releaseBuild": {
+    "warnings": 0,
+    "errors": 0
+  },
+  "physicalIphone": {
+    "productionNearbyShopListConfirmedBySimon": true,
+    "realObservationSubmissionNotClaimed": true,
+    "cameraAndNativePasskeyNotSeparatelyClaimed": true
+  }
+}

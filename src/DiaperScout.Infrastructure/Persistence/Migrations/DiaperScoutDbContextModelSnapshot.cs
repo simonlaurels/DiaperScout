@@ -965,6 +965,9 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)");
 
+                    b.Property<string>("ProviderSnapshotJson")
+                        .HasColumnType("jsonb");
+
                     b.Property<Guid?>("RetailerId")
                         .HasColumnType("uuid");
 

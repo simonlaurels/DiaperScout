@@ -32,7 +32,11 @@ public sealed class ScanDiscoveryBrowserTests(PostgreSqlFixture fixture) : IClas
             if (!await db.ProductIdentifiers.AnyAsync(i => i.Value == "4006381333931")) { db.ProductIdentifiers.Add(new ProductIdentifier(fixture.PackTypeId, IdentifierType.Gtin, "4006381333931")); await db.SaveChangesAsync(); }
         }
         using var apiActor = api.CreateClient(); apiActor.DefaultRequestHeaders.Add("X-Development-Subject", PostgreSqlFixture.ExplorerSubject);
-        var shopResponse = await apiActor.PostAsJsonAsync("/api/v1/places/", new CreatePublicShopRequest("Scan test branch " + width, "1 Public Street", "Testville", "ZZ1 2ZZ", "ZZ", 51.9m, -2.1m, true, true, PlaceCategory.Pharmacy)); shopResponse.EnsureSuccessStatusCode(); var shop = (await shopResponse.Content.ReadFromJsonAsync<PlaceItem>())!;
+        var nearbyResponse = await apiActor.PostAsJsonAsync("/api/v1/places/nearby", new NearbyPlaceRequest(51.9m,-2.1m)); nearbyResponse.EnsureSuccessStatusCode();
+        var candidate = Assert.Single((await nearbyResponse.Content.ReadFromJsonAsync<NearbyPlace[]>())!);
+        var selectedResponse = await apiActor.PostAsJsonAsync("/api/v1/places/select", new SelectProviderPlaceRequest(candidate.Place.SelectionToken!)); selectedResponse.EnsureSuccessStatusCode();
+        var shop = (await selectedResponse.Content.ReadFromJsonAsync<PlaceItem>())!;
+
         using var baseWeb = new PasskeyWebFactory(api);
         using var web = baseWeb.WithWebHostBuilder(b => b.ConfigureAppConfiguration((_, c) => c.AddInMemoryCollection(new Dictionary<string,string?> { ["Authentication:Development:Subject"] = PostgreSqlFixture.ExplorerSubject })));
         web.UseKestrel(0); using var client = web.CreateClient(); using var playwright = await Playwright.CreateAsync();
@@ -60,13 +64,15 @@ public sealed class ScanDiscoveryBrowserTests(PostgreSqlFixture fixture) : IClas
         await page.GetByRole(AriaRole.Button,new(){Name="Find nearby shops",Exact=true}).ClickAsync();
         await Assertions.Expect(page.GetByRole(AriaRole.Status).Filter(new(){HasText="Location isn’t available"})).ToBeVisibleAsync();
         Assert.Equal(1, await page.EvaluateAsync<int>("geoRequests"));
-        await page.Locator("#place-query").FillAsync("Scan test branch " + width); await page.GetByRole(AriaRole.Button,new(){Name="Search shops",Exact=true}).ClickAsync();
-        await page.Locator(".place-options button").Filter(new(){HasText=shop.Name}).ClickAsync(); await Capture(page,$"place-{width}.png");
+        await context.AddInitScriptAsync("Object.defineProperty(navigator,'geolocation',{value:{getCurrentPosition:s=>s({coords:{latitude:51.9,longitude:-2.1}})},configurable:true});");
+        await page.ReloadAsync();
+        await page.GetByRole(AriaRole.Button,new(){Name="Find nearby shops",Exact=true}).ClickAsync();
+        await page.GetByRole(AriaRole.Button,new(){Name="Nearby pharmacy",Exact=false}).ClickAsync();
         await page.GetByRole(AriaRole.Button,new(){Name="Continue",Exact=true}).ClickAsync();
         await page.Locator("#observed-price").FillAsync("14.99"); await page.Locator("#observed-currency").FillAsync("GBP"); await Capture(page,$"discovery-details-{width}.png");
-        await page.GetByRole(AriaRole.Button,new(){Name="Review discovery",Exact=true}).ClickAsync(); await Capture(page,$"discovery-review-{width}.png");
+        await page.GetByRole(AriaRole.Button,new(){Name="Review discovery",Exact=true}).ClickAsync(); await Assertions.Expect(page.GetByRole(AriaRole.Heading,new(){Name="Review your discovery",Exact=true})).ToBeVisibleAsync(); await Capture(page,$"discovery-review-{width}.png");
         await page.ReloadAsync(); await Assertions.Expect(page.GetByRole(AriaRole.Heading,new(){Name="Review your discovery",Exact=true})).ToBeVisibleAsync();
-        await page.GetByRole(AriaRole.Button,new(){Name="Record discovery",Exact=true}).ClickAsync(); await Assertions.Expect(page.GetByRole(AriaRole.Heading,new(){Name="Discovery recorded!",Exact=true})).ToBeVisibleAsync(); await Capture(page,$"discovery-success-{width}.png");
+        await page.GetByRole(AriaRole.Button,new(){Name="Record discovery",Exact=true}).ClickAsync(); await Assertions.Expect(page.GetByRole(AriaRole.Heading,new(){Name="Discovery recorded!",Exact=true})).ToBeVisibleAsync(); Assert.InRange(await page.GetByRole(AriaRole.Link,new(){Name="View in Atlas",Exact=true}).EvaluateAsync<double>("e=>e.getBoundingClientRect().height"),44,70); await Capture(page,$"discovery-success-{width}.png");
         await page.GetByRole(AriaRole.Link,new(){Name="View in Atlas",Exact=true}).ClickAsync(); await Assertions.Expect(page.Locator("#place-heading")).ToHaveTextAsync(shop.Name);
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         await page.GotoAsync(origin + details); await page.WaitForFunctionAsync("() => document.documentElement.dataset.pwaState === 'ready'"); await page.WaitForLoadStateAsync(LoadState.NetworkIdle); await Assertions.Expect(page.Locator("#blazor-error-ui")).ToBeHiddenAsync();
@@ -78,11 +84,11 @@ public sealed class ScanDiscoveryBrowserTests(PostgreSqlFixture fixture) : IClas
         Assert.True(await page.Locator(".proposal-photos img").CountAsync() == 1, await page.Locator(".proposal-flow").InnerTextAsync()); await page.GetByRole(AriaRole.Button,new(){Name="Continue",Exact=true}).ClickAsync();
         await page.Locator("#proposal-brand").FillAsync("Integration Test Brand"); await page.Locator("#proposal-name").FillAsync("Integration Test Product"); await page.Locator("#proposal-notes").FillAsync("New barcode packaging evidence.");
         await page.GetByRole(AriaRole.Button,new(){Name="Continue",Exact=true}).ClickAsync(); await Assertions.Expect(page.Locator(".proposal-candidate").First).ToBeVisibleAsync(); await Capture(page,$"duplicate-check-{width}.png");
-        await page.Locator(".proposal-candidate").First.ClickAsync(); await Capture(page,$"proposal-review-{width}.png");
+        await page.Locator(".proposal-candidate").First.ClickAsync(); await Assertions.Expect(page.GetByRole(AriaRole.Heading,new(){Name="Review your submission",Exact=true})).ToBeVisibleAsync(); await Capture(page,$"proposal-review-{width}.png");
         await page.ReloadAsync(); await Assertions.Expect(page.GetByRole(AriaRole.Heading,new(){Name="Review your submission",Exact=true})).ToBeVisibleAsync(); await Assertions.Expect(page.Locator(".proposal-photos img")).ToHaveCountAsync(1);
         await page.GetByRole(AriaRole.Button,new(){Name="Submit for review",Exact=true}).ClickAsync(); await Assertions.Expect(page.GetByRole(AriaRole.Heading,new(){Name="Product submitted!",Exact=true})).ToBeVisibleAsync(); await Capture(page,$"proposal-success-{width}.png");
         await page.GetByRole(AriaRole.Link,new(){Name="Record where I found it",Exact=true}).ClickAsync();
-        await page.Locator("#place-query").FillAsync(shop.Name); await page.GetByRole(AriaRole.Button,new(){Name="Search shops",Exact=true}).ClickAsync(); await page.Locator(".place-options button").Filter(new(){HasText=shop.Name}).ClickAsync();
+        await page.GetByRole(AriaRole.Button,new(){Name="Find nearby shops",Exact=true}).ClickAsync(); await page.Locator(".place-options button").Filter(new(){HasText=shop.Name}).ClickAsync();
         await page.GetByRole(AriaRole.Button,new(){Name="Continue",Exact=true}).ClickAsync(); await page.GetByRole(AriaRole.Button,new(){Name="Review discovery",Exact=true}).ClickAsync(); await page.GetByRole(AriaRole.Button,new(){Name="Record discovery",Exact=true}).ClickAsync();
         await Assertions.Expect(page.GetByRole(AriaRole.Heading,new(){Name="Discovery evidence saved",Exact=true})).ToBeVisibleAsync();
         await using var verify = fixture.CreateDbContext(); var proposal = await verify.CatalogueSubmissions.Where(s=>s.ProposedGtin=="96385074" && s.PendingLocationId==shop.Id).SingleAsync();

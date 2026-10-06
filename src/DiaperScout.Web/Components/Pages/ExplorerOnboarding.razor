@@ -1,0 +1,59 @@
+@page "/join/continue"
+@page "/join/ready"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@layout OnboardingLayout
+<PageTitle>Your Explorer ID · DiaperScout</PageTitle>
+<section class="explorer-card" data-onboarding-private data-passkey-account data-onboarding-passkey>
+    <AntiforgeryToken />
+    <p class="explorer-message" role="status" aria-live="polite" data-onboarding-loading>Opening your Explorer ID…</p>
+    <div class="explorer-verified-moment" data-onboarding-verified hidden>
+        <span class="explorer-verified-seal" aria-hidden="true">✓</span>
+        <h1>Email verified!</h1>
+        <p>Great! Your email is verified and your Explorer ID has been created.</p>
+        <img class="explorer-scene explorer-scene-verified" src="/images/onboarding/verified.webp" width="768" height="512" loading="lazy" decoding="async" alt="An owl carries your verified letter above the path to the explorer outpost." />
+        <a class="ds-button ds-button-primary" href="/join/continue?step=passkey" data-enhance-nav="false">Continue</a>
+    </div>
+    <div data-onboarding-setup hidden>
+        <a class="explorer-back" href="/join/continue" data-enhance-nav="false">‹ Back</a>
+        <p class="explorer-verified"><span aria-hidden="true">✓</span> Email verified</p>
+        <h1>Add a passkey</h1>
+        <p class="explorer-recommended">Highly recommended · optional</p>
+        <p>Sign in securely with Face ID, Touch ID, your device PIN or another method your device supports.</p>
+        <img class="explorer-scene explorer-scene-passkey" src="/images/onboarding/passkey.webp" width="768" height="512" loading="lazy" decoding="async" alt="The Guide attaches an Explorer tag to her packed Backpack, with her stuffed Fox tucked in its pocket." />
+        <p class="explorer-personal-id">Getting you equipped, <strong data-onboarding-name></strong>.</p>
+        <ul class="explorer-benefits explorer-security-benefits"><li>Your device’s built-in security</li><li>No password to remember</li><li>Quick and easy to sign in</li><li>Add more devices later in Backpack</li></ul>
+        <p class="explorer-note">Your verified email sign-in links will still work.</p>
+        <button class="ds-button ds-button-primary" type="button" data-passkey-action="register">Create passkey</button>
+        <button class="explorer-secondary" type="button" data-onboarding-skip>Maybe later</button>
+        <button class="explorer-secondary" type="button" data-onboarding-existing hidden>Continue with my existing passkey</button>
+        <a class="explorer-secondary" href="/join/details" data-onboarding-reverify hidden>Verify your email again to add a passkey</a>
+    </div>
+    <div data-onboarding-name-needed hidden>
+        <p class="explorer-verified">✓ Email verified</p><h1>Choose your Explorer name</h1>
+        <p>Your email is verified. Choose a name or nickname to finish your Explorer ID.</p>
+        <form class="explorer-form" data-onboarding-name-form>
+            <label for="explorer-name">Name or nickname</label><input id="explorer-name" name="displayName" required maxlength="100" autocomplete="nickname" />
+            <button class="ds-button ds-button-primary" type="submit">Save name</button>
+        </form>
+    </div>
+    <div data-onboarding-success hidden>
+        <p class="explorer-verified">✓ Explorer ID ready</p>
+        <h1 data-onboarding-success-title>Your Explorer ID is ready!</h1>
+        <div class="explorer-completion-key" data-onboarding-key hidden aria-label="Your registered passkey">
+            <img src="/images/onboarding/key-v2.webp" width="768" height="512" loading="lazy" decoding="async" alt="A brass explorer’s key on a keyring with your personal luggage tag." />
+            <div class="explorer-key-tag"><strong data-onboarding-key-name></strong><span>Explorer</span><small>DiaperScout</small></div>
+        </div>
+        <p data-onboarding-success-copy></p>
+        <div class="explorer-id-object" data-onboarding-skipped-id hidden><img src="/images/onboarding/id.webp" width="768" height="512" loading="lazy" decoding="async" alt="Your personal Explorer ID on a cream luggage tag." /><div class="explorer-id-label"><p>YOUR EXPLORER ID</p><strong data-onboarding-success-name></strong><span>Explorer · DiaperScout</span></div></div>
+        <ul class="explorer-complete-checklist">
+            <li>Your account is created</li><li>Your email is verified</li><li data-onboarding-key-confirmed hidden>Your passkey is ready</li><li>You can explore, submit and discover</li>
+        </ul>
+        <img class="explorer-scene explorer-scene-ready" src="/images/onboarding/ready-van.webp" width="768" height="512" loading="lazy" decoding="async" alt="Seated inside Wanderer, the Guide hands you an Explorer tag, with her stuffed Fox resting beside her." />
+        <p class="explorer-note" data-onboarding-reminder hidden>Add a passkey later from Backpack for quicker, more secure sign-in.</p>
+        <a class="ds-button ds-button-primary" href="/">Start exploring</a>
+        <a class="explorer-secondary" href="/backpack">Go to my Backpack</a>
+    </div>
+    <p class="explorer-message" data-passkey-message role="status" aria-live="polite"></p>
+    <button class="explorer-secondary" type="button" data-onboarding-retry hidden>Try again</button>
+    <noscript>Enable JavaScript to finish onboarding and set up a passkey. Your email sign-in links remain available.</noscript>
+</section>

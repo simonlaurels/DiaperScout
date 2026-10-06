@@ -9,7 +9,7 @@ using System.Text;
 
 namespace DiaperScout.Infrastructure;
 
-internal sealed class PlaceObservations(DiaperScoutDbContext db, IEditorialAuthorisation authorisation) : IPlaceObservations
+internal sealed class PlaceObservations(DiaperScoutDbContext db, IEditorialAuthorisation authorisation, GeoapifyPlaces provider) : IPlaceObservations
 {
     private static readonly HashSet<string> Currencies = CultureInfo.GetCultures(CultureTypes.SpecificCultures)
         .Select(c => new RegionInfo(c.Name).ISOCurrencySymbol).ToHashSet(StringComparer.Ordinal);
@@ -21,7 +21,7 @@ internal sealed class PlaceObservations(DiaperScoutDbContext db, IEditorialAutho
     private IQueryable<PlaceItem> Project(IQueryable<Location> locations) => from l in locations
         join c in db.Countries on l.CountryId equals c.Id
         where l.IsPublicCommercialPlace && l.Latitude != null && l.Longitude != null
-        select new PlaceItem(l.Id, l.Name, l.AddressLine1, l.Locality, l.Postcode, c.IsoCode, l.Latitude!.Value, l.Longitude!.Value, l.Category);
+        select new PlaceItem(l.Id, l.Name, l.AddressLine1, l.Locality, l.Postcode, c.IsoCode, l.Latitude!.Value, l.Longitude!.Value, l.Category, null, l.ProviderSnapshotJson != null ? "© OpenStreetMap contributors · Powered by Geoapify" : null);
 
     public async Task<IReadOnlyList<PlaceItem>> SearchAsync(string? query, CancellationToken ct = default)
     {
@@ -35,21 +35,29 @@ internal sealed class PlaceObservations(DiaperScoutDbContext db, IEditorialAutho
 
     public async Task<IReadOnlyList<NearbyPlace>> NearbyAsync(NearbyPlaceRequest r, CancellationToken ct = default)
     {
-        if (r.Latitude is < -90 or > 90 || r.Longitude is < -180 or > 180) throw Invalid("position", "Choose a valid location for nearby shop search.");
-        var lat = r.Latitude; var lon = r.Longitude;
-        var cos = (decimal)Math.Max(.000001, Math.Cos((double)lat * Math.PI / 180));
-        var span = .18m / cos; var min = lon - span; var max = lon + span;
-        var q = QualifyingPlaces.Where(l => l.Latitude >= lat - .18m && l.Latitude <= lat + .18m);
-        if (span >= 180) { /* At the poles the search circle can span every longitude. */ }
-        else if (min < -180) q = q.Where(l => l.Longitude >= min + 360 || l.Longitude <= max);
-        else if (max > 180) q = q.Where(l => l.Longitude >= min || l.Longitude <= max - 360);
-        else q = q.Where(l => l.Longitude >= min && l.Longitude <= max);
-        var candidates = await Project(q.OrderBy(l => (l.Latitude - lat) * (l.Latitude - lat) +
-            Math.Min(Math.Abs(l.Longitude!.Value - lon), 360 - Math.Abs(l.Longitude.Value - lon)) *
-            Math.Min(Math.Abs(l.Longitude.Value - lon), 360 - Math.Abs(l.Longitude.Value - lon)) * cos * cos).Take(100)).ToListAsync(ct);
-        return candidates.Select(p => { var dlat = (double)(p.Latitude - lat) * Math.PI / 180; var dlon = (double)(p.Longitude - lon) * Math.PI / 180;
-            var a = Math.Pow(Math.Sin(dlat / 2), 2) + Math.Cos((double)lat * Math.PI / 180) * Math.Cos((double)p.Latitude * Math.PI / 180) * Math.Pow(Math.Sin(dlon / 2), 2);
-            return new NearbyPlace(p, 6371000 * 2 * Math.Asin(Math.Sqrt(Math.Clamp(a, 0, 1)))); }).Where(p => p.DistanceMetres <= 20000).OrderBy(p => p.DistanceMetres).ThenBy(p => p.Place.Id).Take(50).ToArray();
+        return await provider.NearbyAsync(r, ct);
+    }
+
+    public async Task<PlaceItem> SelectProviderPlaceAsync(ExplorerIdentity actor, SelectProviderPlaceRequest request, CancellationToken ct = default)
+    {
+        var snapshot = provider.Verify(request.SelectionToken);
+        var json = System.Text.Json.JsonSerializer.Serialize(snapshot);
+        var identity = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(json)));
+        var existing = await db.Locations.AsNoTracking().SingleOrDefaultAsync(l => l.PlaceIdentity == identity, ct);
+        if (existing is not null) return await Project(QualifyingPlaces.Where(l => l.Id == existing.Id)).SingleAsync(ct);
+        var country = await db.Countries.SingleOrDefaultAsync(c => c.IsoCode == snapshot.CountryCode, ct)
+            ?? throw Invalid("place", "This country is not supported yet.");
+        var shop = Location.PublicShop(actor.UserId, country.Id, snapshot.Name, snapshot.AddressLine1,
+            snapshot.Locality, snapshot.Postcode, snapshot.Latitude, snapshot.Longitude, identity, snapshot.Category);
+        shop.RecordProviderSnapshot(json);
+        db.Locations.Add(shop);
+        try { await db.SaveChangesAsync(ct); }
+        catch (DbUpdateException e) when (e.InnerException is PostgresException { SqlState: "23505", ConstraintName: "IX_locations_PlaceIdentity" })
+        {
+            db.Entry(shop).State = EntityState.Detached;
+            return await SelectProviderPlaceAsync(actor, request, ct);
+        }
+        return await Project(QualifyingPlaces.Where(l => l.Id == shop.Id)).SingleAsync(ct);
     }
 
     public async Task<PlaceItem> CreateShopAsync(ExplorerIdentity actor, CreatePublicShopRequest r, CancellationToken ct = default)
@@ -138,6 +146,14 @@ internal sealed class PlaceObservations(DiaperScoutDbContext db, IEditorialAutho
             return await ObserveAsync(actor, r, ct);
         }
         return Receipt(observation);
+    }
+
+    public async Task<IReadOnlyList<string>> PublicPlaceSnapshotsAsync(CancellationToken ct = default)
+    {
+        var publishedIds = db.Observations.Where(o => o.Type == ObservationType.RetailAvailability && o.PackTypeId != null &&
+            (o.State == ObservationState.Submitted || o.State == ObservationState.Accepted)).Select(o => o.LocationId);
+        return await db.Locations.AsNoTracking().Where(l => publishedIds.Contains(l.Id) && l.IsPublicCommercialPlace && l.ProviderSnapshotJson != null)
+            .OrderBy(l => l.Id).Select(l => l.ProviderSnapshotJson!).ToListAsync(ct);
     }
 
     public async Task<IReadOnlyList<AtlasPlace>> AtlasAsync(CancellationToken ct = default)

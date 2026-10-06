@@ -62,7 +62,9 @@ public sealed class ExplorerProposalEvidenceTests(PostgreSqlFixture fixture) : I
         Assert.Equal(HttpStatusCode.Unauthorized, (await anonymous.GetAsync(image.ContentUrl)).StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, (await moderator.GetAsync(image.ContentUrl)).StatusCode);
         var ownImage = await actor.GetAsync(image.ContentUrl); ownImage.EnsureSuccessStatusCode(); Assert.Equal("no-store", ownImage.Headers.CacheControl?.ToString()); Assert.Equal(Png, await ownImage.Content.ReadAsByteArrayAsync());
-        var placeResponse = await actor.PostAsJsonAsync("/api/v1/places/", new CreatePublicShopRequest("Pending evidence " + key, "1 Public Street", "Testville", "ZZ1 2ZZ", "ZZ", 51.9m, -2.1m, true, true)); placeResponse.EnsureSuccessStatusCode();
+        var nearby = await actor.PostAsJsonAsync("/api/v1/places/nearby", new NearbyPlaceRequest(51.9m,-2.1m)); nearby.EnsureSuccessStatusCode();
+        var providerCandidate = Assert.Single((await nearby.Content.ReadFromJsonAsync<NearbyPlace[]>())!);
+        var placeResponse = await actor.PostAsJsonAsync("/api/v1/places/select", new SelectProviderPlaceRequest(providerCandidate.Place.SelectionToken!)); placeResponse.EnsureSuccessStatusCode();
         var place = (await placeResponse.Content.ReadFromJsonAsync<PlaceItem>())!;
         var discovery = new PendingPhysicalDiscovery(place.Id, DateTimeOffset.UtcNow.AddMinutes(-10), 14.99m, "GBP");
         var proposal = new PublicProductProposal(gtin, "Integration Test Brand", "Evidence product " + key, null, "Integration Test Manufacturer", "Medium", 12, key,
@@ -111,9 +113,12 @@ public sealed class ExplorerProposalEvidenceTests(PostgreSqlFixture fixture) : I
     [Fact]
     public async Task Nearby_known_shops_do_not_earn_pins_or_write_device_position() {
         using var api = new ObservationApiFactory(fixture); using var actor = Actor(api); using var anonymous = api.CreateClient();
-        var response = await actor.PostAsJsonAsync("/api/v1/places/", new CreatePublicShopRequest("Nearby candidate " + Guid.NewGuid(), "1 Public Street", "Testville", "ZZ1 2ZZ", "ZZ", 51.9m, -2.1m, true, true)); response.EnsureSuccessStatusCode(); var place = (await response.Content.ReadFromJsonAsync<PlaceItem>())!;
-        var found = await anonymous.PostAsJsonAsync("/api/v1/places/nearby", new NearbyPlaceRequest(51.9001m, -2.1001m)); found.EnsureSuccessStatusCode(); Assert.Equal("no-store", found.Headers.CacheControl?.ToString()); Assert.Contains((await found.Content.ReadFromJsonAsync<NearbyPlace[]>())!, p => p.Place.Id == place.Id && p.DistanceMetres < 100);
-        Assert.Equal(HttpStatusCode.BadRequest, (await anonymous.PostAsJsonAsync("/api/v1/places/nearby", new NearbyPlaceRequest(100, 0))).StatusCode);
+        var response = await NativePlaceFixtures.CreateAsync(api, new CreatePublicShopRequest("Nearby candidate " + Guid.NewGuid(), "1 Public Street", "Testville", "ZZ1 2ZZ", "ZZ", 51.9m, -2.1m, true, true)); response.EnsureSuccessStatusCode(); var place = (await response.Content.ReadFromJsonAsync<PlaceItem>())!;
+        Assert.Equal(HttpStatusCode.Unauthorized, (await anonymous.PostAsJsonAsync("/api/v1/places/nearby", new NearbyPlaceRequest(51.9001m,-2.1001m))).StatusCode);
+        var found = await actor.PostAsJsonAsync("/api/v1/places/nearby", new NearbyPlaceRequest(51.9001m, -2.1001m)); found.EnsureSuccessStatusCode(); Assert.Equal("no-store", found.Headers.CacheControl?.ToString());
+        var candidate = Assert.Single((await found.Content.ReadFromJsonAsync<NearbyPlace[]>())!); Assert.True(candidate.DistanceMetres < 100); Assert.NotNull(candidate.Place.SelectionToken);
+        Assert.Equal(HttpStatusCode.BadRequest, (await actor.PostAsJsonAsync("/api/v1/places/nearby", new NearbyPlaceRequest(100, 0))).StatusCode);
+
         Assert.DoesNotContain((await anonymous.GetFromJsonAsync<AtlasPlace[]>("/api/v1/places/atlas"))!, p => p.Place.Id == place.Id);
         using var scope = api.Services.CreateScope(); Assert.False(await scope.ServiceProvider.GetRequiredService<DiaperScoutDbContext>().Observations.AnyAsync(o => o.LocationId == place.Id));
     }

@@ -1,0 +1,6 @@
+{
+  "commit": "fa1da98",
+  "build": "db2q",
+  "image": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-web@sha256:28d9e3f376242e1850e0db1fda0c837a46c381b897b5e851562a275faa20ddd7",
+  "revision": "diaperscout-web-vnet--art-fa1da98"
+}

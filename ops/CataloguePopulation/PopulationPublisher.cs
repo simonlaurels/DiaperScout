@@ -16,7 +16,7 @@ public sealed record PopulationPack(
     bool ReconcileDraftAttributes = false,
     Dictionary<CatalogueVariantOverrideAttribute, string>? VerifiedVariantAttributes = null,
     int? LengthMm = null, int? WidthMm = null, PackagingType PackagingType = PackagingType.Bag,
-    string VariantName = "Current");
+    string VariantName = "Current", string? ProductGroupingEvidence = null);
 
 public sealed record PopulationMapping(string ResearchId, Guid SubmissionId, Guid ProductId,
     Guid VariantId, Guid SizeId, Guid PackId, Guid IdentifierId, Guid AuditId, string Gtin, bool Created);
@@ -64,6 +64,9 @@ public sealed class PopulationPublisher(DiaperScoutDbContext db, ICatalogueSubmi
             var matches = identifiers.Where(i => Key(i.Value) == Key(pack.Gtin)).ToList();
             if (matches.Count > 1) throw new InvalidOperationException("Equivalent GTINs already identify multiple canonical packs.");
             if (matches.Count == 1) return await VerifyMapping(pack, matches[0], false);
+            if (string.IsNullOrWhiteSpace(pack.ProductGroupingEvidence))
+                throw new InvalidOperationException("Review and record the product/variant grouping before publishing a new exact pack.");
+            pack = pack with { EvidenceNotes = pack.EvidenceNotes + "\nProduct/variant grouping: " + pack.ProductGroupingEvidence };
 
             var allSubmissions = await db.CatalogueSubmissions.AsNoTracking().ToListAsync();
             var allVariants = await db.CatalogueSubmissionVariants.AsNoTracking().ToListAsync();

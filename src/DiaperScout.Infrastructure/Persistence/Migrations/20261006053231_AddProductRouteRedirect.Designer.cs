@@ -15,7 +15,6 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
     [Migration("20261006053231_AddProductRouteRedirect")]
     partial class AddProductRouteRedirect
     {
-        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
@@ -967,6 +966,9 @@ namespace DiaperScout.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)");
+
+                    b.Property<string>("ProviderSnapshotJson")
+                        .HasColumnType("jsonb");
 
                     b.Property<Guid?>("RetailerId")
                         .HasColumnType("uuid");

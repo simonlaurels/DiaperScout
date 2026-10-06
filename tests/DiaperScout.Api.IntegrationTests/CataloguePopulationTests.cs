@@ -16,11 +16,25 @@ public sealed class CataloguePopulationTests(PostgreSqlFixture fixture) : IClass
         "Medium", 14, gtin, "Manufacturer hip circumference", null, null, 85, 120,
         "https://manufacturer.example.test/product", ["https://manufacturer.example.test/product"],
         ["https://manufacturer.example.test/logistics", "https://retailer.example.test/pack"],
-        ["https://manufacturer.example.test/size"], "Exact Medium sealed bag of 14; no image permission; no images copied.");
+        ["https://manufacturer.example.test/size"], "Exact Medium sealed bag of 14; no image permission; no images copied.",
+        ProductGroupingEvidence: "Reviewed test manufacturer identity: shared product, explicit variants, independent sizes and exact packs.");
 
     private PopulationPublisher Publisher(IServiceProvider services) => new(
         services.GetRequiredService<DiaperScoutDbContext>(), services.GetRequiredService<ICatalogueSubmissions>(),
         services.GetRequiredService<IEditorialAuthorisation>(), services.GetRequiredService<ICanonicalCatalogue>());
+
+    [Fact]
+    public async Task UnreviewedGroupingCannotPublishNewPackButCannotInvalidateExistingPackRetry()
+    {
+        using var factory = new ObservationApiFactory(fixture); using var scope = factory.Services.CreateScope();
+        var publisher = Publisher(scope.ServiceProvider); var pack = Pack("2990000000330");
+        await Assert.ThrowsAsync<InvalidOperationException>(() => publisher.PublishAsync(Actor, pack with { ProductGroupingEvidence = null }));
+        var db = scope.ServiceProvider.GetRequiredService<DiaperScoutDbContext>();
+        Assert.False(await db.CatalogueSubmissions.AnyAsync(s => s.ProposedProductName == pack.Product));
+        var original = await publisher.PublishAsync(Actor, pack);
+        var retry = await publisher.PublishAsync(Actor, pack with { ProductGroupingEvidence = null });
+        Assert.False(retry.Created); Assert.Equal(original.AuditId, retry.AuditId); Assert.Equal(original.PackId, retry.PackId);
+    }
 
     [Fact]
     public async Task OriginalPackRetryAfterGroupingRetainsOriginalPublicationAuditAndSubmission()

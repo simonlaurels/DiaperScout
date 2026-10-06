@@ -37548,11 +37548,12 @@
       "user_correction": "Premium Elastic 6 drops and 10 drops share one product",
       "preview": "premium-elastic-grouping-preview-2026-10-06.json",
       "production_change_applied": false,
-      "publications_on_hold": true
+      "publications_on_hold": true,
+      "approved": true
     }
   },
   "checkpoint": {
-    "status": "MATERIAL_PRODUCT_VARIANT_GROUPING_REVIEW",
+    "status": "APPROVED_GROUPING_CORRECTION_IN_PROGRESS",
     "next_action": "Implement explicit reviewed grouping and approved audited reconciliation; preserve all original identifiers and evidence; then resume research/publication.",
     "research_complete": false,
     "last_action": "User identified wrong product/variant grouping. Read-only preview prepared; no additional publication after verified pack75.",
@@ -37578,7 +37579,7 @@
       "pack_records": 73
     },
     "additional_test_observation": "Broader Python discovery also ran five inherited web-reliability shell-policy tests on Windows: one passed and four failed. Those tests require Unix executable/shebang CLI stubs; no catalogue manifest test failed. No live web policy changed.",
-    "awaiting_decision": "Approve narrow Premium Elastic grouping reconciliation with retained old identities/routes; individually review other absorbency splits.",
+    "awaiting_decision": null,
     "production_published_pack_count": 75
   }
 }

@@ -1,0 +1,13 @@
+# Explicit catalogue product and variant grouping
+
+The population tool previously treated absorbency-labelled discovery names as separate canonical products, each with a Current variant. Premium Elastic 6 drops and 10 drops were incorrectly split despite being variants of the shared MoliCare Premium Elastic product. The user explicitly approved a narrow audited correction, preserving all existing identities, links and history, and individually reviewing other grouping choices.
+
+PopulationPack now accepts an explicit VariantName. It creates or enriches the named variant beneath a shared product, keeping same-labelled sizes independent between variants. A new exact pack requires ProductGroupingEvidence, which is retained with its publication evidence; old pack verification/retries remain compatible. Retained historical identities cannot be reused as new publication parents.
+
+ProductRouteRedirect is an additive routing table. The correction retains both original Product rows and slugs/statuses, renames the retained shared product to Premium Elastic, renames the existing variants to 6 drops and 10 drops, and moves the existing 10-drops variant to the shared product without recreating descendants. Its original route resolves to the shared product with that variant selected. Explicit valid pack/variant selection is respected. Original submission proposals, publication links, audits, sizes, packs and identifiers remain unchanged; original pack retries still return their original publication audit/submission.
+
+The operational path requires an explicit hash-bound plan and read-only fingerprint preview, active administrator, current migrations, a serializable transaction and the shared catalogue advisory lock. It rejects incomplete variant/pack scope, identity/type/manufacturer/family differences, collisions, chained routes, stale previews and image scope requiring separate reconciliation. A scalar fingerprint verifies all protected existing catalogue/reference/source/history values. Audits append to both original product identities. Retry requires the same plan and creates no extra route or audit.
+
+Latest GitHub source was incorporated before release, retaining approved onboarding/Geoapify/Guide changes and its place snapshot schema. The additive route migration metadata was aligned with that combined model; EF reports no pending model changes. Tests cover shared-product variants, independent packs/sizes, grouping-evidence prevention, original publication references, old/public routes, barcode identity, complete scope, transaction rollback and retry.
+
+Production execution/verification is pending and will be appended after the tested release and reconciliation. No other product family is automatically merged by name or family.

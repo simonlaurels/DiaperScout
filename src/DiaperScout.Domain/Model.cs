@@ -3,6 +3,7 @@ namespace DiaperScout.Domain;
 public abstract class Entity
 {
     protected Entity() => Id = Guid.NewGuid();
+    protected Entity(Guid id) => Id = id != Guid.Empty ? id : throw new ArgumentException("An entity ID is required.", nameof(id));
     public Guid Id { get; private set; }
 }
 
@@ -122,6 +123,7 @@ public sealed class Manufacturer : Entity
 {
     private Manufacturer() { Name = null!; Slug = null!; }
     public Manufacturer(string name, string slug, string? websiteUrl = null) { Name = name; Slug = slug; WebsiteUrl = websiteUrl; }
+    public Manufacturer(Guid id, string name, string slug, string? websiteUrl = null) : base(id) { Name = name; Slug = slug; WebsiteUrl = websiteUrl; }
     public string Name { get; private set; }
     public string Slug { get; private set; }
     public string? WebsiteUrl { get; private set; }
@@ -135,6 +137,12 @@ public sealed class Brand : Entity
     public Guid ManufacturerId { get; private set; }
     public string Name { get; private set; }
     public string Slug { get; private set; }
+    public void ReassignManufacturer(Guid expectedManufacturerId, Guid manufacturerId)
+    {
+        if (ManufacturerId != expectedManufacturerId || manufacturerId == Guid.Empty)
+            throw new InvalidOperationException("The expected brand manufacturer relationship has changed.");
+        ManufacturerId = manufacturerId;
+    }
 }
 
 public sealed class Product : Entity
@@ -177,6 +185,13 @@ public sealed class Product : Entity
 
     public void SetDescriptionVisibility(CatalogueContentVisibility visibility) =>
         DescriptionVisibility = visibility;
+
+    public void ReassignManufacturer(Guid expectedManufacturerId, Guid manufacturerId)
+    {
+        if (ManufacturerId != expectedManufacturerId || manufacturerId == Guid.Empty)
+            throw new InvalidOperationException("The expected product manufacturer relationship has changed.");
+        ManufacturerId = manufacturerId;
+    }
 
     public void SetStatus(ProductStatus status)
     {
@@ -263,6 +278,15 @@ public sealed class ProductVariant : Entity
     public int? FastenerCount { get; private set; }
     public string? ConstructionNotes { get; private set; }
     public ICollection<SizeVariant> Sizes { get; } = new List<SizeVariant>();
+
+    public void ReconcileProduct(Guid expectedProductId, Guid productId, string expectedName, string name)
+    {
+        if (ProductId != expectedProductId || Name != expectedName || productId == Guid.Empty ||
+            string.IsNullOrWhiteSpace(name) || name.Trim().Length > 200)
+            throw new InvalidOperationException("The expected variant identity has changed.");
+        ProductId = productId;
+        Name = name.Trim();
+    }
 
     public void UpdateDetails(
         string name,

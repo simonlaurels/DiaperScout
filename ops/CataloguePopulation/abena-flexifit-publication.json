@@ -1,0 +1,303 @@
+[
+  {
+    "ResearchId": "B10-AFF-M-L1-27",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium Flexi Fit",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Flexi Fit L1"
+    ],
+    "Family": "Slip Flexi Fit",
+    "ProductType": "Tape",
+    "Size": "M-L1",
+    "Quantity": 27,
+    "Gtin": "5703538446047",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 70,
+    "HipMaximumCm": 120,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://online.abena.dk/Product/Pdf/1000020859?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m-l1-flexi-fit-27-pcs-109971/"
+    ],
+    "IdentifierSources": [
+      "https://online.abena.dk/Product/Pdf/1000020859?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m-l1-flexi-fit-27-pcs-109971/"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1000020859?type=Online_varedatablad",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact current manufacturer27June2026 article1000020859: ABENA Slip Premium Flexi Fit M-L1, bag27, EAN5703538446047, hip70–120cm; product820×670mm. IndependentNordicregistry confirms exact bagGTIN/count and licenseholderAbenaProduktionA/S;2025catalogue corroborates fit/count. Actualmanufacturer alphanumeric Sizecode retained; Current is editorialstructuralvariant. Reuse existingempty FlexiFit range proposal e5d82a21-8305-4847-b7b7-cc95d7ac902d. Its oldL1 label is not asserted as an exactsizealias: priorproposal andattrs are preserved in journal before explicitly preparing verifiedrange with actualsizecodes. Remaininglegacy L2/L3/L4/XL1/XL2/XL3/XL4 drafts lack exactsize/article/GTINproof and remainunchanged in backlog; future publication must reconcile against thiscanonicalrange. No images copied; permissionunknown. Size-specificabsorbencies notpromoted to range. L-XL1heldseparately count25manufacturer vs26registry.",
+    "ExistingSubmissionId": "e5d82a21-8305-4847-b7b7-cc95d7ac902d",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {},
+    "LengthMm": 820,
+    "WidthMm": 670
+  },
+  {
+    "ResearchId": "B10-AFF-M-L2-25",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium Flexi Fit",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Flexi Fit L1"
+    ],
+    "Family": "Slip Flexi Fit",
+    "ProductType": "Tape",
+    "Size": "M-L2",
+    "Quantity": 25,
+    "Gtin": "5703538446061",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 70,
+    "HipMaximumCm": 120,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://online.abena.dk/Product/Pdf/1000020860?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m-l2-flexi-fit-25-pcs-109972/"
+    ],
+    "IdentifierSources": [
+      "https://online.abena.dk/Product/Pdf/1000020860?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m-l2-flexi-fit-25-pcs-109972/"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1000020860?type=Online_varedatablad",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact current manufacturer27June2026 article1000020860: ABENA Slip Premium Flexi Fit M-L2, bag25, EAN5703538446061, hip70–120cm; product820×670mm. IndependentNordicregistry confirms exact bagGTIN/count and licenseholderAbenaProduktionA/S;2025catalogue corroborates fit/count. Actualmanufacturer alphanumeric Sizecode retained; Current is editorialstructuralvariant. Reuse existingempty FlexiFit range proposal e5d82a21-8305-4847-b7b7-cc95d7ac902d. Its oldL1 label is not asserted as an exactsizealias: priorproposal andattrs are preserved in journal before explicitly preparing verifiedrange with actualsizecodes. Remaininglegacy L2/L3/L4/XL1/XL2/XL3/XL4 drafts lack exactsize/article/GTINproof and remainunchanged in backlog; future publication must reconcile against thiscanonicalrange. No images copied; permissionunknown. Size-specificabsorbencies notpromoted to range. L-XL1heldseparately count25manufacturer vs26registry.",
+    "ExistingSubmissionId": "e5d82a21-8305-4847-b7b7-cc95d7ac902d",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {},
+    "LengthMm": 820,
+    "WidthMm": 670
+  },
+  {
+    "ResearchId": "B10-AFF-M-L3-23",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium Flexi Fit",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Flexi Fit L1"
+    ],
+    "Family": "Slip Flexi Fit",
+    "ProductType": "Tape",
+    "Size": "M-L3",
+    "Quantity": 23,
+    "Gtin": "5703538446085",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 70,
+    "HipMaximumCm": 120,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://online.abena.dk/Product/Pdf/1000020861?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m-l3-flexi-fit-23-pcs-109973/"
+    ],
+    "IdentifierSources": [
+      "https://online.abena.dk/Product/Pdf/1000020861?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m-l3-flexi-fit-23-pcs-109973/"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1000020861?type=Online_varedatablad",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact current manufacturer27June2026 article1000020861: ABENA Slip Premium Flexi Fit M-L3, bag23, EAN5703538446085, hip70–120cm; product820×670mm. IndependentNordicregistry confirms exact bagGTIN/count and licenseholderAbenaProduktionA/S;2025catalogue corroborates fit/count. Actualmanufacturer alphanumeric Sizecode retained; Current is editorialstructuralvariant. Reuse existingempty FlexiFit range proposal e5d82a21-8305-4847-b7b7-cc95d7ac902d. Its oldL1 label is not asserted as an exactsizealias: priorproposal andattrs are preserved in journal before explicitly preparing verifiedrange with actualsizecodes. Remaininglegacy L2/L3/L4/XL1/XL2/XL3/XL4 drafts lack exactsize/article/GTINproof and remainunchanged in backlog; future publication must reconcile against thiscanonicalrange. No images copied; permissionunknown. Size-specificabsorbencies notpromoted to range. L-XL1heldseparately count25manufacturer vs26registry.",
+    "ExistingSubmissionId": "e5d82a21-8305-4847-b7b7-cc95d7ac902d",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {},
+    "LengthMm": 820,
+    "WidthMm": 670
+  },
+  {
+    "ResearchId": "B10-AFF-M-L4-21",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium Flexi Fit",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Flexi Fit L1"
+    ],
+    "Family": "Slip Flexi Fit",
+    "ProductType": "Tape",
+    "Size": "M-L4",
+    "Quantity": 21,
+    "Gtin": "5713571001561",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 70,
+    "HipMaximumCm": 120,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://online.abena.dk/Product/Pdf/1000021166?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m-l4-flexi-fit-21-pcs-109974/"
+    ],
+    "IdentifierSources": [
+      "https://online.abena.dk/Product/Pdf/1000021166?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m-l4-flexi-fit-21-pcs-109974/"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1000021166?type=Online_varedatablad",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact current manufacturer27June2026 article1000021166: ABENA Slip Premium Flexi Fit M-L4, bag21, EAN5713571001561, hip70–120cm; product820×670mm. IndependentNordicregistry confirms exact bagGTIN/count and licenseholderAbenaProduktionA/S;2025catalogue corroborates fit/count. Actualmanufacturer alphanumeric Sizecode retained; Current is editorialstructuralvariant. Reuse existingempty FlexiFit range proposal e5d82a21-8305-4847-b7b7-cc95d7ac902d. Its oldL1 label is not asserted as an exactsizealias: priorproposal andattrs are preserved in journal before explicitly preparing verifiedrange with actualsizecodes. Remaininglegacy L2/L3/L4/XL1/XL2/XL3/XL4 drafts lack exactsize/article/GTINproof and remainunchanged in backlog; future publication must reconcile against thiscanonicalrange. No images copied; permissionunknown. Size-specificabsorbencies notpromoted to range. L-XL1heldseparately count25manufacturer vs26registry.",
+    "ExistingSubmissionId": "e5d82a21-8305-4847-b7b7-cc95d7ac902d",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {},
+    "LengthMm": 820,
+    "WidthMm": 670
+  },
+  {
+    "ResearchId": "B10-AFF-L-XL2-22",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium Flexi Fit",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Flexi Fit L1"
+    ],
+    "Family": "Slip Flexi Fit",
+    "ProductType": "Tape",
+    "Size": "L-XL2",
+    "Quantity": 22,
+    "Gtin": "5703538446153",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 110,
+    "HipMaximumCm": 170,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://online.abena.dk/Product/Pdf/1000020864?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l-xl2-flexi-fit-22-pcs-109976/"
+    ],
+    "IdentifierSources": [
+      "https://online.abena.dk/Product/Pdf/1000020864?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l-xl2-flexi-fit-22-pcs-109976/"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1000020864?type=Online_varedatablad",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact current manufacturer27June2026 article1000020864: ABENA Slip Premium Flexi Fit L-XL2, bag22, EAN5703538446153, hip110–170cm; product970×800mm. IndependentNordicregistry confirms exact bagGTIN/count and licenseholderAbenaProduktionA/S;2025catalogue corroborates fit/count. Actualmanufacturer alphanumeric Sizecode retained; Current is editorialstructuralvariant. Reuse existingempty FlexiFit range proposal e5d82a21-8305-4847-b7b7-cc95d7ac902d. Its oldL1 label is not asserted as an exactsizealias: priorproposal andattrs are preserved in journal before explicitly preparing verifiedrange with actualsizecodes. Remaininglegacy L2/L3/L4/XL1/XL2/XL3/XL4 drafts lack exactsize/article/GTINproof and remainunchanged in backlog; future publication must reconcile against thiscanonicalrange. No images copied; permissionunknown. Size-specificabsorbencies notpromoted to range. L-XL1heldseparately count25manufacturer vs26registry.",
+    "ExistingSubmissionId": "e5d82a21-8305-4847-b7b7-cc95d7ac902d",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {},
+    "LengthMm": 970,
+    "WidthMm": 800
+  },
+  {
+    "ResearchId": "B10-AFF-L-XL3-20",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium Flexi Fit",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Flexi Fit L1"
+    ],
+    "Family": "Slip Flexi Fit",
+    "ProductType": "Tape",
+    "Size": "L-XL3",
+    "Quantity": 20,
+    "Gtin": "5703538446177",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 110,
+    "HipMaximumCm": 170,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://online.abena.dk/Product/Pdf/1000020865?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l-xl3-flexi-fit-20-pcs-109977/"
+    ],
+    "IdentifierSources": [
+      "https://online.abena.dk/Product/Pdf/1000020865?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l-xl3-flexi-fit-20-pcs-109977/"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1000020865?type=Online_varedatablad",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact current manufacturer27June2026 article1000020865: ABENA Slip Premium Flexi Fit L-XL3, bag20, EAN5703538446177, hip110–170cm; product970×800mm. IndependentNordicregistry confirms exact bagGTIN/count and licenseholderAbenaProduktionA/S;2025catalogue corroborates fit/count. Actualmanufacturer alphanumeric Sizecode retained; Current is editorialstructuralvariant. Reuse existingempty FlexiFit range proposal e5d82a21-8305-4847-b7b7-cc95d7ac902d. Its oldL1 label is not asserted as an exactsizealias: priorproposal andattrs are preserved in journal before explicitly preparing verifiedrange with actualsizecodes. Remaininglegacy L2/L3/L4/XL1/XL2/XL3/XL4 drafts lack exactsize/article/GTINproof and remainunchanged in backlog; future publication must reconcile against thiscanonicalrange. No images copied; permissionunknown. Size-specificabsorbencies notpromoted to range. L-XL1heldseparately count25manufacturer vs26registry.",
+    "ExistingSubmissionId": "e5d82a21-8305-4847-b7b7-cc95d7ac902d",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {},
+    "LengthMm": 970,
+    "WidthMm": 800
+  },
+  {
+    "ResearchId": "B10-AFF-L-XL4-18",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium Flexi Fit",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Flexi Fit L1"
+    ],
+    "Family": "Slip Flexi Fit",
+    "ProductType": "Tape",
+    "Size": "L-XL4",
+    "Quantity": 18,
+    "Gtin": "5713571001585",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 110,
+    "HipMaximumCm": 170,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://online.abena.dk/Product/Pdf/1000021167?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l-xl4-flexi-fit-18-pcs-109978/"
+    ],
+    "IdentifierSources": [
+      "https://online.abena.dk/Product/Pdf/1000021167?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l-xl4-flexi-fit-18-pcs-109978/"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1000021167?type=Online_varedatablad",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact current manufacturer27June2026 article1000021167: ABENA Slip Premium Flexi Fit L-XL4, bag18, EAN5713571001585, hip110–170cm; product970×800mm. IndependentNordicregistry confirms exact bagGTIN/count and licenseholderAbenaProduktionA/S;2025catalogue corroborates fit/count. Actualmanufacturer alphanumeric Sizecode retained; Current is editorialstructuralvariant. Reuse existingempty FlexiFit range proposal e5d82a21-8305-4847-b7b7-cc95d7ac902d. Its oldL1 label is not asserted as an exactsizealias: priorproposal andattrs are preserved in journal before explicitly preparing verifiedrange with actualsizecodes. Remaininglegacy L2/L3/L4/XL1/XL2/XL3/XL4 drafts lack exactsize/article/GTINproof and remainunchanged in backlog; future publication must reconcile against thiscanonicalrange. No images copied; permissionunknown. Size-specificabsorbencies notpromoted to range. L-XL1heldseparately count25manufacturer vs26registry.",
+    "ExistingSubmissionId": "e5d82a21-8305-4847-b7b7-cc95d7ac902d",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {},
+    "LengthMm": 970,
+    "WidthMm": 800
+  }
+]

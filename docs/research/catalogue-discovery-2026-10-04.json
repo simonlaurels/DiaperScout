@@ -1,0 +1,4011 @@
+{
+  "schema": "names-only-discovery-v1",
+  "access_date": "2026-10-04",
+  "source": "https://diapstash.com/catalog/types",
+  "source_use": "Candidate names only; not canonical factual provenance",
+  "publication_allowed": false,
+  "group_count": 363,
+  "candidate_count": 2185,
+  "groups": [
+    {
+      "discovery_group": "A Lovely Day",
+      "names": [
+        "All-in-one Extra",
+        "All-in-one Super",
+        "Classic Pants",
+        "Masculine Pants Level 4",
+        "Masculine Pants Level 5"
+      ]
+    },
+    {
+      "discovery_group": "abdldream",
+      "names": [
+        "Animal world",
+        "Bambi",
+        "Beach Mickey",
+        "Bear&Cats",
+        "Bluey",
+        "Bluey Blue",
+        "Bluey playtime",
+        "Care Bears",
+        "Cars",
+        "Dalmation",
+        "Dino",
+        "Family",
+        "Fubo",
+        "Girls & Kitty",
+        "Hello Kitty",
+        "Ideas",
+        "Little Lion",
+        "Little Rabbit",
+        "Miffy",
+        "Moomin",
+        "My Little Pony",
+        "PP Mix",
+        "Paw Patrol",
+        "Paw Patrol Play Time",
+        "Pink Bear",
+        "Pocket Monster",
+        "Pooh&Eeyore",
+        "Sesame Street",
+        "Sonic",
+        "The Aristocats",
+        "The Bear",
+        "The Powerpuff Girls",
+        "Totally Spies",
+        "Toy Sory",
+        "Trip",
+        "Two-dimensional anime",
+        "Wolf",
+        "Zootopia"
+      ]
+    },
+    {
+      "discovery_group": "Abena",
+      "names": [
+        "Abena Boost",
+        "Abri-Fix Cotton With Legs",
+        "Abri-Fix Cotton Without Legs",
+        "Abri-Flex Premium 1",
+        "Abri-Form 1",
+        "Abri-Form 2",
+        "Abri-Form 3",
+        "Abri-Form 4",
+        "Abri-Form Special",
+        "Abri-Let Maxi",
+        "Abri-Man Slipguard",
+        "Delta Form 2",
+        "Delta Form 3",
+        "Delta San 6",
+        "Delta San 7",
+        "Delta San 9",
+        "Delta-Form 1",
+        "Let Anatomic",
+        "Let Maxi",
+        "Let Normal",
+        "Light Extra 3",
+        "Light Extra Plus 3A",
+        "Light Maxi 4A",
+        "Light Mini 1",
+        "Light Mini Plus 1A",
+        "Light Normal 2",
+        "Light Super 4",
+        "Light Ultra Mini 0",
+        "Man Formula 1",
+        "Man Formula 2",
+        "Man Formula Zero",
+        "Man Slipguard",
+        "Man Special",
+        "Man Zero",
+        "Pants 0",
+        "Pants 1",
+        "Pants 2",
+        "Pants 3",
+        "Pants Junior",
+        "Pants Special 2",
+        "Pants light",
+        "San 1",
+        "San 10",
+        "San 11",
+        "San 11/XXL",
+        "San 12",
+        "San 1A",
+        "San 2",
+        "San 3",
+        "San 3A",
+        "San 4",
+        "San 5",
+        "San 6",
+        "San 7",
+        "San 7/XXL",
+        "San 8",
+        "San 9",
+        "San Special",
+        "Slip 0",
+        "Slip 1",
+        "Slip 2",
+        "Slip 3",
+        "Slip 4",
+        "Slip Flexi-Fit 1",
+        "Slip Flexi-Fit 2",
+        "Slip Flexi-Fit 3",
+        "Slip Flexi-Fit 4",
+        "Slip Junior",
+        "Slip Special 4",
+        "Wing 1",
+        "Wing 2",
+        "Wing 3",
+        "Wing 4"
+      ]
+    },
+    {
+      "discovery_group": "Absorbeo",
+      "names": [
+        "Brief Extra",
+        "Brief Maxi"
+      ]
+    },
+    {
+      "discovery_group": "Absorin",
+      "names": [
+        "Comfort Fit",
+        "Comfort Plus",
+        "Comfort SlimFit",
+        "Comfort Super",
+        "Inlay Pad Maxi",
+        "Inlay Pad Mini",
+        "Mincy Light",
+        "Mincy Normal",
+        "Sanette Day Extra",
+        "Sanette Day Light",
+        "Sanette Heavy",
+        "Sanette Night",
+        "Sanette Ultra",
+        "Slip Day",
+        "Slip Day/Night",
+        "Slip Night/Heavy",
+        "Slip Ultra"
+      ]
+    },
+    {
+      "discovery_group": "ABUniverse",
+      "names": [
+        "AlphaGatorZ",
+        "BareBum",
+        "BunnyHopps",
+        "BunnyHopps 4-Tape",
+        "Cloth-Backed Cushies",
+        "Cushies",
+        "Cushies Ultra",
+        "Cushies v1",
+        "DinoRawrZ",
+        "Kiddo",
+        "Kiddo 4-Tape",
+        "Lavender",
+        "Little Kings",
+        "LittlePawz",
+        "PeekABU",
+        "Power Ups",
+        "PowerUps Europe",
+        "PreSchool Cloth-Backed",
+        "PreSchool Plastic",
+        "Simple",
+        "Simple Daytime",
+        "Simple Ultra",
+        "Sissy",
+        "Space",
+        "Super Dry Kids",
+        "TinyTails"
+      ]
+    },
+    {
+      "discovery_group": "Active Hygiene",
+      "names": [
+        "Advance by Active"
+      ]
+    },
+    {
+      "discovery_group": "Advance",
+      "names": [
+        "Breathable Pads Super",
+        "Breathable Pads Super Plus",
+        "Breathable Pull-up Regular",
+        "Breathable Pull-up Super",
+        "Breathable Pull-up Super Plus"
+      ]
+    },
+    {
+      "discovery_group": "Age Co",
+      "names": [
+        "Total Care Pants Maxi",
+        "Total Care Slips Maxi"
+      ]
+    },
+    {
+      "discovery_group": "Ageplay Outfitters",
+      "names": [
+        "Seaside Princess"
+      ]
+    },
+    {
+      "discovery_group": "Aichner",
+      "names": [
+        "Inko-Hose Klettverschluss",
+        "Inko-Hose mit Druckknöpfe",
+        "Windelspeicher"
+      ]
+    },
+    {
+      "discovery_group": "Aimisin",
+      "names": [
+        "Absorbent Plus",
+        "Fox and Bear",
+        "Heavy Absorbancy Protection Underwear",
+        "Kitten and dinosaur",
+        "The alpaca couple",
+        "Uncle Clown"
+      ]
+    },
+    {
+      "discovery_group": "Aiwibi",
+      "names": [
+        "Comfynite Nighttime Pants"
+      ]
+    },
+    {
+      "discovery_group": "Albert Heijn",
+      "names": [
+        "Discreet Incontinence pants"
+      ]
+    },
+    {
+      "discovery_group": "Alry",
+      "names": [
+        "Adult Pants"
+      ]
+    },
+    {
+      "discovery_group": "Always",
+      "names": [
+        "Always Discreet Pants",
+        "Always Discreet Pants Plus",
+        "Discreet Boutique Incontinence Pad Heavy",
+        "Discreet Boutique Incontinence Underwear",
+        "Discreet Heavy Pads",
+        "Discreet Maximum Protection Underwear",
+        "Discreet Protection Maximale Nuit",
+        "Discreet Ultimate Extra Protect",
+        "Maxi Comfort Pad",
+        "Maxi ProFresh Night",
+        "Maxi Protect Underwear",
+        "Ultimate Night"
+      ]
+    },
+    {
+      "discovery_group": "Always My Baby",
+      "names": [
+        "Diapers",
+        "Training Pants"
+      ]
+    },
+    {
+      "discovery_group": "Amazon Basics",
+      "names": [
+        "Incontinence Pads Extra Plus",
+        "Incontinence Pads Maxi",
+        "Lady Pants Discreet Normal",
+        "Men's Guards",
+        "Pants Plus",
+        "Protective Underwear",
+        "Women's Light Bladder Control Pads",
+        "Women's Maximum Bladder Control Pads",
+        "Women's Moderate Bladder Control Pads",
+        "Women's Overnight Bladder Control Pads",
+        "Women's Ultimate Bladder Control Pads"
+      ]
+    },
+    {
+      "discovery_group": "AMD",
+      "names": [
+        "Fit Extra",
+        "Fit Maxi",
+        "Fit Maxi Plus",
+        "Form Maxi",
+        "Form Maxi Plus",
+        "Form Super",
+        "Lady Extra",
+        "Lady Maxi",
+        "Lady Normal",
+        "Lady Super",
+        "Pant Extra",
+        "Pant Maxi",
+        "Pant Normal",
+        "Pant Super",
+        "Rectangular Pad",
+        "Slip Extra",
+        "Slip Maxi",
+        "Slip Maxi Plus",
+        "Slip Normal",
+        "Slip Super"
+      ]
+    },
+    {
+      "discovery_group": "AMT-LIFE",
+      "names": [
+        "Adult Diaper Premium",
+        "Adult Pants Premium"
+      ]
+    },
+    {
+      "discovery_group": "Anan",
+      "names": [
+        "All-in-One Value"
+      ]
+    },
+    {
+      "discovery_group": "AngelFluff",
+      "names": [
+        "Flannel Diaper Insert",
+        "Flannel Hourglass Shapely Series",
+        "Plastic Pants",
+        "Pre-Folded Flannel Diapers",
+        "Solution Series All-In-One",
+        "Super Flex Plastic Pants"
+      ]
+    },
+    {
+      "discovery_group": "Arkalia",
+      "names": [
+        "Pannoloni Mutandina Adulti"
+      ]
+    },
+    {
+      "discovery_group": "ASDA",
+      "names": [
+        "Little Angels",
+        "Mens Protective Pads for sensitive bladder",
+        "Unisex Protective Underwear"
+      ]
+    },
+    {
+      "discovery_group": "Assurance",
+      "names": [
+        "Men's Guards",
+        "Men's underwear",
+        "Men’s Overnight Underwear",
+        "Stretch Briefs",
+        "Unisex Belted Shield",
+        "Women's overnight underwear",
+        "Women´s underwear"
+      ]
+    },
+    {
+      "discovery_group": "Attends",
+      "names": [
+        "Adjustable 10",
+        "Advanced Briefs",
+        "Attends Classic",
+        "Attends Deoplus",
+        "Breathable Briefs",
+        "Briefs Ultimate Absorbency",
+        "Briefs Waistband Style",
+        "Contours Air Comfort 10",
+        "Contours Air Comfort 4",
+        "Contours Air Comfort 5",
+        "Contours Air Comfort 6",
+        "Contours Air Comfort 7",
+        "Contours Air Comfort 8",
+        "Contours Air Comfort 9",
+        "Contours Air Regular 10",
+        "Contours Air Regular 4",
+        "Contours Air Regular 5",
+        "Contours Air Regular 6",
+        "Contours Air Regular 7",
+        "Contours Air Regular 8",
+        "Contours Air Regular 9",
+        "Flex 10",
+        "Flex 8",
+        "Flex 9",
+        "Lady Discreet Underwear 3",
+        "Men Protective Pad 3",
+        "Men Protective Pad 4",
+        "Men Protective Shield 1",
+        "Men Protective Shield 2",
+        "Men Protective Underwear 3",
+        "Poly Briefs",
+        "Premier Briefs",
+        "Premier Overnight Pad",
+        "Premier Underwear",
+        "Pull-Ons 10",
+        "Pull-Ons 4",
+        "Pull-Ons 6",
+        "Pull-Ons 8",
+        "Pull-Ons Discreet Underwear 3",
+        "Shaped Pads Plus",
+        "Shaped Pads Regular",
+        "Shaped Pads Super",
+        "Sleep Comfort",
+        "Slip 10 SPECIAL CARE",
+        "Slip Active 10",
+        "Slip Active 8",
+        "Slip Active 9",
+        "Slip Air Comfort 10",
+        "Slip Air Comfort 8",
+        "Slip Air Comfort 9",
+        "Slip Classic 10",
+        "Slip Regular 8",
+        "Slip Regular 9",
+        "Slip regular 10",
+        "Stretch Briefs Ultimate Absorbency",
+        "Ultimate Absorbency Underwear",
+        "Underwear for Men"
+      ]
+    },
+    {
+      "discovery_group": "Attento",
+      "names": [
+        "Magic Tape Extensible",
+        "Night Pants"
+      ]
+    },
+    {
+      "discovery_group": "Auchan",
+      "names": [
+        "Baby Pants",
+        "Changes Anatomiques",
+        "Changes Complets",
+        "Culottes Pants",
+        "Pyjama Pants"
+      ]
+    },
+    {
+      "discovery_group": "AwwSoCute",
+      "names": [
+        "Blue Teddy Bear",
+        "Pink Teddy Bear",
+        "Purple Teddy Bear"
+      ]
+    },
+    {
+      "discovery_group": "Baby Pants",
+      "names": [
+        "Big Kid Training Pant",
+        "Birdseye Cotton Contour Cloth Diaper",
+        "Gary Plastic Pants",
+        "My First Training Pants",
+        "Rhumba Plastic Pants"
+      ]
+    },
+    {
+      "discovery_group": "Babydream",
+      "names": [
+        "Fit&Fun",
+        "Gute Nacht Pants",
+        "Premium Pants",
+        "Premium Windeln",
+        "Schwimm Pants",
+        "Wolkenweiche Windeln"
+      ]
+    },
+    {
+      "discovery_group": "Babykins",
+      "names": [
+        "Adult Cloth Diaper with Extra Thick Padding",
+        "Adult Contour Prefold Diaper",
+        "PUL Pull-On Adult Waterproof Pant",
+        "Pull-On Adult Cotton Diaper"
+      ]
+    },
+    {
+      "discovery_group": "Babylino",
+      "names": [
+        "Safe Nights",
+        "Sensitive",
+        "Sensitive Pants",
+        "premium Pants"
+      ]
+    },
+    {
+      "discovery_group": "BabyLove",
+      "names": [
+        "Beyond",
+        "Cosifit",
+        "Nappy Pants",
+        "SleepyNights"
+      ]
+    },
+    {
+      "discovery_group": "Babysec",
+      "names": [
+        "Premium Soft",
+        "Voy A Dormir"
+      ]
+    },
+    {
+      "discovery_group": "Babywell",
+      "names": [
+        "Premium Pants",
+        "Premium Windeln"
+      ]
+    },
+    {
+      "discovery_group": "Bambinex",
+      "names": [
+        "Bambinex Pro / Nappynex",
+        "Bambinex Pro Booster / Nappynex Booster"
+      ]
+    },
+    {
+      "discovery_group": "Bambino",
+      "names": [
+        "Bellissimo V1",
+        "Bellissimo V2",
+        "Bianco",
+        "Bianco Ultra Stretch",
+        "Bloomeez",
+        "Catstronaut",
+        "Classico V1",
+        "Classico V2",
+        "Cloudee",
+        "Cloudee Slip-On",
+        "Cont-Raptor",
+        "Duo",
+        "Karnevalee",
+        "Magnifico",
+        "Magnifico - Slip-on",
+        "Quadro",
+        "Red Bearon",
+        "Skooldoodle",
+        "Skooldoodle - Slip-on",
+        "Sun n' Fun",
+        "Teddy V1",
+        "Teddy V2",
+        "Valentine's"
+      ]
+    },
+    {
+      "discovery_group": "Bambo",
+      "names": [
+        "Bambo Dreamy Night Pants",
+        "Dream Diapers",
+        "Dream Training Pants",
+        "Nature",
+        "Nature Pants",
+        "Overnight Diapers",
+        "Swim Pants"
+      ]
+    },
+    {
+      "discovery_group": "bbtips",
+      "names": [
+        "Diaper"
+      ]
+    },
+    {
+      "discovery_group": "Beauty Baby",
+      "names": [
+        "Premium Dry Windeln",
+        "Premium Pants",
+        "Pyjama Pants"
+      ]
+    },
+    {
+      "discovery_group": "Because Market",
+      "names": [
+        "Because Booster Pads",
+        "Because Booster Pads Maximum",
+        "Because Booster Pads Overnight",
+        "Bladder Control Pads Ultimate Overnight",
+        "Maximum Tabbed Briefs",
+        "Men's Guards",
+        "Premium Boosters Added Protection",
+        "Premium Maximum Plus Underwear for Men",
+        "Premium Maximum Plus Underwear for Women",
+        "Premium Overnight Plus Underwear",
+        "Premium Overnight Plus Underwear for Men",
+        "Premium Pad Maximum",
+        "Premium Pad Moderate",
+        "Premium Pad Moderate",
+        "Premium Pad Overnight",
+        "Sensitive Overnight Underwear"
+      ]
+    },
+    {
+      "discovery_group": "Bella",
+      "names": [
+        "Baby Happy Windeln Comfort",
+        "Mamma Vorlagen",
+        "Panty Classic"
+      ]
+    },
+    {
+      "discovery_group": "Bells Bumz",
+      "names": [
+        "Bamboo & Hemp Mix inserts",
+        "Heavy Wetter",
+        "Reusabelles Stretchy Flat"
+      ]
+    },
+    {
+      "discovery_group": "Beside",
+      "names": [
+        "Art Max"
+      ]
+    },
+    {
+      "discovery_group": "BetterDry",
+      "names": [
+        "BetterDry",
+        "BetterDry Day",
+        "BetterDry Pull-On"
+      ]
+    },
+    {
+      "discovery_group": "Bevola",
+      "names": [
+        "Baby Windeln",
+        "Pyjama Pants"
+      ]
+    },
+    {
+      "discovery_group": "BEYOND",
+      "names": [
+        "Maximum Bladder Control Pad",
+        "Overnight Bladder Control Pad",
+        "Ultimate Bladder Control Pad",
+        "XP 5000"
+      ]
+    },
+    {
+      "discovery_group": "Bigfral",
+      "names": [
+        "Absorbent",
+        "Fralda Plus"
+      ]
+    },
+    {
+      "discovery_group": "Bimedica",
+      "names": [
+        "ABS Pants Day",
+        "ABS Pants Night"
+      ]
+    },
+    {
+      "discovery_group": "Biomédi",
+      "names": [
+        "All-In-One Washable Diaper"
+      ]
+    },
+    {
+      "discovery_group": "Bipa",
+      "names": [
+        "Hygiene Pants Classic",
+        "Men Pad 1",
+        "Men Pad 2",
+        "Men Pad 3"
+      ]
+    },
+    {
+      "discovery_group": "BKN Nappies",
+      "names": [
+        "BKN Premium"
+      ]
+    },
+    {
+      "discovery_group": "Blümchen",
+      "names": [
+        "2 in 1",
+        "StayDry (Snap)",
+        "StayDry (Velcro)"
+      ]
+    },
+    {
+      "discovery_group": "Bobanek",
+      "names": [
+        "Adult All-in-One",
+        "Adult Diaper Cover"
+      ]
+    },
+    {
+      "discovery_group": "Boni",
+      "names": [
+        "Unisex Night"
+      ]
+    },
+    {
+      "discovery_group": "Boots",
+      "names": [
+        "Men Night Pants",
+        "Men Pants",
+        "Staydry Adjustable Slips"
+      ]
+    },
+    {
+      "discovery_group": "Bumooza",
+      "names": [
+        "Alphabet Classic"
+      ]
+    },
+    {
+      "discovery_group": "Bumz",
+      "names": [
+        "Unisex Ultra Brief"
+      ]
+    },
+    {
+      "discovery_group": "Buntewindel",
+      "names": [
+        "Fabine",
+        "Fabine Dreamlike",
+        "Fabine Exclusive Mega Booster Teddy",
+        "Fabine Mega Booster",
+        "Fabine Merry Christmas",
+        "Fabine Pacifier",
+        "Fabine Panda",
+        "Fabine Safety",
+        "Fabine Teddy Pink"
+      ]
+    },
+    {
+      "discovery_group": "Cardinal Health",
+      "names": [
+        "Sure Care Extra",
+        "Sure Care Plus",
+        "Sure Care Super",
+        "Sure Care Ultra",
+        "Wings Extra",
+        "Wings Overnight",
+        "Wings Plus",
+        "Wings Super",
+        "Wings Ultra",
+        "Wings Youth Pants"
+      ]
+    },
+    {
+      "discovery_group": "Care",
+      "names": [
+        "Slip Maxi",
+        "Slip Plus"
+      ]
+    },
+    {
+      "discovery_group": "CareOne",
+      "names": [
+        "Liners",
+        "Maximum Absorbency Pads",
+        "Moderate Absorbency Pads",
+        "Ultimate Absorbency Pads",
+        "Underwear"
+      ]
+    },
+    {
+      "discovery_group": "Carer",
+      "names": [
+        "Adult Cloth Diapers Reusable Adjustable (HD27)",
+        "Bladder Leak Underwear for Men Incontinence (M71)",
+        "Incontinence Boxer Shorts Light Absorbency (M70)",
+        "Lace Midi Briefs for Pee Proof or Period (P18)",
+        "Leak Proof Nighttime Washable Incontinence Underpants (M75)",
+        "Leakproof Boyshort for Periods and Incontinence (SLK8036)",
+        "Leakproof Boyshort for Women (P53)",
+        "Leakproof Underwear for Women (P32)",
+        "Leakproof Underwear for Women (P33)",
+        "Men's Incontinence Briefs (M93)",
+        "Men's Incontinence Trunks (M67)",
+        "Men's Incontinence Underwear (M80)",
+        "Men's Incontinence Underwear Moderate to Heavy Absorbency (M87)",
+        "Men's Leak Proof Underwear (M66)",
+        "Men's Protective Underwear (M100)",
+        "Men's Reusable Incontinence Boxer Briefs (M96)",
+        "Men's Washable Incontinence Boxer Briefs (M167)",
+        "Men's Washable Incontinence Briefs with Fly (M65)",
+        "Reusable Incontinence Boxer Briefs with Pouch (M74)",
+        "Reusable Incontinence Briefs (M166)",
+        "Reusable Incontinence Underwear for Men with Fly (M88)",
+        "Reusable Leakproof Underwear (M90)",
+        "Side-Snap Incontinence Briefs (M95)",
+        "Side-Snap Incontinence Underwear for Women (W11)",
+        "Unisex Adult Plastic Pants for Incontinence (W86)",
+        "Unisex Pull-On Waterproof Diaper Cover (W66)",
+        "Unisex Waterproof Plastic Pants (W88)",
+        "Unisex Waterproof Plastic Pants (W99)",
+        "Washable Incontinence Trunks for Men (M81)",
+        "Women Incontinence Underwear with Velcros (M001)",
+        "Women Leak Proof Panties (P14)",
+        "Women Leakproof Underwear for Period and Incontinence (P11)",
+        "Women's Incontinence Boyshorts (W302)",
+        "Women's Incontinence Underwear (W01)"
+      ]
+    },
+    {
+      "discovery_group": "Carewell",
+      "names": [
+        "Incontinence Underwear Overnight & Heavy",
+        "Overnight Underwear"
+      ]
+    },
+    {
+      "discovery_group": "Carine",
+      "names": [
+        "Active Pants 6",
+        "Active Pants 8",
+        "Confort 6",
+        "Premium 10",
+        "Ultra Premium 10"
+      ]
+    },
+    {
+      "discovery_group": "Carrefour",
+      "names": [
+        "Absodys All In 1 Day",
+        "Absodys All In 1 Night",
+        "Absodys Discreet Maxi",
+        "Absodys Men Security",
+        "Absodys Night Pad",
+        "Absodys Pants Day",
+        "Absodys Pants Night",
+        "Absodys Rectangular Insert Maxi Absorption",
+        "Active Dry Pants Men",
+        "Baby Diaper",
+        "Pyjama Pants"
+      ]
+    },
+    {
+      "discovery_group": "Carryboo",
+      "names": [
+        "Diaper",
+        "Night Pants"
+      ]
+    },
+    {
+      "discovery_group": "Casino",
+      "names": [
+        "Change Complet"
+      ]
+    },
+    {
+      "discovery_group": "Celflo",
+      "names": [
+        "Insert Booster Pad with Tape"
+      ]
+    },
+    {
+      "discovery_group": "Certainty by Walgreens",
+      "names": [
+        "Men's Overnight ComfortLux Underwear",
+        "Mens Guards Maximum Absorbency",
+        "Stretch Briefs",
+        "Unisex briefs",
+        "Woman's Overnight Pads",
+        "Women’s ComfortLux Underwear"
+      ]
+    },
+    {
+      "discovery_group": "Changing Times",
+      "names": [
+        "Adult Cotton Prefold",
+        "Bear Hugz",
+        "Cloth Diaper Insert",
+        "PUL Snap-On Pant",
+        "Swim Diaper",
+        "Traning Pants"
+      ]
+    },
+    {
+      "discovery_group": "Charlie Banana",
+      "names": [
+        "Disposable Cotton Inserts"
+      ]
+    },
+    {
+      "discovery_group": "Chorys",
+      "names": [
+        "Change Anatomique",
+        "Change complet",
+        "Confort",
+        "Pants Confort Night",
+        "Protection Rectangulaire"
+      ]
+    },
+    {
+      "discovery_group": "Classy Comfort",
+      "names": [
+        "Classy Comfort"
+      ]
+    },
+    {
+      "discovery_group": "Clicks",
+      "names": [
+        "Payless Incontinence Slips",
+        "Slips Super"
+      ]
+    },
+    {
+      "discovery_group": "Cloudry's",
+      "names": [
+        "Cloud",
+        "Fluffy Bear",
+        "Maxi",
+        "Maxi V1",
+        "Rainbow Island",
+        "Super Maxi",
+        "Superheros",
+        "Toys",
+        "White"
+      ]
+    },
+    {
+      "discovery_group": "Comfees",
+      "names": [
+        "DriNites"
+      ]
+    },
+    {
+      "discovery_group": "Comfort Haven",
+      "names": [
+        "Diaper Cover / Swim Diaper",
+        "Hybrid All-in-One Diaper",
+        "Premium Bamboo Fitted Diaper",
+        "Universal Insert"
+      ]
+    },
+    {
+      "discovery_group": "Comforts",
+      "names": [
+        "Day & Night Training Pants",
+        "Day or Night Diapers",
+        "Nite Pants"
+      ]
+    },
+    {
+      "discovery_group": "Comfy Life",
+      "names": [
+        "Pull Up Pants",
+        "Slip-on Adult Diapers"
+      ]
+    },
+    {
+      "discovery_group": "ComfyKinz",
+      "names": [
+        "Lil Sparks"
+      ]
+    },
+    {
+      "discovery_group": "Conad",
+      "names": [
+        "AdvantAGE Diaper"
+      ]
+    },
+    {
+      "discovery_group": "Confiance",
+      "names": [
+        "Confort 10",
+        "Elastic 10",
+        "Elastic 9",
+        "Lady Pants 6",
+        "Men Pad 3",
+        "Men Pants 5",
+        "Men Pants 6",
+        "Mobile 10",
+        "Mobile 6",
+        "Mobile 8",
+        "Secure 6",
+        "Secure 8"
+      ]
+    },
+    {
+      "discovery_group": "Confidence Club",
+      "names": [
+        "Essential Booster Pad Large Extra Absorbency",
+        "Essential Booster Pad Ultra Thin"
+      ]
+    },
+    {
+      "discovery_group": "Confiderm",
+      "names": [
+        "Mutandina Giorno",
+        "Mutandina Notte"
+      ]
+    },
+    {
+      "discovery_group": "Confitex",
+      "names": [
+        "Short Trunks Extra Absorbancy"
+      ]
+    },
+    {
+      "discovery_group": "Confy",
+      "names": [
+        "Premium Slip"
+      ]
+    },
+    {
+      "discovery_group": "Content",
+      "names": [
+        "Advanced",
+        "Medical",
+        "UltraSec"
+      ]
+    },
+    {
+      "discovery_group": "Continente",
+      "names": [
+        "Cuecas Bons Sonhos"
+      ]
+    },
+    {
+      "discovery_group": "Coop",
+      "names": [
+        "Pannoloni Mutandina"
+      ]
+    },
+    {
+      "discovery_group": "Cosmea",
+      "names": [
+        "Pelzy Protect"
+      ]
+    },
+    {
+      "discovery_group": "Cosy'N'Dry",
+      "names": [
+        "Terry Towelling"
+      ]
+    },
+    {
+      "discovery_group": "Cotidian",
+      "names": [
+        "Premium"
+      ]
+    },
+    {
+      "discovery_group": "Cottontailz",
+      "names": [
+        "FlutterHops"
+      ]
+    },
+    {
+      "discovery_group": "Covidien",
+      "names": [
+        "Baby Diapers",
+        "Training Pants",
+        "Youth Pants"
+      ]
+    },
+    {
+      "discovery_group": "Crinklz",
+      "names": [
+        "Aquanaut",
+        "Astronaut",
+        "Buccaneer",
+        "Crinklz",
+        "Crinklz v1",
+        "Fairytale"
+      ]
+    },
+    {
+      "discovery_group": "CUB",
+      "names": [
+        "Nappies",
+        "Nappy Pants",
+        "Nights Pants"
+      ]
+    },
+    {
+      "discovery_group": "Cuddlz",
+      "names": [
+        "All-Over Print",
+        "BrightDayz",
+        "Brushed Cotton Waterproof Pull Up Pants",
+        "DryDayz",
+        "Front Print",
+        "Nursery",
+        "Patterned Plastic Pull Up Pants",
+        "Teddy",
+        "Terry Nappy",
+        "Unicorn",
+        "Waterproof Pull Up Pants",
+        "Wide Elastic Pull Up Pants"
+      ]
+    },
+    {
+      "discovery_group": "Cute Diaper (ex LLABDL)",
+      "names": [
+        "Ali",
+        "Alice in Wonderland",
+        "Baby Shark",
+        "Barney",
+        "Bee",
+        "Bluey",
+        "Bluey v2",
+        "Bugs Bunny",
+        "Cinnamoroll",
+        "Cute Train",
+        "Dinosaurs",
+        "Doraemon",
+        "Dreamland",
+        "FuDo",
+        "Garfield",
+        "Halloween",
+        "Halloween",
+        "Happy Holidays",
+        "Hello Kitty",
+        "Kapibala",
+        "Kapibala",
+        "Keroppi",
+        "Kuromi",
+        "LinaBell/StellaLou",
+        "Loopy",
+        "Lots-o'-Huggin' Bear",
+        "Luck Rabbit",
+        "Melody",
+        "Merry Christmas",
+        "Mickey FD",
+        "Mickey Mouse",
+        "Monsters",
+        "My Little Pony",
+        "Ocean Party",
+        "Paw",
+        "Paw Patrol",
+        "Paw Patrol V2",
+        "Peppa Pig",
+        "Pikachu",
+        "Pink Stitch",
+        "Playtime",
+        "Pochacco",
+        "Pompompurin",
+        "Pooh",
+        "Pretty Girls",
+        "Romantic",
+        "Scooby Doo",
+        "Sleepy Bear",
+        "Snoopy",
+        "SpongeBob SquarePants",
+        "Stitch",
+        "Tail",
+        "The Flash",
+        "The Powerpuff Girls",
+        "The king of lions",
+        "Tigger",
+        "Tom and Jerry",
+        "Transformers",
+        "abc"
+      ]
+    },
+    {
+      "discovery_group": "CutiePlusU",
+      "names": [
+        "ABD",
+        "Angel Puppy",
+        "Artist Polar Bear",
+        "Baby Dinosaur",
+        "Baby Dream",
+        "Baby Fox",
+        "Baby Tiger",
+        "Bathing Baby Crocodile",
+        "Birthday Elephant",
+        "Busy Driver",
+        "Candy Sheep",
+        "Corgi Driver",
+        "Cosmic Adventurer",
+        "Cute Bear",
+        "Cute Bunny",
+        "Cute Kitty",
+        "Cute Koala",
+        "Cute Toddler",
+        "Dino Baby Adult Diaper",
+        "Fighting Robots",
+        "Funny Raccoons",
+        "Game Baby",
+        "Genius Baby",
+        "Give Me Five Corgi",
+        "Halloween Pumpkin",
+        "Halloween Squirrel",
+        "Honey Bee",
+        "I Love Summer",
+        "Kawaii Kitten in Train",
+        "Kitty Diner Time",
+        "Little Prince",
+        "Little Princess",
+        "Lovely Corgi",
+        "Melody",
+        "Meowball",
+        "Musician Frog",
+        "Penguin Fishing",
+        "Rocking Fun",
+        "Sissy Baby",
+        "Sleeping Kitten",
+        "Sleeping Owl",
+        "Sorceress",
+        "Sport",
+        "Strawberry Rabbit",
+        "Sweetheart Bear",
+        "Turtle Diving",
+        "Winking Squirrel"
+      ]
+    },
+    {
+      "discovery_group": "Cuties",
+      "names": [
+        "Boundless",
+        "Diapers",
+        "Pants",
+        "SleepOvers"
+      ]
+    },
+    {
+      "discovery_group": "CVS Health",
+      "names": [
+        "Fitted Briefs Maximum Absorbency",
+        "Guards For Men Maximum Absorbency",
+        "Live Better",
+        "Men's Underwear Maximum Absorbency",
+        "Men’s Shields",
+        "Nighttime Underpants",
+        "Stretch Fit",
+        "Training Pants",
+        "Unisex Overnight Underwear",
+        "Women's Maximum Absorbency Underwear",
+        "Women's Underwear Moderate Absorbency"
+      ]
+    },
+    {
+      "discovery_group": "Dada",
+      "names": [
+        "Extra Care Pants"
+      ]
+    },
+    {
+      "discovery_group": "Dailee",
+      "names": [
+        "Lady Extra",
+        "Lady Maxi",
+        "Lady Normal",
+        "Men Premium 1",
+        "Men Premium 2",
+        "Men Premium 3",
+        "Premium Comfort Extra",
+        "Premium Comfort Fit",
+        "Premium Comfort Normal",
+        "Premium Comfort Plus",
+        "Premium Comfort Super",
+        "Premium Confort Maxi",
+        "Premium Pant Normal",
+        "Premium Pant Plus",
+        "Premium Pant Super",
+        "Premium Pants Maxi",
+        "Premium Plus Lady",
+        "Premium Plus Men",
+        "Premium Slip Maxi",
+        "Premium Slip Maxi Plus",
+        "Premium Slip Plus",
+        "Premium Slip Super",
+        "Slip Maxi",
+        "Slip Maxi Plus",
+        "Slip Plus",
+        "Slip Super"
+      ]
+    },
+    {
+      "discovery_group": "Delhaize",
+      "names": [
+        "Pants",
+        "Project Plus - Diaper",
+        "Protect Plus - Pants"
+      ]
+    },
+    {
+      "discovery_group": "Deliplus",
+      "names": [
+        "Night pants",
+        "Pañal adulto"
+      ]
+    },
+    {
+      "discovery_group": "Depend",
+      "names": [
+        "Active-Fit for Men",
+        "Anatomical Pad Normal",
+        "Anatomical Pad Plus",
+        "Anatomical Pad Super",
+        "Anatomical Pad Super Plus",
+        "Brief Normal",
+        "Brief Super",
+        "Briefs Super Plus",
+        "Comfort-Protect Underwear",
+        "Depends Protection with Tabs",
+        "Derma Protect",
+        "Expert Care Unisex Underwear Maxi",
+        "Fresh Protection",
+        "Fresh Protection Guards for Men",
+        "Fresh Protection Plus+",
+        "Night Defense",
+        "Night Defense Guards for Men",
+        "Real Fit for Men",
+        "Real Fit for Women",
+        "Shields for Men",
+        "Silhouette for Women",
+        "Slip Classic Extra Plus",
+        "Slip Super Plus",
+        "Underwear Maximum 10",
+        "Underwear Super 8",
+        "Unisex Underwear Normal",
+        "Unisex Underwear Super",
+        "Unisex Underwear Super Plus"
+      ]
+    },
+    {
+      "discovery_group": "DependEco",
+      "names": [
+        "AIO Cotton Diaper",
+        "AIO Flannel Diaper",
+        "AIO PUL Diaper",
+        "Adult Pocket Diapers PUL",
+        "Doubler",
+        "Doubler with Catheter pocket",
+        "Microfiber Insert",
+        "PUL Training Pants",
+        "Pull Up Flannel",
+        "Swim Diaper",
+        "Velcro Closure Flannel"
+      ]
+    },
+    {
+      "discovery_group": "Diaper Connoisseur",
+      "names": [
+        "Amor 2014",
+        "Amor 2018",
+        "Idyl 2015",
+        "Idyl 2017"
+      ]
+    },
+    {
+      "discovery_group": "Diaper MC",
+      "names": [
+        "Aquaworld"
+      ]
+    },
+    {
+      "discovery_group": "DiaperU",
+      "names": [
+        "ABDL Training Pants",
+        "Japan Cloth Diaper Cover",
+        "Japan Style Diaper Cover",
+        "Multi-purpose Baby Diaper Cover",
+        "Waterproof Training Pants"
+      ]
+    },
+    {
+      "discovery_group": "DiaperUS",
+      "names": [
+        "Barney",
+        "Color Cars",
+        "Furry Girls",
+        "King",
+        "Pikachu",
+        "TWNT",
+        "The Simpsons",
+        "Toy Story"
+      ]
+    },
+    {
+      "discovery_group": "DM BabyLove",
+      "names": [
+        "Nature Windeln",
+        "Premium Pants",
+        "Premium Windeln",
+        "Pyjama Pants"
+      ]
+    },
+    {
+      "discovery_group": "Dodot",
+      "names": [
+        "Activity",
+        "Happyjama"
+      ]
+    },
+    {
+      "discovery_group": "DR.P",
+      "names": [
+        "Dr. P Premium Level 6",
+        "Dr. P Premium Level 7",
+        "Dr. P Premium Level 8",
+        "Dr. P Premium Pants Level 6",
+        "Dr. P Premium Pants Level 7",
+        "Dr. P Premium Pants Level 8",
+        "Highly effective leak-proof night pants",
+        "Overnight Diaper"
+      ]
+    },
+    {
+      "discovery_group": "Dry Direct",
+      "names": [
+        "Booster Pad",
+        "Maxi Overnight",
+        "Premier Plus",
+        "Super Overnight Underwear",
+        "Ultimate Protective Underwear"
+      ]
+    },
+    {
+      "discovery_group": "DryBritches",
+      "names": [
+        "Posy"
+      ]
+    },
+    {
+      "discovery_group": "DryCare",
+      "names": [
+        "ConfiDry 24/7"
+      ]
+    },
+    {
+      "discovery_group": "DryLife",
+      "names": [
+        "Booster Pad",
+        "Double Terry Towelling Pants",
+        "Pants Maxi",
+        "Pants Super",
+        "Pants Ultima",
+        "Plastic Pants",
+        "Premium Plastic Pants With Wide Waistband",
+        "Slip Maxi",
+        "Slip Super",
+        "Slip Ultima",
+        "Slip XPlus",
+        "Terry Towelling Squares"
+      ]
+    },
+    {
+      "discovery_group": "DryMed",
+      "names": [
+        "Unisex Washable Diaper"
+      ]
+    },
+    {
+      "discovery_group": "Drynites",
+      "names": [
+        "Drynites (-2020)",
+        "Drynites (2020-2024)",
+        "Drynites (AU)",
+        "Drynites (EU)"
+      ]
+    },
+    {
+      "discovery_group": "Drypers",
+      "names": [
+        "Wee Wee Dry"
+      ]
+    },
+    {
+      "discovery_group": "Duchesse Med",
+      "names": [
+        "Erwachsenenwindeln",
+        "Hygiene Vorlagen Maxi",
+        "Hygiene Vorlagen Super",
+        "MEN Hygiene-Einlagen Level 1",
+        "MEN Hygiene-Einlagen Level 2",
+        "MEN Hygiene-Einlagen Level 3"
+      ]
+    },
+    {
+      "discovery_group": "Dyper",
+      "names": [
+        "Diaper"
+      ]
+    },
+    {
+      "discovery_group": "Ecoable",
+      "names": [
+        "3-in-1 Hybrid Cloth Diaper",
+        "Adult Cloth Diaper Cover 2.0",
+        "Adult Cloth Diaper v1",
+        "Adult Pocket Cloth Diaper 2.0",
+        "Adult Pocket Cloth Diaper v1",
+        "Adult Pull-on Cloth Diaper 2.0",
+        "Baby And Kids Rayon Snap-In Inserts",
+        "Baby Heavy Duty Cover (With Leg Gussets)",
+        "Baby Heavy Duty Diaper Cover (No Leg Gussets)",
+        "Baby Hemp Night Fitted Cloth Diaper",
+        "Baby Hemp/Cotton Booster Inserts",
+        "Baby Stay-Dry Hemp Fitted Night Cloth Diaper",
+        "Bamboo Cotton Prefold Insert Booster",
+        "Big Kids Fitted Cloth Diaper",
+        "Big Kids Pull-on",
+        "Big Kids Snap-in Insert",
+        "Fitted Cloth Diaper",
+        "Snap-in Insert Incontinence Pad"
+      ]
+    },
+    {
+      "discovery_group": "Egosan",
+      "names": [
+        "Pants Extra",
+        "Pants Maxi",
+        "Pants Super",
+        "Pants X-Dry",
+        "Slip Extra",
+        "Slip Maxi",
+        "Slip Super",
+        "Slip Ultra",
+        "X-Dry"
+      ]
+    },
+    {
+      "discovery_group": "Elcurina",
+      "names": [
+        "Premium Diapers"
+      ]
+    },
+    {
+      "discovery_group": "Elkos",
+      "names": [
+        "Baby Glück Premium Windeln",
+        "Hygiene-Einlagen Extra",
+        "Hygiene-Einlagen Extra Plus",
+        "Hygiene-Einlagen Maxi",
+        "Hygiene-Einlagen Normal",
+        "Hygiene-Einlagen Ultra Mini Plus",
+        "Hygiene-Pants"
+      ]
+    },
+    {
+      "discovery_group": "emi",
+      "names": [
+        "Lady Maxi Night"
+      ]
+    },
+    {
+      "discovery_group": "Emubaby",
+      "names": [
+        "Noches Seguras"
+      ]
+    },
+    {
+      "discovery_group": "Equate",
+      "names": [
+        "3X Max Defense Overnight Underwear",
+        "Adult Diaper Classic",
+        "Equate Options Light",
+        "Equate Options Maximum",
+        "Equate Options Moderate",
+        "Equate Options Overnight",
+        "Equate Options Ultimate",
+        "Equate Options Very Light",
+        "Maximum Absorbency Fitted Briefs"
+      ]
+    },
+    {
+      "discovery_group": "Etos",
+      "names": [
+        "Diaper"
+      ]
+    },
+    {
+      "discovery_group": "Fab Sense",
+      "names": [
+        "City Print"
+      ]
+    },
+    {
+      "discovery_group": "Fabimonti",
+      "names": [
+        "Fabicare Animal"
+      ]
+    },
+    {
+      "discovery_group": "Facelle Diskret",
+      "names": [
+        "Einlagen Super",
+        "Einlagen",
+        "Einlagen Extra",
+        "Einlagen Extra Plus",
+        "Einlagen Maxi",
+        "Einlagen Normal",
+        "Elastic Slip",
+        "Hygiene Vorlagen Super",
+        "Hygiene-Vorlagen maxi",
+        "Men Einlagen Level 1",
+        "Men Einlagen Level 2",
+        "Men Einlagen Level 3",
+        "Men Pants",
+        "Pants",
+        "Pants Super"
+      ]
+    },
+    {
+      "discovery_group": "Farmex",
+      "names": [
+        "Premium EXTRA",
+        "Premium SUPER"
+      ]
+    },
+    {
+      "discovery_group": "Feline Babies",
+      "names": [
+        "Diaper cover"
+      ]
+    },
+    {
+      "discovery_group": "Finéa",
+      "names": [
+        "Couche Droite",
+        "Slip Extra",
+        "Slip Optimum",
+        "Slip Optimum+"
+      ]
+    },
+    {
+      "discovery_group": "First Quality",
+      "names": [
+        "Adult Briefs"
+      ]
+    },
+    {
+      "discovery_group": "FitRight",
+      "names": [
+        "ActivEdge Underwear",
+        "Bariatric Brief",
+        "Daily Briefs Ultra",
+        "Double Up",
+        "Extended Wear Briefs",
+        "Extended Wear Stretch Briefs",
+        "OptiFit Extra",
+        "OptiFit Extra+",
+        "OptiFit Stretch Extra",
+        "OptiFit Stretch Ultra",
+        "OptiFit Ultra",
+        "Underwear Super"
+      ]
+    },
+    {
+      "discovery_group": "Flip Hybrid Diaper System",
+      "names": [
+        "Disposable Insert"
+      ]
+    },
+    {
+      "discovery_group": "Florith",
+      "names": [
+        "TPU Waterproof Diaper Cover"
+      ]
+    },
+    {
+      "discovery_group": "Flufsan",
+      "names": [
+        "Active Extra",
+        "Active Maxi Super",
+        "Active Super"
+      ]
+    },
+    {
+      "discovery_group": "For Littles By Littles",
+      "names": [
+        "Foresty Critters"
+      ]
+    },
+    {
+      "discovery_group": "FormaCare",
+      "names": [
+        "Comfort Slip Extra Night",
+        "Comfort Slip Plus",
+        "Comfort Slip X-plus",
+        "Easy Form Extra",
+        "Easy Form Extra Plus",
+        "Easy Form Normal",
+        "Easy Form Plus",
+        "Easy Form Super",
+        "Easy Slip Night",
+        "Form Premium Dry X-Plus",
+        "Kids SLIP",
+        "Premium Elite Slip Day",
+        "Slip Premium Extra Night",
+        "Teens PANTS",
+        "Woman Premium Dry Extra",
+        "Woman Premium Dry Extra Plus",
+        "Woman Premium Dry Maxi",
+        "Woman Premium Dry Normal",
+        "Woman Premium Dry Super"
+      ]
+    },
+    {
+      "discovery_group": "Forsite",
+      "names": [
+        "AM PM Stars",
+        "AM PM Stripes",
+        "AM PM White",
+        "Euro Max Booster Pad",
+        "Fab Sense",
+        "Health Euro Maxi Briefs",
+        "Lil'Heroes",
+        "Mary Jane",
+        "Maximum Absorbency Protective Underwear",
+        "Overnight Max Booster Pad",
+        "Under the sea"
+      ]
+    },
+    {
+      "discovery_group": "Friends Diaper",
+      "names": [
+        "Classic Adult Dry Pants",
+        "Easy",
+        "Economy",
+        "Insert Pads",
+        "Overnight",
+        "Overnight.Pants",
+        "Premium Adult Dry Pants",
+        "UltraThinz Slim Fit Dry Pants"
+      ]
+    },
+    {
+      "discovery_group": "Gary Wear",
+      "names": [
+        "7 Mil Comfort High Waist Snap",
+        "Active Briefs",
+        "Prefold Cloth Diaper",
+        "Vinyl Print Pant"
+      ]
+    },
+    {
+      "discovery_group": "Gentle Steps",
+      "names": [
+        "Overnight Pants",
+        "Training Pants"
+      ]
+    },
+    {
+      "discovery_group": "Gohy",
+      "names": [
+        "Gcare Sensitive Pants Optima",
+        "Gcare Sensitive Slip Optima",
+        "Slip Extra",
+        "Slip Maxi",
+        "Slip Maxi Plus",
+        "Slip Normal",
+        "Slip Super"
+      ]
+    },
+    {
+      "discovery_group": "GOO.N",
+      "names": [
+        "Night pants",
+        "Super Big Pads",
+        "Super Big Pants",
+        "Super Big tapes"
+      ]
+    },
+    {
+      "discovery_group": "GoodNites",
+      "names": [
+        "Goodnites",
+        "Goodnites Unisex",
+        "Tru-Fit Boosters",
+        "Tru-Fit Underwear"
+      ]
+    },
+    {
+      "discovery_group": "Haian",
+      "names": [
+        "Locking Plastic pants",
+        "Plastic Baby Blue Pant",
+        "Plastic Bloomer",
+        "Plastic Pull-Up",
+        "Plastic cover",
+        "Pull-up PVC and Satin"
+      ]
+    },
+    {
+      "discovery_group": "Hakujūji (白十字)",
+      "names": [
+        "Ateraku Tēpu (あて楽テープ)",
+        "Saruba Ateraku Paddo (サルバあて楽パッド,)"
+      ]
+    },
+    {
+      "discovery_group": "Hartmann",
+      "names": [
+        "Molipants soft",
+        "Samu Classic Maxi",
+        "Strampelpeter"
+      ]
+    },
+    {
+      "discovery_group": "Haruni",
+      "names": [
+        "아기자기"
+      ]
+    },
+    {
+      "discovery_group": "HEB",
+      "names": [
+        "HEB Baby",
+        "Reliance Men's Underwear"
+      ]
+    },
+    {
+      "discovery_group": "Hello Bello",
+      "names": [
+        "Diaper",
+        "Overnight Diapers",
+        "Traning Pants"
+      ]
+    },
+    {
+      "discovery_group": "Hello World",
+      "names": [
+        "Nighttime Pants"
+      ]
+    },
+    {
+      "discovery_group": "Hexa",
+      "names": [
+        "Slip Extra Plus",
+        "Slip Maxi",
+        "Slip Maxi Plus"
+      ]
+    },
+    {
+      "discovery_group": "Hipp",
+      "names": [
+        "Windeln Babysanft"
+      ]
+    },
+    {
+      "discovery_group": "Honest",
+      "names": [
+        "Clean Conscious Diaper",
+        "Training pants"
+      ]
+    },
+    {
+      "discovery_group": "Huaqui",
+      "names": [
+        "Huaqui Form 3"
+      ]
+    },
+    {
+      "discovery_group": "Huggies",
+      "names": [
+        "Complete Protection",
+        "Little Movers",
+        "Little Movers HuggFit 360°",
+        "Little Sleepers 360",
+        "Little Snugglers",
+        "Little Swimmers",
+        "Magic Comfort",
+        "Máxima Proteção",
+        "Overnites",
+        "Plus Little Movers",
+        "Plus Little Snugglers",
+        "Pull-Ups",
+        "Pull-Ups - New Leaf",
+        "Pull-Ups Cool Alert",
+        "Pull-Ups Night*Time",
+        "Pull-Ups Plus+",
+        "Pull-Ups Skin Essentials",
+        "Skin Essentials",
+        "Skin Perfect Tape",
+        "Snug&Dry",
+        "Ultra Comfort",
+        "Ultra Dry",
+        "Ultra Dry Nappy Pants​"
+      ]
+    },
+    {
+      "discovery_group": "IASI",
+      "names": [
+        "Lady Pants",
+        "Men Pants",
+        "Unisex Pants"
+      ]
+    },
+    {
+      "discovery_group": "IncoÉco",
+      "names": [
+        "Changes Complets Extreme",
+        "Changes Complets Premium",
+        "Pants Eco",
+        "Pants Premium",
+        "Pants Prestige"
+      ]
+    },
+    {
+      "discovery_group": "InControl",
+      "names": [
+        "Active Air Incontinence Briefs",
+        "Airtight Rubber Pants",
+        "Bamboo Contour Booster Pads",
+        "BeDry",
+        "BeDry EliteCare",
+        "BeDry Night",
+        "BeDry Ultra Premium Underwear",
+        "Booster Pad",
+        "Diaper Cover Wrap",
+        "Elite Hybrid",
+        "Elite Incontinence Diapers",
+        "Essential Incontinence Briefs",
+        "Felicity",
+        "Harmony Nighttime Fitted",
+        "Ideal Fit Plastic Pants",
+        "Nighttime Rubber Pants",
+        "Original Incontinence Briefs",
+        "Premium Nights Briefs",
+        "Protective Briefs",
+        "Seamless Latex Brief",
+        "Silence Pant",
+        "Super Snap Fitted",
+        "Swim Diaper"
+      ]
+    },
+    {
+      "discovery_group": "Indas",
+      "names": [
+        "Incopack 8",
+        "Incopack 9",
+        "IndaSlip 8"
+      ]
+    },
+    {
+      "discovery_group": "Inspire",
+      "names": [
+        "BoostMAX"
+      ]
+    },
+    {
+      "discovery_group": "Inteno",
+      "names": [
+        "Active Normal",
+        "Active Plus",
+        "Comfort Lady",
+        "Comfort Lady Extra",
+        "Comfort Lady Maxi",
+        "Comfort Lady Maxi Night",
+        "Safety Normal",
+        "Safety Plus"
+      ]
+    },
+    {
+      "discovery_group": "Invizi",
+      "names": [
+        "Booster Pad Maxi",
+        "Booster Pad Mini",
+        "Pants Maxi",
+        "Pants Plus",
+        "Slip Maxi"
+      ]
+    },
+    {
+      "discovery_group": "Iper",
+      "names": [
+        "Pannoloni Mutandina"
+      ]
+    },
+    {
+      "discovery_group": "Jessa",
+      "names": [
+        "Diskret Einlagen Maxi Super",
+        "Diskret Inkontinenz Flex Slip",
+        "Diskret Inkontinenz Pants Super",
+        "Hygiene-Vorlagen Inkontinenz Maxi Lang",
+        "MEN Schutzeinlage Level 2",
+        "Men Level 4",
+        "Ultra-Binden Dry Comfort Night"
+      ]
+    },
+    {
+      "discovery_group": "Jumbo",
+      "names": [
+        "Incontinentie Ondergoed"
+      ]
+    },
+    {
+      "discovery_group": "Kaduola Dream",
+      "names": [
+        "Diaper",
+        "Pants"
+      ]
+    },
+    {
+      "discovery_group": "Kangcare",
+      "names": [
+        "Bambus Prefolds"
+      ]
+    },
+    {
+      "discovery_group": "Kanz",
+      "names": [
+        "Ultra-Dry"
+      ]
+    },
+    {
+      "discovery_group": "Kera",
+      "names": [
+        "Slip Maxi Night"
+      ]
+    },
+    {
+      "discovery_group": "Kiddo Diapers",
+      "names": [
+        "Fluffy Fly",
+        "Junior Maxi Plus",
+        "Junior Plus",
+        "Kiddo Mega Booster",
+        "Kiddo Ultra Dry",
+        "Let's Build",
+        "Lil Soaker",
+        "Lil Soaker V2",
+        "Little Sailor",
+        "Owlnight",
+        "Playtime",
+        "Premium Night",
+        "Premium Night - Plastic Edition",
+        "Sea Friends",
+        "Teddy's ultra",
+        "Teddy's ultra 4-Tapes",
+        "Training Pants",
+        "White Max",
+        "White Max Mega Booster",
+        "Xtreme"
+      ]
+    },
+    {
+      "discovery_group": "Kidgets",
+      "names": [
+        "Overnight Underwear",
+        "Premium Diaper",
+        "Training Pants"
+      ]
+    },
+    {
+      "discovery_group": "Kirkland",
+      "names": [
+        "Protective Underwear",
+        "Signature Diapers"
+      ]
+    },
+    {
+      "discovery_group": "Kitnitiative",
+      "names": [
+        "Adventure Puffs"
+      ]
+    },
+    {
+      "discovery_group": "Kiwisto",
+      "names": [
+        "Adult Care Ultra Booster",
+        "Kids Kinderwindeln",
+        "Kids Kinderwindeln Premium Protection"
+      ]
+    },
+    {
+      "discovery_group": "KleenBébé",
+      "names": [
+        "Suavelastic"
+      ]
+    },
+    {
+      "discovery_group": "Kleinert's",
+      "names": [
+        "DuraCool"
+      ]
+    },
+    {
+      "discovery_group": "KOLIBRI",
+      "names": [
+        "Compact Premium Classic",
+        "Comslip Plus",
+        "Comslip Premium Supra",
+        "Comslip special",
+        "Comtrain Premium Special"
+      ]
+    },
+    {
+      "discovery_group": "Konfian & Cerin",
+      "names": [
+        "Pants Maxi",
+        "Slip Maxi+"
+      ]
+    },
+    {
+      "discovery_group": "Korako Medical",
+      "names": [
+        "Inkontinenčné plienky"
+      ]
+    },
+    {
+      "discovery_group": "Kroger",
+      "names": [
+        "Men’s Underwear",
+        "Women & Men Overnight"
+      ]
+    },
+    {
+      "discovery_group": "Kruidvat",
+      "names": [
+        "Discreet Protection Pants",
+        "Luiers",
+        "Pyjama - Broekjes"
+      ]
+    },
+    {
+      "discovery_group": "Kuxiaoquan",
+      "names": [
+        "Adult Diapers",
+        "Baby Pants",
+        "Big Children Diaper"
+      ]
+    },
+    {
+      "discovery_group": "Kylie Kanga",
+      "names": [
+        "Waterproof Plastic Pants"
+      ]
+    },
+    {
+      "discovery_group": "La Marque en Moins",
+      "names": [
+        "Couche Écologiques",
+        "Couches-culottes Écologiques"
+      ]
+    },
+    {
+      "discovery_group": "Labell",
+      "names": [
+        "Optive Night",
+        "Optivie Day",
+        "Optivie Night Pants",
+        "Optivie Pants"
+      ]
+    },
+    {
+      "discovery_group": "Land Of Genie",
+      "names": [
+        "Amusement Park",
+        "Anime Bunny and Bear",
+        "Anime Dinosaur",
+        "Anime Giraffe and Elephant",
+        "Anime Panda",
+        "Astronaut Bunny",
+        "Candy Castle",
+        "Kittens",
+        "Little Fox Tails",
+        "Puppy Sweet Bakery",
+        "Strawberry Cow",
+        "White"
+      ]
+    },
+    {
+      "discovery_group": "LeakMaster",
+      "names": [
+        "Adult Cloth Diaper Inserts (10 layers)",
+        "All-In-One",
+        "Birdseye Cotton Prefold - Day Weight",
+        "Birdseye Cotton Prefold - Night Weight",
+        "Contoured",
+        "Muslin Weave Flat Cloth Diapers",
+        "Organic Cotton Prefold",
+        "Pull-On",
+        "Purity Gauze Weave Flat Cloth Diaper"
+      ]
+    },
+    {
+      "discovery_group": "Lev Vel",
+      "names": [
+        "Bleier",
+        "Nattbleie"
+      ]
+    },
+    {
+      "discovery_group": "Libero",
+      "names": [
+        "Comfort",
+        "Libero Sleep Tight",
+        "Touch",
+        "Up&Go"
+      ]
+    },
+    {
+      "discovery_group": "Life Brand",
+      "names": [
+        "Overnight Underwear"
+      ]
+    },
+    {
+      "discovery_group": "Lifree",
+      "names": [
+        "Absorbent Pads",
+        "Booster Pad",
+        "Easy to walk",
+        "Peace of Mind Day - Extra",
+        "Peace of Mind Day - Supra Extra",
+        "Peace of Mind Long Hours Pants",
+        "Peace of Mind Night - Extra",
+        "Peace of Mind Night - Normal",
+        "Peace of Mind Night - Super Extra",
+        "Peace of Mind Night - Ultra",
+        "Peace of Mind Night Pants (5 urinations)",
+        "Peace of Mind Night Pants (7 urinations)",
+        "Side leak Prevention Tape-on"
+      ]
+    },
+    {
+      "discovery_group": "Lil Comforts",
+      "names": [
+        "Adult Bamboo Charcoal Inserts",
+        "Adult Pull-On Cloth Diaper",
+        "BackGuard",
+        "Lacy Love",
+        "Ruffle Bottom",
+        "Stardust Nursery",
+        "Tailed Cloth Diaper",
+        "Teddy Bums",
+        "Tie-On Cloth Diaper"
+      ]
+    },
+    {
+      "discovery_group": "Lille",
+      "names": [
+        "Classic Pad",
+        "SUPREM Fit Extra+",
+        "SUPREM Fit Maxi",
+        "SUPREM Fit Regular+",
+        "SUPREM Fit Super+",
+        "SUPREM Form Extra+",
+        "SUPREM Form Maxi+",
+        "SUPREM Form Regular+",
+        "SUPREM Form Super+",
+        "SUPREM Pants Extra",
+        "SUPREM Pants Maxi",
+        "SUPREM Pants Super",
+        "Suprem For Men Super"
+      ]
+    },
+    {
+      "discovery_group": "Lillydoo",
+      "names": [
+        "Diapers",
+        "Green Diapers"
+      ]
+    },
+    {
+      "discovery_group": "Lindor",
+      "names": [
+        "Elásticos Súper Noche"
+      ]
+    },
+    {
+      "discovery_group": "Lines Specialist",
+      "names": [
+        "Alta Protezione",
+        "Classic Super",
+        "Derma Protection Maxi Plus",
+        "Lady Maxi",
+        "Pannolini a Mutandina Unisex Super/Maxi",
+        "Sagomati Unisex Plus"
+      ]
+    },
+    {
+      "discovery_group": "Little Aussie Monster",
+      "names": [
+        "Adult Cloth Diaper",
+        "Bamboo Inserts",
+        "Four Layer Bamboo",
+        "Microfiber Insert"
+      ]
+    },
+    {
+      "discovery_group": "Little Journey (Aldi)",
+      "names": [
+        "Diapers"
+      ]
+    },
+    {
+      "discovery_group": "Little Northwood",
+      "names": [
+        "Little Quest"
+      ]
+    },
+    {
+      "discovery_group": "Little One's",
+      "names": [
+        "Ultra Dry Nappies"
+      ]
+    },
+    {
+      "discovery_group": "Little Troubles",
+      "names": [
+        "Paleo Pants",
+        "Your Pal Patches"
+      ]
+    },
+    {
+      "discovery_group": "LittleForBig",
+      "names": [
+        "ABDry",
+        "ABDry Booster Pads",
+        "ABDry Ultra",
+        "Adult Training Pants",
+        "Astro Babies",
+        "Baby Cuties",
+        "Baby Exposed Lace Frill",
+        "Baby Parade",
+        "Baby Usagi",
+        "Baby in Training",
+        "Blushing Baby",
+        "Briefs Training Pants",
+        "Diaper Cover",
+        "Dolly Pink",
+        "Fairy Littles in Dreamland",
+        "Goth Brat",
+        "High-Waisted Briefs Training Pants",
+        "Little Beauty",
+        "Little Blue BabyFur",
+        "Little Circus",
+        "Little Dreamers",
+        "Little Fantasy",
+        "Little Trunks",
+        "Nursery",
+        "Potty Pants",
+        "Pretty in Satin Cover",
+        "Ribbon Omutsu Japanese Cover",
+        "Ruffle Cover",
+        "Vintage Baby"
+      ]
+    },
+    {
+      "discovery_group": "LivDry",
+      "names": [
+        "Booster pads",
+        "EnduraDry Max",
+        "Insert Pad 500",
+        "Livdry Ultimate",
+        "Mega Briefs Plus",
+        "Overnight Protective Underwear",
+        "Premium Briefs",
+        "Protective Underwear",
+        "Protective Underwear for Men",
+        "Shaped Pads - Hyper 1200",
+        "Shaped Pads - Hyper 1200",
+        "Shaped Pads - Hyper 1600",
+        "Shaped Pads - Hyper 2000",
+        "Shaped Pads - Hyper 2400",
+        "Women Protective Underwear"
+      ]
+    },
+    {
+      "discovery_group": "LiveAnew",
+      "names": [
+        "MaxPlus"
+      ]
+    },
+    {
+      "discovery_group": "LNGU",
+      "names": [
+        "Big Ears Baby",
+        "Candy Fluff",
+        "Cloud Ultra White",
+        "Dragoonz",
+        "Honey Tales",
+        "Little Melody",
+        "Rainbow Pastel Color"
+      ]
+    },
+    {
+      "discovery_group": "Loft Discret",
+      "names": [
+        "Pants"
+      ]
+    },
+    {
+      "discovery_group": "Lohmann Rauscher",
+      "names": [
+        "Sentina Inko Slip"
+      ]
+    },
+    {
+      "discovery_group": "Love & Green",
+      "names": [
+        "Night Pants"
+      ]
+    },
+    {
+      "discovery_group": "Lunova",
+      "names": [
+        "Changes Complets Mixtes"
+      ]
+    },
+    {
+      "discovery_group": "Lupilu",
+      "names": [
+        "Baby Pants",
+        "Soft&Dry"
+      ]
+    },
+    {
+      "discovery_group": "Luvs",
+      "names": [
+        "Platinum Protection",
+        "Platinum Protection Sleepy Nights",
+        "Pro Level Protection"
+      ]
+    },
+    {
+      "discovery_group": "Made For Living",
+      "names": [
+        "Maximum Absorbency Underwear",
+        "Ultimate Absorbency Underwear"
+      ]
+    },
+    {
+      "discovery_group": "Magics",
+      "names": [
+        "Pyjama Pants"
+      ]
+    },
+    {
+      "discovery_group": "Mama Bear",
+      "names": [
+        "Gentle Touch",
+        "Ultra Dry"
+      ]
+    },
+    {
+      "discovery_group": "Mamia",
+      "names": [
+        "Night Pants",
+        "Ultra-Fit"
+      ]
+    },
+    {
+      "discovery_group": "Maya",
+      "names": [
+        "Super Absorbent Extra Large Pad 1500",
+        "Super Absorbent Large Pad 1200",
+        "Super Absorbent Super Extra Large Pad 1800"
+      ]
+    },
+    {
+      "discovery_group": "McKesson",
+      "names": [
+        "Briefs Classic",
+        "Briefs Extended Wear Stretch",
+        "Briefs Super",
+        "Briefs Ultimate",
+        "Briefs Ultra",
+        "Briefs Ultra Plus Stretch",
+        "Underwear Ultra Heavy"
+      ]
+    },
+    {
+      "discovery_group": "Medi+",
+      "names": [
+        "Premium Unisex"
+      ]
+    },
+    {
+      "discovery_group": "Meditrade",
+      "names": [
+        "BEESANA Superslip Comfort",
+        "BEESANA Superslip Extra"
+      ]
+    },
+    {
+      "discovery_group": "Meijer",
+      "names": [
+        "Male Guard Maximum Absorbency",
+        "Nighttime Underwear"
+      ]
+    },
+    {
+      "discovery_group": "Member's mark",
+      "names": [
+        "Premium Baby Diapers",
+        "Total Protection Incontinence Underwear for Women"
+      ]
+    },
+    {
+      "discovery_group": "Merries",
+      "names": [
+        "Diapers",
+        "Pants"
+      ]
+    },
+    {
+      "discovery_group": "Midudu",
+      "names": [
+        "Capybara"
+      ]
+    },
+    {
+      "discovery_group": "Milette",
+      "names": [
+        "Diaper",
+        "Pants",
+        "Protège-couche",
+        "Pyjamas Pants"
+      ]
+    },
+    {
+      "discovery_group": "Millie Moon",
+      "names": [
+        "Luxury Diapers",
+        "Luxury Training Pants",
+        "Overnight Luxury Diapers"
+      ]
+    },
+    {
+      "discovery_group": "Molicare",
+      "names": [
+        "Elastic 10 Drops",
+        "Form 8 Drops",
+        "Form Day",
+        "Form Men Premium",
+        "Form Night",
+        "Form Stool Premium",
+        "Men Form Premium 6",
+        "Men Pants",
+        "Mobile 10",
+        "Mobile 6",
+        "Mobile 8",
+        "Mobile Super",
+        "Molicare 5",
+        "Pad 4 Drops",
+        "Pants Day",
+        "Pants Night",
+        "Premium Elastic 10",
+        "Premium Elastic 5",
+        "Premium Elastic 6",
+        "Premium Elastic 7",
+        "Premium Elastic 8",
+        "Premium Elastic 9",
+        "Premium Fixpants",
+        "Premium Form 9",
+        "Premium Lady Pad 5",
+        "Premium Lady Pants 7",
+        "Premium MEN Pad 5",
+        "Premium Slip Extra Plus",
+        "Premium Slip Maxi",
+        "Premium Slip Maxi Plus",
+        "Premium Slip Super",
+        "Premium Slip Super Plus",
+        "Premium Soft Super",
+        "Rectangular",
+        "Slip 6",
+        "Slip Day",
+        "Slip Extra",
+        "Slip Extra Plus",
+        "Slip Maxi",
+        "Slip Night",
+        "Slip Premium",
+        "Slip Super",
+        "Super Plus"
+      ]
+    },
+    {
+      "discovery_group": "MOLLIS",
+      "names": [
+        "Briefs with Tabs",
+        "Protective Underwear"
+      ]
+    },
+    {
+      "discovery_group": "Moltex",
+      "names": [
+        "Diaper"
+      ]
+    },
+    {
+      "discovery_group": "Monoprix",
+      "names": [
+        "Change Complet"
+      ]
+    },
+    {
+      "discovery_group": "Mooncare",
+      "names": [
+        "Adult Diaper"
+      ]
+    },
+    {
+      "discovery_group": "Mot d'enfant (Leclerc)",
+      "names": [
+        "Ultra Night",
+        "mots d'enfants"
+      ]
+    },
+    {
+      "discovery_group": "My Pool Pal",
+      "names": [
+        "Adult Swim Diaper"
+      ]
+    },
+    {
+      "discovery_group": "MyKiddo",
+      "names": [
+        "Adult Pants"
+      ]
+    },
+    {
+      "discovery_group": "NappiesRUs",
+      "names": [
+        "4 Layer Microfiber Insert",
+        "Adult Pocket Nappy",
+        "Little Rascals",
+        "Play Dayz",
+        "Sprogs",
+        "Stompers",
+        "Str8up",
+        "Tinimals",
+        "Training Pants"
+      ]
+    },
+    {
+      "discovery_group": "Nappy Dapper",
+      "names": [
+        "The Classic"
+      ]
+    },
+    {
+      "discovery_group": "Nateen",
+      "names": [
+        "Absorba Nateen Plus",
+        "Absorba Nateen Soft",
+        "Basic Line Purple",
+        "Combi Maxi",
+        "Combi Plus",
+        "Combi Ultra",
+        "Flexi Maxi",
+        "Ultima"
+      ]
+    },
+    {
+      "discovery_group": "Natuvell",
+      "names": [
+        "Natuvelle Premium windeln"
+      ]
+    },
+    {
+      "discovery_group": "Naty",
+      "names": [
+        "BioEmbrace",
+        "Eco Diapers"
+      ]
+    },
+    {
+      "discovery_group": "Netto",
+      "names": [
+        "Baby Pants"
+      ]
+    },
+    {
+      "discovery_group": "Neva",
+      "names": [
+        "Ocean"
+      ]
+    },
+    {
+      "discovery_group": "Newclears",
+      "names": [
+        "Adult Diaper",
+        "Adult Pants"
+      ]
+    },
+    {
+      "discovery_group": "Night n Day",
+      "names": [
+        "Absorbent Soaker Incontinence Pad - AQ21",
+        "Absorbent Soaker Incontinence Pad - AQ2122",
+        "Absorbent Soaker Incontinence Pad - D21",
+        "Absorbent Soaker Incontinence Pad - D22",
+        "Absorbent Soaker Incontinence Pad - D23",
+        "Adult's Side-Opening Snap",
+        "Adult's Side-Opening Veclro",
+        "Pull-Up All-in-One Pant, Maxi"
+      ]
+    },
+    {
+      "discovery_group": "Nishiki",
+      "names": [
+        "Core Pad 350cc",
+        "Core Pad 500cc",
+        "Core Pad 600cc"
+      ]
+    },
+    {
+      "discovery_group": "NONA",
+      "names": [
+        "Classic Slip Extra",
+        "Classic Slip Normal",
+        "Classic Slip Super"
+      ]
+    },
+    {
+      "discovery_group": "Nonisec",
+      "names": [
+        "Ultra"
+      ]
+    },
+    {
+      "discovery_group": "NorthShore",
+      "names": [
+        "AirPremium Brief",
+        "AirSupreme",
+        "Booster Pad Contoured",
+        "Double Stop",
+        "DynaDry Bladder Control Pads",
+        "DynaDry Supreme Heavy",
+        "DynaDry Supreme Heavy Unisex Incontinence Liners",
+        "EternaDry",
+        "GoSupreme",
+        "GoSupreme Lite",
+        "GoSupreme Max",
+        "MegaMax",
+        "MegaMax Air",
+        "MegaMax AirLock",
+        "MegaMax AirLock Lite",
+        "MegaMax Made in USA V1",
+        "MegaMax USA",
+        "Megamax Lite",
+        "Megamax Lite (V1 2024)",
+        "Pack Pals",
+        "Supreme",
+        "Supreme Lite",
+        "Trifecta"
+      ]
+    },
+    {
+      "discovery_group": "Novamed",
+      "names": [
+        "All in Ones",
+        "Novamed Pull-up Pants"
+      ]
+    },
+    {
+      "discovery_group": "Nundies",
+      "names": [
+        "Nundies"
+      ]
+    },
+    {
+      "discovery_group": "Nutmeg",
+      "names": [
+        "Newborn Nappies",
+        "Ultra Dry Nappies"
+      ]
+    },
+    {
+      "discovery_group": "ObboMed",
+      "names": [
+        "Pull On Style (MT-350X​)",
+        "Snap On Style (MT-331X)"
+      ]
+    },
+    {
+      "discovery_group": "OKIITOKKI",
+      "names": [
+        "Merry Go Round"
+      ]
+    },
+    {
+      "discovery_group": "Omutopia",
+      "names": [
+        "Pastel Puffies"
+      ]
+    },
+    {
+      "discovery_group": "Ontex Id",
+      "names": [
+        "Belt Maxi",
+        "Belt Maxi Plus",
+        "Belt Plus",
+        "Belt Super",
+        "Comfy Junior",
+        "Comfy Junior Slip",
+        "Free Life",
+        "ID Expert Slip Extra",
+        "ID Expert Slip Extra Plus",
+        "ID Expert Slip Maxi",
+        "ID Expert Slip Normal",
+        "ID Expert Slip Plus",
+        "ID Expert Slip Super",
+        "ID Rectangular Insert Extra",
+        "ID Rectangular Insert Maxi Plus",
+        "ID Rectangular Insert Mini",
+        "ID Rectangular Pad Extra",
+        "ID Rectangular Pad Maxi Plus",
+        "ID Rectangular Pad Mini",
+        "InnoFit Premium Extra Plus",
+        "InnoFit Premium Plus",
+        "Innofit Premium Maxi",
+        "Pants Plus",
+        "Slip Extra Plus",
+        "Slip Maxi",
+        "Slip Maxi Prime",
+        "Slip Plus",
+        "Slip Super",
+        "iD Anatomical Pad",
+        "iD Essential Pad Super",
+        "iD Form Extra",
+        "iD Form Maxi",
+        "iD Form Super",
+        "iD Pants Maxi",
+        "iD Pants Normal",
+        "iD Pants Super",
+        "iD Sensitive Form Plus",
+        "iD Slip Expert",
+        "iD for Men Pants Level 4"
+      ]
+    },
+    {
+      "discovery_group": "Oodzoo Boodzoo",
+      "names": [
+        "Holiday Diapers - Christmas",
+        "Holiday Diapers - Halloween"
+      ]
+    },
+    {
+      "discovery_group": "Pampers",
+      "names": [
+        "Active Baby",
+        "Amore",
+        "Baby Dry",
+        "Baby Dry Nappy Pants",
+        "Cruisers",
+        "Cruisers 360°",
+        "Easy Ups",
+        "Good Night Pants",
+        "Harmonie",
+        "Night Pants",
+        "Ninjamas",
+        "Pampers Progressi",
+        "Pants 360",
+        "Premium Protection",
+        "Premium Protection™ Pants",
+        "Pure Hybrid Booster",
+        "Pure Protection",
+        "Pure Protection Training Underwear",
+        "Splashers swim pants",
+        "Swaddlers",
+        "Swaddlers 360°",
+        "Swaddlers Overnights",
+        "UnderJams"
+      ]
+    },
+    {
+      "discovery_group": "Panvel",
+      "names": [
+        "Classic",
+        "Confort",
+        "Vida Plena Incontinence Pads",
+        "Vida Plena Incontinence Pads Comfort"
+      ]
+    },
+    {
+      "discovery_group": "Param",
+      "names": [
+        "BASIS Pants"
+      ]
+    },
+    {
+      "discovery_group": "Parent's Choice",
+      "names": [
+        "Dry & Gentle Diapers",
+        "Explorers 360 Active Fit Diaper",
+        "Gentle Dreams Overnight Diapers",
+        "Training Pants",
+        "Ultimate Care Unisex Training Pants"
+      ]
+    },
+    {
+      "discovery_group": "Patella GM",
+      "names": [
+        "Patella GM Day",
+        "Patella GM Night"
+      ]
+    },
+    {
+      "discovery_group": "Petite AB",
+      "names": [
+        "Le Jardin Secret"
+      ]
+    },
+    {
+      "discovery_group": "Pharma",
+      "names": [
+        "Slip",
+        "Slip Day",
+        "Slip Night"
+      ]
+    },
+    {
+      "discovery_group": "Pingo",
+      "names": [
+        "Ultrasoft Pants"
+      ]
+    },
+    {
+      "discovery_group": "Poise",
+      "names": [
+        "Overnight Pads 8",
+        "Ultimate Long 6",
+        "Ultimate Long 7"
+      ]
+    },
+    {
+      "discovery_group": "Pommette",
+      "names": [
+        "Agility Dry",
+        "Autonomy Up",
+        "Night Pants"
+      ]
+    },
+    {
+      "discovery_group": "Poofy Pins",
+      "names": [
+        "Starry Nights"
+      ]
+    },
+    {
+      "discovery_group": "Popolini",
+      "names": [
+        "Kombolone Diaper",
+        "Kombolone Insert"
+      ]
+    },
+    {
+      "discovery_group": "Potty Training Dropouts",
+      "names": [
+        "BeddyByes",
+        "Uppiez"
+      ]
+    },
+    {
+      "discovery_group": "Prémia",
+      "names": [
+        "Couche Droite",
+        "Extra",
+        "Form Extra",
+        "Form Maxi",
+        "Form Normal",
+        "Form Plus",
+        "Form Super",
+        "Pants Extra",
+        "Pants Super",
+        "Slip Maxi",
+        "Super"
+      ]
+    },
+    {
+      "discovery_group": "Presto",
+      "names": [
+        "Discreet Underwear",
+        "Maximum Guards for Men",
+        "Overnight Discreet Underwear",
+        "Plus Classic Underwear",
+        "Plus Full Fit",
+        "Premier Full Fit",
+        "Supreme Bariatric Full Fit",
+        "Supreme Classic Underwear",
+        "Supreme Discreet Underwear",
+        "Supreme Full Fit",
+        "Ultimate Full Fit",
+        "Ultimate Stretch Briefs"
+      ]
+    },
+    {
+      "discovery_group": "PretendAgain",
+      "names": [
+        "Super Pixel Pals",
+        "TryAgains"
+      ]
+    },
+    {
+      "discovery_group": "Prevail",
+      "names": [
+        "Air",
+        "Air Overnight",
+        "Air Plus",
+        "Bariatric Briefs",
+        "Belted Shields",
+        "Breathable Brief with Tabs",
+        "Breezers",
+        "Breezers 360°",
+        "Daily Briefs Maximum Absorbency",
+        "Daily Male Guards",
+        "Daily Pads Moderate Absorbency",
+        "Daily Pads Ultimate Absorbency",
+        "Daily Pant Liners",
+        "Daily Pant Liners",
+        "Daily Underwear",
+        "Daily Underwear - Extra Absorbancy",
+        "Daily Underwear - Maximum Absorbancy",
+        "Nu-Fit",
+        "Nu-Fit Daily Brief",
+        "Overnight Pads",
+        "Overnight Underwear",
+        "Per-Fit 360°",
+        "Per-Fit Daily Briefs",
+        "Per-Fit Daily Underwear",
+        "Per-Fit Daily Underwear (Men)",
+        "Per-Fit Daily Underwear (Women)",
+        "Underwear Extra"
+      ]
+    },
+    {
+      "discovery_group": "Priva",
+      "names": [
+        "Vinyl Pull-on Pants"
+      ]
+    },
+    {
+      "discovery_group": "ProCare",
+      "names": [
+        "Breathable Adult Briefs",
+        "Protective Underwear"
+      ]
+    },
+    {
+      "discovery_group": "Protex",
+      "names": [
+        "Overnight Collector's Edition Pant"
+      ]
+    },
+    {
+      "discovery_group": "Pupus",
+      "names": [
+        "Hourglass Bamboo Insert",
+        "Reusable diaper with insert"
+      ]
+    },
+    {
+      "discovery_group": "Pura",
+      "names": [
+        "Diaper",
+        "Pants"
+      ]
+    },
+    {
+      "discovery_group": "QTTY Diapers",
+      "names": [
+        "Rawr"
+      ]
+    },
+    {
+      "discovery_group": "R For Rabbit",
+      "names": [
+        "Feather Diapers"
+      ]
+    },
+    {
+      "discovery_group": "Rascal + Friends",
+      "names": [
+        "Night Pants",
+        "Premium Diapers",
+        "Training Pants"
+      ]
+    },
+    {
+      "discovery_group": "Rearz",
+      "names": [
+        "Adult Bamboo Booster Pads",
+        "Alpaca",
+        "Ballet Valentine Snap Plastic Pant",
+        "Barnyard",
+        "Barnyard Muslin Gauze Flat Diaper",
+        "Building Blocks",
+        "Bunny Boo",
+        "Christmas Memories",
+        "Critter Caboose",
+        "DL Night Diaper Cover",
+        "Daydreamer",
+        "Diaper Wrap",
+        "Dinosaur Panel",
+        "Halloween Haunt",
+        "Husky",
+        "Inspire +",
+        "Inspire Select v1",
+        "Ladies First",
+        "Lil Bella",
+        "Lil Bella V1",
+        "Lil Squirts - V1",
+        "Lil Squirts Splash",
+        "Lil' Monsters",
+        "Lil' Monsters V1",
+        "Lunar Cub",
+        "Luxury Bamboo Pocket",
+        "Mega Barnyard",
+        "Mega Critter Caboose",
+        "Mega Dinosaur",
+        "Mega Inspire+",
+        "Mega Inspire+",
+        "Mega Safari",
+        "Mermaid Tales",
+        "Minky Pocket Diaper",
+        "Nighttime Prefold",
+        "Omutsu Bulky",
+        "Omutsu Purrfection",
+        "Omutsu V1",
+        "Omutsu V2 Waddle",
+        "Overnight Booster Pads",
+        "Pink Satin Diaper Cover",
+        "Pocket Diaper",
+        "Princess Pink",
+        "Princess Pink v1",
+        "Raven 2020",
+        "Raven 2021",
+        "Rebel",
+        "Rebel Pink",
+        "Seduction Black",
+        "Seduction Violet Dinosaur",
+        "Snow Much Fun",
+        "Spoiled",
+        "Spring Floral Pull-up",
+        "Swim Diaper",
+        "Taste of the Holidays",
+        "Training Pants",
+        "Valentine",
+        "Vintage Baby Dry Replica",
+        "Violet Seduction Nighttime Briefs",
+        "Zebra"
+      ]
+    },
+    {
+      "discovery_group": "Reassure",
+      "names": [
+        "Booster Pad",
+        "Overnight Premium",
+        "Premium Overnight Underwear",
+        "Thin Booster Pad, Maximum"
+      ]
+    },
+    {
+      "discovery_group": "Relax-Care",
+      "names": [
+        "Lira Pad Tape + 1000",
+        "Lira Pad Tape + 1200",
+        "Lira Pad Tape + 600"
+      ]
+    },
+    {
+      "discovery_group": "Relief",
+      "names": [
+        "Easy Pants Long Time ​",
+        "Easy Pants Thin Type",
+        "Like Underwear"
+      ]
+    },
+    {
+      "discovery_group": "Rely",
+      "names": [
+        "Briefs"
+      ]
+    },
+    {
+      "discovery_group": "Rexall",
+      "names": [
+        "Composure Men Underwear",
+        "Composure Underwear Overnight",
+        "Composure Women Underwear"
+      ]
+    },
+    {
+      "discovery_group": "RIte Aid",
+      "names": [
+        "Men's Underwear, Maximum Absorbency",
+        "Women's Protective Underwear, Maximum Absorbancy"
+      ]
+    },
+    {
+      "discovery_group": "Romed Holland",
+      "names": [
+        "Slip Super Plus"
+      ]
+    },
+    {
+      "discovery_group": "Sainsbury's",
+      "names": [
+        "Comfort Fit for Him Discreet Underwear Plus",
+        "Comfort Fit for Him Discreet Underwear Super"
+      ]
+    },
+    {
+      "discovery_group": "Sana (Aldi)",
+      "names": [
+        "Incontinence Pads Extra",
+        "Incontinence Pads Normal",
+        "Pants"
+      ]
+    },
+    {
+      "discovery_group": "Sani Sensitive",
+      "names": [
+        "Day&Night",
+        "Premium Pants"
+      ]
+    },
+    {
+      "discovery_group": "Satessa",
+      "names": [
+        "Hygiene-Pants"
+      ]
+    },
+    {
+      "discovery_group": "Save Express",
+      "names": [
+        "Booster -2XL-",
+        "MyDiaper Animal",
+        "MyDiaper Black",
+        "MyDiaper Colour",
+        "MyDiaper Comfort",
+        "MyDiaper Pink",
+        "MyDiaper Sexy",
+        "MyDiaper Ultra",
+        "MyDiaper White",
+        "MyDiaper X-Plus",
+        "MyDiaper Yellow",
+        "Mydiaper Blue"
+      ]
+    },
+    {
+      "discovery_group": "SCOOZZ",
+      "names": [
+        "Dry-Keeper"
+      ]
+    },
+    {
+      "discovery_group": "Secure",
+      "names": [
+        "Pants Plus",
+        "Pants Ultra",
+        "Slip Extra"
+      ]
+    },
+    {
+      "discovery_group": "Secure Personal Care Products",
+      "names": [
+        "Booster Pads Ultra",
+        "Duo Booster Pads",
+        "Ultimate Boost Ups",
+        "Ultimate Pads"
+      ]
+    },
+    {
+      "discovery_group": "Seguna",
+      "names": [
+        "Men Extra",
+        "Men Level 4",
+        "Pants Maxi",
+        "Pants Normal",
+        "Pants Plus",
+        "Pants Super",
+        "Slip Extra",
+        "Slip Maxi",
+        "Slip Plus",
+        "Slip Super"
+      ]
+    },
+    {
+      "discovery_group": "Senea",
+      "names": [
+        "Change Complet",
+        "Pants"
+      ]
+    },
+    {
+      "discovery_group": "Seneo",
+      "names": [
+        "Boosters Terry",
+        "Boosters Twill",
+        "Fitted Insert Twill",
+        "Fitted Inserts MicroFiber",
+        "Nappy Covers"
+      ]
+    },
+    {
+      "discovery_group": "Seni",
+      "names": [
+        "Active Classic",
+        "Active Normal",
+        "Active Plus",
+        "Active Super",
+        "Active Super Plus",
+        "Briefs Classic",
+        "Briefs Classic Plus",
+        "Briefs Super",
+        "Briefs Super Plus",
+        "Classic",
+        "Control Extra",
+        "Control Mini",
+        "Control Normal",
+        "Control Plus",
+        "Control Super",
+        "Day Shaped Pads",
+        "Fix Comfort",
+        "Kids Junior",
+        "Kids Junior Extra",
+        "Kids Junior Super",
+        "Lady Super Night",
+        "Man Extra Level 3",
+        "Man Extra Plus Level 4",
+        "Man Light Level 1",
+        "Man Normal Level 2",
+        "Man Pants",
+        "Man Super Level 5",
+        "Night Shaped Pads",
+        "Optima Plus",
+        "Optima Quatro",
+        "Optima Super",
+        "Optima Trio",
+        "San Plus",
+        "San Plus Extra",
+        "San Prima",
+        "San Seni Uni",
+        "San for Men",
+        "Seni Active Trio",
+        "Seni Balanced Booster",
+        "Seni Classic Basic",
+        "Seni R",
+        "Seni V",
+        "Standard Air",
+        "Standard Plus Air",
+        "Super",
+        "Super Plus",
+        "Super Quatro",
+        "Super Trio"
+      ]
+    },
+    {
+      "discovery_group": "Sensalou",
+      "names": [
+        "Pants maxi",
+        "Pants super"
+      ]
+    },
+    {
+      "discovery_group": "Serenity",
+      "names": [
+        "Classic Extra",
+        "Classic Maxi",
+        "Classic Super",
+        "Classic Super",
+        "Man Pants Plus",
+        "Maxi Notte",
+        "Pants Giorno Extra",
+        "Pants Notte",
+        "Pants SoftDry Sensitive Maxi",
+        "Pants SoftDry Sensitive Super",
+        "Pants Super",
+        "Sagomato Maxi",
+        "Serenity Maxi",
+        "SoftDry Sensitive Extra",
+        "SoftDry Sensitive Maxi"
+      ]
+    },
+    {
+      "discovery_group": "Shield",
+      "names": [
+        "Adult Diaper",
+        "Pants"
+      ]
+    },
+    {
+      "discovery_group": "Siempre",
+      "names": [
+        "Incontinence Pants"
+      ]
+    },
+    {
+      "discovery_group": "Signature Care",
+      "names": [
+        "Diapers",
+        "Easy Sleeps"
+      ]
+    },
+    {
+      "discovery_group": "Sleepy",
+      "names": [
+        "Sensitive Adult Diaper"
+      ]
+    },
+    {
+      "discovery_group": "Snap-EZ",
+      "names": [
+        "Hemp/Bamboo Inserts",
+        "Pocket Diaper"
+      ]
+    },
+    {
+      "discovery_group": "Snuggle Blanks",
+      "names": [
+        "All-In-One Pocket Nappy",
+        "Bamboo Trifold Booster",
+        "ContiSlip Maxi Cotton",
+        "Cotton Trifold Booster",
+        "Luxury Bamboo ContiSlip",
+        "Reusable Pull Up Pants - Jersey",
+        "Reusable Pull-Up Pants - Cotton",
+        "Superwetter Quickdry",
+        "Waterproof nappy wrap/cover"
+      ]
+    },
+    {
+      "discovery_group": "Soffisof",
+      "names": [
+        "Air Dry Super",
+        "Rectangular Midi Super",
+        "Slip Classic Maxi",
+        "Slip Maxi Plus"
+      ]
+    },
+    {
+      "discovery_group": "SOSecure",
+      "names": [
+        "Adult Swim Diaper"
+      ]
+    },
+    {
+      "discovery_group": "SPC",
+      "names": [
+        "Extra Absorbent Thin Incontinence Pads",
+        "Reusable Incontinence Underwear",
+        "Super Absorbent Breathable Briefs",
+        "Super Absorbent Incontinence Liners"
+      ]
+    },
+    {
+      "discovery_group": "Sphère Santé",
+      "names": [
+        "Droite Traversable Maxi +",
+        "Form Maxi+",
+        "Pants Extra",
+        "Pants Maxi+",
+        "Slip Extra",
+        "Slip Maxi+"
+      ]
+    },
+    {
+      "discovery_group": "Splash About",
+      "names": [
+        "Adult Splash Shorts",
+        "Splash Jammers Adult"
+      ]
+    },
+    {
+      "discovery_group": "Sposie",
+      "names": [
+        "Booster Pad",
+        "Super Sposie"
+      ]
+    },
+    {
+      "discovery_group": "Sunkiss",
+      "names": [
+        "Booster Pads",
+        "Booster Pads",
+        "Masterpiece",
+        "Protective Underwear",
+        "TrustPlus",
+        "TrustPlus Overnight",
+        "TrustPlus Underwear",
+        "Ultra Thin for Men",
+        "Ultra Thin for Women"
+      ]
+    },
+    {
+      "discovery_group": "Suprima",
+      "names": [
+        "PVC brief (1311)",
+        "Bodyguard – Brief Ultra (1270)",
+        "Cotton/PU brief, buttoned (1269)",
+        "PU brief (1204)",
+        "PU brief (1217)",
+        "PU brief (1287)",
+        "PVC brief (1205)",
+        "PVC brief (1218)",
+        "PVC brief (1265)",
+        "PVC brief, buttoned  (1249)",
+        "Swimming shorts (1521)"
+      ]
+    },
+    {
+      "discovery_group": "Swimmm",
+      "names": [
+        "Disposable swim pants"
+      ]
+    },
+    {
+      "discovery_group": "Taynie",
+      "names": [
+        "Herren Slip 150mL",
+        "Herren Slip 500mL"
+      ]
+    },
+    {
+      "discovery_group": "TEN@NIGHT",
+      "names": [
+        "Rainbow Week"
+      ]
+    },
+    {
+      "discovery_group": "Tena",
+      "names": [
+        "Classic Plus",
+        "Comfort Extra",
+        "Comfort Maxi",
+        "Comfort Mini Extra",
+        "Comfort Mini Plus",
+        "Comfort Mini Super",
+        "Comfort Plus",
+        "Comfort Plus Compact",
+        "Comfort Super",
+        "Comfort Ultima",
+        "Complete + Care Extra",
+        "Complete Plus",
+        "Complete Ultra",
+        "Confort",
+        "Dermacare Pants",
+        "Dermacare Slip",
+        "Discreet Normal",
+        "Discreet Protect+ Maxi",
+        "Dry Comfort",
+        "Fix",
+        "Flex Maxi ProSkin",
+        "Flex Plus ProSkin",
+        "Flex Super ProSkin",
+        "Flex Ultima ProSkin",
+        "Fully Breathable Super ProSkin",
+        "Fully Breathable Ultra ProSkin",
+        "Lady Night Normal Night",
+        "Lady Night Pad Maxi Night",
+        "Lady Super",
+        "Men Active Fit Level 1",
+        "Men Active Fit Level 2",
+        "Men Active Fit Level 3",
+        "Men Active Fit Pants Normal",
+        "Men Active Fit Pants Plus",
+        "Men Extra Coverage Overnight Underwear",
+        "Men Overnight Max Underwear",
+        "Men Premium Fit Protective Underwear Maxi",
+        "Men Protective Shield Light",
+        "Men Protective Underwear",
+        "Overnight",
+        "Pants Confort",
+        "Pants Maxi",
+        "Pants Night Super",
+        "Pants Nocturno",
+        "Pants Normal",
+        "Pants Noturna",
+        "Pants Plus",
+        "Pants Plus Night",
+        "Pants Protect+ Maxi",
+        "Pants Protect+ Plus",
+        "Pants Protect+ Plus Night",
+        "Pants Protect+ Super",
+        "Pants Super",
+        "Plus Size Care",
+        "ProSkin 3XL Night Pads",
+        "Proskin Protective Underwear for Men",
+        "Proskin Stretch Night",
+        "Proskin Stretch Super Day",
+        "Proskin Stretch Super Night",
+        "Rectangular pads",
+        "Sensitive Care Maximum",
+        "Sensitive Care Overnight",
+        "Sensitive Care Underwear Maximum",
+        "Silhouette Black Mini Pads",
+        "Silhouette Plus High Waist",
+        "Silhouette Plus Low Waist",
+        "Slip Maxi",
+        "Slip Maxi ActiveFit",
+        "Slip Maxi ProSkin",
+        "Slip Maxi Protect",
+        "Slip Noturna",
+        "Slip Original Maxi",
+        "Slip Original Plus",
+        "Slip Original Super",
+        "Slip Plus",
+        "Slip Plus ActiveFit",
+        "Slip Plus ProSkin",
+        "Slip Super",
+        "Slip Super ProSkin",
+        "Slip Ultima ActiveFit",
+        "Slip Ultima ProSkin",
+        "Slip Ultra",
+        "Slip Ultra Protect",
+        "Small Brief",
+        "Stretch Plus",
+        "Stretch Super",
+        "Stretch Ultra",
+        "Stylish Super Plus Heavy Underwear",
+        "Super Plus Protective Underwear for Men",
+        "TENA Pants Discreet",
+        "Tena Discreet Extra",
+        "Tena Washable Men's Boxer",
+        "Ultimate Underwear",
+        "Value",
+        "discreet Ultra Mini"
+      ]
+    },
+    {
+      "discovery_group": "Tesco",
+      "names": [
+        "Fred & Flo Easy Fit Pants",
+        "Fred & Flo Ultra Dry Nappies",
+        "Free Spirit Super Underwear",
+        "Junior Nappies",
+        "Junior Plus Nappies",
+        "Junior Plus Pants",
+        "Men Active Protective Pants Plus",
+        "Men Active Protective Pants Super"
+      ]
+    },
+    {
+      "discovery_group": "The ABDL Shop",
+      "names": [
+        "Carousel",
+        "Carousel v1"
+      ]
+    },
+    {
+      "discovery_group": "The Cuddle Cooperative",
+      "names": [
+        "Fairyland"
+      ]
+    },
+    {
+      "discovery_group": "The Dotty Diaper Company",
+      "names": [
+        "Basic",
+        "Basic Pull-up",
+        "Dotty the Pony",
+        "Medical Plus",
+        "Plain and Simple",
+        "Plain and Simple Boosters",
+        "Playful Pups",
+        "Pride",
+        "Super Boompa",
+        "Super Dotty the Pony",
+        "The Bed Teds Cloth Backed",
+        "The Bed Teds Plastic Backed"
+      ]
+    },
+    {
+      "discovery_group": "Think Alvita",
+      "names": [
+        "All-In-One Maxi",
+        "All-In-One Super",
+        "Pants Maxi",
+        "Pants Super"
+      ]
+    },
+    {
+      "discovery_group": "Thirsties",
+      "names": [
+        "Duo Wrap"
+      ]
+    },
+    {
+      "discovery_group": "Threaded Armor",
+      "names": [
+        "Adult Diaper Soaker Bomb",
+        "Basic Briefs",
+        "Hero Insert",
+        "Lounge Brief",
+        "Protective Briefs",
+        "Protective Briefs with Snaps",
+        "Step-up Insert"
+      ]
+    },
+    {
+      "discovery_group": "Tippy Toes",
+      "names": [
+        "Nighttime Pants"
+      ]
+    },
+    {
+      "discovery_group": "Tooshies",
+      "names": [
+        "Eco Nappies",
+        "Eco Nappy Pants"
+      ]
+    },
+    {
+      "discovery_group": "TopCare",
+      "names": [
+        "Bladder Control Liners for Women",
+        "Bladder Control Pads for Women Light",
+        "Bladder Control Pads for Women Maximum",
+        "Bladder Control Pads for Women Moderate",
+        "Bladder Control Pads for Women Overnight",
+        "Bladder Control Pads for Women Ultimate",
+        "Guards for Men",
+        "Underwear for Men",
+        "Underwear for Women",
+        "Underwear for Women Overnight",
+        "Underwear for Women Premium Maximum",
+        "Unisex Stretch Brief with Tabs"
+      ]
+    },
+    {
+      "discovery_group": "TotalDry",
+      "names": [
+        "Booster Pad Duo",
+        "Booster Pads Ultra",
+        "Brief Liner Classic",
+        "Dual Pads",
+        "Fitted Briefs - Breathable",
+        "Fitted Briefs - Plastic Backed",
+        "Max-Day Pads",
+        "Maximum Boost Ups",
+        "Overnight Boosters",
+        "Overnight Breathable Briefs",
+        "Overnight Fitted Briefs",
+        "Protective Underwear",
+        "Ultimate Boost Ups",
+        "Ultimate Pads",
+        "X-Plus Fitted Briefs"
+      ]
+    },
+    {
+      "discovery_group": "Tranquility",
+      "names": [
+        "ATN (All-Through-the-Night)",
+        "Daytime Premium Underwear",
+        "EliteCare",
+        "Essential Booster Pads – Heavy",
+        "Essential Breathable Briefs - Heavy",
+        "Essential Breathable Briefs – Moderate",
+        "Essential Underwear – Heavy",
+        "Essential Underwear – Moderate",
+        "HI-Rise Bariatric Disposable Briefs",
+        "Male Guard",
+        "Overnight Premium",
+        "Personal Care Pads Maximum",
+        "Personal Care Pads Overnight",
+        "Personal Care Pads Ultimate",
+        "Select Disposable Briefs",
+        "SlimLine",
+        "SmartCore Briefs",
+        "Swimmates",
+        "TopLiner Contour Booster",
+        "TopLiner Mini",
+        "TopLiner Regular",
+        "TopLiner Super"
+      ]
+    },
+    {
+      "discovery_group": "Trest",
+      "names": [
+        "Elite Briefs"
+      ]
+    },
+    {
+      "discovery_group": "TruPal",
+      "names": [
+        "Adult Diaper",
+        "Premium Night"
+      ]
+    },
+    {
+      "discovery_group": "Tykables",
+      "names": [
+        "Animooz",
+        "Camelot",
+        "Camelot V1",
+        "Cammies Blue",
+        "Cammies Pink",
+        "Detective Marty",
+        "Dubbler",
+        "Dubblers v1",
+        "Galactic",
+        "Galactic V1",
+        "Koda Cubs",
+        "Little Builder v1",
+        "Little Builders",
+        "Little Rawrs",
+        "Overnights",
+        "Overnights V1",
+        "Overnights V1 (Waddle)",
+        "PLeather",
+        "Potty Monsters",
+        "Puppers",
+        "Puppers V1",
+        "Purrfect Cafe",
+        "Snuggies Scene Extender (S.Ex)",
+        "Snuggies Waddler",
+        "Snuggies Waddler Overnight",
+        "Soggers",
+        "Tighty Whities",
+        "Unicorns",
+        "Unicorns v1",
+        "Waddler",
+        "Waddler v1",
+        "Waddlin"
+      ]
+    },
+    {
+      "discovery_group": "U",
+      "names": [
+        "Change Complets",
+        "Children's Night Pants",
+        "Couche Essentiel",
+        "Couche Rectangulaire",
+        "Culottes Mixtes Jour",
+        "Culottes Mixtes Nuit"
+      ]
+    },
+    {
+      "discovery_group": "Underx",
+      "names": [
+        "Xtreme Absorbancy Briefs"
+      ]
+    },
+    {
+      "discovery_group": "Unicharm",
+      "names": [
+        "Mamypoko Extra Dry",
+        "Mamypoko Pants",
+        "Moony",
+        "Moony Man Boy",
+        "Moony Man Girl",
+        "Oyasumiman Boy",
+        "Oyasumiman Girl"
+      ]
+    },
+    {
+      "discovery_group": "Unique Wellness",
+      "names": [
+        "Absorbent Underwear",
+        "Booster pads",
+        "Briefs",
+        "Softistico Comfort Series",
+        "Superio Briefs"
+      ]
+    },
+    {
+      "discovery_group": "Up & Up",
+      "names": [
+        "Absorbent and Soft Diapers",
+        "Comfort-Fit Training Pants",
+        "Incontinence Underwear for Men",
+        "Incontinence Underwear for Women",
+        "Nighttime Underwear",
+        "Nighttime Underwear (2020 - 2024)"
+      ]
+    },
+    {
+      "discovery_group": "Vevor",
+      "names": [
+        "Adult Briefs"
+      ]
+    },
+    {
+      "discovery_group": "ViraCare",
+      "names": [
+        "Pants Super"
+      ]
+    },
+    {
+      "discovery_group": "Vivactive",
+      "names": [
+        "Booster Pads Maxi",
+        "Booster Pads Super",
+        "Lady Discreet Underwear Maxi",
+        "Men Active Fit",
+        "Pants Discreet",
+        "Pants Maxi Black",
+        "Pants Maxi White",
+        "Pants Night Maxi",
+        "Pants Night Ultimate",
+        "Pants Super",
+        "Shaped Pads Extra",
+        "Shaped Pads Maxi",
+        "Shaped Pads Night Maxi",
+        "Shaped Pads Normal",
+        "Shaped Pads Plus",
+        "Shaped Pads Super",
+        "Slip Maxi",
+        "Slip Plus",
+        "Slip Plus (2018-2024)",
+        "Slip Super (2018-2024)",
+        "Slip Ultimate",
+        "Waterproof Pants"
+      ]
+    },
+    {
+      "discovery_group": "Vivo",
+      "names": [
+        "Fully Breathable Briefs",
+        "Fully Breathable Underwear"
+      ]
+    },
+    {
+      "discovery_group": "Vivoy",
+      "names": [
+        "Einlagen discreet Extra",
+        "Einlagen discreet Maxi",
+        "Einlagen discreet Mini",
+        "Einlagen discreet Super"
+      ]
+    },
+    {
+      "discovery_group": "Weifang Mimosa Personalcare",
+      "names": [
+        "Mimosa"
+      ]
+    },
+    {
+      "discovery_group": "WhiteCloud",
+      "names": [
+        "Ultra Comfort Diapers"
+      ]
+    },
+    {
+      "discovery_group": "WhyWorry",
+      "names": [
+        "Briefs",
+        "Protective Underwear"
+      ]
+    },
+    {
+      "discovery_group": "Win",
+      "names": [
+        "Win Plus"
+      ]
+    },
+    {
+      "discovery_group": "Yibero",
+      "names": [
+        "Adult Pants"
+      ]
+    },
+    {
+      "discovery_group": "Yisan",
+      "names": [
+        "Combi Flexi Super Ultra",
+        "Combi Maxi",
+        "Combi Super Ultra"
+      ]
+    },
+    {
+      "discovery_group": "Youth Crews",
+      "names": [
+        "Youth Diaper"
+      ]
+    },
+    {
+      "discovery_group": "Zealacare",
+      "names": [
+        "Briefs"
+      ]
+    },
+    {
+      "discovery_group": "Other",
+      "names": [
+        "Active Slips Premium",
+        "Aidapt Premium Unisex Adult Nappies",
+        "Azipad",
+        "BareBum (PreABU)",
+        "BiMart Stretch Briefs With Tabs Ultimate Absorbency",
+        "Booster Pads",
+        "Comficare 10",
+        "Comfort & Care Adult Diaper - Mannings Guardian",
+        "Comodín",
+        "Conni Pull Ons",
+        "G FUEL Energy Diaper",
+        "Hyganelle",
+        "Inflatable Silicone Diaper",
+        "Jindalai Adult Diaper",
+        "Mar Nel Adult Diapers",
+        "Nonino plus",
+        "Nursa Slip",
+        "PROTECBriefs",
+        "Pit Diaper",
+        "Pull-Up All-in-One Pant Maxi",
+        "Pure Med Adult Diaper",
+        "Snugglers Nappies",
+        "Ugoki",
+        "XP Medical A+ Booster Pad"
+      ]
+    }
+  ]
+}

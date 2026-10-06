@@ -1,0 +1,522 @@
+[
+  {
+    "ResearchId": "B05-AS1-30",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "San Premium 1",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "San",
+    "ProductType": "Pad",
+    "Size": "1",
+    "Quantity": 30,
+    "Gtin": "5713571000441",
+    "MeasurementBasis": "pad dimensions; body fit not applicable",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": null,
+    "HipMaximumCm": null,
+    "LengthMm": 220,
+    "WidthMm": 100,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-1-premium-30-pcs-119588"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-1-premium-30-pcs-119588",
+      "https://online.abena.dk/Product/Pdf/1000021301?type=Online_varedatablad"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://online.abena.dk/Product/Pdf/1000021301?type=Online_varedatablad"
+    ],
+    "EvidenceNotes": "Exact ABENA San Premium 1, manufacturer article 1000021301, sealed bag 30, GTIN 5713571000441. Nordic Swan exact-pack registry agrees with official 2025 manufacturer table on size and bag count; pad dimensions 220 × 100 mm. Manufacturer size code preserved; pad dimensions are not body-fit or shipping dimensions. Waist and hip not applicable. Adhesive anatomical pad. Current is an editorial structural variant; no alternate manufacturer variant inferred. Optional absorbency and construction attributes remain unknown rather than applying heterogeneous family traits. No images copied; rights unknown. Carton codes are distinct and excluded. Market scope Nordic registry / European manufacturer documentation; no US pack equivalence inferred. Current official manufacturer sheet 11.06.2026 independently confirms exact bag EAN/count; carton excluded."
+  },
+  {
+    "ResearchId": "B05-AS1A-28",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "San Premium 1A",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "San",
+    "ProductType": "Pad",
+    "Size": "1A",
+    "Quantity": 28,
+    "Gtin": "5713571000465",
+    "MeasurementBasis": "pad dimensions; body fit not applicable",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": null,
+    "HipMaximumCm": null,
+    "LengthMm": 280,
+    "WidthMm": 100,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-1a-premium-28-pcs-119585"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-1a-premium-28-pcs-119585"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA San Premium 1A, manufacturer article 1000021302, sealed bag 28, GTIN 5713571000465. Nordic Swan exact-pack registry agrees with official 2025 manufacturer table on size and bag count; pad dimensions 280 × 100 mm. Manufacturer size code preserved; pad dimensions are not body-fit or shipping dimensions. Waist and hip not applicable. Adhesive anatomical pad. Current is an editorial structural variant; no alternate manufacturer variant inferred. Optional absorbency and construction attributes remain unknown rather than applying heterogeneous family traits. No images copied; rights unknown. Carton codes are distinct and excluded. Market scope Nordic registry / European manufacturer documentation; no US pack equivalence inferred."
+  },
+  {
+    "ResearchId": "B05-AS2-30",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "San Premium 2",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "San",
+    "ProductType": "Pad",
+    "Size": "2",
+    "Quantity": 30,
+    "Gtin": "5713571000489",
+    "MeasurementBasis": "pad dimensions; body fit not applicable",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": null,
+    "HipMaximumCm": null,
+    "LengthMm": 260,
+    "WidthMm": 100,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-2-premium-30-pcs-119589"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-2-premium-30-pcs-119589"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA San Premium 2, manufacturer article 1000021303, sealed bag 30, GTIN 5713571000489. Nordic Swan exact-pack registry agrees with official 2025 manufacturer table on size and bag count; pad dimensions 260 × 100 mm. Manufacturer size code preserved; pad dimensions are not body-fit or shipping dimensions. Waist and hip not applicable. Adhesive anatomical pad. Current is an editorial structural variant; no alternate manufacturer variant inferred. Optional absorbency and construction attributes remain unknown rather than applying heterogeneous family traits. No images copied; rights unknown. Carton codes are distinct and excluded. Market scope Nordic registry / European manufacturer documentation; no US pack equivalence inferred."
+  },
+  {
+    "ResearchId": "B05-AS3-28",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "San Premium 3",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "San",
+    "ProductType": "Pad",
+    "Size": "3",
+    "Quantity": 28,
+    "Gtin": "5713571000502",
+    "MeasurementBasis": "pad dimensions; body fit not applicable",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": null,
+    "HipMaximumCm": null,
+    "LengthMm": 330,
+    "WidthMm": 110,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-3-premium-28-pcs-119587"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-3-premium-28-pcs-119587"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA San Premium 3, manufacturer article 1000021304, sealed bag 28, GTIN 5713571000502. Nordic Swan exact-pack registry agrees with official 2025 manufacturer table on size and bag count; pad dimensions 330 × 110 mm. Manufacturer size code preserved; pad dimensions are not body-fit or shipping dimensions. Waist and hip not applicable. Adhesive anatomical pad. Current is an editorial structural variant; no alternate manufacturer variant inferred. Optional absorbency and construction attributes remain unknown rather than applying heterogeneous family traits. No images copied; rights unknown. Carton codes are distinct and excluded. Market scope Nordic registry / European manufacturer documentation; no US pack equivalence inferred."
+  },
+  {
+    "ResearchId": "B05-AS3A-28",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "San Premium 3A",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "San",
+    "ProductType": "Pad",
+    "Size": "3A",
+    "Quantity": 28,
+    "Gtin": "5713571000526",
+    "MeasurementBasis": "pad dimensions; body fit not applicable",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": null,
+    "HipMaximumCm": null,
+    "LengthMm": 330,
+    "WidthMm": 110,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-3a-premium-28-pcs-119590"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-3a-premium-28-pcs-119590"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA San Premium 3A, manufacturer article 1000021305, sealed bag 28, GTIN 5713571000526. Nordic Swan exact-pack registry agrees with official 2025 manufacturer table on size and bag count; pad dimensions 330 × 110 mm. Manufacturer size code preserved; pad dimensions are not body-fit or shipping dimensions. Waist and hip not applicable. Adhesive anatomical pad. Current is an editorial structural variant; no alternate manufacturer variant inferred. Optional absorbency and construction attributes remain unknown rather than applying heterogeneous family traits. No images copied; rights unknown. Carton codes are distinct and excluded. Market scope Nordic registry / European manufacturer documentation; no US pack equivalence inferred."
+  },
+  {
+    "ResearchId": "B05-AS4-30",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "San Premium 4",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "San",
+    "ProductType": "Pad",
+    "Size": "4",
+    "Quantity": 30,
+    "Gtin": "5713571000540",
+    "MeasurementBasis": "pad dimensions; body fit not applicable",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": null,
+    "HipMaximumCm": null,
+    "LengthMm": 420,
+    "WidthMm": 200,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-4-premium-30-pcs-119586"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-4-premium-30-pcs-119586"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA San Premium 4, manufacturer article 1000021306, sealed bag 30, GTIN 5713571000540. Nordic Swan exact-pack registry agrees with official 2025 manufacturer table on size and bag count; pad dimensions 420 × 200 mm. Manufacturer size code preserved; pad dimensions are not body-fit or shipping dimensions. Waist and hip not applicable. Adhesive anatomical pad. Current is an editorial structural variant; no alternate manufacturer variant inferred. Optional absorbency and construction attributes remain unknown rather than applying heterogeneous family traits. No images copied; rights unknown. Carton codes are distinct and excluded. Market scope Nordic registry / European manufacturer documentation; no US pack equivalence inferred. US Target partner listing has internally inconsistent title/count specifications; that listing is excluded from canonical evidence and US retail publication. Nordic/EU bag identity is established by authoritative registry and manufacturer documents."
+  },
+  {
+    "ResearchId": "B05-AS5-36",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "San Premium 5",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "San",
+    "ProductType": "Pad",
+    "Size": "5",
+    "Quantity": 36,
+    "Gtin": "5713571000564",
+    "MeasurementBasis": "pad dimensions; body fit not applicable",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": null,
+    "HipMaximumCm": null,
+    "LengthMm": 540,
+    "WidthMm": 280,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-5-36-pcs-109911"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-5-36-pcs-109911",
+      "https://online.abena.dk/Product/Pdf/100002130710?type=Online_varedatablad"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://online.abena.dk/Product/Pdf/100002130710?type=Online_varedatablad"
+    ],
+    "EvidenceNotes": "Exact ABENA San Premium 5, manufacturer article 1000021307, sealed bag 36, GTIN 5713571000564. Nordic Swan exact-pack registry agrees with official 2025 manufacturer table on size and bag count; pad dimensions 540 × 280 mm. Manufacturer size code preserved; pad dimensions are not body-fit or shipping dimensions. Waist and hip not applicable. Shaped pad for use with fixation underwear. Current is an editorial structural variant; no alternate manufacturer variant inferred. Optional absorbency and construction attributes remain unknown rather than applying heterogeneous family traits. No images copied; rights unknown. Carton codes are distinct and excluded. Market scope Nordic registry / European manufacturer documentation; no US pack equivalence inferred. Current official manufacturer sheet 11.06.2026 independently confirms exact bag EAN/count; carton excluded."
+  },
+  {
+    "ResearchId": "B05-AS6-34",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "San Premium 6",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "San",
+    "ProductType": "Pad",
+    "Size": "6",
+    "Quantity": 34,
+    "Gtin": "5713571000588",
+    "MeasurementBasis": "pad dimensions; body fit not applicable",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": null,
+    "HipMaximumCm": null,
+    "LengthMm": 630,
+    "WidthMm": 300,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-6-34-pcs-109912"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-6-34-pcs-109912"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA San Premium 6, manufacturer article 1000021308, sealed bag 34, GTIN 5713571000588. Nordic Swan exact-pack registry agrees with official 2025 manufacturer table on size and bag count; pad dimensions 630 × 300 mm. Manufacturer size code preserved; pad dimensions are not body-fit or shipping dimensions. Waist and hip not applicable. Shaped pad for use with fixation underwear. Current is an editorial structural variant; no alternate manufacturer variant inferred. Optional absorbency and construction attributes remain unknown rather than applying heterogeneous family traits. No images copied; rights unknown. Carton codes are distinct and excluded. Market scope Nordic registry / European manufacturer documentation; no US pack equivalence inferred."
+  },
+  {
+    "ResearchId": "B05-AS7-30",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "San Premium 7",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "San",
+    "ProductType": "Pad",
+    "Size": "7",
+    "Quantity": 30,
+    "Gtin": "5713571000601",
+    "MeasurementBasis": "pad dimensions; body fit not applicable",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": null,
+    "HipMaximumCm": null,
+    "LengthMm": 630,
+    "WidthMm": 360,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-7-30-pcs-109913"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-7-30-pcs-109913",
+      "https://online.abena.dk/Product/Pdf/1000021309?type=Online_varedatablad"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://online.abena.dk/Product/Pdf/1000021309?type=Online_varedatablad"
+    ],
+    "EvidenceNotes": "Exact ABENA San Premium 7, manufacturer article 1000021309, sealed bag 30, GTIN 5713571000601. Nordic Swan exact-pack registry agrees with official 2025 manufacturer table on size and bag count; pad dimensions 630 × 360 mm. Manufacturer size code preserved; pad dimensions are not body-fit or shipping dimensions. Waist and hip not applicable. Shaped pad for use with fixation underwear. Current is an editorial structural variant; no alternate manufacturer variant inferred. Optional absorbency and construction attributes remain unknown rather than applying heterogeneous family traits. No images copied; rights unknown. Carton codes are distinct and excluded. Market scope Nordic registry / European manufacturer documentation; no US pack equivalence inferred. Current official manufacturer sheet 11.06.2026 independently confirms exact bag EAN/count; carton excluded. US Target partner listing has internally inconsistent title/count specifications; that listing is excluded from canonical evidence and US retail publication. Nordic/EU bag identity is established by authoritative registry and manufacturer documents."
+  },
+  {
+    "ResearchId": "B05-AS8-22",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "San Premium 8",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "San",
+    "ProductType": "Pad",
+    "Size": "8",
+    "Quantity": 22,
+    "Gtin": "5713571000625",
+    "MeasurementBasis": "pad dimensions; body fit not applicable",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": null,
+    "HipMaximumCm": null,
+    "LengthMm": 630,
+    "WidthMm": 360,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-8-22-pcs-109916"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-8-22-pcs-109916"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA San Premium 8, manufacturer article 1000021310, sealed bag 22, GTIN 5713571000625. Nordic Swan exact-pack registry agrees with official 2025 manufacturer table on size and bag count; pad dimensions 630 × 360 mm. Manufacturer size code preserved; pad dimensions are not body-fit or shipping dimensions. Waist and hip not applicable. Shaped pad for use with fixation underwear. Current is an editorial structural variant; no alternate manufacturer variant inferred. Optional absorbency and construction attributes remain unknown rather than applying heterogeneous family traits. No images copied; rights unknown. Carton codes are distinct and excluded. Market scope Nordic registry / European manufacturer documentation; no US pack equivalence inferred."
+  },
+  {
+    "ResearchId": "B05-AS9-28",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "San Premium 9",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "San",
+    "ProductType": "Pad",
+    "Size": "9",
+    "Quantity": 28,
+    "Gtin": "5713571000649",
+    "MeasurementBasis": "pad dimensions; body fit not applicable",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": null,
+    "HipMaximumCm": null,
+    "LengthMm": 730,
+    "WidthMm": 370,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-9-28-pcs-109917"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-9-28-pcs-109917"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA San Premium 9, manufacturer article 1000021311, sealed bag 28, GTIN 5713571000649. Nordic Swan exact-pack registry agrees with official 2025 manufacturer table on size and bag count; pad dimensions 730 × 370 mm. Manufacturer size code preserved; pad dimensions are not body-fit or shipping dimensions. Waist and hip not applicable. Shaped pad for use with fixation underwear. Current is an editorial structural variant; no alternate manufacturer variant inferred. Optional absorbency and construction attributes remain unknown rather than applying heterogeneous family traits. No images copied; rights unknown. Carton codes are distinct and excluded. Market scope Nordic registry / European manufacturer documentation; no US pack equivalence inferred."
+  },
+  {
+    "ResearchId": "B05-AS10-25",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "San Premium 10",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "San",
+    "ProductType": "Pad",
+    "Size": "10",
+    "Quantity": 25,
+    "Gtin": "5713571000663",
+    "MeasurementBasis": "pad dimensions; body fit not applicable",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": null,
+    "HipMaximumCm": null,
+    "LengthMm": 730,
+    "WidthMm": 370,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-10-25-pcs-109914"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-10-25-pcs-109914",
+      "https://online.abena.dk/Product/Pdf/100002131210?type=Online_varedatablad"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://online.abena.dk/Product/Pdf/100002131210?type=Online_varedatablad"
+    ],
+    "EvidenceNotes": "Exact ABENA San Premium 10, manufacturer article 1000021312, sealed bag 25, GTIN 5713571000663. Nordic Swan exact-pack registry agrees with official 2025 manufacturer table on size and bag count; pad dimensions 730 × 370 mm. Manufacturer size code preserved; pad dimensions are not body-fit or shipping dimensions. Waist and hip not applicable. Shaped pad for use with fixation underwear. Current is an editorial structural variant; no alternate manufacturer variant inferred. Optional absorbency and construction attributes remain unknown rather than applying heterogeneous family traits. No images copied; rights unknown. Carton codes are distinct and excluded. Market scope Nordic registry / European manufacturer documentation; no US pack equivalence inferred. Current official manufacturer sheet 14.07.2026 independently confirms exact bag EAN/count; carton excluded."
+  },
+  {
+    "ResearchId": "B05-AS11-21",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "San Premium 11",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "San",
+    "ProductType": "Pad",
+    "Size": "11",
+    "Quantity": 21,
+    "Gtin": "5713571000687",
+    "MeasurementBasis": "pad dimensions; body fit not applicable",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": null,
+    "HipMaximumCm": null,
+    "LengthMm": 730,
+    "WidthMm": 370,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-11-21-pcs-109918"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-11-21-pcs-109918",
+      "https://online.abena.dk/Product/Pdf/100002131310?type=Online_varedatablad"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://online.abena.dk/Product/Pdf/100002131310?type=Online_varedatablad"
+    ],
+    "EvidenceNotes": "Exact ABENA San Premium 11, manufacturer article 1000021313, sealed bag 21, GTIN 5713571000687. Nordic Swan exact-pack registry agrees with official 2025 manufacturer table on size and bag count; pad dimensions 730 × 370 mm. Manufacturer size code preserved; pad dimensions are not body-fit or shipping dimensions. Waist and hip not applicable. Shaped pad for use with fixation underwear. Current is an editorial structural variant; no alternate manufacturer variant inferred. Optional absorbency and construction attributes remain unknown rather than applying heterogeneous family traits. No images copied; rights unknown. Carton codes are distinct and excluded. Market scope Nordic registry / European manufacturer documentation; no US pack equivalence inferred. Current official manufacturer sheet 14.07.2026 independently confirms exact bag EAN/count; carton excluded. US Target partner listing has internally inconsistent title/count specifications; that listing is excluded from canonical evidence and US retail publication. Nordic/EU bag identity is established by authoritative registry and manufacturer documents."
+  },
+  {
+    "ResearchId": "B05-AS7-XXL-26",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "San Premium 7/XXL",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "San",
+    "ProductType": "Pad",
+    "Size": "7/XXL",
+    "Quantity": 26,
+    "Gtin": "5713571000724",
+    "MeasurementBasis": "pad dimensions; body fit not applicable",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": null,
+    "HipMaximumCm": null,
+    "LengthMm": 840,
+    "WidthMm": 460,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-7xxl-26-pcs-109920"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-7xxl-26-pcs-109920"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA San Premium 7/XXL, manufacturer article 1000021315, sealed bag 26, GTIN 5713571000724. Nordic Swan exact-pack registry agrees with official 2025 manufacturer table on size and bag count; pad dimensions 840 × 460 mm. Manufacturer size code preserved; pad dimensions are not body-fit or shipping dimensions. Waist and hip not applicable. Shaped pad for use with fixation underwear. Current is an editorial structural variant; no alternate manufacturer variant inferred. Optional absorbency and construction attributes remain unknown rather than applying heterogeneous family traits. No images copied; rights unknown. Carton codes are distinct and excluded. Market scope Nordic registry / European manufacturer documentation; no US pack equivalence inferred."
+  },
+  {
+    "ResearchId": "B05-AS11-XXL-16",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "San Premium 11/XXL",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "San",
+    "ProductType": "Pad",
+    "Size": "11/XXL",
+    "Quantity": 16,
+    "Gtin": "5713571000748",
+    "MeasurementBasis": "pad dimensions; body fit not applicable",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": null,
+    "HipMaximumCm": null,
+    "LengthMm": 840,
+    "WidthMm": 460,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-11xxl-16-pcs-109915"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-11xxl-16-pcs-109915"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA San Premium 11/XXL, manufacturer article 1000021316, sealed bag 16, GTIN 5713571000748. Nordic Swan exact-pack registry agrees with official 2025 manufacturer table on size and bag count; pad dimensions 840 × 460 mm. Manufacturer size code preserved; pad dimensions are not body-fit or shipping dimensions. Waist and hip not applicable. Shaped pad for use with fixation underwear. Current is an editorial structural variant; no alternate manufacturer variant inferred. Optional absorbency and construction attributes remain unknown rather than applying heterogeneous family traits. No images copied; rights unknown. Carton codes are distinct and excluded. Market scope Nordic registry / European manufacturer documentation; no US pack equivalence inferred."
+  }
+]

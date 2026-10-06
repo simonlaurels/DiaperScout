@@ -1,0 +1,38 @@
+[
+  {
+    "ResearchId": "B15-LET-MAXI-28",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA A/S",
+    "Brand": "ABENA",
+    "Product": "Let Maxi",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "Let",
+    "ProductType": "Booster",
+    "Size": "Maxi",
+    "Quantity": 28,
+    "Gtin": "5703538461422",
+    "MeasurementBasis": "Product dimensions; no waist or hip fit stated",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": null,
+    "HipMaximumCm": null,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.fvdvooren.nl/uploads/pdf/Conformiteitsverklaring%2008-43063_87128.pdf",
+      "https://online.abena.dk/Product/Pdf/1999905441?type=Online_varedatablad",
+      "https://www.citycare24.de/abena-let-maxi-ip?btgsterne=5"
+    ],
+    "IdentifierSources": [
+      "https://online.abena.dk/Product/Pdf/1999905441?type=Online_varedatablad",
+      "https://www.citycare24.de/abena-let-maxi-ip?btgsterne=5",
+      "https://www.dryonline.de/abena-let-maxi"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1999905441?type=Online_varedatablad"
+    ],
+    "EvidenceNotes": "Current manufacturer 26 June 2026 article1999905441 Let Maxi is a flow-through booster, sealed bag28 GTIN5703538461422. Independent Citycare24 selected bag28/GTIN matches, DryOnline exact article/GTIN/count agrees. Signed declaration 13 August 2025 page5 explicitly lists1999905441; legal manufacturer ABENA A/S SRN DK-MF-000002482. Production company for this exact article not independently established and remains unknown; not inferred from regional distributor/labeler. Carton112 separateGTIN5703538461385 not equated to bag. Currentmanufacturer600x150mm and DryOnline60x15cm agree; DeWelzijnwinkel14x39cm discrepancy preserved and optional dimensions remain null. Optionalcapacity remains unknown. GUDID bagDI05703538461422 reports USnotincommercialdistribution since1January2026, not currentUSavailability or globaldiscontinuation. UKCA does not prove UKretailavailability; UK/USA currentregionalpack evidence remains unverified. HistoricalAbriLet not an identity alias without verified revision mapping. Current editorial structural variant; no images copied/rightsunknown.",
+    "LengthMm": null,
+    "WidthMm": null
+  }
+]

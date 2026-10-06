@@ -266,6 +266,15 @@ public sealed record CreateCanonicalProductSizeManagement(
     string EditorialRationale,
     string? CorrelationId);
 
+public sealed record CreateCanonicalProductPackManagement(
+    int QuantityPerPack,
+    PackagingType PackagingType,
+    string Gtin,
+    string SourceSummary,
+    IReadOnlyList<string> SourceReferences,
+    string EditorialRationale,
+    string? CorrelationId);
+
 public sealed record UpdateCanonicalProductSizeManagement(
     string ManufacturerSize,
     int? WaistMinimumCm,
@@ -1547,6 +1556,14 @@ public interface ICanonicalCatalogue
         Guid productId,
         Guid variantId,
         CreateCanonicalProductSizeManagement command,
+        CancellationToken cancellationToken = default);
+
+    Task AddProductPackAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        Guid variantId,
+        Guid sizeId,
+        CreateCanonicalProductPackManagement command,
         CancellationToken cancellationToken = default);
 
     Task UpdateProductSizeAsync(

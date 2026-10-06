@@ -1,0 +1,26 @@
+[
+  {
+    "ResearchId": "B12-LET-NORMAL-34",
+    "SubmissionId": "dfa506b6-a91b-4e5d-b36d-74056513efdd",
+    "ProductId": "4fd01944-ac77-41b1-a21d-b9f60bbca2e0",
+    "VariantId": "2089b7dc-9666-4268-9a29-d382731b1bec",
+    "SizeId": "01675866-12e9-43f6-8c9d-475f7567eaa6",
+    "PackId": "f3fb8b23-29dd-4894-a74f-cfc012d3ce06",
+    "IdentifierId": "b83a879e-ec1c-4a62-ba4c-9d33fdcd7a5a",
+    "AuditId": "b5ab9978-516f-4b62-99e3-f2e4b53c8c81",
+    "Gtin": "5713571001288",
+    "Created": true
+  },
+  {
+    "ResearchId": "B12-LET-ANATOMIC-30",
+    "SubmissionId": "9ae6ed6a-b980-4a52-a670-c5dd0887baab",
+    "ProductId": "08fda3d0-6c3f-460f-ad56-168c789f1a72",
+    "VariantId": "89fd8a8a-c902-49ec-a8d7-2b1870d34fb6",
+    "SizeId": "5f1d1cb6-a4f7-49c5-81d5-0c8e13741c07",
+    "PackId": "1dfb0bc3-0911-4624-afbc-732c36f8ed4a",
+    "IdentifierId": "22e909c2-7466-4a93-967b-d76260f37a71",
+    "AuditId": "4de24078-8587-44da-909b-0562de70e83f",
+    "Gtin": "5713571001325",
+    "Created": true
+  }
+]

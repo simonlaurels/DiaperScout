@@ -67,20 +67,38 @@ internal sealed class CatalogueSubmissions(
                 await using var transaction =
                     await db.Database.BeginTransactionAsync(cancellationToken);
 
+                // Serialize CSV imports so two retries cannot both observe an empty queue.
+                await db.Database.ExecuteSqlRawAsync(
+                    "SELECT pg_advisory_xact_lock(683492710246301)", cancellationToken);
+
+                var canonicalGtins = await db.ProductIdentifiers.AsNoTracking()
+                    .Where(value => value.Type == IdentifierType.Gtin)
+                    .Select(value => value.Value).ToListAsync(cancellationToken);
+                var submissionGtins = await db.CatalogueSubmissionSizeVariants.AsNoTracking()
+                    .Where(value => value.Gtin != null)
+                    .Select(value => value.Gtin!).ToListAsync(cancellationToken);
+                var identityGtins = await db.CatalogueSubmissions.AsNoTracking()
+                    .Where(value => value.ProposedGtin != null)
+                    .Select(value => value.ProposedGtin!).ToListAsync(cancellationToken);
+                var occupiedGtins = canonicalGtins.Concat(submissionGtins).Concat(identityGtins)
+                    .Select(ImportGtinKey).ToHashSet(StringComparer.Ordinal);
+
+                var suppliedGtins = groupRows.Where(row => !string.IsNullOrWhiteSpace(row.Gtin))
+                    .Select(row => ImportGtinKey(row.Gtin!)).ToList();
+                if (suppliedGtins.Distinct(StringComparer.Ordinal).Count() != suppliedGtins.Count)
+                    throw new CatalogueValidationException("GTIN",
+                        "The import product group assigns equivalent GTINs to more than one row.");
+
                 var eligibleRows = new List<CatalogueSubmissionCsvRow>();
 
                 foreach (var row in groupRows)
                 {
                     if (!string.IsNullOrWhiteSpace(row.Gtin) &&
-                        await db.ProductIdentifiers.AnyAsync(
-                            value =>
-                                value.Type == IdentifierType.Gtin &&
-                                value.Value == row.Gtin,
-                            cancellationToken))
+                        occupiedGtins.Contains(ImportGtinKey(row.Gtin)))
                     {
                         groupRowsSkipped++;
                         warnings.Add(
-                            $"Line {row.LineNumber}: GTIN {row.Gtin} already exists in the canonical catalogue; the row was skipped.");
+                            $"Line {row.LineNumber}: GTIN {row.Gtin} or an equivalent zero-padded identifier already exists in the catalogue or a submission; the row was skipped.");
                         continue;
                     }
 
@@ -97,6 +115,25 @@ internal sealed class CatalogueSubmissions(
                 ValidateProductGroup(eligibleRows);
 
                 var submissionTemplate = eligibleRows[0];
+
+                var queuedIdentities = await db.CatalogueSubmissions.AsNoTracking()
+                    .Select(value => new { Manufacturer = value.ProposedManufacturerName,
+                        Brand = value.ProposedBrandName, Product = value.ProposedProductName })
+                    .ToListAsync(cancellationToken);
+                var canonicalIdentities = await (
+                    from product in db.Products.AsNoTracking()
+                    join manufacturer in db.Manufacturers on product.ManufacturerId equals manufacturer.Id
+                    join brand in db.Brands on product.BrandId equals brand.Id into brands
+                    from brand in brands.DefaultIfEmpty()
+                    select new { Manufacturer = manufacturer.Name,
+                        Brand = brand == null ? null : brand.Name, Product = product.Name })
+                    .ToListAsync(cancellationToken);
+                if (queuedIdentities.Concat(canonicalIdentities).Any(value =>
+                        SameImportIdentity(value.Manufacturer, submissionTemplate.Manufacturer) &&
+                        SameImportIdentity(value.Brand, submissionTemplate.Brand) &&
+                        SameImportIdentity(value.Product, submissionTemplate.ProductName)))
+                    throw new CatalogueValidationException("productName",
+                        "This manufacturer/brand/product identity already exists in the catalogue or a submission. Review and enrich that record instead of creating another submission.");
 
                 var submission = new CatalogueSubmission(
                     CatalogueSubmissionSource.BulkImport,
@@ -255,6 +292,8 @@ internal sealed class CatalogueSubmissions(
                 CatalogueValidationException or
                 FormatException)
             {
+                // A failed group must not leak tracked additions into the next group's save.
+                db.ChangeTracker.Clear();
                 skipped += productGroup.Count();
                 warnings.Add(
                     $"Import product key '{productGroup.Key}' was skipped: {exception.Message}");
@@ -268,6 +307,13 @@ internal sealed class CatalogueSubmissions(
             skipped,
             warnings);
     }
+
+    private static string ImportGtinKey(string value) =>
+        value.Replace(" ", string.Empty).Replace("-", string.Empty).PadLeft(14, '0');
+
+    private static bool SameImportIdentity(string? left, string? right) =>
+        string.Equals(left?.Trim() ?? string.Empty, right?.Trim() ?? string.Empty,
+            StringComparison.OrdinalIgnoreCase);
 
     private static void ValidateProductGroup(
         IReadOnlyList<CatalogueSubmissionCsvRow> rows)

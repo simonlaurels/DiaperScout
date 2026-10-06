@@ -1,0 +1,44 @@
+{
+  "execution": "ds-bootstrap-admin-eg6u6gh",
+  "build": "db34",
+  "image": "sha256:74c900795f76b627b8667003bb0af44df72f980c6c58003ad7d15c49da85dd52",
+  "batch_sha256": "F57882C457287B01E9F80856DCE813906D0C461D8F2A079EC2B73ABF756C1C70",
+  "receipts": [
+    {
+      "ResearchId": "B14-LIGHT-1000021341-10",
+      "SubmissionId": "2357eede-be26-4c1d-bf2d-d29312419299",
+      "ProductId": "18fb4171-f360-4857-8d56-84f897b7cead",
+      "VariantId": "63f9da6a-5a47-463f-9dd3-9d10bb31d622",
+      "SizeId": "e0b5b35d-ac9b-4687-acff-6b9733e7e272",
+      "PackId": "8086e7e2-63a9-4c7a-a939-d5aa64b65114",
+      "IdentifierId": "40e062c1-62dc-4f9f-96c7-963e8b7801d0",
+      "AuditId": "14667317-3d3e-4ee9-ab66-e039b79239b8",
+      "Gtin": "5713571001240",
+      "Created": true
+    },
+    {
+      "ResearchId": "B14-LIGHT-1999905383-8",
+      "SubmissionId": "c0981c9d-993c-47f9-9935-fc859e9ef42d",
+      "ProductId": "e6170ddc-f509-42c0-8112-b4ef18cf78eb",
+      "VariantId": "67c3ee67-762c-49bb-a853-6386ebc6815d",
+      "SizeId": "dd1ebd3a-9d7d-4335-b04f-5ec2aa0d851a",
+      "PackId": "5d88a679-6b85-46ff-8a22-720f158fbef2",
+      "IdentifierId": "a8efeeb9-c140-4ae6-af40-4c8164fb5560",
+      "AuditId": "8f44c235-5a56-4bc5-a693-c95820860ef2",
+      "Gtin": "5703538459023",
+      "Created": true
+    },
+    {
+      "ResearchId": "B14-LIGHT-1999905382-24",
+      "SubmissionId": "a1ac6417-48df-4f13-a81a-a2ec54390521",
+      "ProductId": "c46def4d-ce33-40d0-a71b-e1fa84fa0eae",
+      "VariantId": "11019a35-74ce-4d0a-976c-aaf78bdf84ee",
+      "SizeId": "39bcce32-d03c-4def-99c8-9b2e46d113a2",
+      "PackId": "3adf3928-b1a4-4728-9e66-7abb027c7e44",
+      "IdentifierId": "78187bd4-46d2-402a-895e-613e332e28a5",
+      "AuditId": "af47f225-a59d-43d9-a917-50042eed8cb7",
+      "Gtin": "5703538458873",
+      "Created": true
+    }
+  ]
+}

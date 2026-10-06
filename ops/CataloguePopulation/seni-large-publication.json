@@ -1,0 +1,37 @@
+[
+  {
+    "ResearchId": "B02-SA-L-10",
+    "Outcome": "READY",
+    "Manufacturer": "TZMO SA",
+    "Brand": "Seni",
+    "Product": "Active Super",
+    "ManufacturerAliases": [],
+    "ProductAliases": [
+      "Seni Active Super"
+    ],
+    "Family": "Active",
+    "ProductType": "PullUp",
+    "Size": "Large",
+    "Quantity": 10,
+    "Gtin": "5900516695767",
+    "MeasurementBasis": "waist/hip as published",
+    "WaistMinimumCm": 100,
+    "WaistMaximumCm": 135,
+    "HipMinimumCm": 100,
+    "HipMaximumCm": 135,
+    "OfficialWebsite": "https://en.seni-global.com/en/product/seni-active-super-en",
+    "IdentitySources": [
+      "https://en.seni-global.com/en/product/seni-active-super-en"
+    ],
+    "IdentifierSources": [
+      "https://www.shop-apotheke.com/sanitaetshaus/13475845/seni-active-inkontinenzpants-super-l.htm",
+      "https://www.senup.com/changes-mobiles/5547-11046-seni-active-super.html"
+    ],
+    "SpecificationSources": [
+      "https://en.seni-global.com/en/product/seni-active-super-en",
+      "https://www.senup.com/changes-mobiles/5547-11046-seni-active-super.html"
+    ],
+    "EvidenceNotes": "Exact European Seni Active Super Large sealed bag of 10, EAN 5900516695767, reference SE-096-LA10-AS1. Primary manufacturer waist/hip 100–135 cm and bag10 corroborated by independent Senup; exact EAN independently agrees between Senup and Shop Apotheke. TZMO SA manufacturer distinct from regional TZMO Deutschland and TZMO France operators. Existing Medium product/variant reused unchanged. Unspecified-method retail absorbency volumes omitted. No image permission established and no images copied.",
+    "ExistingSubmissionId": "0ff23d7c-5908-4c33-b9b4-5166cbd995d7"
+  }
+]

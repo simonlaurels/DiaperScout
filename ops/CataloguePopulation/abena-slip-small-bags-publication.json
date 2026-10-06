@@ -1,0 +1,82 @@
+[
+  {
+    "ResearchId": "B09-ASL-L1-10",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Premium"
+    ],
+    "Family": "Slip",
+    "ProductType": "Tape",
+    "Size": "L1",
+    "Quantity": 10,
+    "Gtin": "5713571000366",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 100,
+    "HipMaximumCm": 150,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l1-26-pcs-109936"
+    ],
+    "IdentifierSources": [
+      "https://online.abena.dk/Product/Pdf/1000021297?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l1-10-pcs-109947/"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1000021297?type=Online_varedatablad"
+    ],
+    "EvidenceNotes": "Current manufacturer sheet27June2026 article1000021297 confirms ABENA Slip Premium L1 taped brief, hip100–150cm, sealed bag10 with GTIN5713571000366. IndependentNordicbarcode registry confirms exact10piece bag and manufacturer license holder. Preserve existingL1shared size, larger bag and alloriginalIDs. Productdimensions970×800mm supported in source but optionalsharedsizefields remain unchanged; shippingdimensions are not productdimensions. Noimages copied, rightsunknown. Market scopeNordic/Europe; noUSretail inference from older FDA regional distribution status.",
+    "ExistingSubmissionId": "f59927ab-2a60-4a23-87e8-acab48cb3d23",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {}
+  },
+  {
+    "ResearchId": "B09-ASL-L2-10",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Premium"
+    ],
+    "Family": "Slip",
+    "ProductType": "Tape",
+    "Size": "L2",
+    "Quantity": 10,
+    "Gtin": "5713571000380",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 100,
+    "HipMaximumCm": 150,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l2-22-pcs-109937"
+    ],
+    "IdentifierSources": [
+      "https://online.abena.dk/Product/Pdf/1000021298?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l2-10-pcs-109948/"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1000021298?type=Online_varedatablad"
+    ],
+    "EvidenceNotes": "Current manufacturer sheet27June2026 article1000021298 confirms ABENA Slip Premium L2 taped brief, hip100–150cm, sealed bag10 with GTIN5713571000380. IndependentNordicbarcode registry confirms exact10piece bag and manufacturer license holder. Preserve existingL2shared size, larger bag and alloriginalIDs. Productdimensions970×800mm supported in source but optionalsharedsizefields remain unchanged; shippingdimensions are not productdimensions. Noimages copied, rightsunknown. Market scopeNordic/Europe; noUSretail inference from older FDA regional distribution status.",
+    "ExistingSubmissionId": "f59927ab-2a60-4a23-87e8-acab48cb3d23",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {}
+  }
+]

@@ -1,0 +1,254 @@
+[
+  {
+    "ResearchId": "B11-AP2-M2-15",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Pants Premium level2",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "Pants Premium",
+    "ProductType": "PullUp",
+    "Size": "Medium",
+    "Quantity": 15,
+    "Gtin": "5713571000885",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 80,
+    "HipMaximumCm": 110,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://online.abena.dk/Product/Pdf/1000021323?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-m2-15-pcs-109928/"
+    ],
+    "IdentifierSources": [
+      "https://online.abena.dk/Product/Pdf/1000021323?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-m2-15-pcs-109928/"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1000021323?type=Online_varedatablad",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Currentmanufacturer27June2026 article1000021323: ABENAPantsPremium M2, pull-up, exactsealedbag15, EAN5713571000885, hip80–110cm, product780×680mm. IndependentNordicregistry corroborates exactcode/count/GTIN and productionlicenseholder. Manufacturer level2 remains distinctproduct consistentwithexistingPantsPremiumlevels; Current is editorialstructuralvariant. ActualcodeM2retainedin provenance; sizeMedium. Optionalnumericabsorbency notpromoted: earlierM2manufacturer1900Rothwell vsretailer1800 discrepancy remainsrecorded, no silentlychosen marketingcapacity. EarlierM3retailerHygiEAN5713571000847is rejected asprovenance for selectedM3EAN5713571000908; manufacturer and independentregistry now both explicitlyconfirm selectedM3 bag15. XL3manufacturerhip130–170and retailerwaist120–160are differentmetrics; nohip-to-waistsubstitution, waistunknown. Noimagescopied, rightsunknown, noUK/USpackequivalenceinferred.",
+    "LengthMm": 780,
+    "WidthMm": 680
+  },
+  {
+    "ResearchId": "B11-AP2-L2-15",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Pants Premium level2",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "Pants Premium",
+    "ProductType": "PullUp",
+    "Size": "Large",
+    "Quantity": 15,
+    "Gtin": "5713571000946",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 100,
+    "HipMaximumCm": 140,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://online.abena.dk/Product/Pdf/1000021326?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-l2-premium-15-pcs-154700/"
+    ],
+    "IdentifierSources": [
+      "https://online.abena.dk/Product/Pdf/1000021326?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-l2-premium-15-pcs-154700/"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1000021326?type=Online_varedatablad",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Currentmanufacturer27June2026 article1000021326: ABENAPantsPremium L2, pull-up, exactsealedbag15, EAN5713571000946, hip100–140cm, product880×780mm. IndependentNordicregistry corroborates exactcode/count/GTIN and productionlicenseholder. Manufacturer level2 remains distinctproduct consistentwithexistingPantsPremiumlevels; Current is editorialstructuralvariant. ActualcodeL2retainedin provenance; sizeLarge. Optionalnumericabsorbency notpromoted: earlierM2manufacturer1900Rothwell vsretailer1800 discrepancy remainsrecorded, no silentlychosen marketingcapacity. EarlierM3retailerHygiEAN5713571000847is rejected asprovenance for selectedM3EAN5713571000908; manufacturer and independentregistry now both explicitlyconfirm selectedM3 bag15. XL3manufacturerhip130–170and retailerwaist120–160are differentmetrics; nohip-to-waistsubstitution, waistunknown. Noimagescopied, rightsunknown, noUK/USpackequivalenceinferred.",
+    "LengthMm": 880,
+    "WidthMm": 780
+  },
+  {
+    "ResearchId": "B11-AP2-S2-16",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Pants Premium level2",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "Pants Premium",
+    "ProductType": "PullUp",
+    "Size": "Small",
+    "Quantity": 16,
+    "Gtin": "5713571000809",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 60,
+    "HipMaximumCm": 90,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://online.abena.dk/Product/Pdf/1000021319?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-s2-16-pcs-109926/"
+    ],
+    "IdentifierSources": [
+      "https://online.abena.dk/Product/Pdf/1000021319?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-s2-16-pcs-109926/"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1000021319?type=Online_varedatablad",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Currentmanufacturer27June2026 article1000021319: ABENAPantsPremium S2, pull-up, exactsealedbag16, EAN5713571000809, hip60–90cm, product780×550mm. IndependentNordicregistry corroborates exactcode/count/GTIN and productionlicenseholder. Manufacturer level2 remains distinctproduct consistentwithexistingPantsPremiumlevels; Current is editorialstructuralvariant. ActualcodeS2retainedin provenance; sizeSmall. Optionalnumericabsorbency notpromoted: earlierM2manufacturer1900Rothwell vsretailer1800 discrepancy remainsrecorded, no silentlychosen marketingcapacity. EarlierM3retailerHygiEAN5713571000847is rejected asprovenance for selectedM3EAN5713571000908; manufacturer and independentregistry now both explicitlyconfirm selectedM3 bag15. XL3manufacturerhip130–170and retailerwaist120–160are differentmetrics; nohip-to-waistsubstitution, waistunknown. Noimagescopied, rightsunknown, noUK/USpackequivalenceinferred.",
+    "LengthMm": 780,
+    "WidthMm": 550
+  },
+  {
+    "ResearchId": "B11-AP2-XL2-16",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Pants Premium level2",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "Pants Premium",
+    "ProductType": "PullUp",
+    "Size": "X-Large",
+    "Quantity": 16,
+    "Gtin": "5713571001004",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 130,
+    "HipMaximumCm": 170,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://online.abena.dk/Product/Pdf/1000021329?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-xl2-16-pcs-109925/"
+    ],
+    "IdentifierSources": [
+      "https://online.abena.dk/Product/Pdf/1000021329?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-xl2-16-pcs-109925/"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1000021329?type=Online_varedatablad",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Currentmanufacturer27June2026 article1000021329: ABENAPantsPremium XL2, pull-up, exactsealedbag16, EAN5713571001004, hip130–170cm, product1050×900mm. IndependentNordicregistry corroborates exactcode/count/GTIN and productionlicenseholder. Manufacturer level2 remains distinctproduct consistentwithexistingPantsPremiumlevels; Current is editorialstructuralvariant. ActualcodeXL2retainedin provenance; sizeX-Large. Optionalnumericabsorbency notpromoted: earlierM2manufacturer1900Rothwell vsretailer1800 discrepancy remainsrecorded, no silentlychosen marketingcapacity. EarlierM3retailerHygiEAN5713571000847is rejected asprovenance for selectedM3EAN5713571000908; manufacturer and independentregistry now both explicitlyconfirm selectedM3 bag15. XL3manufacturerhip130–170and retailerwaist120–160are differentmetrics; nohip-to-waistsubstitution, waistunknown. Noimagescopied, rightsunknown, noUK/USpackequivalenceinferred.",
+    "LengthMm": 1050,
+    "WidthMm": 900
+  },
+  {
+    "ResearchId": "B11-AP3-M3-15",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Pants Premium level3",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "Pants Premium",
+    "ProductType": "PullUp",
+    "Size": "Medium",
+    "Quantity": 15,
+    "Gtin": "5713571000908",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 80,
+    "HipMaximumCm": 110,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://online.abena.dk/Product/Pdf/1000021324?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-m3-15-pcs-109929/"
+    ],
+    "IdentifierSources": [
+      "https://online.abena.dk/Product/Pdf/1000021324?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-m3-15-pcs-109929/"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1000021324?type=Online_varedatablad",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Currentmanufacturer27June2026 article1000021324: ABENAPantsPremium M3, pull-up, exactsealedbag15, EAN5713571000908, hip80–110cm, product780×680mm. IndependentNordicregistry corroborates exactcode/count/GTIN and productionlicenseholder. Manufacturer level3 remains distinctproduct consistentwithexistingPantsPremiumlevels; Current is editorialstructuralvariant. ActualcodeM3retainedin provenance; sizeMedium. Optionalnumericabsorbency notpromoted: earlierM2manufacturer1900Rothwell vsretailer1800 discrepancy remainsrecorded, no silentlychosen marketingcapacity. EarlierM3retailerHygiEAN5713571000847is rejected asprovenance for selectedM3EAN5713571000908; manufacturer and independentregistry now both explicitlyconfirm selectedM3 bag15. XL3manufacturerhip130–170and retailerwaist120–160are differentmetrics; nohip-to-waistsubstitution, waistunknown. Noimagescopied, rightsunknown, noUK/USpackequivalenceinferred.",
+    "LengthMm": 780,
+    "WidthMm": 680
+  },
+  {
+    "ResearchId": "B11-AP3-L3-15",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Pants Premium level3",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "Pants Premium",
+    "ProductType": "PullUp",
+    "Size": "Large",
+    "Quantity": 15,
+    "Gtin": "5713571000960",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 100,
+    "HipMaximumCm": 140,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://online.abena.dk/Product/Pdf/1000021327?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-l3-premium-15-pcs-154701/"
+    ],
+    "IdentifierSources": [
+      "https://online.abena.dk/Product/Pdf/1000021327?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-l3-premium-15-pcs-154701/"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1000021327?type=Online_varedatablad",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Currentmanufacturer27June2026 article1000021327: ABENAPantsPremium L3, pull-up, exactsealedbag15, EAN5713571000960, hip100–140cm, product880×780mm. IndependentNordicregistry corroborates exactcode/count/GTIN and productionlicenseholder. Manufacturer level3 remains distinctproduct consistentwithexistingPantsPremiumlevels; Current is editorialstructuralvariant. ActualcodeL3retainedin provenance; sizeLarge. Optionalnumericabsorbency notpromoted: earlierM2manufacturer1900Rothwell vsretailer1800 discrepancy remainsrecorded, no silentlychosen marketingcapacity. EarlierM3retailerHygiEAN5713571000847is rejected asprovenance for selectedM3EAN5713571000908; manufacturer and independentregistry now both explicitlyconfirm selectedM3 bag15. XL3manufacturerhip130–170and retailerwaist120–160are differentmetrics; nohip-to-waistsubstitution, waistunknown. Noimagescopied, rightsunknown, noUK/USpackequivalenceinferred.",
+    "LengthMm": 880,
+    "WidthMm": 780
+  },
+  {
+    "ResearchId": "B11-AP3-XL3-16",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Pants Premium level3",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "Pants Premium",
+    "ProductType": "PullUp",
+    "Size": "X-Large",
+    "Quantity": 16,
+    "Gtin": "5713571001028",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 130,
+    "HipMaximumCm": 170,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://online.abena.dk/Product/Pdf/1000021330?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-xl3-16-pcs-109933/"
+    ],
+    "IdentifierSources": [
+      "https://online.abena.dk/Product/Pdf/1000021330?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-xl3-16-pcs-109933/"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1000021330?type=Online_varedatablad",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Currentmanufacturer27June2026 article1000021330: ABENAPantsPremium XL3, pull-up, exactsealedbag16, EAN5713571001028, hip130–170cm, product1050×900mm. IndependentNordicregistry corroborates exactcode/count/GTIN and productionlicenseholder. Manufacturer level3 remains distinctproduct consistentwithexistingPantsPremiumlevels; Current is editorialstructuralvariant. ActualcodeXL3retainedin provenance; sizeX-Large. Optionalnumericabsorbency notpromoted: earlierM2manufacturer1900Rothwell vsretailer1800 discrepancy remainsrecorded, no silentlychosen marketingcapacity. EarlierM3retailerHygiEAN5713571000847is rejected asprovenance for selectedM3EAN5713571000908; manufacturer and independentregistry now both explicitlyconfirm selectedM3 bag15. XL3manufacturerhip130–170and retailerwaist120–160are differentmetrics; nohip-to-waistsubstitution, waistunknown. Noimagescopied, rightsunknown, noUK/USpackequivalenceinferred.",
+    "LengthMm": 1050,
+    "WidthMm": 900
+  }
+]

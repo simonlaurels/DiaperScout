@@ -1,0 +1,138 @@
+[
+  {
+    "ResearchId": "B03-AP0-M-15",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Pants Premium level0",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "Pants Premium",
+    "ProductType": "PullUp",
+    "Size": "Medium",
+    "Quantity": 15,
+    "Gtin": "5713571000823",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 80,
+    "HipMaximumCm": 110,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-m0-15-pcs-109922"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-m0-15-pcs-109922",
+      "https://www.benu.cz/abena-pants-premium-m0-kalhotky-absorpcni-navlekaci-prodysne-boky-80-11"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://www.benu.cz/abena-pants-premium-m0-kalhotky-absorpcni-navlekaci-prodysne-boky-80-11"
+    ],
+    "EvidenceNotes": "Exact ABENA Pants Premium M0, article 1000021320, sealed bag 15, GTIN 5713571000823. Hip 80–110 cm in official 2025 catalogue p33, independently corroborated by exact-GTIN pharmacy listing. Nordic Swan registry ties this named/count pack to Abena Produktion A/S; official Danish production page independently identifies that production business. Regional distribution companies are separate and not treated as manufacturer aliases. Standard range level is product distinction; Current is editorial structural variant. No absorbency volume promoted (optional, test/revision precision differs); no images copied or rights assumed."
+  },
+  {
+    "ResearchId": "B03-AP1-M-15",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Pants Premium level1",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "Pants Premium",
+    "ProductType": "PullUp",
+    "Size": "Medium",
+    "Quantity": 15,
+    "Gtin": "5713571000861",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 80,
+    "HipMaximumCm": 110,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-m1-15-pcs-109927"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-m1-15-pcs-109927",
+      "https://www.drmax.cz/abena-pants-premium-m1-inkontinencni-kalhotky-15-ks"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://www.drmax.cz/abena-pants-premium-m1-inkontinencni-kalhotky-15-ks"
+    ],
+    "EvidenceNotes": "Exact ABENA Pants Premium M1, article 1000021322, sealed bag 15, GTIN 5713571000861. Hip 80–110 cm in official 2025 catalogue p33, independently corroborated by exact-GTIN pharmacy listing. Nordic Swan registry ties this named/count pack to Abena Produktion A/S; official Danish production page independently identifies that production business. Regional distribution companies are separate and not treated as manufacturer aliases. Standard range level is product distinction; Current is editorial structural variant. No absorbency volume promoted (optional, test/revision precision differs); no images copied or rights assumed."
+  },
+  {
+    "ResearchId": "B03-AP1-S-16",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Pants Premium level1",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "Pants Premium",
+    "ProductType": "PullUp",
+    "Size": "Small",
+    "Quantity": 16,
+    "Gtin": "5713571000786",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 60,
+    "HipMaximumCm": 90,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-s1-16-pcs-109921"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-s1-16-pcs-109921",
+      "https://www.benu.cz/abena-pants-premium-s1-kalhotky-absorpcni-navlekaci-prodysne-boky-60-90"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://www.benu.cz/abena-pants-premium-s1-kalhotky-absorpcni-navlekaci-prodysne-boky-60-90"
+    ],
+    "EvidenceNotes": "Exact ABENA Pants Premium S1, article 1000021318, sealed bag 16, GTIN 5713571000786. Hip 60–90 cm in official 2025 catalogue p33, independently corroborated by exact-GTIN pharmacy listing. Nordic Swan registry ties this named/count pack to Abena Produktion A/S; official Danish production page independently identifies that production business. Regional distribution companies are separate and not treated as manufacturer aliases. Standard range level is product distinction; Current is editorial structural variant. No absorbency volume promoted (optional, test/revision precision differs); no images copied or rights assumed."
+  },
+  {
+    "ResearchId": "B03-APJ-XS2-18",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Pants Premium Junior",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "Pants Premium",
+    "ProductType": "PullUp",
+    "Size": "XS2",
+    "Quantity": 18,
+    "Gtin": "5713571000762",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 50,
+    "HipMaximumCm": 75,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-xs2-junior-18-pcs-119601"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-xs2-junior-18-pcs-119601",
+      "https://www.benu.cz/abena-pants-premium-junior-xs2-kalhotky-absorpcni-navlekaci-prodysne-boky-50-75"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://www.benu.cz/abena-pants-premium-junior-xs2-kalhotky-absorpcni-navlekaci-prodysne-boky-50-75"
+    ],
+    "EvidenceNotes": "Exact ABENA Pants Premium XS2, article 1000021317, sealed bag 18, GTIN 5713571000762. Hip 50–75 cm in official 2025 catalogue p33, independently corroborated by exact-GTIN pharmacy listing. Nordic Swan registry ties this named/count pack to Abena Produktion A/S; official Danish production page independently identifies that production business. Regional distribution companies are separate and not treated as manufacturer aliases. Standard range level is product distinction; Current is editorial structural variant. No absorbency volume promoted (optional, test/revision precision differs); no images copied or rights assumed."
+  }
+]

@@ -1,0 +1,1000 @@
+{
+  "barcode_checks": [
+    {
+      "research_id": "B03-AP0-M-15",
+      "gtin": "5713571000823",
+      "size": "Medium",
+      "count": 15,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B03-AP1-M-15",
+      "gtin": "5713571000861",
+      "size": "Medium",
+      "count": 15,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B03-AP1-S-16",
+      "gtin": "5713571000786",
+      "size": "Small",
+      "count": 16,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B03-APJ-XS2-18",
+      "gtin": "5713571000762",
+      "size": "XS2",
+      "count": 18,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B04-AP1-L-15",
+      "gtin": "5713571000922",
+      "size": "Large",
+      "count": 15,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B04-APL-M-15",
+      "gtin": "5713571001042",
+      "size": "Medium",
+      "count": 15,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B05-AS1-30",
+      "gtin": "5713571000441",
+      "size": "1",
+      "count": 30,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B05-AS1A-28",
+      "gtin": "5713571000465",
+      "size": "1A",
+      "count": 28,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B05-AS2-30",
+      "gtin": "5713571000489",
+      "size": "2",
+      "count": 30,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B05-AS3-28",
+      "gtin": "5713571000502",
+      "size": "3",
+      "count": 28,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B05-AS3A-28",
+      "gtin": "5713571000526",
+      "size": "3A",
+      "count": 28,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B05-AS4-30",
+      "gtin": "5713571000540",
+      "size": "4",
+      "count": 30,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B05-AS5-36",
+      "gtin": "5713571000564",
+      "size": "5",
+      "count": 36,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B05-AS6-34",
+      "gtin": "5713571000588",
+      "size": "6",
+      "count": 34,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B05-AS7-30",
+      "gtin": "5713571000601",
+      "size": "7",
+      "count": 30,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B05-AS8-22",
+      "gtin": "5713571000625",
+      "size": "8",
+      "count": 22,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B05-AS9-28",
+      "gtin": "5713571000649",
+      "size": "9",
+      "count": 28,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B05-AS10-25",
+      "gtin": "5713571000663",
+      "size": "10",
+      "count": 25,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B05-AS11-21",
+      "gtin": "5713571000687",
+      "size": "11",
+      "count": 21,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B05-AS7-XXL-26",
+      "gtin": "5713571000724",
+      "size": "7/XXL",
+      "count": 26,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B05-AS11-XXL-16",
+      "gtin": "5713571000748",
+      "size": "11/XXL",
+      "count": 16,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B06-AS12-16",
+      "gtin": "5713571008447",
+      "size": "12",
+      "count": 16,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B07-ASL-standard-M0-27",
+      "gtin": "5713571000083",
+      "size": "M0",
+      "count": 27,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B07-ASL-standard-L0-26",
+      "gtin": "5713571000182",
+      "size": "L0",
+      "count": 26,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B07-ASL-standard-M1-26",
+      "gtin": "5713571000106",
+      "size": "M1",
+      "count": 26,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B07-ASL-standard-L1-26",
+      "gtin": "5713571000205",
+      "size": "L1",
+      "count": 26,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B07-ASL-standard-S2-28",
+      "gtin": "5713571000045",
+      "size": "S2",
+      "count": 28,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B07-ASL-standard-XS2-32",
+      "gtin": "5713571000021",
+      "size": "XS2",
+      "count": 32,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B07-ASL-standard-M2-24",
+      "gtin": "5713571000120",
+      "size": "M2",
+      "count": 24,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B07-ASL-standard-L2-22",
+      "gtin": "5713571000229",
+      "size": "L2",
+      "count": 22,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B07-ASL-standard-XL2-21",
+      "gtin": "5713571000281",
+      "size": "XL2",
+      "count": 21,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B07-ASL-standard-M3-23",
+      "gtin": "5713571000144",
+      "size": "M3",
+      "count": 23,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B07-ASL-standard-L3-20",
+      "gtin": "5713571000243",
+      "size": "L3",
+      "count": 20,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B07-ASL-standard-S4-25",
+      "gtin": "5713571000069",
+      "size": "S4",
+      "count": 25,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B07-ASL-standard-L4-18",
+      "gtin": "5713571000267",
+      "size": "L4",
+      "count": 18,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B07-ASL-standard-XL4-12",
+      "gtin": "5713571000304",
+      "size": "XL4",
+      "count": 12,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B07-ASL-junior-XS2-32",
+      "gtin": "5713571000007",
+      "size": "XS2",
+      "count": 32,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B07-ASL-special-M4-14",
+      "gtin": "5713571008140",
+      "size": "M4",
+      "count": 14,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B07-ASL-special-L4-12",
+      "gtin": "5713571008164",
+      "size": "L4",
+      "count": 12,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B09-ASL-L1-10",
+      "gtin": "5713571000366",
+      "size": "L1",
+      "count": 10,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B09-ASL-L2-10",
+      "gtin": "5713571000380",
+      "size": "L2",
+      "count": 10,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B10-AFF-M-L1-27",
+      "gtin": "5703538446047",
+      "size": "M-L1",
+      "count": 27,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B10-AFF-M-L2-25",
+      "gtin": "5703538446061",
+      "size": "M-L2",
+      "count": 25,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B10-AFF-M-L3-23",
+      "gtin": "5703538446085",
+      "size": "M-L3",
+      "count": 23,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B10-AFF-M-L4-21",
+      "gtin": "5713571001561",
+      "size": "M-L4",
+      "count": 21,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B10-AFF-L-XL2-22",
+      "gtin": "5703538446153",
+      "size": "L-XL2",
+      "count": 22,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B10-AFF-L-XL3-20",
+      "gtin": "5703538446177",
+      "size": "L-XL3",
+      "count": 20,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B10-AFF-L-XL4-18",
+      "gtin": "5713571001585",
+      "size": "L-XL4",
+      "count": 18,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B11-AP2-M2-15",
+      "gtin": "5713571000885",
+      "size": "Medium",
+      "count": 15,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B11-AP2-L2-15",
+      "gtin": "5713571000946",
+      "size": "Large",
+      "count": 15,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B11-AP2-S2-16",
+      "gtin": "5713571000809",
+      "size": "Small",
+      "count": 16,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B11-AP2-XL2-16",
+      "gtin": "5713571001004",
+      "size": "X-Large",
+      "count": 16,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B11-AP3-M3-15",
+      "gtin": "5713571000908",
+      "size": "Medium",
+      "count": 15,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B11-AP3-L3-15",
+      "gtin": "5713571000960",
+      "size": "Large",
+      "count": 15,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B11-AP3-XL3-16",
+      "gtin": "5713571001028",
+      "size": "X-Large",
+      "count": 16,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B12-LET-NORMAL-34",
+      "gtin": "5713571001288",
+      "size": "Normal",
+      "count": 34,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B12-LET-ANATOMIC-30",
+      "gtin": "5713571001325",
+      "size": "Anatomic",
+      "count": 30,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B13-LIGHT-1000021337-20",
+      "gtin": "5713571001165",
+      "size": "Mini 1",
+      "count": 20,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B13-LIGHT-1000021338-16",
+      "gtin": "5713571001189",
+      "size": "Mini Plus 1A",
+      "count": 16,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B13-LIGHT-1000021339-12",
+      "gtin": "5713571001202",
+      "size": "Normal 2",
+      "count": 12,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B13-LIGHT-1000021340-10",
+      "gtin": "5713571001226",
+      "size": "Extra 3",
+      "count": 10,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    },
+    {
+      "research_id": "B13-LIGHT-1000021342-30",
+      "gtin": "5713571001264",
+      "size": "Super 4",
+      "count": 30,
+      "exact_pack_found": true,
+      "verified_after_reconciliation": true
+    }
+  ],
+  "public_pages": [
+    {
+      "id": "B03-AP0-M-15",
+      "url": "https://diaperscout.app/products/pants-premium-level0?variantId=f4f4fbc5-3680-4bcd-8a5b-be358f45985c&packTypeId=b5cb0307-14ed-4413-af99-5bc07fb62071",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B03-AP1-M-15",
+      "url": "https://diaperscout.app/products/pants-premium-level1?variantId=d2e911a4-6fa0-4048-83f1-aaf909ad0d5e&packTypeId=83f52bb4-1f84-444b-b134-72905adf29c8",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B03-AP1-S-16",
+      "url": "https://diaperscout.app/products/pants-premium-level1?variantId=d2e911a4-6fa0-4048-83f1-aaf909ad0d5e&packTypeId=3c358d32-d2d4-482f-9d51-b7d28befbd66",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B03-APJ-XS2-18",
+      "url": "https://diaperscout.app/products/pants-premium-junior?variantId=29743958-f670-4f9c-80f7-ee705616c01c&packTypeId=a3094d66-b59d-467b-97bb-b38549d045b7",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B04-AP1-L-15",
+      "url": "https://diaperscout.app/products/pants-premium-level1?variantId=d2e911a4-6fa0-4048-83f1-aaf909ad0d5e&packTypeId=2bd8522b-7aab-4113-a0cb-f2bb9f028c56",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B04-APL-M-15",
+      "url": "https://diaperscout.app/products/pants-premium-light?variantId=40252ff2-2d06-4780-a1dc-df066dc95dd9&packTypeId=b863ee29-87ff-47a5-985c-5b678777e9c4",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B05-AS1-30",
+      "url": "https://diaperscout.app/products/san-premium-1?variantId=37abd32d-9242-4ff8-8e17-038f4288a270&packTypeId=82f67b67-7b22-44a7-8f19-8eb72bad6c18",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B05-AS1A-28",
+      "url": "https://diaperscout.app/products/san-premium-1a?variantId=32610cfd-a35a-4f2b-9ef0-66c7e60f0d35&packTypeId=0b7a61c9-5e26-4e60-bb31-0550f61ba900",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B05-AS2-30",
+      "url": "https://diaperscout.app/products/san-premium-2?variantId=1418588b-1826-4ddb-ba4e-67f77654bdb0&packTypeId=bf9b2085-6970-4965-a75e-ab88c54584a9",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B05-AS3-28",
+      "url": "https://diaperscout.app/products/san-premium-3?variantId=bf13f8a9-0d42-48d5-9646-b318c6d40a2b&packTypeId=e46dfa4a-bf1b-4ecd-a52b-46d9efe2a1af",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B05-AS3A-28",
+      "url": "https://diaperscout.app/products/san-premium-3a?variantId=32fd255d-1ed2-4e80-9c21-fd17726c0ffd&packTypeId=81093cd4-645a-4830-a756-aeaa7bda84e1",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B05-AS4-30",
+      "url": "https://diaperscout.app/products/san-premium-4?variantId=ef5c4c15-5a11-46ef-9519-21aafcf26c92&packTypeId=bf6a5518-047b-4bef-8195-02aa7b20be21",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B05-AS5-36",
+      "url": "https://diaperscout.app/products/san-premium-5?variantId=3342bd81-d6f7-4236-ba3b-52416157fad3&packTypeId=07d4c59e-2ec1-453f-b40a-aa6caa15b526",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B05-AS6-34",
+      "url": "https://diaperscout.app/products/san-premium-6?variantId=0702f7d6-7e97-4ddd-a950-cfbf3b865421&packTypeId=0e13acb0-237a-4aba-965e-2efa6c9b1ede",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B05-AS7-30",
+      "url": "https://diaperscout.app/products/san-premium-7?variantId=1fd562e1-5b0c-45e7-9412-7c47fdb93b71&packTypeId=51b75655-4fd4-447c-a75b-ec3ae6e36d80",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B05-AS8-22",
+      "url": "https://diaperscout.app/products/san-premium-8?variantId=5e31e0be-fd64-4eb8-af6b-b3f65f0f750f&packTypeId=8e37c5ee-e762-4144-9b72-1c7d52a6eb7d",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B05-AS9-28",
+      "url": "https://diaperscout.app/products/san-premium-9?variantId=ba79fc7f-ed8e-472c-b358-d68c31cad38c&packTypeId=ab3a5f6a-93ce-48a0-be88-f0ecdd7bbbed",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B05-AS10-25",
+      "url": "https://diaperscout.app/products/san-premium-10?variantId=dd7f7ede-fe8a-429c-a174-e295594dad72&packTypeId=4feb6c64-4149-49c3-9f25-4e225eef60d0",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B05-AS11-21",
+      "url": "https://diaperscout.app/products/san-premium-11?variantId=82211f25-5f07-44df-bacb-bd4d3384a450&packTypeId=77be6f92-fe7f-4d1d-be0f-f339763e205b",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B05-AS7-XXL-26",
+      "url": "https://diaperscout.app/products/san-premium-7-xxl?variantId=e869df9a-d8a0-4de9-81eb-cb4725eb2b21&packTypeId=8f1985a8-1566-44ef-9bf3-765addb00818",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B05-AS11-XXL-16",
+      "url": "https://diaperscout.app/products/san-premium-11-xxl?variantId=78ec5356-597c-4e02-8f69-682a5ab8144b&packTypeId=aece427b-18dc-4b7b-873d-ca1104a946fb",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B06-AS12-16",
+      "url": "https://diaperscout.app/products/san-premium-12?variantId=b51e4c01-d63b-414e-b85a-c2c8e286f8c9&packTypeId=37f7b0ad-a749-45a0-b6ce-57e7ef2795ec",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B07-ASL-standard-M0-27",
+      "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=05875f5b-33dc-4348-98dd-3d3844758ea6",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B07-ASL-standard-L0-26",
+      "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=1f49df0a-3c0a-4003-b259-352cdbe31bed",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B07-ASL-standard-M1-26",
+      "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=d9c6892c-ec1b-4921-84fb-a3060c49a898",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B07-ASL-standard-L1-26",
+      "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=a4c355cf-c407-4381-908b-3c0b7e5b6dae",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B07-ASL-standard-S2-28",
+      "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=1dc36a6e-5df6-4ad8-9287-62ad71de605c",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B07-ASL-standard-XS2-32",
+      "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=25e02135-583f-41c3-9545-84e48145c13e",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B07-ASL-standard-M2-24",
+      "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=6ae9f6e0-b28d-4d07-b4db-b06207624793",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B07-ASL-standard-L2-22",
+      "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=ed642027-98e1-432f-9c0d-dbc12fa8d0cb",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B07-ASL-standard-XL2-21",
+      "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=aa0b702d-abd4-4482-858d-036061331732",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B07-ASL-standard-M3-23",
+      "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=31615c7e-19f4-4476-9270-5dddda4dbd7e",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B07-ASL-standard-L3-20",
+      "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=95c7d310-2fbd-4bce-b297-3bb7de8e0ee7",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B07-ASL-standard-S4-25",
+      "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=502b3916-6b3a-4213-bce4-31065d740a53",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B07-ASL-standard-L4-18",
+      "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=f8308d72-3f7d-43f3-a165-570d2a4d2d90",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B07-ASL-standard-XL4-12",
+      "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=180641e9-e3f9-4466-99f5-9ff41f133e97",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B07-ASL-junior-XS2-32",
+      "url": "https://diaperscout.app/products/slip-premium-junior?variantId=338a2a06-63ef-4024-9039-8b12299faf0d&packTypeId=e21b732e-4a6d-4a3e-aa9f-c9fd9b49e431",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B07-ASL-special-M4-14",
+      "url": "https://diaperscout.app/products/slip-premium-special?variantId=160455f6-3ed3-4019-8ea1-e9645c6079e1&packTypeId=52bb926b-43af-435d-b984-2eb4ef50170b",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B07-ASL-special-L4-12",
+      "url": "https://diaperscout.app/products/slip-premium-special?variantId=160455f6-3ed3-4019-8ea1-e9645c6079e1&packTypeId=f62eafeb-e978-4492-b4f3-a14361fe68a8",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B09-ASL-L1-10",
+      "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=196c5283-0d93-405c-9d86-5e92843e48f7",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B09-ASL-L2-10",
+      "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=9ed0abe2-97e3-4818-9a33-9daba3c497cd",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B10-AFF-M-L1-27",
+      "url": "https://diaperscout.app/products/slip-premium-flexi-fit?variantId=9b049238-a8fd-4602-8490-de2383de512d&packTypeId=4240fd93-d7cf-406b-a065-7e51e6e59426",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B10-AFF-M-L2-25",
+      "url": "https://diaperscout.app/products/slip-premium-flexi-fit?variantId=9b049238-a8fd-4602-8490-de2383de512d&packTypeId=c2b85446-1110-498d-b095-bcbb87163655",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B10-AFF-M-L3-23",
+      "url": "https://diaperscout.app/products/slip-premium-flexi-fit?variantId=9b049238-a8fd-4602-8490-de2383de512d&packTypeId=268b2b03-134a-4894-838f-a1b6b0c76d8f",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B10-AFF-M-L4-21",
+      "url": "https://diaperscout.app/products/slip-premium-flexi-fit?variantId=9b049238-a8fd-4602-8490-de2383de512d&packTypeId=c93f05e4-07bb-4f66-afd7-08fbe5410e21",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B10-AFF-L-XL2-22",
+      "url": "https://diaperscout.app/products/slip-premium-flexi-fit?variantId=9b049238-a8fd-4602-8490-de2383de512d&packTypeId=b38345d4-6437-4197-8f9b-ea88cb71be57",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B10-AFF-L-XL3-20",
+      "url": "https://diaperscout.app/products/slip-premium-flexi-fit?variantId=9b049238-a8fd-4602-8490-de2383de512d&packTypeId=1c2d71e2-0e3e-4d00-b9f5-8392076ef294",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B10-AFF-L-XL4-18",
+      "url": "https://diaperscout.app/products/slip-premium-flexi-fit?variantId=9b049238-a8fd-4602-8490-de2383de512d&packTypeId=79668614-34eb-41fb-9abc-f50dd98ccfb7",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B11-AP2-M2-15",
+      "url": "https://diaperscout.app/products/pants-premium-level2?variantId=ae6cd1ee-c9ff-44f2-a57c-8ae2a03c7a3c&packTypeId=51f649e3-5e05-4fde-8815-0a287322be4a",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B11-AP2-L2-15",
+      "url": "https://diaperscout.app/products/pants-premium-level2?variantId=ae6cd1ee-c9ff-44f2-a57c-8ae2a03c7a3c&packTypeId=04c7c02b-4ed3-4e0b-9e17-3ebfacbe5b01",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B11-AP2-S2-16",
+      "url": "https://diaperscout.app/products/pants-premium-level2?variantId=ae6cd1ee-c9ff-44f2-a57c-8ae2a03c7a3c&packTypeId=e076aef9-b9f4-431f-b40b-76c44ce64149",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B11-AP2-XL2-16",
+      "url": "https://diaperscout.app/products/pants-premium-level2?variantId=ae6cd1ee-c9ff-44f2-a57c-8ae2a03c7a3c&packTypeId=98dc0b27-31ad-40d3-9da3-b6fc7d5ee80f",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B11-AP3-M3-15",
+      "url": "https://diaperscout.app/products/pants-premium-level3?variantId=0938dec5-f794-42de-bb97-2f0878fc1c2b&packTypeId=bde77ae3-8c42-4626-9e8a-277777e79c84",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B11-AP3-L3-15",
+      "url": "https://diaperscout.app/products/pants-premium-level3?variantId=0938dec5-f794-42de-bb97-2f0878fc1c2b&packTypeId=78c72038-21f7-4db5-b267-551e0ff81e9c",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B11-AP3-XL3-16",
+      "url": "https://diaperscout.app/products/pants-premium-level3?variantId=0938dec5-f794-42de-bb97-2f0878fc1c2b&packTypeId=bdce6808-9801-43ef-962d-85c1135c7cec",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B12-LET-NORMAL-34",
+      "url": "https://diaperscout.app/products/let-normal?variantId=2089b7dc-9666-4268-9a29-d382731b1bec&packTypeId=f3fb8b23-29dd-4894-a74f-cfc012d3ce06",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B12-LET-ANATOMIC-30",
+      "url": "https://diaperscout.app/products/let-anatomic?variantId=89fd8a8a-c902-49ec-a8d7-2b1870d34fb6&packTypeId=1dfb0bc3-0911-4624-afbc-732c36f8ed4a",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B13-LIGHT-1000021337-20",
+      "url": "https://diaperscout.app/products/light-premium-mini-1?variantId=0d0e3096-00f6-4d91-bc2f-c0368464a471&packTypeId=396c5f2a-32c5-4454-b2e3-58c9acf51b32",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B13-LIGHT-1000021338-16",
+      "url": "https://diaperscout.app/products/light-premium-mini-plus-1a?variantId=0e97727f-2277-43ff-9a39-ca3346f770e3&packTypeId=3c453c3c-9c9e-4316-94e5-a8c2579a7f95",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B13-LIGHT-1000021339-12",
+      "url": "https://diaperscout.app/products/light-premium-normal-2?variantId=42708bb1-7b66-4631-a071-1c65574fd7d3&packTypeId=d3cd8a5f-fd28-4e5b-a7d9-b3a3a22388f8",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B13-LIGHT-1000021340-10",
+      "url": "https://diaperscout.app/products/light-premium-extra-3?variantId=544661b3-cdf5-41ba-b7ea-3d75702b5b51&packTypeId=4242267c-518a-46fa-a3ec-f74ddc2da6c0",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    },
+    {
+      "id": "B13-LIGHT-1000021342-30",
+      "url": "https://diaperscout.app/products/light-premium-super-4?variantId=8e4ff2aa-f447-4131-a387-5929163c28e5&packTypeId=2352885e-b877-4c78-8402-d5d9787c31b9",
+      "status": 200,
+      "title_present": true,
+      "count_present": true,
+      "gtin_present": false
+    }
+  ],
+  "manufacturer_verified_via_canonical_inventory": true,
+  "manufacturer_not_displayed_on_existing_public_detail_layout": true
+}

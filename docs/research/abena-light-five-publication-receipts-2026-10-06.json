@@ -1,0 +1,62 @@
+[
+  {
+    "ResearchId": "B13-LIGHT-1000021337-20",
+    "SubmissionId": "7ca3e12f-0a6f-4aff-8893-72cf95127148",
+    "ProductId": "73f24299-3a6e-48a1-8a4e-fb4c1508fd3e",
+    "VariantId": "0d0e3096-00f6-4d91-bc2f-c0368464a471",
+    "SizeId": "2bc90e08-b658-4fc2-96ad-1a40567c0ee2",
+    "PackId": "396c5f2a-32c5-4454-b2e3-58c9acf51b32",
+    "IdentifierId": "2af4314e-15fc-44b4-b96d-d3f747db738b",
+    "AuditId": "4373c9ef-b5ee-4d66-8abd-15fef4957a36",
+    "Gtin": "5713571001165",
+    "Created": true
+  },
+  {
+    "ResearchId": "B13-LIGHT-1000021338-16",
+    "SubmissionId": "4f6e497b-ced3-4c81-b3e7-8c6af5c24726",
+    "ProductId": "68a211c8-dd8d-4b62-8619-155a08812cfe",
+    "VariantId": "0e97727f-2277-43ff-9a39-ca3346f770e3",
+    "SizeId": "a250693a-dd8b-4dd6-b27d-9587d10f938c",
+    "PackId": "3c453c3c-9c9e-4316-94e5-a8c2579a7f95",
+    "IdentifierId": "ef6da35e-e13c-445e-bfb1-669bd61c06c3",
+    "AuditId": "5a6827d4-1a34-48a4-b4b3-39a520f8ea4e",
+    "Gtin": "5713571001189",
+    "Created": true
+  },
+  {
+    "ResearchId": "B13-LIGHT-1000021339-12",
+    "SubmissionId": "70735f5f-547e-4ca8-8025-62084d9dc9a9",
+    "ProductId": "cbfcb6de-be4d-4a44-9893-a955322f2c5e",
+    "VariantId": "42708bb1-7b66-4631-a071-1c65574fd7d3",
+    "SizeId": "7994ddd9-3c86-4a1b-a930-efebb3f31bfb",
+    "PackId": "d3cd8a5f-fd28-4e5b-a7d9-b3a3a22388f8",
+    "IdentifierId": "c7525ec9-62a4-48f1-b0a1-5ef8f964929c",
+    "AuditId": "44ffc36d-7118-4bb9-9c9b-7e032dcfa073",
+    "Gtin": "5713571001202",
+    "Created": true
+  },
+  {
+    "ResearchId": "B13-LIGHT-1000021340-10",
+    "SubmissionId": "cf7f6b74-a375-4690-9f07-3c98dad46902",
+    "ProductId": "d47845b1-f968-4242-bd89-125a298f65d1",
+    "VariantId": "544661b3-cdf5-41ba-b7ea-3d75702b5b51",
+    "SizeId": "47fa0914-c7ea-484a-81d9-9403f67ea505",
+    "PackId": "4242267c-518a-46fa-a3ec-f74ddc2da6c0",
+    "IdentifierId": "857b45a7-315f-4717-8d85-6a60b1b31494",
+    "AuditId": "f51c2610-b75a-4e5f-89d6-8fe77a81945e",
+    "Gtin": "5713571001226",
+    "Created": true
+  },
+  {
+    "ResearchId": "B13-LIGHT-1000021342-30",
+    "SubmissionId": "81eb8705-81af-4767-8699-8e52671e7102",
+    "ProductId": "7a12411d-2bc0-47ac-a456-87e0811254d4",
+    "VariantId": "8e4ff2aa-f447-4131-a387-5929163c28e5",
+    "SizeId": "27f965bf-96dc-41df-b5fd-20f3aebb0a20",
+    "PackId": "2352885e-b877-4c78-8402-d5d9787c31b9",
+    "IdentifierId": "710de1a3-ae16-4e1c-97cf-7442467cd6b6",
+    "AuditId": "e3321daf-747c-4f85-81cf-c04b86af3480",
+    "Gtin": "5713571001264",
+    "Created": true
+  }
+]

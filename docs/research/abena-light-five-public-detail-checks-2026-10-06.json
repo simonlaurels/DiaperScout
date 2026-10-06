@@ -1,0 +1,42 @@
+[
+  {
+    "id": "B13-LIGHT-1000021337-20",
+    "url": "https://diaperscout.app/products/light-premium-mini-1?variantId=0d0e3096-00f6-4d91-bc2f-c0368464a471&packTypeId=396c5f2a-32c5-4454-b2e3-58c9acf51b32",
+    "status": 200,
+    "title_present": true,
+    "count_present": true,
+    "placeholder_present": true
+  },
+  {
+    "id": "B13-LIGHT-1000021338-16",
+    "url": "https://diaperscout.app/products/light-premium-mini-plus-1a?variantId=0e97727f-2277-43ff-9a39-ca3346f770e3&packTypeId=3c453c3c-9c9e-4316-94e5-a8c2579a7f95",
+    "status": 200,
+    "title_present": true,
+    "count_present": true,
+    "placeholder_present": true
+  },
+  {
+    "id": "B13-LIGHT-1000021339-12",
+    "url": "https://diaperscout.app/products/light-premium-normal-2?variantId=42708bb1-7b66-4631-a071-1c65574fd7d3&packTypeId=d3cd8a5f-fd28-4e5b-a7d9-b3a3a22388f8",
+    "status": 200,
+    "title_present": true,
+    "count_present": true,
+    "placeholder_present": true
+  },
+  {
+    "id": "B13-LIGHT-1000021340-10",
+    "url": "https://diaperscout.app/products/light-premium-extra-3?variantId=544661b3-cdf5-41ba-b7ea-3d75702b5b51&packTypeId=4242267c-518a-46fa-a3ec-f74ddc2da6c0",
+    "status": 200,
+    "title_present": true,
+    "count_present": true,
+    "placeholder_present": true
+  },
+  {
+    "id": "B13-LIGHT-1000021342-30",
+    "url": "https://diaperscout.app/products/light-premium-super-4?variantId=8e4ff2aa-f447-4131-a387-5929163c28e5&packTypeId=2352885e-b877-4c78-8402-d5d9787c31b9",
+    "status": 200,
+    "title_present": true,
+    "count_present": true,
+    "placeholder_present": true
+  }
+]

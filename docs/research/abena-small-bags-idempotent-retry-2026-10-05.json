@@ -1,0 +1,30 @@
+{
+  "execution": "ds-bootstrap-admin-996hdey",
+  "all_identifiers_preserved": true,
+  "receipts": [
+    {
+      "ResearchId": "B09-ASL-L1-10",
+      "SubmissionId": "f59927ab-2a60-4a23-87e8-acab48cb3d23",
+      "ProductId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+      "VariantId": "eedd9541-0628-4fc0-9b3d-e87ab4da55aa",
+      "SizeId": "30ee57f2-dd76-41a8-90fe-40de2c5108b7",
+      "PackId": "196c5283-0d93-405c-9d86-5e92843e48f7",
+      "IdentifierId": "a770198f-9887-4734-a246-0879a171dbcf",
+      "AuditId": "63abe921-2f3b-4d12-8d56-7257ba986fde",
+      "Gtin": "5713571000366",
+      "Created": false
+    },
+    {
+      "ResearchId": "B09-ASL-L2-10",
+      "SubmissionId": "f59927ab-2a60-4a23-87e8-acab48cb3d23",
+      "ProductId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+      "VariantId": "eedd9541-0628-4fc0-9b3d-e87ab4da55aa",
+      "SizeId": "0f33a164-ee18-4e4c-9343-081c8163b7d4",
+      "PackId": "9ed0abe2-97e3-4818-9a33-9daba3c497cd",
+      "IdentifierId": "7740ad15-cca2-4169-93f5-3ae057da287d",
+      "AuditId": "a0716639-3718-4be2-93b1-a2ed44355a7f",
+      "Gtin": "5713571000380",
+      "Created": false
+    }
+  ]
+}

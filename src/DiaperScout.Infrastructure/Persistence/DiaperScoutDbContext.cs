@@ -8,6 +8,7 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
     public DbSet<Manufacturer> Manufacturers => Set<Manufacturer>();
     public DbSet<Brand> Brands => Set<Brand>();
     public DbSet<Product> Products => Set<Product>();
+    public DbSet<ProductRouteRedirect> ProductRouteRedirects => Set<ProductRouteRedirect>();
     public DbSet<ProductVariant> ProductVariants => Set<ProductVariant>();
     public DbSet<SizeVariant> SizeVariants => Set<SizeVariant>();
     public DbSet<PackType> PackTypes => Set<PackType>();
@@ -94,6 +95,15 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
                 .WithMany()
                 .HasForeignKey(x => x.BrandId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<ProductRouteRedirect>(entity =>
+        {
+            entity.ToTable("product_route_redirects");
+            entity.HasIndex(x => x.SourceProductId).IsUnique();
+            entity.HasOne<Product>().WithMany().HasForeignKey(x => x.SourceProductId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne<Product>().WithMany().HasForeignKey(x => x.TargetProductId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne<ProductVariant>().WithMany().HasForeignKey(x => x.DefaultVariantId).OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<ProductVariant>(entity =>

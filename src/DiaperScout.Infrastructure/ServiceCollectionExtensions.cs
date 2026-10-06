@@ -712,11 +712,25 @@ internal sealed class RetailerManagement(DiaperScoutDbContext db, IEditorialAuth
 
 internal sealed partial class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmissionImageStorage imageStorage, IEditorialAuthorisation editorialAuthorisation, ICommercePluginOrchestrator commercePlugins) : IAtlasQueries
 {
-    public async Task<ProductSummary?> GetProductBySlugAsync(string slug, CancellationToken cancellationToken = default) =>
-        await db.Products.AsNoTracking()
+    public async Task<ProductSummary?> GetProductBySlugAsync(string slug, CancellationToken cancellationToken = default)
+    {
+        var redirect = await ResolveProductRouteAsync(slug, cancellationToken);
+        if (redirect is not null) slug = redirect.Value.Slug;
+        return await db.Products.AsNoTracking()
             .Where(p => p.Slug == slug)
             .Select(p => new ProductSummary(p.Id, p.Name, p.Slug, p.ProductType, p.Status))
             .SingleOrDefaultAsync(cancellationToken);
+    }
+
+    private async Task<(string Slug, Guid VariantId)?> ResolveProductRouteAsync(string slug, CancellationToken cancellationToken)
+    {
+        var route = await (from source in db.Products.AsNoTracking()
+                           join redirect in db.ProductRouteRedirects.AsNoTracking() on source.Id equals redirect.SourceProductId
+                           join target in db.Products.AsNoTracking() on redirect.TargetProductId equals target.Id
+                           where source.Slug == slug
+                           select new { target.Slug, redirect.DefaultVariantId }).SingleOrDefaultAsync(cancellationToken);
+        return route is null ? null : (route.Slug, route.DefaultVariantId);
+    }
 
     public async Task<ProductIdentification?> GetProductByGtinAsync(string gtin, CancellationToken cancellationToken = default)
     {
@@ -970,6 +984,13 @@ internal sealed partial class AtlasQueries(DiaperScoutDbContext db, ICatalogueSu
 
     public async Task<CatalogueProductDetails?> GetProductDetailsBySlugAsync(string slug, CancellationToken cancellationToken = default, Guid? variantId = null, Guid? packTypeId = null)
     {
+        var redirect = await ResolveProductRouteAsync(slug, cancellationToken);
+        if (redirect is not null)
+        {
+            slug = redirect.Value.Slug;
+            // An explicit pack/variant remains authoritative; a bare old link keeps its original variant.
+            if (!variantId.HasValue && !packTypeId.HasValue) variantId = redirect.Value.VariantId;
+        }
         var details = (await GetProductDetailsCoreAsync(slug, includeModeratorOnly: false, cancellationToken, variantId, packTypeId))?.PublicDetails;
         if (details is null || details.Status != ProductStatus.Current) return null;
         var variant = variantId.HasValue

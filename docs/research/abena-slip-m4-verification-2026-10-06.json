@@ -1,0 +1,26 @@
+{
+  "research_id": "B16-ASL-M4-21",
+  "retry_execution": "ds-bootstrap-admin-xcvzswa",
+  "inventory_execution": "ds-bootstrap-admin-ofc0a7p",
+  "all_previous_rows_unchanged": {
+    "manufacturers": true,
+    "brands": true,
+    "products": true,
+    "variants": true,
+    "sizes": true,
+    "packs": true,
+    "identifiers": true,
+    "submissions": true,
+    "submissionVariants": true,
+    "submissionSizes": true
+  },
+  "idempotent_retry_verified": true,
+  "public_barcode_verified": true,
+  "public_detail": {
+    "http_status": 200,
+    "title": true,
+    "size": "M4",
+    "count": 21,
+    "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=9358ac9c-46fe-4235-809e-ad530b253e40"
+  }
+}

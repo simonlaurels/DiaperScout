@@ -1,0 +1,56 @@
+{
+  "executions": [
+    "ds-bootstrap-admin-q8ag870",
+    "ds-bootstrap-admin-si7cq03"
+  ],
+  "receipts": [
+    {
+      "ResearchId": "B01-C16-PACK",
+      "SubmissionId": "0ff23d7c-5908-4c33-b9b4-5166cbd995d7",
+      "ProductId": "1bf2c322-ec2c-4858-bf43-6f7112ab379d",
+      "VariantId": "1d9fa7b4-f3f7-40a9-ab6b-0db61ab94ca9",
+      "SizeId": "1f4286b5-c7f4-4b67-a7b1-89101024cdb2",
+      "PackId": "c48e90e6-ba96-4939-92e4-2dec8ec6315e",
+      "IdentifierId": "d500d291-8edc-4d93-9504-5e08d7a3d41d",
+      "AuditId": "76c1a4b5-7109-4590-817f-7ca0c8a8f84e",
+      "Gtin": "5900516695750",
+      "Created": true
+    },
+    {
+      "ResearchId": "B01-C18-PACK",
+      "SubmissionId": "17e9c8f6-40e7-47b3-8dfc-1bafe0a0f494",
+      "ProductId": "76b5d1f0-cf55-4aab-a344-f1e50cdbe91c",
+      "VariantId": "a2be020e-0770-4b6c-8f94-8288d94e632b",
+      "SizeId": "6a893d3b-0e6a-48d2-bf86-9bcccb8cbb63",
+      "PackId": "3f911483-edfa-4791-a2d7-c3cf3867ce99",
+      "IdentifierId": "9b6ae845-d77d-4ed3-8d50-2ef9d2a1defc",
+      "AuditId": "33be9623-5407-4383-a070-a06de3c9f9f8",
+      "Gtin": "7332152207383",
+      "Created": true
+    },
+    {
+      "ResearchId": "B01-C07-PACK",
+      "SubmissionId": "78bf7d46-87cb-4b1c-b464-f1f077692f03",
+      "ProductId": "debe4cbd-baab-4a45-aa56-d3e077f452a5",
+      "VariantId": "afc172c0-ebbf-4391-80dc-33aa75bbe3b0",
+      "SizeId": "b3415db5-20d1-4282-b722-ae6755469ed0",
+      "PackId": "e4f8fe7a-bdb8-4523-a8e1-02a7f9f9359b",
+      "IdentifierId": "6cc8cff4-5a27-4a81-9e0b-5c5d5cb64083",
+      "AuditId": "ac527453-a5df-4552-9e72-dd0cf0906151",
+      "Gtin": "4052199297002",
+      "Created": true
+    },
+    {
+      "ResearchId": "B01-C10-PACK",
+      "SubmissionId": "7a277b9f-3911-4a2f-920e-e74387c015a7",
+      "ProductId": "eecd0811-cfbd-4f5f-8bc4-dceb0a00fbb6",
+      "VariantId": "9ec537ff-aebd-4ff8-8eca-2b18f9199cbc",
+      "SizeId": "9ac47c62-b4f6-4e80-ba17-fa8e015051d7",
+      "PackId": "3bd05e71-8223-49cc-9924-2bcfd3959937",
+      "IdentifierId": "aba81309-2d1f-451f-aa7f-6d6b123d44be",
+      "AuditId": "5592c721-25d0-487a-849c-41fbfde3395d",
+      "Gtin": "4052199303413",
+      "Created": true
+    }
+  ]
+}

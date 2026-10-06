@@ -1,0 +1,44 @@
+[
+  {
+    "candidate_id": "DS00065",
+    "size": "Extra Plus 3A",
+    "article": "1000021341",
+    "manufacturer_gtin": "5713571001240",
+    "manufacturer_count": 10,
+    "manufacturer_dimensions_mm": [
+      330,
+      110
+    ],
+    "registry_url": "https://svanemerket.no/miljomerkede-produkter/produkt/abena-light-premium-3a-10-pcs-117310/",
+    "registry_gtin": "713571001240",
+    "blocker": "Registry GTIN is malformed/checksum-invalid. Manufacturer bag10 GTIN5713571001240; corroborating retailer exactGTIN/count but retailer Q&A dimensions16.5x9.4cm differs from manufacturer33x11cm. Retain discrepancy and seek source resolving dimensions before promotion."
+  },
+  {
+    "candidate_id": "DS00066",
+    "size": "Maxi 4A",
+    "article": "1999905383",
+    "manufacturer_gtin": "5703538459023",
+    "manufacturer_count": 8,
+    "manufacturer_dimensions_mm": [
+      410,
+      150
+    ],
+    "registry_url": "https://svanemerket.no/miljomerkede-produkter/produkt/abena-light-premium-maxi-4a-8-pcs-119597/",
+    "registry_gtin": "570358459023",
+    "blocker": "Registry GTIN malformed/checksum-invalid; manufacturer bag8 exactGTIN5703538459023 and Apotea exactEAN/count/dimensions match. Manufacturer visualreview and explicit source exclusion record pending."
+  },
+  {
+    "candidate_id": "DS00071",
+    "size": "Ultra Mini 0",
+    "article": "1999905382",
+    "manufacturer_gtin": "5703538458873",
+    "manufacturer_count": 24,
+    "manufacturer_dimensions_mm": [
+      190,
+      75
+    ],
+    "registry_url": "https://svanemerket.no/miljomerkede-produkter/produkt/abena-light-ultra-mini-0-24-pcs-119142/",
+    "registry_gtin": null,
+    "blocker": "Registry omits GTIN. Current manufacturer bag24 exactEAN5703538458873 and independent retailer corroborates; visualreview and duplicate gate pending. Optional retailer80vs100ml notcanonical."
+  }
+]

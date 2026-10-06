@@ -1,0 +1,58 @@
+[
+  {
+    "id": "B10-AFF-M-L1-27",
+    "url": "https://diaperscout.app/products/slip-premium-flexi-fit?variantId=9b049238-a8fd-4602-8490-de2383de512d&packTypeId=4240fd93-d7cf-406b-a065-7e51e6e59426",
+    "status": 200,
+    "title_present": true,
+    "count_present": true,
+    "placeholder_present": true
+  },
+  {
+    "id": "B10-AFF-M-L2-25",
+    "url": "https://diaperscout.app/products/slip-premium-flexi-fit?variantId=9b049238-a8fd-4602-8490-de2383de512d&packTypeId=c2b85446-1110-498d-b095-bcbb87163655",
+    "status": 200,
+    "title_present": true,
+    "count_present": true,
+    "placeholder_present": true
+  },
+  {
+    "id": "B10-AFF-M-L3-23",
+    "url": "https://diaperscout.app/products/slip-premium-flexi-fit?variantId=9b049238-a8fd-4602-8490-de2383de512d&packTypeId=268b2b03-134a-4894-838f-a1b6b0c76d8f",
+    "status": 200,
+    "title_present": true,
+    "count_present": true,
+    "placeholder_present": true
+  },
+  {
+    "id": "B10-AFF-M-L4-21",
+    "url": "https://diaperscout.app/products/slip-premium-flexi-fit?variantId=9b049238-a8fd-4602-8490-de2383de512d&packTypeId=c93f05e4-07bb-4f66-afd7-08fbe5410e21",
+    "status": 200,
+    "title_present": true,
+    "count_present": true,
+    "placeholder_present": true
+  },
+  {
+    "id": "B10-AFF-L-XL2-22",
+    "url": "https://diaperscout.app/products/slip-premium-flexi-fit?variantId=9b049238-a8fd-4602-8490-de2383de512d&packTypeId=b38345d4-6437-4197-8f9b-ea88cb71be57",
+    "status": 200,
+    "title_present": true,
+    "count_present": true,
+    "placeholder_present": true
+  },
+  {
+    "id": "B10-AFF-L-XL3-20",
+    "url": "https://diaperscout.app/products/slip-premium-flexi-fit?variantId=9b049238-a8fd-4602-8490-de2383de512d&packTypeId=1c2d71e2-0e3e-4d00-b9f5-8392076ef294",
+    "status": 200,
+    "title_present": true,
+    "count_present": true,
+    "placeholder_present": true
+  },
+  {
+    "id": "B10-AFF-L-XL4-18",
+    "url": "https://diaperscout.app/products/slip-premium-flexi-fit?variantId=9b049238-a8fd-4602-8490-de2383de512d&packTypeId=79668614-34eb-41fb-9abc-f50dd98ccfb7",
+    "status": 200,
+    "title_present": true,
+    "count_present": true,
+    "placeholder_present": true
+  }
+]

@@ -1,0 +1,660 @@
+{
+  "CorrelationId": "ABENA-LEGAL-MANUFACTURER-2026-10-06",
+  "PreviousManufacturerId": "1f2f8418-6bda-4a43-bef3-96171cc77677",
+  "PreviousManufacturerName": "ABENA Produktion A/S",
+  "BrandId": "70969539-d52d-4638-a65e-515ba97ac7e0",
+  "LegalManufacturerId": "d3ca82e3-e994-45da-8f26-c560744374c2",
+  "LegalManufacturerName": "ABENA A/S",
+  "LegalManufacturerSlug": "abena-a-s",
+  "DeclarationUrl": "https://www.fvdvooren.nl/uploads/pdf/Conformiteitsverklaring%2008-43063_87128.pdf",
+  "DeclarationSha256": "00061AB2BFF8BA22C9A1CAEBA9394D74A1C0BD77DDFA051700D3E2C2F5FD864C",
+  "LegalManufacturerSrn": "DK-MF-000002482",
+  "ProductionProvenance": "ABENA Produktion A/S remains a separate production organisation and Nordic ecolabel licence holder where independently supported. Legal manufacturer ABENA A/S is established by the signed 13 August 2025 declaration for each explicitly listed article. No organisation aliases or mergers.",
+  "ProvenanceSources": [
+    "https://www.abena.com/why-abena/own-production",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-m0-15-pcs-109922",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-m1-15-pcs-109927",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-s1-16-pcs-109921",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-xs2-junior-18-pcs-119601",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-l1-premium-15-pcs-154699",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-light-medium-15-pcs-117358",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-1-premium-30-pcs-119588",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-1a-premium-28-pcs-119585",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-2-premium-30-pcs-119589",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-3-premium-28-pcs-119587",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-3a-premium-28-pcs-119590",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-4-premium-30-pcs-119586",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-5-36-pcs-109911",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-6-34-pcs-109912",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-7-30-pcs-109913",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-8-22-pcs-109916",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-9-28-pcs-109917",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-10-25-pcs-109914",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-11-21-pcs-109918",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-7xxl-26-pcs-109920",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-11xxl-16-pcs-109915",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-san-12-premium-16-stk-151760",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m0-27-pcs-109942",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l0-26-pcs-109935",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m1-26-pcs-109934",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l1-26-pcs-109936",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-s2-28-pcs-109940",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-xs2-premium-32-pcs-119593",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m2-24-pcs-109945",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l2-22-pcs-109937",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-xl2-21-pcs-109938",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m3-23-pcs-109943",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l3-20-pcs-109946",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-s4-25-pcs-109941",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l4-18-pcs-109949",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-xl4-12-pcs-109939",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-junior-xs2-32-pcs-110308",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-special-m4-14-stk-142547",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-special-l4-12-stk-142546",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l1-10-pcs-109947/",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l2-10-pcs-109948/",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m-l1-flexi-fit-27-pcs-109971/",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m-l2-flexi-fit-25-pcs-109972/",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m-l3-flexi-fit-23-pcs-109973/",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m-l4-flexi-fit-21-pcs-109974/",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l-xl2-flexi-fit-22-pcs-109976/",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l-xl3-flexi-fit-20-pcs-109977/",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l-xl4-flexi-fit-18-pcs-109978/",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-m2-15-pcs-109928/",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-l2-premium-15-pcs-154700/",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-s2-16-pcs-109926/",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-xl2-16-pcs-109925/",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-m3-15-pcs-109929/",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-l3-premium-15-pcs-154701/",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-xl3-16-pcs-109933/",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-let-normal-34-stk-128964/",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-let-anatomic-30-stk-128966/",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-light-premium-1-20-pcs-117313/",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-light-premium-1a-16-pcs-117314/",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-light-premium-2-12-pcs-117312/",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-light-premium-3-10-pcs-117311/",
+    "https://svanemerket.no/miljomerkede-produkter/produkt/abena-light-premium-4-30-pcs-117309/"
+  ],
+  "DeclaredArticles": [
+    "1000020859",
+    "1000020860",
+    "1000020861",
+    "1000020863",
+    "1000020864",
+    "1000020865",
+    "1000021166",
+    "1000021167",
+    "1000021279",
+    "1000021280",
+    "1000021281",
+    "1000021282",
+    "1000021283",
+    "1000021284",
+    "1000021285",
+    "1000021286",
+    "1000021287",
+    "1000021288",
+    "1000021289",
+    "1000021290",
+    "1000021291",
+    "1000021292",
+    "1000021293",
+    "1000021294",
+    "1000021295",
+    "1000021296",
+    "1000021297",
+    "1000021298",
+    "1000021301",
+    "1000021302",
+    "1000021303",
+    "1000021304",
+    "1000021305",
+    "1000021306",
+    "1000021307",
+    "1000021308",
+    "1000021309",
+    "1000021310",
+    "1000021311",
+    "1000021312",
+    "1000021313",
+    "1000021314",
+    "1000021315",
+    "1000021316",
+    "1000021317",
+    "1000021318",
+    "1000021319",
+    "1000021320",
+    "1000021321",
+    "1000021322",
+    "1000021323",
+    "1000021324",
+    "1000021325",
+    "1000021326",
+    "1000021327",
+    "1000021328",
+    "1000021329",
+    "1000021330",
+    "1000021331",
+    "1000021332",
+    "1000021333",
+    "1000021334",
+    "1000021335",
+    "1000021336",
+    "1000021337",
+    "1000021338",
+    "1000021339",
+    "1000021340",
+    "1000021341",
+    "1000021342",
+    "1000021343",
+    "1000021344",
+    "1000021345",
+    "1000021661",
+    "1000021662",
+    "1000021663",
+    "1000022654",
+    "1000024469",
+    "1000024470",
+    "1000024588",
+    "1000025107",
+    "1000025108",
+    "1000025109",
+    "1000025110",
+    "1000025111",
+    "1000025112",
+    "1000025113",
+    "1000025114",
+    "1000025231",
+    "1000025232",
+    "1000025234",
+    "1000025235",
+    "1000025237",
+    "1000025238",
+    "1000025240",
+    "1000025241",
+    "1000027520",
+    "1000027521",
+    "1000027522",
+    "1000027523",
+    "1000027524",
+    "1000027525",
+    "1000029455",
+    "1000029456",
+    "1000031056",
+    "1000031057",
+    "1000031065",
+    "1000031066",
+    "1000031067",
+    "1000031068",
+    "1000031069",
+    "1000031070",
+    "1999905354",
+    "1999905360",
+    "1999905375",
+    "1999905376",
+    "1999905378",
+    "1999905382",
+    "1999905383",
+    "1999905384",
+    "1999905385",
+    "1999905386",
+    "1999905387",
+    "1999905388",
+    "1999905389",
+    "1999905390",
+    "1999905391",
+    "1999905392",
+    "1999905393",
+    "1999905394",
+    "1999905395",
+    "1999905396",
+    "1999905397",
+    "1999905432",
+    "1999905433",
+    "1999905441",
+    "1999915798",
+    "1999919305",
+    "1999919306",
+    "1999919307",
+    "1999919308",
+    "1999919309",
+    "1999919310",
+    "1999919311"
+  ],
+  "Coverage": [
+    {
+      "ProductId": "edc38ea9-b8d2-4263-a517-5b7192d8694d",
+      "PackId": "b5cb0307-14ed-4413-af99-5bc07fb62071",
+      "Gtin": "5713571000823",
+      "Article": "1000021320",
+      "DeclarationPage": 4
+    },
+    {
+      "ProductId": "e9369a50-fcf3-45e9-9d70-b12fc3912d04",
+      "PackId": "83f52bb4-1f84-444b-b134-72905adf29c8",
+      "Gtin": "5713571000861",
+      "Article": "1000021322",
+      "DeclarationPage": 4
+    },
+    {
+      "ProductId": "e9369a50-fcf3-45e9-9d70-b12fc3912d04",
+      "PackId": "3c358d32-d2d4-482f-9d51-b7d28befbd66",
+      "Gtin": "5713571000786",
+      "Article": "1000021318",
+      "DeclarationPage": 4
+    },
+    {
+      "ProductId": "9566f79c-c49b-453d-8bf9-bf802b5237ce",
+      "PackId": "a3094d66-b59d-467b-97bb-b38549d045b7",
+      "Gtin": "5713571000762",
+      "Article": "1000021317",
+      "DeclarationPage": 4
+    },
+    {
+      "ProductId": "e9369a50-fcf3-45e9-9d70-b12fc3912d04",
+      "PackId": "2bd8522b-7aab-4113-a0cb-f2bb9f028c56",
+      "Gtin": "5713571000922",
+      "Article": "1000021325",
+      "DeclarationPage": 4
+    },
+    {
+      "ProductId": "32750499-a159-4eaa-8f54-d1a480b8f01e",
+      "PackId": "b863ee29-87ff-47a5-985c-5b678777e9c4",
+      "Gtin": "5713571001042",
+      "Article": "1000021331",
+      "DeclarationPage": 4
+    },
+    {
+      "ProductId": "cce60c02-7b84-4e16-b4c9-f5b42db0f671",
+      "PackId": "82f67b67-7b22-44a7-8f19-8eb72bad6c18",
+      "Gtin": "5713571000441",
+      "Article": "1000021301",
+      "DeclarationPage": 5
+    },
+    {
+      "ProductId": "1fcf6021-b1e8-4b12-9593-8a8641c30f78",
+      "PackId": "0b7a61c9-5e26-4e60-bb31-0550f61ba900",
+      "Gtin": "5713571000465",
+      "Article": "1000021302",
+      "DeclarationPage": 5
+    },
+    {
+      "ProductId": "eb6dd777-fbce-41df-a961-38fddcb29acd",
+      "PackId": "bf9b2085-6970-4965-a75e-ab88c54584a9",
+      "Gtin": "5713571000489",
+      "Article": "1000021303",
+      "DeclarationPage": 5
+    },
+    {
+      "ProductId": "8d32564b-5694-4553-a469-9195e5ed9198",
+      "PackId": "e46dfa4a-bf1b-4ecd-a52b-46d9efe2a1af",
+      "Gtin": "5713571000502",
+      "Article": "1000021304",
+      "DeclarationPage": 5
+    },
+    {
+      "ProductId": "7da33a70-a611-4b0a-9494-b555626b3783",
+      "PackId": "81093cd4-645a-4830-a756-aeaa7bda84e1",
+      "Gtin": "5713571000526",
+      "Article": "1000021305",
+      "DeclarationPage": 5
+    },
+    {
+      "ProductId": "dfd68681-0918-4680-a9ee-5a696c11d555",
+      "PackId": "bf6a5518-047b-4bef-8195-02aa7b20be21",
+      "Gtin": "5713571000540",
+      "Article": "1000021306",
+      "DeclarationPage": 5
+    },
+    {
+      "ProductId": "a4bb438a-2a1c-4a4a-8642-e2c4c900e1ae",
+      "PackId": "07d4c59e-2ec1-453f-b40a-aa6caa15b526",
+      "Gtin": "5713571000564",
+      "Article": "1000021307",
+      "DeclarationPage": 5
+    },
+    {
+      "ProductId": "a00674d2-d2f1-4b60-8c1f-9ee83fbcd272",
+      "PackId": "0e13acb0-237a-4aba-965e-2efa6c9b1ede",
+      "Gtin": "5713571000588",
+      "Article": "1000021308",
+      "DeclarationPage": 5
+    },
+    {
+      "ProductId": "5ea1280d-30d0-4e9c-8947-f9e383de84c1",
+      "PackId": "51b75655-4fd4-447c-a75b-ec3ae6e36d80",
+      "Gtin": "5713571000601",
+      "Article": "1000021309",
+      "DeclarationPage": 5
+    },
+    {
+      "ProductId": "355dfb80-0542-4787-bb7d-6c2f8fbc708c",
+      "PackId": "8e37c5ee-e762-4144-9b72-1c7d52a6eb7d",
+      "Gtin": "5713571000625",
+      "Article": "1000021310",
+      "DeclarationPage": 5
+    },
+    {
+      "ProductId": "a7e1b1ce-7851-4a1b-bde2-abc59cec5775",
+      "PackId": "ab3a5f6a-93ce-48a0-be88-f0ecdd7bbbed",
+      "Gtin": "5713571000649",
+      "Article": "1000021311",
+      "DeclarationPage": 5
+    },
+    {
+      "ProductId": "b8ce7068-9415-4b9d-b51a-f691720dd637",
+      "PackId": "4feb6c64-4149-49c3-9f25-4e225eef60d0",
+      "Gtin": "5713571000663",
+      "Article": "1000021312",
+      "DeclarationPage": 5
+    },
+    {
+      "ProductId": "6a09a44e-f695-4039-82d7-4f30eebace40",
+      "PackId": "77be6f92-fe7f-4d1d-be0f-f339763e205b",
+      "Gtin": "5713571000687",
+      "Article": "1000021313",
+      "DeclarationPage": 5
+    },
+    {
+      "ProductId": "706e2260-86e3-49c0-9d90-29ba26a94511",
+      "PackId": "8f1985a8-1566-44ef-9bf3-765addb00818",
+      "Gtin": "5713571000724",
+      "Article": "1000021315",
+      "DeclarationPage": 5
+    },
+    {
+      "ProductId": "d92b68b9-c37b-41bc-bf65-9555d3f71878",
+      "PackId": "aece427b-18dc-4b7b-873d-ca1104a946fb",
+      "Gtin": "5713571000748",
+      "Article": "1000021316",
+      "DeclarationPage": 5
+    },
+    {
+      "ProductId": "7b2fe0cf-534b-438d-b929-94535925e72d",
+      "PackId": "37f7b0ad-a749-45a0-b6ce-57e7ef2795ec",
+      "Gtin": "5713571008447",
+      "Article": "1000024588",
+      "DeclarationPage": 5
+    },
+    {
+      "ProductId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+      "PackId": "05875f5b-33dc-4348-98dd-3d3844758ea6",
+      "Gtin": "5713571000083",
+      "Article": "1000021283",
+      "DeclarationPage": 2
+    },
+    {
+      "ProductId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+      "PackId": "1f49df0a-3c0a-4003-b259-352cdbe31bed",
+      "Gtin": "5713571000182",
+      "Article": "1000021288",
+      "DeclarationPage": 2
+    },
+    {
+      "ProductId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+      "PackId": "d9c6892c-ec1b-4921-84fb-a3060c49a898",
+      "Gtin": "5713571000106",
+      "Article": "1000021284",
+      "DeclarationPage": 2
+    },
+    {
+      "ProductId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+      "PackId": "a4c355cf-c407-4381-908b-3c0b7e5b6dae",
+      "Gtin": "5713571000205",
+      "Article": "1000021289",
+      "DeclarationPage": 2
+    },
+    {
+      "ProductId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+      "PackId": "1dc36a6e-5df6-4ad8-9287-62ad71de605c",
+      "Gtin": "5713571000045",
+      "Article": "1000021281",
+      "DeclarationPage": 2
+    },
+    {
+      "ProductId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+      "PackId": "25e02135-583f-41c3-9545-84e48145c13e",
+      "Gtin": "5713571000021",
+      "Article": "1000021280",
+      "DeclarationPage": 2
+    },
+    {
+      "ProductId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+      "PackId": "6ae9f6e0-b28d-4d07-b4db-b06207624793",
+      "Gtin": "5713571000120",
+      "Article": "1000021285",
+      "DeclarationPage": 2
+    },
+    {
+      "ProductId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+      "PackId": "ed642027-98e1-432f-9c0d-dbc12fa8d0cb",
+      "Gtin": "5713571000229",
+      "Article": "1000021290",
+      "DeclarationPage": 2
+    },
+    {
+      "ProductId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+      "PackId": "aa0b702d-abd4-4482-858d-036061331732",
+      "Gtin": "5713571000281",
+      "Article": "1000021293",
+      "DeclarationPage": 2
+    },
+    {
+      "ProductId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+      "PackId": "31615c7e-19f4-4476-9270-5dddda4dbd7e",
+      "Gtin": "5713571000144",
+      "Article": "1000021286",
+      "DeclarationPage": 2
+    },
+    {
+      "ProductId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+      "PackId": "95c7d310-2fbd-4bce-b297-3bb7de8e0ee7",
+      "Gtin": "5713571000243",
+      "Article": "1000021291",
+      "DeclarationPage": 2
+    },
+    {
+      "ProductId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+      "PackId": "502b3916-6b3a-4213-bce4-31065d740a53",
+      "Gtin": "5713571000069",
+      "Article": "1000021282",
+      "DeclarationPage": 2
+    },
+    {
+      "ProductId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+      "PackId": "f8308d72-3f7d-43f3-a165-570d2a4d2d90",
+      "Gtin": "5713571000267",
+      "Article": "1000021292",
+      "DeclarationPage": 2
+    },
+    {
+      "ProductId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+      "PackId": "180641e9-e3f9-4466-99f5-9ff41f133e97",
+      "Gtin": "5713571000304",
+      "Article": "1000021294",
+      "DeclarationPage": 2
+    },
+    {
+      "ProductId": "67fc87fb-d580-43cd-b9a6-39d5c823be6e",
+      "PackId": "e21b732e-4a6d-4a3e-aa9f-c9fd9b49e431",
+      "Gtin": "5713571000007",
+      "Article": "1000021279",
+      "DeclarationPage": 2
+    },
+    {
+      "ProductId": "4fabda7a-3fe4-411d-9def-ead0203047e5",
+      "PackId": "52bb926b-43af-435d-b984-2eb4ef50170b",
+      "Gtin": "5713571008140",
+      "Article": "1000024469",
+      "DeclarationPage": 3
+    },
+    {
+      "ProductId": "4fabda7a-3fe4-411d-9def-ead0203047e5",
+      "PackId": "f62eafeb-e978-4492-b4f3-a14361fe68a8",
+      "Gtin": "5713571008164",
+      "Article": "1000024470",
+      "DeclarationPage": 3
+    },
+    {
+      "ProductId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+      "PackId": "196c5283-0d93-405c-9d86-5e92843e48f7",
+      "Gtin": "5713571000366",
+      "Article": "1000021297",
+      "DeclarationPage": 2
+    },
+    {
+      "ProductId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+      "PackId": "9ed0abe2-97e3-4818-9a33-9daba3c497cd",
+      "Gtin": "5713571000380",
+      "Article": "1000021298",
+      "DeclarationPage": 3
+    },
+    {
+      "ProductId": "fc7c0a3b-f24b-42fb-a0f1-db6199ee646d",
+      "PackId": "4240fd93-d7cf-406b-a065-7e51e6e59426",
+      "Gtin": "5703538446047",
+      "Article": "1000020859",
+      "DeclarationPage": 3
+    },
+    {
+      "ProductId": "fc7c0a3b-f24b-42fb-a0f1-db6199ee646d",
+      "PackId": "c2b85446-1110-498d-b095-bcbb87163655",
+      "Gtin": "5703538446061",
+      "Article": "1000020860",
+      "DeclarationPage": 3
+    },
+    {
+      "ProductId": "fc7c0a3b-f24b-42fb-a0f1-db6199ee646d",
+      "PackId": "268b2b03-134a-4894-838f-a1b6b0c76d8f",
+      "Gtin": "5703538446085",
+      "Article": "1000020861",
+      "DeclarationPage": 3
+    },
+    {
+      "ProductId": "fc7c0a3b-f24b-42fb-a0f1-db6199ee646d",
+      "PackId": "c93f05e4-07bb-4f66-afd7-08fbe5410e21",
+      "Gtin": "5713571001561",
+      "Article": "1000021166",
+      "DeclarationPage": 3
+    },
+    {
+      "ProductId": "fc7c0a3b-f24b-42fb-a0f1-db6199ee646d",
+      "PackId": "b38345d4-6437-4197-8f9b-ea88cb71be57",
+      "Gtin": "5703538446153",
+      "Article": "1000020864",
+      "DeclarationPage": 3
+    },
+    {
+      "ProductId": "fc7c0a3b-f24b-42fb-a0f1-db6199ee646d",
+      "PackId": "1c2d71e2-0e3e-4d00-b9f5-8392076ef294",
+      "Gtin": "5703538446177",
+      "Article": "1000020865",
+      "DeclarationPage": 3
+    },
+    {
+      "ProductId": "fc7c0a3b-f24b-42fb-a0f1-db6199ee646d",
+      "PackId": "79668614-34eb-41fb-9abc-f50dd98ccfb7",
+      "Gtin": "5713571001585",
+      "Article": "1000021167",
+      "DeclarationPage": 3
+    },
+    {
+      "ProductId": "6d16fe9e-af06-4d08-b0bd-28082b8db63d",
+      "PackId": "51f649e3-5e05-4fde-8815-0a287322be4a",
+      "Gtin": "5713571000885",
+      "Article": "1000021323",
+      "DeclarationPage": 4
+    },
+    {
+      "ProductId": "6d16fe9e-af06-4d08-b0bd-28082b8db63d",
+      "PackId": "04c7c02b-4ed3-4e0b-9e17-3ebfacbe5b01",
+      "Gtin": "5713571000946",
+      "Article": "1000021326",
+      "DeclarationPage": 4
+    },
+    {
+      "ProductId": "6d16fe9e-af06-4d08-b0bd-28082b8db63d",
+      "PackId": "e076aef9-b9f4-431f-b40b-76c44ce64149",
+      "Gtin": "5713571000809",
+      "Article": "1000021319",
+      "DeclarationPage": 4
+    },
+    {
+      "ProductId": "6d16fe9e-af06-4d08-b0bd-28082b8db63d",
+      "PackId": "98dc0b27-31ad-40d3-9da3-b6fc7d5ee80f",
+      "Gtin": "5713571001004",
+      "Article": "1000021329",
+      "DeclarationPage": 4
+    },
+    {
+      "ProductId": "34394c5b-e39c-493b-acb5-e633a2b5caa9",
+      "PackId": "bde77ae3-8c42-4626-9e8a-277777e79c84",
+      "Gtin": "5713571000908",
+      "Article": "1000021324",
+      "DeclarationPage": 4
+    },
+    {
+      "ProductId": "34394c5b-e39c-493b-acb5-e633a2b5caa9",
+      "PackId": "78c72038-21f7-4db5-b267-551e0ff81e9c",
+      "Gtin": "5713571000960",
+      "Article": "1000021327",
+      "DeclarationPage": 4
+    },
+    {
+      "ProductId": "34394c5b-e39c-493b-acb5-e633a2b5caa9",
+      "PackId": "bdce6808-9801-43ef-962d-85c1135c7cec",
+      "Gtin": "5713571001028",
+      "Article": "1000021330",
+      "DeclarationPage": 4
+    },
+    {
+      "ProductId": "4fd01944-ac77-41b1-a21d-b9f60bbca2e0",
+      "PackId": "f3fb8b23-29dd-4894-a74f-cfc012d3ce06",
+      "Gtin": "5713571001288",
+      "Article": "1000021343",
+      "DeclarationPage": 5
+    },
+    {
+      "ProductId": "08fda3d0-6c3f-460f-ad56-168c789f1a72",
+      "PackId": "1dfb0bc3-0911-4624-afbc-732c36f8ed4a",
+      "Gtin": "5713571001325",
+      "Article": "1000021345",
+      "DeclarationPage": 5
+    },
+    {
+      "ProductId": "73f24299-3a6e-48a1-8a4e-fb4c1508fd3e",
+      "PackId": "396c5f2a-32c5-4454-b2e3-58c9acf51b32",
+      "Gtin": "5713571001165",
+      "Article": "1000021337",
+      "DeclarationPage": 6
+    },
+    {
+      "ProductId": "68a211c8-dd8d-4b62-8619-155a08812cfe",
+      "PackId": "3c453c3c-9c9e-4316-94e5-a8c2579a7f95",
+      "Gtin": "5713571001189",
+      "Article": "1000021338",
+      "DeclarationPage": 6
+    },
+    {
+      "ProductId": "cbfcb6de-be4d-4a44-9893-a955322f2c5e",
+      "PackId": "d3cd8a5f-fd28-4e5b-a7d9-b3a3a22388f8",
+      "Gtin": "5713571001202",
+      "Article": "1000021339",
+      "DeclarationPage": 6
+    },
+    {
+      "ProductId": "d47845b1-f968-4242-bd89-125a298f65d1",
+      "PackId": "4242267c-518a-46fa-a3ec-f74ddc2da6c0",
+      "Gtin": "5713571001226",
+      "Article": "1000021340",
+      "DeclarationPage": 6
+    },
+    {
+      "ProductId": "7a12411d-2bc0-47ac-a456-87e0811254d4",
+      "PackId": "2352885e-b877-4c78-8402-d5d9787c31b9",
+      "Gtin": "5713571001264",
+      "Article": "1000021342",
+      "DeclarationPage": 6
+    }
+  ]
+}

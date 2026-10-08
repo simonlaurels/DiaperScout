@@ -796,3 +796,10 @@
 .pwa-prototype .retailer-product-info {min-width:0;}
 
 .pwa-prototype .retailer-product-image.gallery-empty {width:92px;height:92px;}
+
+/* Only ordinary desktop Product Details uses the recovered full presentation. */
+@media (min-width: 1000px) {
+  html:not([data-standalone="true"]) .ds-desktop-product { display: block; overflow: clip; }
+  html:not([data-standalone="true"]) .ds-app-shell:has(.ds-desktop-product) .ds-app-header { display: block; }
+  html:not([data-standalone="true"]) .pwa-prototype.product-page:has(~ .ds-desktop-product) { display: none; }
+}

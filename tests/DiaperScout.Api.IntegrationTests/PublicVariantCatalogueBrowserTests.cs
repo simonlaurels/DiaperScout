@@ -51,11 +51,11 @@ public sealed class PublicVariantCatalogueBrowserTests(PostgreSqlFixture fixture
         await Assertions.Expect(blackLink).ToHaveAttributeAsync("href", PublicProductIdentity.ProductUrl(managed.Slug, receipt.ProductVariantId));
         await blackLink.ClickAsync();
         await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Level = 1 })).ToHaveTextAsync("Integration Test Brand MEGAMAX Black");
-        await Assertions.Expect(page.Locator(".ds-size-pill")).ToHaveCountAsync(2);
+        await Assertions.Expect(page.Locator(".ds-size-pill:visible")).ToHaveCountAsync(2);
         await page.WaitForFunctionAsync("() => document.documentElement.dataset.pwaState === 'ready'");
         var medium = page.GetByRole(AriaRole.Button, new() { Name = "Medium", Exact = false });
         await medium.ClickAsync();
-        var retailerLink = page.Locator($"a[href='{destination}']");
+        var retailerLink = page.Locator($".ds-desktop-product a[href='{destination}']");
         await Assertions.Expect(retailerLink).ToHaveCountAsync(1);
         var packSelect = page.GetByRole(AriaRole.Combobox, new() { Name = "Pack size", Exact = true });
         await packSelect.SelectOptionAsync(otherPack.Id.ToString());
@@ -68,10 +68,10 @@ public sealed class PublicVariantCatalogueBrowserTests(PostgreSqlFixture fixture
         await Assertions.Expect(packSelect).Not.ToHaveValueAsync(receipt.PackTypeId.ToString());
         await medium.ClickAsync();
         await Assertions.Expect(retailerLink).ToHaveCountAsync(1);
-        await page.Locator("#public-product-variant").SelectOptionAsync(pink.Id.ToString());
+        await page.Locator("#desktop-product-variant").SelectOptionAsync(pink.Id.ToString());
         await Assertions.Expect(page).ToHaveURLAsync(origin + PublicProductIdentity.ProductUrl(managed.Slug, pink.Id));
         await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Level = 1 })).ToHaveTextAsync("Integration Test Brand MEGAMAX Pink");
-        await Assertions.Expect(page.Locator(".ds-size-pill")).ToHaveCountAsync(1);
+        await Assertions.Expect(page.Locator(".ds-size-pill:visible")).ToHaveCountAsync(1);
         await Assertions.Expect(retailerLink).ToHaveCountAsync(0);
         await Assertions.Expect(packSelect.Locator("option")).ToHaveTextAsync(["20 pieces · Bag"]);
         await page.ReloadAsync();

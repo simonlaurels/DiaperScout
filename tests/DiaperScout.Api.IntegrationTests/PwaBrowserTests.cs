@@ -70,7 +70,7 @@ public sealed class PwaBrowserTests(PostgreSqlFixture fixture) : IClassFixture<P
         await Screenshot(page, $"search-{width}");
         var detailLink = page.Locator(width <= 700 ? ".pwa-search .search-result-card" : ".catalogue-product-identity h2 a");
         await detailLink.ClickAsync();
-        await Assertions.Expect(page.Locator(".ds-size-pill")).ToHaveCountAsync(1);
+        await Assertions.Expect(page.Locator(".ds-size-pill:visible")).ToHaveCountAsync(1);
         await Screenshot(page, $"product-{width}");
         Assert.True(await Fits(page), await page.EvaluateAsync<string>("JSON.stringify([...document.querySelectorAll('*')].filter(e=>e.getBoundingClientRect().right>innerWidth+1).map(e=>({tag:e.tagName,class:e.className,width:e.getBoundingClientRect().width})).slice(0,20))"));
         await page.GotoAsync(origin + "/atlas");

@@ -16,6 +16,9 @@ public class PublicProductIdentityTests
     [InlineData("NorthShore", "NorthShore MEGAMAX", "MEGAMAX Black", "NorthShore MEGAMAX Black")]
     [InlineData("Brand Care", "Care Original", "Original", "Brand Care Original")]
     [InlineData(null, "Original", null, "Original")]
+    [InlineData("ABENA", "Slip Premium Special", null, "ABENA Slip Premium Special")]
+    [InlineData("TENA", "TENA Slip", "Plus", "TENA Slip Plus")]
+    [InlineData("Seni", "Active Classic", "Default", "Seni Active Classic")]
     public void ComposesCanonicalPublicNames(string? brand, string product, string? variant, string expected)
         => Assert.Equal(expected, PublicProductIdentity.DisplayName(brand, product, variant));
     [Fact]

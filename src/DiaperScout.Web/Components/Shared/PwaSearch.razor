@@ -23,7 +23,6 @@
                         <label><input type="checkbox" checked="@IsSelected(facet.Key, option.Value)" @onchange="() => ToggleFilter.InvokeAsync((facet.Key, option.Value))" /><span>@option.Label</span><small>@option.Count</small></label>
                     }</fieldset>
                 }
-                <label class="search-sort">Sort by<select value="@Sort" @onchange="SortChanged"><option value="relevance">Relevance</option><option value="name">Name</option><option value="manufacturer">Manufacturer</option><option value="newest">Newest</option></select></label>
             </section>
         }
         <section class="search-section" aria-labelledby="pwa-category-heading">
@@ -69,6 +68,7 @@
             else if (ShowResults && Catalogue is not null)
             {
                 <div class="search-section-heading"><h2>@Catalogue.TotalCount result@(Catalogue.TotalCount == 1 ? "" : "s")</h2>@if (HasFilters) { <button class="clear-searches" @onclick="ClearFilters">Clear filters</button> }</div>
+                <label class="search-sort">Sort by<select value="@Sort" @onchange="SortChanged"><option value="relevance">Relevance</option><option value="name">Name</option><option value="manufacturer">Manufacturer</option><option value="newest">Newest added</option></select></label>
                 @if (Catalogue.Products.Count == 0)
                 {
                     <div class="search-state"><h2>No products found</h2><p>Try removing a filter or searching for something else.</p></div>
@@ -111,7 +111,7 @@
     private List<string> recent = [];
     private readonly HashSet<string> failedImages = [];
     private string SelectedState(string key, string value) => IsSelected(key, value) ? "true" : "false";
-    private bool ShowResults => browseAll || HasFilters || !string.IsNullOrWhiteSpace(Query);
+    private bool ShowResults => browseAll || Sort != "relevance" || HasFilters || !string.IsNullOrWhiteSpace(Query);
     private static readonly (ProductType Type, string Label, string Asset, string Colour)[] Categories = [
         (ProductType.Tape, "Diapers", "diaper", "teal"), (ProductType.PullUp, "Pull-ups", "pullup", "cream"),
         (ProductType.AllInOne, "All-in-One", "all-in-one", "blue"), (ProductType.Booster, "Boosters", "boosters", "yellow"),

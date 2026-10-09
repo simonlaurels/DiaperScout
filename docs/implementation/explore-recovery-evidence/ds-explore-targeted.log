@@ -1,0 +1,30 @@
+  Determining projects to restore...
+  Restored /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/src/DiaperScout.Web/DiaperScout.Web.csproj (in 266 ms).
+  Restored /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/ops/CataloguePopulation/CataloguePopulation.csproj (in 266 ms).
+  Restored /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/src/DiaperScout.Api/DiaperScout.Api.csproj (in 300 ms).
+  Restored /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/tests/DiaperScout.Api.IntegrationTests/DiaperScout.Api.IntegrationTests.csproj (in 340 ms).
+  4 of 8 projects are up-to-date for restore.
+  DiaperScout.Domain -> /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/src/DiaperScout.Domain/bin/Debug/net10.0/DiaperScout.Domain.dll
+  DiaperScout.Application -> /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/src/DiaperScout.Application/bin/Debug/net10.0/DiaperScout.Application.dll
+  DiaperScout.Commerce.Plugins.Awin -> /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/src/DiaperScout.Commerce.Plugins.Awin/bin/Debug/net10.0/DiaperScout.Commerce.Plugins.Awin.dll
+  DiaperScout.Infrastructure -> /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/src/DiaperScout.Infrastructure/bin/Debug/net10.0/DiaperScout.Infrastructure.dll
+  CataloguePopulation -> /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/ops/CataloguePopulation/bin/Debug/net10.0/CataloguePopulation.dll
+  DiaperScout.Api -> /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/src/DiaperScout.Api/bin/Debug/net10.0/DiaperScout.Api.dll
+  DiaperScout.Web -> /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/src/DiaperScout.Web/bin/Debug/net10.0/DiaperScout.Web.dll
+  DiaperScout.Api.IntegrationTests -> /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/tests/DiaperScout.Api.IntegrationTests/bin/Debug/net10.0/DiaperScout.Api.IntegrationTests.dll
+Test run for /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/tests/DiaperScout.Api.IntegrationTests/bin/Debug/net10.0/DiaperScout.Api.IntegrationTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:01:06.05]     DiaperScout.Api.IntegrationTests.PublicVariantCatalogueBrowserTests.RetailerCreation_HidesSlugAndGeneratesItFromName [FAIL]
+  Failed DiaperScout.Api.IntegrationTests.PublicVariantCatalogueBrowserTests.RetailerCreation_HidesSlugAndGeneratesItFromName [38 s]
+  Error Message:
+   System.TimeoutException : Timeout 30000ms exceeded.
+Call log:
+  - waiting for Locator("#retailer-name")
+  Stack Trace:
+     at Microsoft.Playwright.Transport.Connection.InnerSendMessageToServerAsync[T](ChannelOwner object, String method, Dictionary`2 dictionary, Boolean keepNulls, Nullable`1 timeout) in /_/src/Playwright/Transport/Connection.cs:line 230
+   at Microsoft.Playwright.Transport.Connection.WrapApiCallAsync[T](Func`1 action, Boolean isInternal, String title) in /_/src/Playwright/Transport/Connection.cs:line 539
+   at DiaperScout.Api.IntegrationTests.PublicVariantCatalogueBrowserTests.RetailerCreation_HidesSlugAndGeneratesItFromName() in /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/tests/DiaperScout.Api.IntegrationTests/PublicVariantCatalogueBrowserTests.cs:line 111
+   at DiaperScout.Api.IntegrationTests.PublicVariantCatalogueBrowserTests.RetailerCreation_HidesSlugAndGeneratesItFromName() in /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/tests/DiaperScout.Api.IntegrationTests/PublicVariantCatalogueBrowserTests.cs:line 117
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     1, Passed:    62, Skipped:     0, Total:    63, Duration: 1 m 50 s - DiaperScout.Api.IntegrationTests.dll (net10.0)

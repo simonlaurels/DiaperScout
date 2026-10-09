@@ -1,24 +1,24 @@
 .pwa-explore { display: none; }
 html[data-standalone="true"]:has(.pwa-explore) .ds-app-header,html[data-standalone="true"] .website-explore { display: none; }
-html[data-standalone="true"] .pwa-explore { display: block; width: min(640px,100%); margin: auto; padding: env(safe-area-inset-top) 0 24px; color: var(--color-primary); }
-.pwa-explore .explore-intro { position: relative; display: flex; align-items: center; min-height: 205px; padding: 16px 12px 12px; background: radial-gradient(ellipse at 80% 50%,#e7ecd9,transparent 70%); overflow: hidden; }
-.pwa-explore .explore-intro > img { position: absolute; right: -9px; bottom: -12px; width: 52%; height: 210px; object-fit: contain; }
-.pwa-explore .explore-paper { z-index: 1; width: 58%; padding: 18px 12px; border: 1px dashed #c9ab77; border-radius: 8px; background: #fff4dce8; box-shadow: 0 3px 9px #8b6a2920; transform: rotate(-3deg); }
-.pwa-explore h1 { display: flex; align-items: center; gap: 8px; font: 700 34px/1.1 var(--font-body); margin: 0 0 12px; }
-.pwa-explore h1 svg { width: 29px; height: 29px; flex-shrink: 0; }
-.pwa-explore .explore-paper p { font-size: 15px; line-height: 1.45; margin: 0; }
-.pwa-explore .explore-panel { margin: 8px 8px 12px; padding: 14px 12px; background: #fff8e9; border: 1px solid #e9d9b7; border-radius: 20px; box-shadow: 0 3px 9px #99712a0c; }
+html[data-standalone="true"] .pwa-explore { display: block; width: min(640px,100%); margin: 0 auto; padding: calc(env(safe-area-inset-top) + 16px) max(12px,env(safe-area-inset-right)) 24px max(12px,env(safe-area-inset-left)); color: #173841; }
+.pwa-explore .explore-heading { margin: 0 4px 12px; }
+.pwa-explore .explore-heading h1 { font: 700 30px/1.15 var(--font-body); letter-spacing: -.03em; margin: 0; }
+.pwa-explore .explore-intro { margin: 0 0 16px; }
+.pwa-explore .explore-intro img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 1; border-radius: 16px; }
+/* The tan full-width line was the shared navigation top border. Remove it only on installed Explore. */
+html[data-standalone="true"]:has(.pwa-explore) .pwa-mobile-nav { border-top: 0; }
+.pwa-explore .explore-panel { margin: 0 0 16px; padding: 14px 12px; background: #fffdf9; border: 1px solid #dce5e3; border-radius: 16px; box-shadow: 0 2px 3px rgb(23 56 65 / 4%),0 14px 32px rgb(23 56 65 / 10%); }
 .pwa-explore .explore-panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.pwa-explore h2 { display: flex; align-items: center; gap: 7px; font: 700 19px/1.2 var(--font-body); margin: 0; }
+.pwa-explore h2 { display: flex; align-items: center; gap: 7px; font: 700 18px/1.25 var(--font-body); margin: 0; }
 .pwa-explore h2 svg { width: 27px; height: 27px; flex-shrink: 0; }
 .pwa-explore .explore-star { color: var(--color-gold); font-size: 30px; line-height: 1; }
 .pwa-explore a { color: var(--color-primary); text-decoration: none; }
-.pwa-explore .explore-panel-heading > a { display: flex; align-items: center; gap: 4px; flex-shrink: 0; border: 1px solid #e8d8b7; padding: 10px 8px; border-radius: 18px; font-size: 12px; font-weight: 600; min-height: 44px; }
+.pwa-explore .explore-panel-heading > a { display: flex; align-items: center; gap: 4px; flex-shrink: 0; border: 0; padding: 10px 0 10px 8px; border-radius: 8px; font-size: 12px; font-weight: 600; min-height: 44px; }
 .pwa-explore .explore-panel-heading > a svg { width: 15px; height: 15px; }
 .pwa-explore .explore-description { font-size: 13px; color: #706b5d; margin: 5px 0 13px 34px; line-height: 1.45; }
 .pwa-explore .explore-product-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 0 2px 6px; scroll-snap-type: x proximity; }
-.pwa-explore .explore-product { flex: 0 0 112px; min-width: 0; padding: 6px 6px 10px; border-radius: 15px; background: #fffcf5; border: 1px solid #f1e7d4; scroll-snap-align: start; box-shadow: 0 2px 5px #9b773110; }
-.pwa-explore .explore-product-image { display: flex; align-items: center; justify-content: center; aspect-ratio: 1; background: #f3ead6; border-radius: 11px; margin-bottom: 9px; overflow: hidden; }
+.pwa-explore .explore-product { flex: 0 0 142px; min-width: 0; padding: 8px 8px 12px; border-radius: 16px; background: #fffdf9; border: 1px solid #dce5e3; scroll-snap-align: start; box-shadow: 0 2px 6px rgb(23 56 65 / 4%); }
+.pwa-explore .explore-product-image { display: flex; align-items: center; justify-content: center; aspect-ratio: 1; background: #f7f1e7; border: 1px solid #e5e3dc; padding: 5px; border-radius: 11px; margin-bottom: 9px; overflow: hidden; }
 .pwa-explore .explore-product-image img { width: 100%; height: 100%; object-fit: contain; }
 .pwa-explore .explore-product strong { display: block; font-size: 14px; color: var(--color-ink); line-height: 1.3; overflow-wrap: anywhere; }
 .pwa-explore .explore-product > span { display: flex; justify-content: space-between; gap: 3px; font-size: 12px; color: #6c6b64; margin-top: 4px; }
@@ -47,3 +47,5 @@ html[data-standalone="true"] .pwa-explore { display: block; width: min(640px,100
 .pwa-explore .explore-message { font-size: 14px; line-height: 1.5; padding: 12px 2px; margin: 0; }
 .pwa-explore :focus-visible { outline: 3px solid var(--color-primary-light); outline-offset: 3px; }
 @media (max-width: 370px) { .pwa-explore h2 { font-size: 16px; }.pwa-explore .explore-panel-heading > a { font-size: 11px; padding: 10px 6px; }.pwa-explore h1 { font-size: 29px; } }
+
+.pwa-explore img[hidden] { display: none; }

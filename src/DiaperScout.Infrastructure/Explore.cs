@@ -30,7 +30,7 @@ internal sealed partial class AtlasQueries
             .Where(i => i.ProductId.HasValue && ids.Contains(i.ProductId.Value) && i.Visibility == CatalogueContentVisibility.Public)
             .OrderByDescending(i => i.IsPrimary).ThenBy(i => i.Role).ThenBy(i => i.CreatedAtUtc)
             .Select(i => new { i.ProductId, i.Id }).ToListAsync(cancellationToken);
-        return rows.Select(r => new RecentCatalogueProduct(r.Id, r.Name, r.Slug, r.BrandName, r.ManufacturerName,
+        return rows.Select(r => new RecentCatalogueProduct(r.Id, PublicProductIdentity.DisplayName(r.BrandName, r.Name), r.Slug, r.BrandName, r.ManufacturerName,
             variants.First(v => v.ProductId == r.Id).Id,
             images.FirstOrDefault(i => i.ProductId == r.Id) is { } image ? $"/api/v1/products/{r.Id}/images/{image.Id}" : null,
             r.Added)).ToArray();

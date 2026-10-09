@@ -1,0 +1,14 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  DiaperScout.Domain -> /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/src/DiaperScout.Domain/bin/Debug/net10.0/DiaperScout.Domain.dll
+  DiaperScout.Application -> /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/src/DiaperScout.Application/bin/Debug/net10.0/DiaperScout.Application.dll
+  DiaperScout.Commerce.Plugins.Awin -> /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/src/DiaperScout.Commerce.Plugins.Awin/bin/Debug/net10.0/DiaperScout.Commerce.Plugins.Awin.dll
+  DiaperScout.Infrastructure -> /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/src/DiaperScout.Infrastructure/bin/Debug/net10.0/DiaperScout.Infrastructure.dll
+  CataloguePopulation -> /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/ops/CataloguePopulation/bin/Debug/net10.0/CataloguePopulation.dll
+  DiaperScout.Web -> /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/src/DiaperScout.Web/bin/Debug/net10.0/DiaperScout.Web.dll
+  DiaperScout.Api -> /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/src/DiaperScout.Api/bin/Debug/net10.0/DiaperScout.Api.dll
+  DiaperScout.Api.IntegrationTests -> /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/tests/DiaperScout.Api.IntegrationTests/bin/Debug/net10.0/DiaperScout.Api.IntegrationTests.dll
+Test run for /Users/sporter/.codex/.chatgpt-projects/g-p-6a5fc1e552e48191b387b855f8288fa2/DiaperScout/tests/DiaperScout.Api.IntegrationTests/bin/Debug/net10.0/DiaperScout.Api.IntegrationTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     2, Skipped:     0, Total:     2, Duration: 3 s - DiaperScout.Api.IntegrationTests.dll (net10.0)

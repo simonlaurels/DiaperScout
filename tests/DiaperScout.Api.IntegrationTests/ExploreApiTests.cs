@@ -33,6 +33,14 @@ public sealed class ExploreApiTests(PostgreSqlFixture fixture) : IClassFixture<P
         using var anonymous = factory.CreateClient();
         var recent = (await anonymous.GetFromJsonAsync<RecentCatalogueProduct[]>("/api/v1/explore/recent-products"))!;
         Assert.Equal(newer.ProductId, recent[0].Id);
+        Assert.Equal("Integration Test Brand MEGAMAX", recent[0].Name);
+        var all = (await anonymous.GetFromJsonAsync<CatalogueProductSearch>("/api/v1/products?sort=newest&limit=50"))!;
+        Assert.Equal(newer.ProductId, all.Products[0].Id);
+        Assert.Equal(2, all.Products.TakeWhile(p => p.Id == newer.ProductId).Count());
+        Assert.Contains(all.Products, p => p.Id == fixture.ProductId); // Undated public products are retained.
+        Assert.True(Array.FindIndex(all.Products.ToArray(), p => p.Id == fixture.ProductId)
+            > Array.FindIndex(all.Products.ToArray(), p => p.Id == older.ProductId));
+        Assert.DoesNotContain(all.Products, p => p.Id == retired.Id || p.Id == draft.Id);
         Assert.Contains(recent,p=>p.Id==older.ProductId);
         Assert.Equal(recent.Length,recent.Select(p=>p.Id).Distinct().Count());
         Assert.DoesNotContain(recent,p=>p.Id==fixture.ProductId); // Existing seed has no trustworthy audit date.

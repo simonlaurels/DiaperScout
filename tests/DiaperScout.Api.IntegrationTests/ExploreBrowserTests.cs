@@ -31,6 +31,7 @@ public sealed class ExploreBrowserTests(PostgreSqlFixture fixture) : IClassFixtu
     [Theory]
     [InlineData(390,844,false)]
     [InlineData(430,932,true)]
+    [InlineData(375,667,true)]
     [InlineData(844,390,true)]
     [Trait("Category","Browser")]
     public async Task Installed_explore_real_navigation_product_links_images_and_nearby_states(int width,int height,bool webkit)
@@ -46,7 +47,7 @@ public sealed class ExploreBrowserTests(PostgreSqlFixture fixture) : IClassFixtu
         await using var browser=await (webkit?playwright.Webkit:playwright.Chromium).LaunchAsync(new(){Headless=true});
         var context=await browser.NewContextAsync(new(){ViewportSize=new(){Width=width,Height=height},ServiceWorkers=ServiceWorkerPolicy.Block});
         await context.AddInitScriptAsync("Object.defineProperty(navigator,'standalone',{value:true});localStorage.setItem('ds-welcome-complete-v1','yes');window.locationRequests=0;Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition:(success)=>{window.locationRequests++;success({coords:{latitude:51.5,longitude:-2,accuracy:30}});}}});");
-        await context.RouteAsync("**/test-only-pack.svg",r=>r.FulfillAsync(new(){ContentType="image/svg+xml",Body="<svg xmlns='http://www.w3.org/2000/svg' width='120' height='180'><rect width='120' height='180' fill='#d9e9de'/><text x='10' y='80'>TEST PACK</text></svg>"}));
+        await context.RouteAsync("**/test-only-pack.svg",r=>r.FulfillAsync(new(){ContentType="image/svg+xml",Body="<svg xmlns='http://www.w3.org/2000/svg' width='120' height='180'><rect width='120' height='180' fill='#fffdfa'/><text x='10' y='80'>TEST PACK</text></svg>"}));
         var page=await context.NewPageAsync(); await page.GotoAsync(client.BaseAddress!.ToString());
         await Assertions.Expect(page.Locator(".explore-product")).ToHaveCountAsync(5);
         await Assertions.Expect(page.Locator(".ds-app-header")).ToBeHiddenAsync();
@@ -57,7 +58,14 @@ public sealed class ExploreBrowserTests(PostgreSqlFixture fixture) : IClassFixtu
         await Assertions.Expect(page.Locator(".explore-product").First).ToHaveAttributeAsync("href",$"/products/test-product?variantId={handler.Variant}");
         Assert.True(await page.EvaluateAsync<bool>("document.documentElement.scrollWidth<=innerWidth && document.querySelector('.explore-product-scroll').scrollWidth>document.querySelector('.explore-product-scroll').clientWidth"));
         Assert.Equal("contain",await page.Locator(".explore-product-image img").First.EvaluateAsync<string>("e=>getComputedStyle(e).objectFit"));
-        Assert.True(await page.Locator(".explore-intro").EvaluateAsync<bool>("e=>e.getBoundingClientRect().height<=240"));
+        Assert.True(await page.Locator(".explore-intro").EvaluateAsync<bool>("e=>e.getBoundingClientRect().height<=210"));
+        await Assertions.Expect(page.Locator(".explore-heading h1")).ToHaveTextAsync("Explore");
+        await Assertions.Expect(page.Locator(".explore-intro img")).ToHaveAttributeAsync("src", "/pwa/explore-products-v1.webp");
+        await Assertions.Expect(page.Locator(".explore-panel").First.GetByRole(AriaRole.Link,new(){Name="View all",Exact=false})).ToHaveAttributeAsync("href","/products?sort=newest");
+        if(width<700) {
+            Assert.Equal("0px",await page.Locator(".pwa-mobile-nav").EvaluateAsync<string>("e=>getComputedStyle(e).borderTopWidth"));
+            Assert.True(await page.EvaluateAsync<bool>("document.querySelector('.explore-product-image').getBoundingClientRect().bottom < document.querySelector('.pwa-mobile-nav').getBoundingClientRect().top"));
+        }
         await Evidence(page,$"explore-location-{width}");
         await page.GetByRole(AriaRole.Button,new(){Name="Use my location",Exact=true}).ClickAsync();
         await Assertions.Expect(page.Locator(".explore-discovery")).ToHaveCountAsync(1);
@@ -125,8 +133,46 @@ public sealed class ExploreBrowserTests(PostgreSqlFixture fixture) : IClassFixtu
         await Assertions.Expect(browserPage.Locator(".website-explore")).ToBeVisibleAsync();
         await Assertions.Expect(browserPage.Locator(".pwa-explore")).ToBeHiddenAsync();
         await Assertions.Expect(browserPage.Locator("#explore-query")).ToBeVisibleAsync();
+        await Evidence(browserPage,"explore-browser-desktop-1280");
+        await browserPage.SetViewportSizeAsync(390,844);
+        await Assertions.Expect(browserPage.Locator(".website-explore")).ToBeVisibleAsync();
+        await Assertions.Expect(browserPage.Locator(".pwa-explore")).ToBeHiddenAsync();
+        Assert.True(await browserPage.EvaluateAsync<bool>("document.documentElement.scrollWidth<=innerWidth"));
+        await Evidence(browserPage,"explore-browser-mobile-390");
         await standard.CloseAsync();
     }
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    [Trait("Category","Browser")]
+    public async Task Explore_view_all_uses_existing_public_search_and_preserves_newest_sort_on_back(bool webkit)
+    {
+        using var api = new ObservationApiFactory(fixture);
+        using var moderator = RetailListingApiTests.Moderator(api);
+        var receipt = await PublicVariantCatalogueApiTests.CreateProductAsync(moderator,fixture);
+        using var web = new PasskeyWebFactory(api); web.UseKestrel(0); using var client=web.CreateClient();
+        using var playwright=await Playwright.CreateAsync();
+        await using var browser=await (webkit?playwright.Webkit:playwright.Chromium).LaunchAsync(new(){Headless=true});
+        await using var context=await browser.NewContextAsync(new(){ViewportSize=new(){Width=390,Height=844},ServiceWorkers=ServiceWorkerPolicy.Block});
+        await context.AddInitScriptAsync("Object.defineProperty(navigator,'standalone',{value:true});localStorage.setItem('ds-welcome-complete-v1','yes');");
+        var page=await context.NewPageAsync(); await page.GotoAsync(client.BaseAddress!.ToString());
+        await Assertions.Expect(page.Locator($".explore-product[href*='{receipt.ProductVariantId}'] strong")).ToHaveTextAsync("Integration Test Brand MEGAMAX");
+        await page.Locator(".explore-panel").First.GetByRole(AriaRole.Link,new(){Name="View all",Exact=false}).ClickAsync();
+        await Assertions.Expect(page).ToHaveURLAsync(new System.Text.RegularExpressions.Regex("/products\\?sort=newest$"));
+        await Assertions.Expect(page.Locator(".pwa-search .search-sort select")).ToHaveValueAsync("newest");
+        var first=page.Locator(".pwa-search .search-result-card").First;
+        await Assertions.Expect(first).ToContainTextAsync("Integration Test Brand MEGAMAX Black");
+        await first.ClickAsync();
+        await Assertions.Expect(page.Locator(".product-intro h1")).ToHaveTextAsync("Integration Test Brand MEGAMAX Black");
+        Assert.Equal("1px",await page.Locator(".pwa-mobile-nav").EvaluateAsync<string>("e=>getComputedStyle(e).borderTopWidth"));
+        await page.GoBackAsync();
+        await Assertions.Expect(page.Locator(".pwa-search .search-sort select")).ToHaveValueAsync("newest");
+        await Assertions.Expect(page.Locator(".pwa-search .search-result-card").First).ToContainTextAsync("Integration Test Brand MEGAMAX Black");
+        await page.GoBackAsync();
+        await Assertions.Expect(page.Locator(".explore-heading h1")).ToBeVisibleAsync();
+        await Assertions.Expect(page.Locator("#blazor-error-ui")).ToBeHiddenAsync();
+    }
+
     private static async Task Evidence(IPage page,string name) {
         await page.EvaluateAsync("window.scrollTo(0,0)");
         await AtlasBrowserTests.Evidence(page,name);
@@ -141,7 +187,7 @@ public sealed class ExploreBrowserTests(PostgreSqlFixture fixture) : IClassFixtu
             object body;
             if(request.RequestUri!.AbsolutePath.EndsWith("recent-products")) {
                 if(FailProducts)return Task.FromResult(new HttpResponseMessage(HttpStatusCode.ServiceUnavailable));
-                body=Enumerable.Range(0,ProductCount).Select(i=>new RecentCatalogueProduct(Guid.NewGuid(),"Test product "+i,"test-product","Test brand","Test maker",Variant,i==0?"/test-only-pack.svg":null,DateTimeOffset.UtcNow.AddDays(-i))).ToArray();
+                body=Enumerable.Range(0,ProductCount).Select(i=>new RecentCatalogueProduct(Guid.NewGuid(),i==1?"Test brand with a deliberately very long product discovery name":"Test product "+i,"test-product","Test brand","Test maker",Variant,i==0?"/test-only-pack.svg":null,DateTimeOffset.UtcNow.AddDays(-i))).ToArray();
             }
             else {Interlocked.Increment(ref AtlasRequests); if(FailPlaces)return Task.FromResult(new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)); body=new[]{Place,AtlasBrowserTests.Place("Unobserved candidate",51.5m,-2m,0)};}
             return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK){Content=JsonContent.Create(body)});

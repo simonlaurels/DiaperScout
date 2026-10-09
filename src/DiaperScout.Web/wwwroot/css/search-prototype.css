@@ -318,3 +318,5 @@ html[data-standalone=true] .ds-app-shell:has(.pwa-search) { background: #fff; }
 .pwa-search .search-submit, .pwa-search .search-filter-button { position: relative; }
 .pwa-search .search-submit::after, .pwa-search .search-filter-button::after { content: ''; position: absolute; inset: 0 -6px; }
 .pwa-search .search-result-image > img[hidden] { display: none; }
+
+.pwa-search .search-results > .search-sort { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:0 0 16px; font-size:.85rem; color:#61757a; }

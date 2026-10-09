@@ -13,6 +13,7 @@ internal sealed partial class AtlasQueries
         public string ManufacturerName { get; init; } = null!;
         public string? BrandName { get; init; }
         public int VariantCount { get; init; }
+        public DateTimeOffset? AddedAtUtc { get; init; }
     }
 
     private IQueryable<PublicCatalogueRow> FilterPublicVariants(IQueryable<PublicCatalogueRow> rows, CatalogueProductFilters filters, string? excluded = null)
@@ -42,7 +43,9 @@ internal sealed partial class AtlasQueries
                    join brand in db.Brands.AsNoTracking() on product.BrandId equals brand.Id into brands
                    from brand in brands.DefaultIfEmpty()
                    where product.Status == ProductStatus.Current
-                   select new PublicCatalogueRow { Product = product, Variant = variant, ManufacturerName = manufacturer.Name, BrandName = brand == null ? null : brand.Name, VariantCount = product.Variants.Count };
+                   select new PublicCatalogueRow { Product = product, Variant = variant, ManufacturerName = manufacturer.Name, BrandName = brand == null ? null : brand.Name, VariantCount = product.Variants.Count,
+                       AddedAtUtc = db.CatalogueAuditRecords.Where(a => a.ProductId == product.Id && a.Action == CatalogueAuditAction.ProductCreated)
+                           .Select(a => (DateTimeOffset?)a.OccurredAtUtc).Min() };
         if (!string.IsNullOrWhiteSpace(query))
         {
             var pattern = $"%{query.Trim()}%";
@@ -58,7 +61,9 @@ internal sealed partial class AtlasQueries
         var ordered = sort.Trim().ToLowerInvariant() switch
         {
             "manufacturer" => filtered.OrderBy(r => r.ManufacturerName).ThenBy(r => r.Product.Name).ThenBy(r => r.Variant.Name),
-            "newest" => filtered.OrderByDescending(r => r.Product.Id).ThenBy(r => r.Variant.Name),
+            // Undated legacy products remain browseable, after products with creation evidence.
+            "newest" => filtered.OrderByDescending(r => r.AddedAtUtc.HasValue).ThenByDescending(r => r.AddedAtUtc)
+                .ThenBy(r => r.Product.Id).ThenBy(r => r.Variant.Name),
             _ => filtered.OrderBy(r => r.BrandName).ThenBy(r => r.Product.Name).ThenBy(r => r.Variant.Name)
         };
         var page = await ordered.ThenBy(r => r.Variant.Id).Skip(Math.Max(0, offset)).Take(Math.Clamp(limit, 1, 50)).ToListAsync(cancellationToken);

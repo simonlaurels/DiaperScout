@@ -22,7 +22,7 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<DiaperScoutDbContext>(options => options.UseNpgsql(connectionString));
         services.AddHttpContextAccessor();
         services.AddDataProtection();
-        services.Configure<AwinAffiliateProgrammeDiscoveryOptions>(configuration.GetSection(AwinAffiliateProgrammeDiscoveryOptions.SectionName));
+        services.AddInstalledCommercePlugins(configuration);
         services.AddSingleton(TimeProvider.System);
         services.AddResend(options =>
         {
@@ -33,10 +33,13 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRetailerManagement, RetailerManagement>();
         services.AddScoped<IRetailerDiscovery, RetailerDiscovery>();
         services.AddScoped<IObservationSubmissions, ObservationSubmissions>();
+        services.AddHttpClient<GeoapifyPlaces>().RemoveAllLoggers();
+        services.AddScoped<IPlaceObservations, PlaceObservations>();
+        services.AddScoped<IBackpackAccount, BackpackAccount>();
+        services.AddScoped<IPublicProductContributions, PublicProductContributions>();
         services.AddScoped<ICatalogueSubmissions, CatalogueSubmissions>();
         services.AddSingleton<ICatalogueSubmissionImageStorage, CatalogueSubmissionImageStorage>();
         services.AddScoped<ICatalogueRetailQueries, CatalogueRetailQueries>();
-        services.AddSingleton<IAffiliateLinkResolver, AwinAffiliateLinkResolver>();
         services.AddScoped<IPasswordlessAuthentication, PasswordlessAuthentication>();
         services.AddSingleton<Fido2NetLib.IFido2>(_ =>
         {
@@ -88,7 +91,7 @@ public sealed class CurrentExplorer(DiaperScoutDbContext db, IHttpContextAccesso
 }
 
 
-internal sealed class RetailerDiscovery(DiaperScoutDbContext db) : IRetailerDiscovery
+internal sealed partial class RetailerDiscovery(DiaperScoutDbContext db, IEditorialAuthorisation editorialAuthorisation) : IRetailerDiscovery
 {
     public async Task<RetailerProductListingItem> RecordAsync(
         RetailerDiscoveryResult result,
@@ -135,49 +138,9 @@ internal sealed class RetailerDiscovery(DiaperScoutDbContext db) : IRetailerDisc
             db.Retailers.Add(retailer);
         }
 
-        RetailerProductListing listing;
-        var listingUrl = NormalizeUrlForComparison(result.ListingUrl);
-        if (listingUrl is null)
-            throw new CatalogueValidationException("listingUrl", "A valid HTTP or HTTPS listing URL is required.");
-
-        listing = await db.RetailerProductListings
-            .SingleOrDefaultAsync(
-                value => value.PackTypeId == pack.PackType.Id &&
-                         value.RetailerId == retailer.Id &&
-                         value.ListingUrl == listingUrl,
-                cancellationToken);
-
-        try
-        {
-            if (listing is null)
-            {
-                listing = new RetailerProductListing(
-                    pack.PackType.Id,
-                    retailer.Id,
-                    listingUrl,
-                    result.DiscoveryProvider,
-                    result.SourceUrl,
-                    result.ExternalListingId);
-                db.RetailerProductListings.Add(listing);
-            }
-            else
-            {
-                listing.UpdateDiscovery(
-                    listingUrl,
-                    result.DiscoveryProvider,
-                    result.SourceUrl,
-                    result.ExternalListingId);
-            }
-        }
-        catch (ArgumentException exception)
-        {
-            throw new CatalogueValidationException(exception.ParamName ?? "discovery", exception.Message);
-        }
-
-        await db.SaveChangesAsync(cancellationToken);
-        return ToListingItem(listing, retailer);
+        return await UpsertAsync(new UpsertRetailerListing(pack.PackType.Id, retailer.Id,
+            result.ListingUrl, result.DiscoveryProvider, result.SourceUrl, result.ExternalListingId), cancellationToken);
     }
-
     public async Task<IReadOnlyList<RetailerProductListingItem>> GetForGtinAsync(
         string gtin,
         CancellationToken cancellationToken = default)
@@ -214,7 +177,7 @@ internal sealed class RetailerDiscovery(DiaperScoutDbContext db) : IRetailerDisc
             .ToListAsync(cancellationToken);
     }
 
-    private static string CreateRetailerSlug(string retailerName)
+    internal static string CreateRetailerSlug(string retailerName)
     {
         var slug = new string(retailerName.Trim().ToLowerInvariant()
             .Select(character => char.IsLetterOrDigit(character) ? character : '-')
@@ -330,7 +293,15 @@ internal sealed class RetailerManagement(DiaperScoutDbContext db, IEditorialAuth
             throw new CatalogueValidationException("name", "A retailer name is required.");
 
         if (string.IsNullOrWhiteSpace(slug))
-            throw new CatalogueValidationException("slug", "A retailer slug is required.");
+        {
+            var baseSlug = RetailerDiscovery.CreateRetailerSlug(name);
+            if (string.IsNullOrWhiteSpace(baseSlug))
+                throw new CatalogueValidationException("name", "Use a retailer name containing letters or numbers.");
+            slug = baseSlug;
+            var suffix = 2;
+            while (await db.Retailers.AnyAsync(value => value.Slug == slug, cancellationToken))
+                slug = $"{baseSlug}-{suffix++}";
+        }
 
         if (await db.Retailers.AnyAsync(retailer => retailer.Slug == slug, cancellationToken))
             throw new CatalogueValidationException("slug", "A retailer with this slug already exists.");
@@ -499,7 +470,7 @@ internal sealed class RetailerManagement(DiaperScoutDbContext db, IEditorialAuth
         if (retailer.Status != RetailerStatus.Verified)
             throw new CatalogueValidationException("retailer", "The retailer must be verified before affiliate programme discovery can be recorded.");
 
-        RetailerAffiliateProgramme programme;
+        RetailerAffiliateProgramme? programme;
         try
         {
             programme = await db.RetailerAffiliateProgrammes
@@ -740,23 +711,46 @@ internal sealed class RetailerManagement(DiaperScoutDbContext db, IEditorialAuth
             retailer.IdentityVerifiedAtUtc);
 }
 
-internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmissionImageStorage imageStorage, IEditorialAuthorisation editorialAuthorisation, IAffiliateLinkResolver affiliateLinkResolver) : IAtlasQueries
+internal sealed partial class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmissionImageStorage imageStorage, IEditorialAuthorisation editorialAuthorisation, ICommercePluginOrchestrator commercePlugins) : IAtlasQueries
 {
-    public async Task<ProductSummary?> GetProductBySlugAsync(string slug, CancellationToken cancellationToken = default) =>
-        await db.Products.AsNoTracking()
+    public async Task<ProductSummary?> GetProductBySlugAsync(string slug, CancellationToken cancellationToken = default)
+    {
+        var redirect = await ResolveProductRouteAsync(slug, cancellationToken);
+        if (redirect is not null) slug = redirect.Value.Slug;
+        return await db.Products.AsNoTracking()
             .Where(p => p.Slug == slug)
             .Select(p => new ProductSummary(p.Id, p.Name, p.Slug, p.ProductType, p.Status))
             .SingleOrDefaultAsync(cancellationToken);
+    }
 
-    public async Task<ProductIdentification?> GetProductByGtinAsync(string gtin, CancellationToken cancellationToken = default) =>
-        await (from identifier in db.ProductIdentifiers.AsNoTracking()
-               join pack in db.PackTypes on identifier.PackTypeId equals pack.Id
+    private async Task<(string Slug, Guid VariantId)?> ResolveProductRouteAsync(string slug, CancellationToken cancellationToken)
+    {
+        var route = await (from source in db.Products.AsNoTracking()
+                           join redirect in db.ProductRouteRedirects.AsNoTracking() on source.Id equals redirect.SourceProductId
+                           join target in db.Products.AsNoTracking() on redirect.TargetProductId equals target.Id
+                           where source.Slug == slug
+                           select new { target.Slug, redirect.DefaultVariantId }).SingleOrDefaultAsync(cancellationToken);
+        return route is null ? null : (route.Slug, route.DefaultVariantId);
+    }
+
+    public async Task<ProductIdentification?> GetProductByGtinAsync(string gtin, CancellationToken cancellationToken = default)
+    {
+        var value = gtin.TrimStart('0');
+        var packIds = db.ProductIdentifiers.Where(i => i.Type == IdentifierType.Gtin && i.Value.TrimStart('0') == value)
+            .Select(i => i.PackTypeId).Distinct();
+        var matches = await (from pack in db.PackTypes.AsNoTracking()
                join size in db.SizeVariants on pack.SizeVariantId equals size.Id
                join variant in db.ProductVariants on size.ProductVariantId equals variant.Id
                join product in db.Products on variant.ProductId equals product.Id
-               where identifier.Type == IdentifierType.Gtin && identifier.Value == gtin
-               select new ProductIdentification(new ProductSummary(product.Id, product.Name, product.Slug, product.ProductType, product.Status), variant.Id, variant.Name, size.Id, size.ManufacturerSize, pack.Id, pack.QuantityPerPack, pack.PackagingType, identifier.Value))
-            .SingleOrDefaultAsync(cancellationToken);
+               join brand in db.Brands on product.BrandId equals brand.Id into brands
+               from brand in brands.DefaultIfEmpty()
+               where packIds.Contains(pack.Id) && product.Status == ProductStatus.Current
+               select new { Brand = brand == null ? null : brand.Name, Identification = new ProductIdentification(new ProductSummary(product.Id, product.Name, product.Slug, product.ProductType, product.Status), variant.Id, variant.Name, size.Id, size.ManufacturerSize, pack.Id, pack.QuantityPerPack, pack.PackagingType, gtin) })
+            .Take(2).ToListAsync(cancellationToken);
+        if (matches.Count > 1) throw new CatalogueValidationException("gtin", "This barcode has conflicting catalogue matches. We cannot safely identify the pack; please try another item.");
+        var match = matches.SingleOrDefault();
+        return match is null ? null : match.Identification with { Product = match.Identification.Product with { Name = PublicProductIdentity.DisplayName(match.Brand, match.Identification.Product.Name) } };
+    }
 
     public async Task<IReadOnlyList<CatalogueProductListItem>> SearchProductsAsync(string? query, int limit, CancellationToken cancellationToken = default) =>
         (await SearchCatalogueAsync(query, new CatalogueProductFilters([], [], [], [], [], []), "relevance", limit, 0, cancellationToken)).Products;
@@ -768,7 +762,7 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmission
         int limit,
         int offset = 0,
         CancellationToken cancellationToken = default) =>
-        SearchCatalogueCoreAsync(query, filters, [ProductStatus.Current], sort, limit, offset, cancellationToken);
+        SearchPublicCatalogueAsync(query, filters, sort, limit, offset, cancellationToken);
 
     public Task<CatalogueProductSearch> SearchCatalogueManagementAsync(
         string? query,
@@ -989,8 +983,36 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmission
         return new CatalogueFacet("packaging", "Packaging", rows);
     }
 
-    public async Task<CatalogueProductDetails?> GetProductDetailsBySlugAsync(string slug, CancellationToken cancellationToken = default)
-        => (await GetProductDetailsCoreAsync(slug, includeModeratorOnly: false, cancellationToken))?.PublicDetails;
+    public async Task<CatalogueProductDetails?> GetProductDetailsBySlugAsync(string slug, CancellationToken cancellationToken = default, Guid? variantId = null, Guid? packTypeId = null)
+    {
+        var redirect = await ResolveProductRouteAsync(slug, cancellationToken);
+        if (redirect is not null)
+        {
+            slug = redirect.Value.Slug;
+            // An explicit pack/variant remains authoritative; a bare old link keeps its original variant.
+            if (!variantId.HasValue && !packTypeId.HasValue) variantId = redirect.Value.VariantId;
+        }
+        var details = (await GetProductDetailsCoreAsync(slug, includeModeratorOnly: false, cancellationToken, variantId, packTypeId))?.PublicDetails;
+        if (details is null || details.Status != ProductStatus.Current) return null;
+        var variant = variantId.HasValue
+            ? details.Variants.SingleOrDefault(v => v.Id == variantId.Value)
+            : packTypeId.HasValue
+                ? details.Variants.SingleOrDefault(v => v.Sizes.Any(s => s.Packs.Any(p => p.Id == packTypeId.Value)))
+                : details.Variants.FirstOrDefault();
+        if (variant is null) return null;
+        var packs = variant.Sizes.SelectMany(s => s.Packs).ToArray();
+        if (packTypeId.HasValue && !packs.Any(p => p.Id == packTypeId.Value)) return null;
+        var selectedPack = packTypeId ?? variant.Sizes.FirstOrDefault()?.Packs.FirstOrDefault()?.Id;
+        return details with
+        {
+            Name = PublicProductIdentity.DisplayName(details.BrandName, details.Name, variant.Name, details.Variants.Count),
+            ProductVariantId = variant.Id,
+            AvailableVariants = details.Variants.Select(v => new CatalogueVariantOption(v.Id,
+                PublicProductIdentity.DisplayName(details.BrandName, details.Name, v.Name, details.Variants.Count))).ToArray(),
+            Variants = [variant with { Name = PublicProductIdentity.MeaningfulVariantName(variant.Name, details.Variants.Count) ?? string.Empty }],
+            RetailOffers = details.RetailOffers.Where(o => o.PackTypeId == selectedPack).ToArray()
+        };
+    }
 
     public async Task<CatalogueModeratorProductDetails?> GetProductDetailsForModeratorAsync(
         AuthenticatedUser actor,
@@ -1319,7 +1341,9 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmission
     private async Task<(CatalogueProductDetails PublicDetails, CatalogueModeratorProductDetails ModeratorDetails)?> GetProductDetailsCoreAsync(
         string slug,
         bool includeModeratorOnly,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        Guid? selectedVariantId = null,
+        Guid? selectedPackTypeId = null)
     {
         var product = await (from value in db.Products.AsNoTracking()
                              join manufacturer in db.Manufacturers.AsNoTracking() on value.ManufacturerId equals manufacturer.Id
@@ -1329,7 +1353,7 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmission
                              select new { value.Id, value.Name, value.Slug, value.ProductType, value.Status, ManufacturerName = manufacturer.Name, BrandName = brand == null ? null : brand.Name, value.Description, value.DescriptionVisibility, value.OfficialWebsiteUrl })
             .SingleOrDefaultAsync(cancellationToken);
 
-        if (product is null)
+        if (product is null || (!includeModeratorOnly && product.Status != ProductStatus.Current))
             return null;
 
         var variants = await db.ProductVariants.AsNoTracking()
@@ -1410,6 +1434,16 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmission
             ? product.Description
             : null;
 
+        var activeVariant = selectedVariantId.HasValue
+            ? variantResults.SingleOrDefault(v => v.Id == selectedVariantId.Value)
+            : selectedPackTypeId.HasValue
+                ? variantResults.SingleOrDefault(v => v.Sizes.Any(s => s.Packs.Any(p => p.Id == selectedPackTypeId.Value)))
+                : variantResults.FirstOrDefault();
+        if (!includeModeratorOnly && activeVariant is null) return null;
+        if (!includeModeratorOnly && selectedPackTypeId.HasValue
+            && !activeVariant!.Sizes.SelectMany(s => s.Packs).Any(p => p.Id == selectedPackTypeId.Value)) return null;
+        var activePackId = selectedPackTypeId ?? activeVariant?.Sizes.FirstOrDefault()?.Packs.FirstOrDefault()?.Id;
+
         var retailOfferRows = await (from listing in db.RetailerProductListings.AsNoTracking()
                                      join retailer in db.Retailers.AsNoTracking() on listing.RetailerId equals retailer.Id
                                      join pack in db.PackTypes.AsNoTracking() on listing.PackTypeId equals pack.Id
@@ -1418,6 +1452,7 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmission
                                      join identifier in db.ProductIdentifiers.AsNoTracking().Where(value => value.Type == IdentifierType.Gtin) on pack.Id equals identifier.PackTypeId into identifierJoin
                                      from identifier in identifierJoin.DefaultIfEmpty()
                                      where variant.ProductId == product.Id
+                                           && (includeModeratorOnly || pack.Id == activePackId)
                                            && product.Status == ProductStatus.Current
                                            && retailer.Status == RetailerStatus.Verified
                                            && listing.Status == RetailerProductDiscoveryStatus.Verified
@@ -1425,6 +1460,11 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmission
                                      select new
                                      {
                                          ListingId = listing.Id,
+                                         VariantId = variant.Id,
+                                         VariantName = variant.Name,
+                                         SizeVariantId = size.Id,
+                                         ExternalListingId = listing.ExternalListingId,
+                                         RetailerWebsiteUrl = retailer.WebsiteUrl,
                                          PackTypeId = pack.Id,
                                          ManufacturerSize = size.ManufacturerSize,
                                          QuantityPerPack = pack.QuantityPerPack,
@@ -1443,25 +1483,24 @@ internal sealed class AtlasQueries(DiaperScoutDbContext db, ICatalogueSubmission
                             && value.Status == AffiliateProgrammeStatus.Configured)
             .ToDictionaryAsync(value => value.RetailerId, cancellationToken);
 
-        var retailOffers = retailOfferRows
-            .Select(value =>
-            {
-                preferredProgrammes.TryGetValue(value.RetailerId, out var programme);
-                var destination = affiliateLinkResolver.Resolve(value.ListingUrl, programme);
-                return new CatalogueRetailOffer(
-                    value.ListingId,
-                    value.PackTypeId,
-                    value.ManufacturerSize,
-                    value.QuantityPerPack,
-                    value.PackagingType,
-                    value.Gtin,
-                    value.RetailerName,
-                    value.ListingUrl,
-                    destination.Url,
-                    destination.Network,
-                    destination.IsAffiliateBacked);
-            })
-            .ToList();
+        var retailOffers = new List<CatalogueRetailOffer>();
+        foreach (var value in retailOfferRows)
+        {
+            preferredProgrammes.TryGetValue(value.RetailerId, out var programme);
+            var programmes = programme is null ? Array.Empty<CommerceAffiliateProgramme>()
+                : new[] { new CommerceAffiliateProgramme(programme.Id, programme.Network, programme.ProgrammeId,
+                    programme.Status, programme.IsPreferred, programme.DeepLinksAllowed) };
+            // Public eligibility and exact pack scope have already been enforced by the canonical query.
+            var item = new CanonicalSellableItem(product.Id, value.VariantId,
+                value.SizeVariantId,
+                value.PackTypeId, product.Name, product.BrandName, value.VariantName, value.ManufacturerSize,
+                value.QuantityPerPack, value.PackagingType, value.Gtin is null ? [] : [new(IdentifierType.Gtin, value.Gtin)]);
+            var destination = await commercePlugins.ResolveAffiliateAsync(new(value.ListingId, item, value.RetailerId,
+                value.RetailerName, value.RetailerWebsiteUrl, value.ListingUrl, value.ExternalListingId, programmes), cancellationToken);
+            retailOffers.Add(new CatalogueRetailOffer(value.ListingId, value.PackTypeId, value.ManufacturerSize,
+                value.QuantityPerPack, value.PackagingType, value.Gtin, value.RetailerName, value.ListingUrl,
+                destination.Url, destination.Network, destination.IsAffiliateBacked));
+        }
 
         return (
             new CatalogueProductDetails(product.Id, product.Name, product.Slug, product.ProductType, product.Status, product.ManufacturerName, product.BrandName, publicDescription, product.DescriptionVisibility, product.OfficialWebsiteUrl, variantResults, publicImages, retailOffers),

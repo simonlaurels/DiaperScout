@@ -1,0 +1,8 @@
+{
+  "date": "2026-10-01",
+  "credential": "Temporary scoped Azure CLI provisioning identity; grants removed after probe",
+  "crossInstanceDecryption": true,
+  "applicationIsolation": true,
+  "encryptedAtRest": true,
+  "keyIds": ["3ab78896-4823-4ed8-bca6-8809146fbb0b"]
+}

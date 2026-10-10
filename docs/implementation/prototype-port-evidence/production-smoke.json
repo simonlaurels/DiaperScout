@@ -1,0 +1,104 @@
+{
+  "started": "2026-10-02T15:33:07.584Z",
+  "productionWrites": 0,
+  "physicalIosProven": false,
+  "sessions": [
+    {
+      "engine": "chromium",
+      "errors": [],
+      "transport": [
+        {
+          "path": "/_blazor/initializers",
+          "status": 200
+        },
+        {
+          "path": "/_blazor/negotiate",
+          "status": 200
+        }
+      ],
+      "socket": {
+        "sent": 51,
+        "received": 47
+      },
+      "productPath": "/products/original?variantId=9d71fd7f-b0e7-412c-9fff-0301d87916ff",
+      "productStyle": {
+        "colour": "rgb(23, 56, 65)",
+        "weight": "600",
+        "font": "Inter, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif"
+      },
+      "productName": "Crinklz Original",
+      "packId": "65d59f5a-b07b-4faf-9b94-ea4e80583ede",
+      "variantId": "9d71fd7f-b0e7-412c-9fff-0301d87916ff",
+      "affinity": [
+        {
+          "name": "acaAffinity",
+          "httpOnly": true,
+          "secure": true,
+          "sameSite": "None"
+        }
+      ],
+      "cachedPaths": [
+        "/pwa/offline.html",
+        "/pwa/offline.css",
+        "/pwa/offline.js",
+        "/images/brand/DiaperScout.svg",
+        "/pwa/guide-map.webp",
+        "/pwa/icons/icon-192.png",
+        "/pwa/icons/icon-512.png",
+        "/pwa/icons/maskable-512.png",
+        "/pwa/icons/apple-touch-icon.png"
+      ],
+      "passed": true,
+      "ended": "2026-10-02T15:33:38.718Z"
+    },
+    {
+      "engine": "webkit",
+      "errors": [],
+      "transport": [
+        {
+          "path": "/_blazor/initializers",
+          "status": 200
+        },
+        {
+          "path": "/_blazor/negotiate",
+          "status": 200
+        }
+      ],
+      "socket": {
+        "sent": 49,
+        "received": 43
+      },
+      "productPath": "/products/original?variantId=9d71fd7f-b0e7-412c-9fff-0301d87916ff",
+      "productStyle": {
+        "colour": "rgb(23, 56, 65)",
+        "weight": "600",
+        "font": "Inter, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif"
+      },
+      "productName": "Crinklz Original",
+      "packId": "65d59f5a-b07b-4faf-9b94-ea4e80583ede",
+      "variantId": "9d71fd7f-b0e7-412c-9fff-0301d87916ff",
+      "affinity": [
+        {
+          "name": "acaAffinity",
+          "httpOnly": true,
+          "secure": true,
+          "sameSite": "None"
+        }
+      ],
+      "cachedPaths": [
+        "/pwa/offline.html",
+        "/pwa/offline.css",
+        "/images/brand/DiaperScout.svg",
+        "/pwa/offline.js",
+        "/pwa/icons/icon-192.png",
+        "/pwa/icons/icon-512.png",
+        "/pwa/guide-map.webp",
+        "/pwa/icons/maskable-512.png",
+        "/pwa/icons/apple-touch-icon.png"
+      ],
+      "passed": true,
+      "ended": "2026-10-02T15:33:43.791Z"
+    }
+  ],
+  "ended": "2026-10-02T15:33:43.823Z"
+}

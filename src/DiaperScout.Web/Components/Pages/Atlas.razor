@@ -1,0 +1,80 @@
+@page "/atlas"
+@rendermode InteractiveServer
+@inject PlaceObservationClient PlacesClient
+<PageTitle>Atlas · DiaperScout</PageTitle>
+<section class="atlas-page" aria-label="Atlas product discoveries">
+    <PlaceMap AtlasCanvas="true" Places="places" SelectedPlaceId="selected?.Place.Id" PlaceSelected="SelectPlace" VisiblePlacesChanged="VisiblePlacesChanged" />
+    <div class="atlas-tools">
+        <h1><PrototypeIcon Name="map" />Atlas</h1>
+        <button type="button" class="atlas-control" aria-expanded="@showList" @onclick="() => { showList = !showList; selected = null; }">Discoveries (@places.Count)</button>
+    </div>
+    @if (loading) { <p class="atlas-status" role="status">Loading product discoveries… You can explore the map while we look.</p> }
+    else if (error is not null) { <aside class="atlas-status" role="alert">@error <button class="atlas-control" @onclick="LoadAsync">Try again</button></aside> }
+    else if (visiblePlaces == 0 && selected is null && !showList) {
+        <aside class="atlas-field-note" aria-labelledby="uncharted-heading">
+            <img src="/pwa/guide-map.webp" alt="" width="68" height="64" />
+            <div><h2 id="uncharted-heading">Uncharted territory</h2><p>No product discoveries have been mapped here yet. Scan a pack you find and record where you found it.</p><a href="/scan">Scan a product <PrototypeIcon Name="chevron-right" /></a></div>
+        </aside>
+    }
+    @if (showList) {
+        <section class="atlas-sheet" aria-labelledby="discoveries-heading">
+            <header><h2 id="discoveries-heading">Mapped discoveries</h2><button class="atlas-control" aria-label="Close discoveries" @onclick="() => showList = false"><PrototypeIcon Name="x" /></button></header>
+            @if (places.Count == 0) { <p>No product discoveries loaded yet. The map is yours to explore.</p> }
+            <div class="atlas-place-list">@foreach (var entry in places) {
+                <button type="button" class="atlas-place-choice" @onclick="() => SelectPlace(entry.Place.Id)"><strong>@entry.Place.Name</strong><span>@entry.Place.Locality · @entry.Observations.Count @(entry.Observations.Count == 1 ? "observation" : "observations") · @entry.ProductCount @(entry.ProductCount == 1 ? "pack" : "packs") reported</span></button>
+            }</div>
+        </section>
+    }
+    @if (selected is not null) {
+        <section class="atlas-sheet atlas-selected-place" aria-live="polite" aria-labelledby="place-heading">
+            <header><div><p class="atlas-eyebrow">Product discovery</p><h2 id="place-heading">@selected.Place.Name</h2></div><button class="atlas-control" aria-label="Close place details" @onclick="() => selected = null"><PrototypeIcon Name="x" /></button></header>
+            <p>@selected.Place.AddressLine1, @selected.Place.Locality, @selected.Place.Postcode</p>
+            @if (selected.Place.Category.HasValue) { <p class="atlas-place-type">@PlaceCategoryPresentation.Label(selected.Place.Category)</p> }
+            <AuthorizeView Roles="Moderator,Administrator"><Authorized>
+                <div class="atlas-category-editor"><label for="atlas-category">Place type</label><PlaceCategorySelect Id="atlas-category" @bind-Value="categoryDraft" Disabled="savingCategory" />
+                    <button class="atlas-control" @onclick="SaveCategoryAsync" disabled="@savingCategory">@(savingCategory ? "Saving…" : "Save place type")</button>
+                    @if (categoryNotice is not null) { <p role="status">@categoryNotice</p> }
+                </div>
+            </Authorized></AuthorizeView>
+            <p class="atlas-evidence-summary">@selected.Observations.Count @(selected.Observations.Count == 1 ? "observation" : "observations") · @selected.ProductCount @(selected.ProductCount == 1 ? "pack" : "packs") reported</p>
+            <p class="atlas-stock-note">Dated contributor reports, not a guarantee of current stock.</p>
+            @foreach (var observation in selected.Observations.Take(50)) {
+                <article class="atlas-observation"><a href="@observation.ProductUrl"><strong>@observation.Name</strong></a><p>@observation.Size · Pack of @observation.Quantity</p><p>Observed <time datetime="@observation.ObservedAtUtc.ToString("O")">@observation.ObservedAtUtc.ToString("d MMM yyyy, HH:mm 'UTC'")</time></p>
+                    @if (observation.PriceAmount.HasValue) { <p>Reported shelf price: @observation.PriceAmount.Value.ToString("0.00") @observation.CurrencyCode</p> }
+                </article>
+            }
+            @if (selected.Observations.Count > 50) { <p>Showing the latest 50 loaded observations for this place.</p> }
+        </section>
+    }
+</section>
+@code {
+    [SupplyParameterFromQuery(Name="locationId")] public Guid? LocationId { get; set; }
+    private IReadOnlyList<AtlasPlace> places = [];
+    private AtlasPlace? selected;
+    private bool loading = true, showList;
+    private int visiblePlaces;
+    private string? error;
+    private PlaceCategory? categoryDraft;
+    private bool savingCategory;
+    private string? categoryNotice;
+    protected override Task OnAfterRenderAsync(bool firstRender) => firstRender ? LoadAsync() : Task.CompletedTask;
+    protected override void OnParametersSet() { if (LocationId.HasValue) SelectPlace(LocationId.Value); }
+    private async Task LoadAsync() {
+        loading = true; error = null; await InvokeAsync(StateHasChanged);
+        try { places = (await PlacesClient.AtlasAsync()).Where(p => p.Observations.Count > 0).ToArray(); if (LocationId.HasValue) SelectPlace(LocationId.Value); else selected = null; }
+        catch (Exception e) when (e is HttpRequestException or TaskCanceledException or System.Text.Json.JsonException) { error = "We couldn’t load current discoveries. Keep exploring the map, or try again."; }
+        finally { loading = false; await InvokeAsync(StateHasChanged); }
+    }
+    private void SelectPlace(Guid id) { selected = places.FirstOrDefault(p => p.Place.Id == id); categoryDraft = selected?.Place.Category; categoryNotice = null; showList = false; }
+    private async Task SaveCategoryAsync() {
+        if (savingCategory || selected is null) return;
+        savingCategory = true; categoryNotice = null; var id = selected.Place.Id;
+        try {
+            var savedPlace = await PlacesClient.UpdateCategoryAsync(id, new(categoryDraft));
+            places = places.Select(p => p.Place.Id == id ? p with { Place = savedPlace } : p).ToArray();
+            if (selected?.Place.Id == id) { selected = places.Single(p => p.Place.Id == id); categoryDraft = savedPlace.Category; categoryNotice = "Place type saved."; }
+        } catch (Exception e) when (e is ContributionException or HttpRequestException or TaskCanceledException) { categoryNotice = "We couldn’t save the place type. Check your permission and connection, then try again."; }
+        finally { savingCategory = false; }
+    }
+    private void VisiblePlacesChanged(int count) => visiblePlaces = count;
+}

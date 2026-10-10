@@ -1,0 +1,27 @@
+[
+  {
+    "launch": 0,
+    "errors": [
+      "[2026-10-01T11:32:32.931Z] Error: The circuit failed to initialize.",
+      "Error: Circuit host not initialized.",
+      "Error: Invocation canceled due to the underlying connection being closed."
+    ],
+    "worker": true,
+    "restoredCover": false,
+    "errorBanner": false
+  },
+  {
+    "launch": 1,
+    "errors": [],
+    "worker": true,
+    "restoredCover": false,
+    "errorBanner": false
+  },
+  {
+    "launch": 2,
+    "errors": [],
+    "worker": true,
+    "restoredCover": false,
+    "errorBanner": false
+  }
+]

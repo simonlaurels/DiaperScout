@@ -1,0 +1,325 @@
+{
+  "observed_at_utc": "2026-10-06T05:25:27.810Z",
+  "read_only": true,
+  "production_change_applied": false,
+  "user_domain_decision": "Premium Elastic 6 drops and 10 drops are variants of one product.",
+  "before": {
+    "products": [
+      {
+        "Id": "debe4cbd-baab-4a45-aa56-d3e077f452a5",
+        "ManufacturerId": "c17ca402-b6fc-457d-9d81-24895450343b",
+        "BrandId": "a19ba3a4-8346-40e0-8f4b-50a7199e0181",
+        "Name": "Premium Elastic 6 drops",
+        "Slug": "premium-elastic-6-drops",
+        "Status": 0,
+        "Family": "Premium Elastic"
+      },
+      {
+        "Id": "eecd0811-cfbd-4f5f-8bc4-dceb0a00fbb6",
+        "ManufacturerId": "c17ca402-b6fc-457d-9d81-24895450343b",
+        "BrandId": "a19ba3a4-8346-40e0-8f4b-50a7199e0181",
+        "Name": "Premium Elastic 10 drops",
+        "Slug": "premium-elastic-10-drops",
+        "Status": 0,
+        "Family": "Premium Elastic"
+      }
+    ],
+    "variants": [
+      {
+        "Id": "afc172c0-ebbf-4391-80dc-33aa75bbe3b0",
+        "ProductId": "debe4cbd-baab-4a45-aa56-d3e077f452a5",
+        "Name": "Current"
+      },
+      {
+        "Id": "9ec537ff-aebd-4ff8-8eca-2b18f9199cbc",
+        "ProductId": "eecd0811-cfbd-4f5f-8bc4-dceb0a00fbb6",
+        "Name": "Current"
+      }
+    ],
+    "packs": [
+      {
+        "research_pack_id": "B01-C07-PACK",
+        "gtin": "4052199297002",
+        "quantity": 30,
+        "size": "Medium",
+        "ids": {
+          "submission_id": "78bf7d46-87cb-4b1c-b464-f1f077692f03",
+          "product_id": "debe4cbd-baab-4a45-aa56-d3e077f452a5",
+          "variant_id": "afc172c0-ebbf-4391-80dc-33aa75bbe3b0",
+          "size_id": "b3415db5-20d1-4282-b722-ae6755469ed0",
+          "pack_id": "e4f8fe7a-bdb8-4523-a8e1-02a7f9f9359b",
+          "identifier_id": "6cc8cff4-5a27-4a81-9e0b-5c5d5cb64083",
+          "audit_id": "ac527453-a5df-4552-9e72-dd0cf0906151"
+        }
+      },
+      {
+        "research_pack_id": "B01-C10-PACK",
+        "gtin": "4052199303413",
+        "quantity": 14,
+        "size": "Medium",
+        "ids": {
+          "submission_id": "7a277b9f-3911-4a2f-920e-e74387c015a7",
+          "product_id": "eecd0811-cfbd-4f5f-8bc4-dceb0a00fbb6",
+          "variant_id": "9ec537ff-aebd-4ff8-8eca-2b18f9199cbc",
+          "size_id": "9ac47c62-b4f6-4e80-ba17-fa8e015051d7",
+          "pack_id": "3bd05e71-8223-49cc-9924-2bcfd3959937",
+          "identifier_id": "aba81309-2d1f-451f-aa7f-6d6b123d44be",
+          "audit_id": "5592c721-25d0-487a-849c-41fbfde3395d"
+        }
+      },
+      {
+        "research_pack_id": "B02-H6-L-30",
+        "gtin": "4052199297033",
+        "quantity": 30,
+        "size": "Large",
+        "ids": {
+          "submission_id": "78bf7d46-87cb-4b1c-b464-f1f077692f03",
+          "product_id": "debe4cbd-baab-4a45-aa56-d3e077f452a5",
+          "variant_id": "afc172c0-ebbf-4391-80dc-33aa75bbe3b0",
+          "size_id": "fb389e48-c1b1-4b5b-abd3-ff46d4f3d5b0",
+          "pack_id": "277dc733-2be8-4878-9d8c-aaa4ed11cc57",
+          "identifier_id": "9ffdda3b-44ed-4b69-a44d-50309fe871d2",
+          "audit_id": "5e7fa582-c410-40a6-b34a-5b862c9e4bc4"
+        }
+      },
+      {
+        "research_pack_id": "B02-H6-XL-14",
+        "gtin": "4052199299433",
+        "quantity": 14,
+        "size": "X-Large",
+        "ids": {
+          "submission_id": "78bf7d46-87cb-4b1c-b464-f1f077692f03",
+          "product_id": "debe4cbd-baab-4a45-aa56-d3e077f452a5",
+          "variant_id": "afc172c0-ebbf-4391-80dc-33aa75bbe3b0",
+          "size_id": "bcf47903-7dc6-4c85-b574-337673fc3a89",
+          "pack_id": "0909182d-14d5-4305-abe0-d9e9abadb5c0",
+          "identifier_id": "15e7c358-7dfb-4b47-a7c7-0dbbdc7ee720",
+          "audit_id": "eb177a6e-b593-48d2-92e0-f80720ce5a17"
+        }
+      },
+      {
+        "research_pack_id": "B08-H6-XL-CASE56",
+        "gtin": "4052199299440",
+        "quantity": 56,
+        "size": "X-Large",
+        "ids": {
+          "submission_id": "78bf7d46-87cb-4b1c-b464-f1f077692f03",
+          "product_id": "debe4cbd-baab-4a45-aa56-d3e077f452a5",
+          "variant_id": "afc172c0-ebbf-4391-80dc-33aa75bbe3b0",
+          "size_id": "bcf47903-7dc6-4c85-b574-337673fc3a89",
+          "pack_id": "9cf8f42b-8a36-49a2-a0d9-32dc8077bfbf",
+          "identifier_id": "2865c616-2f8b-4b7b-8273-35a7eda33d67",
+          "audit_id": "91ffaf30-194c-4452-bead-befd2ecabdc6"
+        }
+      }
+    ]
+  },
+  "recommended_after": {
+    "product": {
+      "id": "debe4cbd-baab-4a45-aa56-d3e077f452a5",
+      "name": "Premium Elastic",
+      "slug": "premium-elastic-6-drops"
+    },
+    "variants": [
+      {
+        "id": "afc172c0-ebbf-4391-80dc-33aa75bbe3b0",
+        "name": "6 drops",
+        "product_id": "debe4cbd-baab-4a45-aa56-d3e077f452a5"
+      },
+      {
+        "id": "9ec537ff-aebd-4ff8-8eca-2b18f9199cbc",
+        "name": "10 drops",
+        "product_id": "debe4cbd-baab-4a45-aa56-d3e077f452a5"
+      }
+    ],
+    "retained_original_product": {
+      "id": "eecd0811-cfbd-4f5f-8bc4-dceb0a00fbb6",
+      "slug": "premium-elastic-10-drops",
+      "role": "Historical identity retained; public route resolves to shared product with 10 drops selected, omitted as duplicate from public browse."
+    },
+    "unchanged": [
+      "All original IDs and slugs",
+      "All sizes, measurements, packs, GTINs and identifiers",
+      "Original submission proposals and audit/source history",
+      "Existing publication states"
+    ],
+    "required_implementation": [
+      "Explicit reviewed product/variant grouping in population contract; no Current-only assumption",
+      "Audited transaction and fingerprint-bound before/after preview",
+      "Preserved old identity/public-route mapping without deleting original Product row",
+      "Public barcode, page, retail/observation/reference and retry regressions",
+      "No bulk grouping by shared family/name alone"
+    ]
+  },
+  "wider_review_flags": [
+    {
+      "id": "1fcf6021-b1e8-4b12-9593-8a8641c30f78",
+      "name": "San Premium 1A",
+      "family": "San",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "34394c5b-e39c-493b-acb5-e633a2b5caa9",
+      "name": "Pants Premium level3",
+      "family": "Pants Premium",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "355dfb80-0542-4787-bb7d-6c2f8fbc708c",
+      "name": "San Premium 8",
+      "family": "San",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "5ea1280d-30d0-4e9c-8947-f9e383de84c1",
+      "name": "San Premium 7",
+      "family": "San",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "68a211c8-dd8d-4b62-8619-155a08812cfe",
+      "name": "Light Premium Mini Plus 1A",
+      "family": "Light Premium",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "6a09a44e-f695-4039-82d7-4f30eebace40",
+      "name": "San Premium 11",
+      "family": "San",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "6d16fe9e-af06-4d08-b0bd-28082b8db63d",
+      "name": "Pants Premium level2",
+      "family": "Pants Premium",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "706e2260-86e3-49c0-9d90-29ba26a94511",
+      "name": "San Premium 7/XXL",
+      "family": "San",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "73f24299-3a6e-48a1-8a4e-fb4c1508fd3e",
+      "name": "Light Premium Mini 1",
+      "family": "Light Premium",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "7a12411d-2bc0-47ac-a456-87e0811254d4",
+      "name": "Light Premium Super 4",
+      "family": "Light Premium",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "7b2fe0cf-534b-438d-b929-94535925e72d",
+      "name": "San Premium 12",
+      "family": "San",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "7da33a70-a611-4b0a-9494-b555626b3783",
+      "name": "San Premium 3A",
+      "family": "San",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "8d32564b-5694-4553-a469-9195e5ed9198",
+      "name": "San Premium 3",
+      "family": "San",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "a00674d2-d2f1-4b60-8c1f-9ee83fbcd272",
+      "name": "San Premium 6",
+      "family": "San",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "a4bb438a-2a1c-4a4a-8642-e2c4c900e1ae",
+      "name": "San Premium 5",
+      "family": "San",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "a7e1b1ce-7851-4a1b-bde2-abc59cec5775",
+      "name": "San Premium 9",
+      "family": "San",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "b8ce7068-9415-4b9d-b51a-f691720dd637",
+      "name": "San Premium 10",
+      "family": "San",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "cbfcb6de-be4d-4a44-9893-a955322f2c5e",
+      "name": "Light Premium Normal 2",
+      "family": "Light Premium",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "cce60c02-7b84-4e16-b4c9-f5b42db0f671",
+      "name": "San Premium 1",
+      "family": "San",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "d47845b1-f968-4242-bd89-125a298f65d1",
+      "name": "Light Premium Extra 3",
+      "family": "Light Premium",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "d92b68b9-c37b-41bc-bf65-9555d3f71878",
+      "name": "San Premium 11/XXL",
+      "family": "San",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "dfd68681-0918-4680-a9ee-5a696c11d555",
+      "name": "San Premium 4",
+      "family": "San",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "e9369a50-fcf3-45e9-9d70-b12fc3912d04",
+      "name": "Pants Premium level1",
+      "family": "Pants Premium",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "eb6dd777-fbce-41df-a961-38fddcb29acd",
+      "name": "San Premium 2",
+      "family": "San",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "edc38ea9-b8d2-4263-a517-5b7192d8694d",
+      "name": "Pants Premium level0",
+      "family": "Pants Premium",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "18fb4171-f360-4857-8d56-84f897b7cead",
+      "name": "Light Premium Extra Plus 3A",
+      "family": "Light Premium",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "e6170ddc-f509-42c0-8112-b4ef18cf78eb",
+      "name": "Light Premium Maxi 4A",
+      "family": "Light Premium",
+      "decision": "Review only; no automatic merge approved"
+    },
+    {
+      "id": "c46def4d-ce33-40d0-a71b-e1fa84fa0eae",
+      "name": "Light Premium Ultra Mini 0",
+      "family": "Light Premium",
+      "decision": "Review only; no automatic merge approved"
+    }
+  ],
+  "stop_reason": "Approved brief requires report before a new mass canonical reconciliation. Grouping policy now identified as material and current publisher cannot preserve old routes without explicit reconciliation support."
+}

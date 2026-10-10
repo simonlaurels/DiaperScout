@@ -1,0 +1,161 @@
+[
+  {
+    "ResearchId": "B01-C07-PACK",
+    "Outcome": "READY",
+    "Manufacturer": "PAUL HARTMANN AG",
+    "Brand": "MoliCare",
+    "Product": "Premium Elastic 6 drops",
+    "ManufacturerAliases": [
+      "PAUL HARTMANN"
+    ],
+    "ProductAliases": [
+      "MoliCare Premium Elastic 6 drops"
+    ],
+    "Family": "Premium Elastic",
+    "ProductType": "Tape",
+    "Size": "Medium",
+    "Quantity": 30,
+    "Gtin": "4052199297002",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 85,
+    "HipMaximumCm": 120,
+    "OfficialWebsite": "https://www.hartmann.info/en-gb/products/continence-management/all-in-one/moderate-incontinence/molicare%C2%AE-premium-elastic-6-drops",
+    "IdentitySources": [
+      "https://www.hartmann.info/en-gb/products/continence-management/all-in-one/moderate-incontinence/molicare%C2%AE-premium-elastic-6-drops",
+      "https://www.hartmann.info/-/media/country/website/archive/incontinence/doc/sales-folder-relaunch-mc-premium-elastic-klinik-hires_0865536-018492.pdf?rev=4fdfcf64f3714b8a9e53082b50453d93&sc_lang=de-de"
+    ],
+    "IdentifierSources": [
+      "https://www.hartmann.info/en-gb/products/continence-management/all-in-one/moderate-incontinence/molicare%C2%AE-premium-elastic-6-drops",
+      "https://www.hartmann.info/-/media/country/website/archive/incontinence/doc/sales-folder-relaunch-mc-premium-elastic-klinik-hires_0865536-018492.pdf?rev=4fdfcf64f3714b8a9e53082b50453d93&sc_lang=de-de",
+      "https://medi-inn.de/products/molicare-premium-elastic-6-tropfen-gr-m-85-120-cm-hueftumfang"
+    ],
+    "SpecificationSources": [
+      "https://www.hartmann.info/en-gb/products/continence-management/all-in-one/moderate-incontinence/molicare%C2%AE-premium-elastic-6-drops",
+      "https://www.hartmann.info/-/media/country/website/archive/incontinence/doc/sales-folder-relaunch-mc-premium-elastic-klinik-hires_0865536-018492.pdf?rev=4fdfcf64f3714b8a9e53082b50453d93&sc_lang=de-de",
+      "https://www.hartmann.info/de-de/produkte/inkontinenzversorgung/inkontinenz-slips/mittlere-inkontinenz/molicare%C2%AE-premium-elastic-6-tropfen"
+    ],
+    "EvidenceNotes": "Approved Batch 01 independently verified exact pack. Manufacturer/retailer source register accessed 2026-10-04. {\"manufacturer\":\"PAUL HARTMANN AG\",\"brand\":\"MoliCare\",\"family\":\"Premium Elastic\",\"product\":\"Premium Elastic 6 drops\",\"product_type\":\"Tape\",\"size\":\"Medium\",\"measurement_basis\":\"hip\",\"minimum_cm\":85,\"maximum_cm\":120,\"count\":30,\"gtin\":\"4052199297002\",\"article\":\"165272\",\"markets\":[\"UK manufacturer\",\"DE retailer\"],\"spec_sources\":[\"H6\",\"HPDF\"],\"image_source\":\"H6\",\"identifier_sources\":[\"H6\",\"HPDF\",\"R6\"],\"manufacturer_absorbency_ml\":null,\"packaging_type\":\"Bag\",\"barcode_format\":\"GTIN-13 (source EAN designation; printed symbol not decoded)\",\"proposed_variant\":\"One ordinary required variant; editorial display label not yet assigned\",\"variant_scope\":\"No manufacturer-defined alternate variant established for this selected product\",\"image_permission_status\":\"Unknown\",\"image_copied\":false,\"public_gtin_lookup\":\"No match found on2026-10-04\",\"hidden_record_duplicate_check\":\"Required before import\",\"publish_allowed\":false}\nImage permission unknown; no images copied. Ordinary Current variant is an editorial structural convention.\nIndividual draft attribute review 2026-10-04: manufacturer confirms hook-and-loop closure, wetness indicator and adult use. Prior AllAroundElastic is not supported by two elastic side panels; do not equate side panels with a waistband. Plain/White, latex-free, unscented, backing composition and exact fastener count and standing-guard construction remain unknown in this reviewed payload. Prior entered attributes are preserved in the editorial journal before reconciliation.",
+    "ExistingSubmissionId": "78bf7d46-87cb-4b1c-b464-f1f077692f03",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {
+      "FastenerType": "HookAndLoop",
+      "WetnessIndicator": "true",
+      "DesignedFor": "Adult"
+    }
+  },
+  {
+    "ResearchId": "B01-C10-PACK",
+    "Outcome": "READY",
+    "Manufacturer": "PAUL HARTMANN AG",
+    "Brand": "MoliCare",
+    "Product": "Premium Elastic 10 drops",
+    "ManufacturerAliases": [
+      "PAUL HARTMANN"
+    ],
+    "ProductAliases": [
+      "MoliCare Premium Elastic 10 drops"
+    ],
+    "Family": "Premium Elastic",
+    "ProductType": "Tape",
+    "Size": "Medium",
+    "Quantity": 14,
+    "Gtin": "4052199303413",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 85,
+    "HipMaximumCm": 120,
+    "OfficialWebsite": "https://www.hartmann.info/en-gb/products/continence-management/all-in-one/very-severe-incontinence/molicare%C2%AE-premium-elastic-10-drops",
+    "IdentitySources": [
+      "https://www.hartmann.info/en-gb/products/continence-management/all-in-one/very-severe-incontinence/molicare%C2%AE-premium-elastic-10-drops",
+      "https://www.hartmann.info/de-de/produkte/inkontinenzversorgung/inkontinenz-slips/schwerste-inkontinenz/molicare%C2%AE-premium-elastic-10-tropfen",
+      "https://www.hartmann.info/-/media/country/website/archive/incontinence/doc/sales-folder-relaunch-mc-premium-elastic-klinik-hires_0865536-018492.pdf?rev=4fdfcf64f3714b8a9e53082b50453d93&sc_lang=de-de"
+    ],
+    "IdentifierSources": [
+      "https://www.hartmann.info/en-gb/products/continence-management/all-in-one/very-severe-incontinence/molicare%C2%AE-premium-elastic-10-drops",
+      "https://www.hartmann.info/de-de/produkte/inkontinenzversorgung/inkontinenz-slips/schwerste-inkontinenz/molicare%C2%AE-premium-elastic-10-tropfen",
+      "https://www.hartmann.info/-/media/country/website/archive/incontinence/doc/sales-folder-relaunch-mc-premium-elastic-klinik-hires_0865536-018492.pdf?rev=4fdfcf64f3714b8a9e53082b50453d93&sc_lang=de-de"
+    ],
+    "SpecificationSources": [
+      "https://www.hartmann.info/en-gb/products/continence-management/all-in-one/very-severe-incontinence/molicare%C2%AE-premium-elastic-10-drops",
+      "https://www.hartmann.info/de-de/produkte/inkontinenzversorgung/inkontinenz-slips/schwerste-inkontinenz/molicare%C2%AE-premium-elastic-10-tropfen",
+      "https://www.hartmann.info/-/media/country/website/archive/incontinence/doc/sales-folder-relaunch-mc-premium-elastic-klinik-hires_0865536-018492.pdf?rev=4fdfcf64f3714b8a9e53082b50453d93&sc_lang=de-de"
+    ],
+    "EvidenceNotes": "Approved Batch 01 independently verified exact pack. Manufacturer/retailer source register accessed 2026-10-04. {\"manufacturer\":\"PAUL HARTMANN AG\",\"brand\":\"MoliCare\",\"family\":\"Premium Elastic\",\"product\":\"Premium Elastic 10 drops\",\"product_type\":\"Tape\",\"size\":\"Medium\",\"measurement_basis\":\"hip\",\"minimum_cm\":85,\"maximum_cm\":120,\"count\":14,\"gtin\":\"4052199303413\",\"article\":\"165672\",\"markets\":[\"UK manufacturer and case retailer\",\"DE manufacturer\"],\"spec_sources\":[\"H10\",\"H10DE\",\"HPDF\"],\"image_source\":\"H10\",\"identifier_sources\":[\"H10\",\"H10DE\",\"HPDF\"],\"manufacturer_absorbency_ml\":null,\"packaging_type\":\"Bag\",\"barcode_format\":\"GTIN-13 (source EAN designation; printed symbol not decoded)\",\"proposed_variant\":\"One ordinary required variant; editorial display label not yet assigned\",\"variant_scope\":\"No manufacturer-defined alternate variant established for this selected product\",\"image_permission_status\":\"Unknown\",\"image_copied\":false,\"public_gtin_lookup\":\"No match found on2026-10-04\",\"hidden_record_duplicate_check\":\"Required before import\",\"publish_allowed\":false}\nImage permission unknown; no images copied. Ordinary Current variant is an editorial structural convention.\nIndividual draft attribute review 2026-10-04: manufacturer confirms hook-and-loop closure, wetness indicator and adult use. Prior AllAroundElastic is not supported by two elastic side panels; do not equate side panels with a waistband. Plain/White, latex-free, unscented, backing composition and exact fastener count and standing-guard construction remain unknown in this reviewed payload. Prior entered attributes are preserved in the editorial journal before reconciliation.",
+    "ExistingSubmissionId": "7a277b9f-3911-4a2f-920e-e74387c015a7",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {
+      "FastenerType": "HookAndLoop",
+      "WetnessIndicator": "true",
+      "DesignedFor": "Adult"
+    }
+  },
+  {
+    "ResearchId": "B01-C16-PACK",
+    "Outcome": "READY",
+    "Manufacturer": "TZMO SA",
+    "Brand": "Seni",
+    "Product": "Active Super",
+    "ManufacturerAliases": [],
+    "ProductAliases": [
+      "Seni Active Super"
+    ],
+    "Family": "Active",
+    "ProductType": "PullUp",
+    "Size": "Medium",
+    "Quantity": 10,
+    "Gtin": "5900516695750",
+    "MeasurementBasis": "waist/hip as published",
+    "WaistMinimumCm": 80,
+    "WaistMaximumCm": 110,
+    "HipMinimumCm": 80,
+    "HipMaximumCm": 110,
+    "OfficialWebsite": "https://en.seni-global.com/en/product/seni-active-super-en",
+    "IdentitySources": [
+      "https://en.seni-global.com/en/product/seni-active-super-en"
+    ],
+    "IdentifierSources": [
+      "https://www.dryonline.de/seni-active-super-pants-medium"
+    ],
+    "SpecificationSources": [
+      "https://en.seni-global.com/en/product/seni-active-super-en"
+    ],
+    "EvidenceNotes": "Approved Batch 01 independently verified exact pack. Manufacturer/retailer source register accessed 2026-10-04. {\"manufacturer\":\"TZMO SA\",\"brand\":\"Seni\",\"family\":\"Active\",\"product\":\"Active Super\",\"product_type\":\"PullUp\",\"size\":\"Medium\",\"measurement_basis\":\"waist/hip as published\",\"minimum_cm\":80,\"maximum_cm\":110,\"count\":10,\"gtin\":\"5900516695750\",\"article\":null,\"markets\":[\"European manufacturer\",\"DE retailer\"],\"spec_sources\":[\"SA\"],\"image_source\":\"SA\",\"identifier_sources\":[\"RSA\"],\"manufacturer_absorbency_ml\":null,\"packaging_type\":\"Bag\",\"barcode_format\":\"GTIN-13 (source EAN designation; printed symbol not decoded)\",\"proposed_variant\":\"One ordinary required variant; editorial display label not yet assigned\",\"variant_scope\":\"No manufacturer-defined alternate variant established for this selected product\",\"image_permission_status\":\"Unknown\",\"image_copied\":false,\"public_gtin_lookup\":\"No match found on2026-10-04\",\"hidden_record_duplicate_check\":\"Required before import\",\"publish_allowed\":false}\nImage permission unknown; no images copied. Ordinary Current variant is an editorial structural convention.",
+    "ExistingSubmissionId": null
+  },
+  {
+    "ResearchId": "B01-C18-PACK",
+    "Outcome": "READY",
+    "Manufacturer": "Attends",
+    "Brand": "Attends",
+    "Product": "Pull-Ons 8",
+    "ManufacturerAliases": [],
+    "ProductAliases": [
+      "Attends Pull-Ons 8"
+    ],
+    "Family": "Pull-Ons",
+    "ProductType": "PullUp",
+    "Size": "Medium",
+    "Quantity": 16,
+    "Gtin": "7332152207383",
+    "MeasurementBasis": "waist",
+    "WaistMinimumCm": 80,
+    "WaistMaximumCm": 110,
+    "HipMinimumCm": null,
+    "HipMaximumCm": null,
+    "OfficialWebsite": "https://shop.attends.co.uk/shop/pull-ons-8-medium",
+    "IdentitySources": [
+      "https://shop.attends.co.uk/shop/pull-ons-8-medium"
+    ],
+    "IdentifierSources": [
+      "https://www.redcare-pharmacie.fr/hygiene-et-sante/BE03130978/attends-pull-ons-8-medium.htm"
+    ],
+    "SpecificationSources": [
+      "https://shop.attends.co.uk/shop/pull-ons-8-medium"
+    ],
+    "EvidenceNotes": "Approved Batch 01 independently verified exact pack. Manufacturer/retailer source register accessed 2026-10-04. {\"manufacturer\":\"Attends\",\"brand\":\"Attends\",\"family\":\"Pull-Ons\",\"product\":\"Pull-Ons 8\",\"product_type\":\"PullUp\",\"size\":\"Medium\",\"measurement_basis\":\"waist\",\"minimum_cm\":80,\"maximum_cm\":110,\"count\":16,\"gtin\":\"7332152207383\",\"article\":\"207406\",\"markets\":[\"UK manufacturer shop\",\"FR retailer unavailable\"],\"spec_sources\":[\"A8\"],\"image_source\":\"A8\",\"identifier_sources\":[\"RA8\"],\"manufacturer_absorbency_ml\":null,\"packaging_type\":\"Bag\",\"barcode_format\":\"GTIN-13 (source EAN designation; printed symbol not decoded)\",\"proposed_variant\":\"One ordinary required variant; editorial display label not yet assigned\",\"variant_scope\":\"No manufacturer-defined alternate variant established for this selected product\",\"image_permission_status\":\"Unknown\",\"image_copied\":false,\"public_gtin_lookup\":\"No match found on2026-10-04\",\"hidden_record_duplicate_check\":\"Required before import\",\"publish_allowed\":false}\nImage permission unknown; no images copied. Ordinary Current variant is an editorial structural convention.",
+    "ExistingSubmissionId": null
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "web_configuration": true,
+  "web_environmentId": true,
+  "web_workloadProfileName": true,
+  "web_identity": true,
+  "web_other_template_fields": true,
+  "api_configuration": true,
+  "api_template": true,
+  "api_environmentId": true,
+  "api_workloadProfileName": true,
+  "api_identity": true
+}

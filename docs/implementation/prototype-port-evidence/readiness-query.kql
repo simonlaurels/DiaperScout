@@ -1,0 +1,5 @@
+ContainerAppConsoleLogs_CL
+| where TimeGenerated > ago(30m) and RevisionName_s == 'diaperscout-web-vnet--prototype-c1b2801'
+| where Log_s contains 'Shared Data Protection key ring readiness check passed.' or Log_s contains 'Application started.' or Log_s contains 'Blazor circuit connection up'
+| project TimeGenerated, RevisionName_s, ContainerGroupName_s, Log_s
+| order by TimeGenerated asc

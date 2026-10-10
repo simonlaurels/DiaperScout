@@ -1,0 +1,17 @@
+{
+  "inspectedAt": "2026-10-02",
+  "approvedPages": ["https://diaperscout-prototype.pages.dev/screens/product", "https://diaperscout-prototype.pages.dev/screens/retailers"],
+  "stylesheet": "https://diaperscout-prototype.pages.dev/css/coastal-explorer.css",
+  "retailerAssets": {
+    "tesco.svg": "https://diaperscout-prototype.pages.dev/assets/retailers/Tesco_Logo.svg",
+    "boots.svg": "https://diaperscout-prototype.pages.dev/assets/retailers/Boots_logo.svg",
+    "sainsburys.svg": "https://diaperscout-prototype.pages.dev/assets/retailers/Sainsbury%27s_Logo.svg",
+    "morrisons.svg": "https://diaperscout-prototype.pages.dev/assets/retailers/Wm_Morrison_Supermarkets_logo.svg",
+    "asda.svg": "https://diaperscout-prototype.pages.dev/assets/retailers/Asda_logo.svg"
+  },
+  "fonts": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
+  "fontLicense": "https://raw.githubusercontent.com/rsms/inter/master/LICENSE.txt",
+  "iconLicense": "https://raw.githubusercontent.com/lucide-icons/lucide/main/LICENSE",
+  "testOnlyImage": "https://diaperscout-prototype.pages.dev/assets/products/tena1.avif",
+  "testImageConversion": "Decoded to 8-bit RGBA PNG for desktop WebKit; never served by production"
+}

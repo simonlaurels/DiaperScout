@@ -1,0 +1,644 @@
+[
+  {
+    "ResearchId": "B07-ASL-standard-M0-27",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Premium"
+    ],
+    "Family": "Slip",
+    "ProductType": "Tape",
+    "Size": "M0",
+    "Quantity": 27,
+    "Gtin": "5713571000083",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 70,
+    "HipMaximumCm": 110,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m0-27-pcs-109942"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m0-27-pcs-109942"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA Slip Premium M0, article 1000021283, bag 27, GTIN 5713571000083. Authoritative registry exactGTIN/count independently corroborated by official 2025 manufacturer table p37 with hip 70–110 cm. Waist unknown; no hip-to-waist substitution. Manufacturer-defined size code M0 preserved, including absorbency digit; Current is an editorial structural variant. Size-specific optional absorbency and construction attributes not promoted to heterogeneous range. Reuse existing empty ABENA Slip Premium draft f59927ab-2a60-4a23-87e8-acab48cb3d23; prior entered proposal and unsupported FlexiFit attribute values preserved in evidence journal before explicit reconciliation. Distinct juniorXS2 and standardXS2 have different fit ranges andGTINs. No images copied; permissionsunknown. Nordic/EUpackscope; no USidentifier equivalence inferred.",
+    "ExistingSubmissionId": "f59927ab-2a60-4a23-87e8-acab48cb3d23",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {}
+  },
+  {
+    "ResearchId": "B07-ASL-standard-L0-26",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Premium"
+    ],
+    "Family": "Slip",
+    "ProductType": "Tape",
+    "Size": "L0",
+    "Quantity": 26,
+    "Gtin": "5713571000182",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 100,
+    "HipMaximumCm": 150,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l0-26-pcs-109935"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l0-26-pcs-109935"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA Slip Premium L0, article 1000021288, bag 26, GTIN 5713571000182. Authoritative registry exactGTIN/count independently corroborated by official 2025 manufacturer table p37 with hip 100–150 cm. Waist unknown; no hip-to-waist substitution. Manufacturer-defined size code L0 preserved, including absorbency digit; Current is an editorial structural variant. Size-specific optional absorbency and construction attributes not promoted to heterogeneous range. Reuse existing empty ABENA Slip Premium draft f59927ab-2a60-4a23-87e8-acab48cb3d23; prior entered proposal and unsupported FlexiFit attribute values preserved in evidence journal before explicit reconciliation. Distinct juniorXS2 and standardXS2 have different fit ranges andGTINs. No images copied; permissionsunknown. Nordic/EUpackscope; no USidentifier equivalence inferred.",
+    "ExistingSubmissionId": "f59927ab-2a60-4a23-87e8-acab48cb3d23",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {}
+  },
+  {
+    "ResearchId": "B07-ASL-standard-M1-26",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Premium"
+    ],
+    "Family": "Slip",
+    "ProductType": "Tape",
+    "Size": "M1",
+    "Quantity": 26,
+    "Gtin": "5713571000106",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 70,
+    "HipMaximumCm": 110,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m1-26-pcs-109934"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m1-26-pcs-109934"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA Slip Premium M1, article 1000021284, bag 26, GTIN 5713571000106. Authoritative registry exactGTIN/count independently corroborated by official 2025 manufacturer table p37 with hip 70–110 cm. Waist unknown; no hip-to-waist substitution. Manufacturer-defined size code M1 preserved, including absorbency digit; Current is an editorial structural variant. Size-specific optional absorbency and construction attributes not promoted to heterogeneous range. Reuse existing empty ABENA Slip Premium draft f59927ab-2a60-4a23-87e8-acab48cb3d23; prior entered proposal and unsupported FlexiFit attribute values preserved in evidence journal before explicit reconciliation. Distinct juniorXS2 and standardXS2 have different fit ranges andGTINs. No images copied; permissionsunknown. Nordic/EUpackscope; no USidentifier equivalence inferred.",
+    "ExistingSubmissionId": "f59927ab-2a60-4a23-87e8-acab48cb3d23",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {}
+  },
+  {
+    "ResearchId": "B07-ASL-standard-L1-26",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Premium"
+    ],
+    "Family": "Slip",
+    "ProductType": "Tape",
+    "Size": "L1",
+    "Quantity": 26,
+    "Gtin": "5713571000205",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 100,
+    "HipMaximumCm": 150,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l1-26-pcs-109936"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l1-26-pcs-109936"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA Slip Premium L1, article 1000021289, bag 26, GTIN 5713571000205. Authoritative registry exactGTIN/count independently corroborated by official 2025 manufacturer table p37 with hip 100–150 cm. Waist unknown; no hip-to-waist substitution. Manufacturer-defined size code L1 preserved, including absorbency digit; Current is an editorial structural variant. Size-specific optional absorbency and construction attributes not promoted to heterogeneous range. Reuse existing empty ABENA Slip Premium draft f59927ab-2a60-4a23-87e8-acab48cb3d23; prior entered proposal and unsupported FlexiFit attribute values preserved in evidence journal before explicit reconciliation. Distinct juniorXS2 and standardXS2 have different fit ranges andGTINs. No images copied; permissionsunknown. Nordic/EUpackscope; no USidentifier equivalence inferred.",
+    "ExistingSubmissionId": "f59927ab-2a60-4a23-87e8-acab48cb3d23",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {}
+  },
+  {
+    "ResearchId": "B07-ASL-standard-S2-28",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Premium"
+    ],
+    "Family": "Slip",
+    "ProductType": "Tape",
+    "Size": "S2",
+    "Quantity": 28,
+    "Gtin": "5713571000045",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 60,
+    "HipMaximumCm": 85,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-s2-28-pcs-109940"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-s2-28-pcs-109940"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA Slip Premium S2, article 1000021281, bag 28, GTIN 5713571000045. Authoritative registry exactGTIN/count independently corroborated by official 2025 manufacturer table p37 with hip 60–85 cm. Waist unknown; no hip-to-waist substitution. Manufacturer-defined size code S2 preserved, including absorbency digit; Current is an editorial structural variant. Size-specific optional absorbency and construction attributes not promoted to heterogeneous range. Reuse existing empty ABENA Slip Premium draft f59927ab-2a60-4a23-87e8-acab48cb3d23; prior entered proposal and unsupported FlexiFit attribute values preserved in evidence journal before explicit reconciliation. Distinct juniorXS2 and standardXS2 have different fit ranges andGTINs. No images copied; permissionsunknown. Nordic/EUpackscope; no USidentifier equivalence inferred.",
+    "ExistingSubmissionId": "f59927ab-2a60-4a23-87e8-acab48cb3d23",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {}
+  },
+  {
+    "ResearchId": "B07-ASL-standard-XS2-32",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Premium"
+    ],
+    "Family": "Slip",
+    "ProductType": "Tape",
+    "Size": "XS2",
+    "Quantity": 32,
+    "Gtin": "5713571000021",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 50,
+    "HipMaximumCm": 60,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-xs2-premium-32-pcs-119593"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-xs2-premium-32-pcs-119593"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA Slip Premium XS2, article 1000021280, bag 32, GTIN 5713571000021. Authoritative registry exactGTIN/count independently corroborated by official 2025 manufacturer table p37 with hip 50–60 cm. Waist unknown; no hip-to-waist substitution. Manufacturer-defined size code XS2 preserved, including absorbency digit; Current is an editorial structural variant. Size-specific optional absorbency and construction attributes not promoted to heterogeneous range. Reuse existing empty ABENA Slip Premium draft f59927ab-2a60-4a23-87e8-acab48cb3d23; prior entered proposal and unsupported FlexiFit attribute values preserved in evidence journal before explicit reconciliation. Distinct juniorXS2 and standardXS2 have different fit ranges andGTINs. No images copied; permissionsunknown. Nordic/EUpackscope; no USidentifier equivalence inferred.",
+    "ExistingSubmissionId": "f59927ab-2a60-4a23-87e8-acab48cb3d23",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {}
+  },
+  {
+    "ResearchId": "B07-ASL-standard-M2-24",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Premium"
+    ],
+    "Family": "Slip",
+    "ProductType": "Tape",
+    "Size": "M2",
+    "Quantity": 24,
+    "Gtin": "5713571000120",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 70,
+    "HipMaximumCm": 110,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m2-24-pcs-109945"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m2-24-pcs-109945"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA Slip Premium M2, article 1000021285, bag 24, GTIN 5713571000120. Authoritative registry exactGTIN/count independently corroborated by official 2025 manufacturer table p37 with hip 70–110 cm. Waist unknown; no hip-to-waist substitution. Manufacturer-defined size code M2 preserved, including absorbency digit; Current is an editorial structural variant. Size-specific optional absorbency and construction attributes not promoted to heterogeneous range. Reuse existing empty ABENA Slip Premium draft f59927ab-2a60-4a23-87e8-acab48cb3d23; prior entered proposal and unsupported FlexiFit attribute values preserved in evidence journal before explicit reconciliation. Distinct juniorXS2 and standardXS2 have different fit ranges andGTINs. No images copied; permissionsunknown. Nordic/EUpackscope; no USidentifier equivalence inferred.",
+    "ExistingSubmissionId": "f59927ab-2a60-4a23-87e8-acab48cb3d23",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {}
+  },
+  {
+    "ResearchId": "B07-ASL-standard-L2-22",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Premium"
+    ],
+    "Family": "Slip",
+    "ProductType": "Tape",
+    "Size": "L2",
+    "Quantity": 22,
+    "Gtin": "5713571000229",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 100,
+    "HipMaximumCm": 150,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l2-22-pcs-109937"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l2-22-pcs-109937"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA Slip Premium L2, article 1000021290, bag 22, GTIN 5713571000229. Authoritative registry exactGTIN/count independently corroborated by official 2025 manufacturer table p37 with hip 100–150 cm. Waist unknown; no hip-to-waist substitution. Manufacturer-defined size code L2 preserved, including absorbency digit; Current is an editorial structural variant. Size-specific optional absorbency and construction attributes not promoted to heterogeneous range. Reuse existing empty ABENA Slip Premium draft f59927ab-2a60-4a23-87e8-acab48cb3d23; prior entered proposal and unsupported FlexiFit attribute values preserved in evidence journal before explicit reconciliation. Distinct juniorXS2 and standardXS2 have different fit ranges andGTINs. No images copied; permissionsunknown. Nordic/EUpackscope; no USidentifier equivalence inferred.",
+    "ExistingSubmissionId": "f59927ab-2a60-4a23-87e8-acab48cb3d23",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {}
+  },
+  {
+    "ResearchId": "B07-ASL-standard-XL2-21",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Premium"
+    ],
+    "Family": "Slip",
+    "ProductType": "Tape",
+    "Size": "XL2",
+    "Quantity": 21,
+    "Gtin": "5713571000281",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 110,
+    "HipMaximumCm": 170,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-xl2-21-pcs-109938"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-xl2-21-pcs-109938"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA Slip Premium XL2, article 1000021293, bag 21, GTIN 5713571000281. Authoritative registry exactGTIN/count independently corroborated by official 2025 manufacturer table p37 with hip 110–170 cm. Waist unknown; no hip-to-waist substitution. Manufacturer-defined size code XL2 preserved, including absorbency digit; Current is an editorial structural variant. Size-specific optional absorbency and construction attributes not promoted to heterogeneous range. Reuse existing empty ABENA Slip Premium draft f59927ab-2a60-4a23-87e8-acab48cb3d23; prior entered proposal and unsupported FlexiFit attribute values preserved in evidence journal before explicit reconciliation. Distinct juniorXS2 and standardXS2 have different fit ranges andGTINs. No images copied; permissionsunknown. Nordic/EUpackscope; no USidentifier equivalence inferred.",
+    "ExistingSubmissionId": "f59927ab-2a60-4a23-87e8-acab48cb3d23",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {}
+  },
+  {
+    "ResearchId": "B07-ASL-standard-M3-23",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Premium"
+    ],
+    "Family": "Slip",
+    "ProductType": "Tape",
+    "Size": "M3",
+    "Quantity": 23,
+    "Gtin": "5713571000144",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 70,
+    "HipMaximumCm": 110,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m3-23-pcs-109943"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m3-23-pcs-109943"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA Slip Premium M3, article 1000021286, bag 23, GTIN 5713571000144. Authoritative registry exactGTIN/count independently corroborated by official 2025 manufacturer table p37 with hip 70–110 cm. Waist unknown; no hip-to-waist substitution. Manufacturer-defined size code M3 preserved, including absorbency digit; Current is an editorial structural variant. Size-specific optional absorbency and construction attributes not promoted to heterogeneous range. Reuse existing empty ABENA Slip Premium draft f59927ab-2a60-4a23-87e8-acab48cb3d23; prior entered proposal and unsupported FlexiFit attribute values preserved in evidence journal before explicit reconciliation. Distinct juniorXS2 and standardXS2 have different fit ranges andGTINs. No images copied; permissionsunknown. Nordic/EUpackscope; no USidentifier equivalence inferred.",
+    "ExistingSubmissionId": "f59927ab-2a60-4a23-87e8-acab48cb3d23",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {}
+  },
+  {
+    "ResearchId": "B07-ASL-standard-L3-20",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Premium"
+    ],
+    "Family": "Slip",
+    "ProductType": "Tape",
+    "Size": "L3",
+    "Quantity": 20,
+    "Gtin": "5713571000243",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 100,
+    "HipMaximumCm": 150,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l3-20-pcs-109946"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l3-20-pcs-109946"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA Slip Premium L3, article 1000021291, bag 20, GTIN 5713571000243. Authoritative registry exactGTIN/count independently corroborated by official 2025 manufacturer table p37 with hip 100–150 cm. Waist unknown; no hip-to-waist substitution. Manufacturer-defined size code L3 preserved, including absorbency digit; Current is an editorial structural variant. Size-specific optional absorbency and construction attributes not promoted to heterogeneous range. Reuse existing empty ABENA Slip Premium draft f59927ab-2a60-4a23-87e8-acab48cb3d23; prior entered proposal and unsupported FlexiFit attribute values preserved in evidence journal before explicit reconciliation. Distinct juniorXS2 and standardXS2 have different fit ranges andGTINs. No images copied; permissionsunknown. Nordic/EUpackscope; no USidentifier equivalence inferred.",
+    "ExistingSubmissionId": "f59927ab-2a60-4a23-87e8-acab48cb3d23",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {}
+  },
+  {
+    "ResearchId": "B07-ASL-standard-S4-25",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Premium"
+    ],
+    "Family": "Slip",
+    "ProductType": "Tape",
+    "Size": "S4",
+    "Quantity": 25,
+    "Gtin": "5713571000069",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 60,
+    "HipMaximumCm": 85,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-s4-25-pcs-109941"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-s4-25-pcs-109941"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA Slip Premium S4, article 1000021282, bag 25, GTIN 5713571000069. Authoritative registry exactGTIN/count independently corroborated by official 2025 manufacturer table p37 with hip 60–85 cm. Waist unknown; no hip-to-waist substitution. Manufacturer-defined size code S4 preserved, including absorbency digit; Current is an editorial structural variant. Size-specific optional absorbency and construction attributes not promoted to heterogeneous range. Reuse existing empty ABENA Slip Premium draft f59927ab-2a60-4a23-87e8-acab48cb3d23; prior entered proposal and unsupported FlexiFit attribute values preserved in evidence journal before explicit reconciliation. Distinct juniorXS2 and standardXS2 have different fit ranges andGTINs. No images copied; permissionsunknown. Nordic/EUpackscope; no USidentifier equivalence inferred.",
+    "ExistingSubmissionId": "f59927ab-2a60-4a23-87e8-acab48cb3d23",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {}
+  },
+  {
+    "ResearchId": "B07-ASL-standard-L4-18",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Premium"
+    ],
+    "Family": "Slip",
+    "ProductType": "Tape",
+    "Size": "L4",
+    "Quantity": 18,
+    "Gtin": "5713571000267",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 100,
+    "HipMaximumCm": 150,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l4-18-pcs-109949"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-l4-18-pcs-109949"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA Slip Premium L4, article 1000021292, bag 18, GTIN 5713571000267. Authoritative registry exactGTIN/count independently corroborated by official 2025 manufacturer table p37 with hip 100–150 cm. Waist unknown; no hip-to-waist substitution. Manufacturer-defined size code L4 preserved, including absorbency digit; Current is an editorial structural variant. Size-specific optional absorbency and construction attributes not promoted to heterogeneous range. Reuse existing empty ABENA Slip Premium draft f59927ab-2a60-4a23-87e8-acab48cb3d23; prior entered proposal and unsupported FlexiFit attribute values preserved in evidence journal before explicit reconciliation. Distinct juniorXS2 and standardXS2 have different fit ranges andGTINs. No images copied; permissionsunknown. Nordic/EUpackscope; no USidentifier equivalence inferred.",
+    "ExistingSubmissionId": "f59927ab-2a60-4a23-87e8-acab48cb3d23",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {}
+  },
+  {
+    "ResearchId": "B07-ASL-standard-XL4-12",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium",
+    "ManufacturerAliases": [
+      "ABENA"
+    ],
+    "ProductAliases": [
+      "ABENA Slip Premium"
+    ],
+    "Family": "Slip",
+    "ProductType": "Tape",
+    "Size": "XL4",
+    "Quantity": 12,
+    "Gtin": "5713571000304",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 110,
+    "HipMaximumCm": 170,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-xl4-12-pcs-109939"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-xl4-12-pcs-109939"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA Slip Premium XL4, article 1000021294, bag 12, GTIN 5713571000304. Authoritative registry exactGTIN/count independently corroborated by official 2025 manufacturer table p37 with hip 110–170 cm. Waist unknown; no hip-to-waist substitution. Manufacturer-defined size code XL4 preserved, including absorbency digit; Current is an editorial structural variant. Size-specific optional absorbency and construction attributes not promoted to heterogeneous range. Reuse existing empty ABENA Slip Premium draft f59927ab-2a60-4a23-87e8-acab48cb3d23; prior entered proposal and unsupported FlexiFit attribute values preserved in evidence journal before explicit reconciliation. Distinct juniorXS2 and standardXS2 have different fit ranges andGTINs. No images copied; permissionsunknown. Nordic/EUpackscope; no USidentifier equivalence inferred.",
+    "ExistingSubmissionId": "f59927ab-2a60-4a23-87e8-acab48cb3d23",
+    "ReconcileDraftAttributes": true,
+    "VerifiedVariantAttributes": {}
+  },
+  {
+    "ResearchId": "B07-ASL-junior-XS2-32",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium Junior",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "Slip",
+    "ProductType": "Tape",
+    "Size": "XS2",
+    "Quantity": 32,
+    "Gtin": "5713571000007",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 40,
+    "HipMaximumCm": 60,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-junior-xs2-32-pcs-110308"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-junior-xs2-32-pcs-110308"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA Slip Premium Junior XS2, article 1000021279, bag 32, GTIN 5713571000007. Authoritative registry exactGTIN/count independently corroborated by official 2025 manufacturer table p37 andp49 with hip 40–60 cm. Waist unknown; no hip-to-waist substitution. Manufacturer-defined size code XS2 preserved, including absorbency digit; Current is an editorial structural variant. Size-specific optional absorbency and construction attributes not promoted to heterogeneous range. Keep junior product separate from standardSlip. Distinct juniorXS2 and standardXS2 have different fit ranges andGTINs. No images copied; permissionsunknown. Nordic/EUpackscope; no USidentifier equivalence inferred."
+  },
+  {
+    "ResearchId": "B07-ASL-special-M4-14",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium Special",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "Slip",
+    "ProductType": "Tape",
+    "Size": "M4",
+    "Quantity": 14,
+    "Gtin": "5713571008140",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 70,
+    "HipMaximumCm": 110,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-special-m4-14-stk-142547"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-special-m4-14-stk-142547"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA Slip Premium Special M4, article 1000024469, bag 14, GTIN 5713571008140. Authoritative registry exactGTIN/count independently corroborated by official 2025 manufacturer table p37 with hip 70–110 cm. Waist unknown; no hip-to-waist substitution. Manufacturer-defined size code M4 preserved, including absorbency digit; Current is an editorial structural variant. Size-specific optional absorbency and construction attributes not promoted to heterogeneous range. Keep special product separate from standardSlip. Distinct juniorXS2 and standardXS2 have different fit ranges andGTINs. No images copied; permissionsunknown. Nordic/EUpackscope; no USidentifier equivalence inferred."
+  },
+  {
+    "ResearchId": "B07-ASL-special-L4-12",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium Special",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "Slip",
+    "ProductType": "Tape",
+    "Size": "L4",
+    "Quantity": 12,
+    "Gtin": "5713571008164",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 100,
+    "HipMaximumCm": 150,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-special-l4-12-stk-142546"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-special-l4-12-stk-142546"
+    ],
+    "SpecificationSources": [
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf"
+    ],
+    "EvidenceNotes": "Exact ABENA Slip Premium Special L4, article 1000024470, bag 12, GTIN 5713571008164. Authoritative registry exactGTIN/count independently corroborated by official 2025 manufacturer table p37 with hip 100–150 cm. Waist unknown; no hip-to-waist substitution. Manufacturer-defined size code L4 preserved, including absorbency digit; Current is an editorial structural variant. Size-specific optional absorbency and construction attributes not promoted to heterogeneous range. Keep special product separate from standardSlip. Distinct juniorXS2 and standardXS2 have different fit ranges andGTINs. No images copied; permissionsunknown. Nordic/EUpackscope; no USidentifier equivalence inferred."
+  }
+]

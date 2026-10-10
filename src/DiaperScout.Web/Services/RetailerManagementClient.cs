@@ -5,7 +5,7 @@ using DiaperScout.Domain;
 
 namespace DiaperScout.Web.Services;
 
-public sealed class RetailerManagementClient(HttpClient client)
+public sealed partial class RetailerManagementClient(HttpClient client)
 {
     public async Task<RetailerManagementResult> GetAsync(
         string? query = null,

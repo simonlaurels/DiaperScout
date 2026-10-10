@@ -38,6 +38,11 @@ async function loadPasskeys(root) {
     const list = root.querySelector("[data-passkey-list]");
     const passkeys = await request(root, "/account/passkeys/list", undefined, "GET");
     list.replaceChildren();
+    if (root.hasAttribute('data-backpack-account')) {
+        const {renderBackpackPasskeys} = await import('./backpack.js');
+        renderBackpackPasskeys(list, passkeys ?? []);
+        return;
+    }
     if (!passkeys?.length) { list.textContent = "You haven’t added a passkey yet."; return; }
     for (const passkey of passkeys) {
         const row = document.createElement("div");
@@ -71,6 +76,9 @@ document.addEventListener("click", async event => {
     root.dataset.busy = "true";
     root.querySelectorAll("button").forEach(item => item.disabled = true);
     message.textContent = "";
+    let navigating = false;
+    const originalLabel = button.textContent;
+    if(root.hasAttribute('data-onboarding-passkey')) { button.textContent = "Creating passkey…"; root.setAttribute('aria-busy','true'); }
     try {
         if (action === "remove") {
             await request(root, `/account/passkeys/${button.dataset.passkeyId}`, undefined, "DELETE");
@@ -80,7 +88,8 @@ document.addEventListener("click", async event => {
         }
         if (!supported()) throw new Error("This browser doesn’t support passkeys here. You can still use an email sign-in link.");
         const registration = action === "register";
-        const name = registration ? root.querySelector("#passkey-name").value.trim() : undefined;
+        const onboarding = root.hasAttribute('data-onboarding-passkey');
+        const name = registration ? (onboarding ? "Passkey" : root.querySelector("#passkey-name").value.trim()) : undefined;
         if (registration && !name) throw new Error("Give this passkey a name so you can recognise it later.");
         const base = registration ? "/account/passkeys" : "/signin/passkey";
         const options = await request(root, `${base}/options`, {});
@@ -96,31 +105,49 @@ document.addEventListener("click", async event => {
         const credential = await navigator.credentials[registration ? "create" : "get"]({ publicKey });
         if (!credential) throw new Error("No passkey was selected. Please try again or use an email sign-in link.");
         const result = await request(root, `${base}/verify`, { requestId: options.requestId, credential: credentialJson(credential), name });
-        if (registration) {
+        if (registration && onboarding) {
+            await request(root, "/join/data/complete", {skip:false});
+            window.location.assign("/join/ready"); navigating = true;
+        } else if (registration) {
             await loadPasskeys(root);
             root.querySelector("#passkey-name").value = "";
             message.textContent = "Passkey added. You can now use it to sign in.";
-        } else window.location.assign(result.redirect);
+        } else { window.location.assign(result.redirect); navigating = true; }
     } catch (error) {
+        const fallback = root.querySelector("[data-passkey-fallback]");
+        if (fallback) fallback.hidden = false;
         message.textContent = error.name === "NotAllowedError" ? "The passkey request was cancelled or no matching passkey was available. Try again or use an email sign-in link."
             : error.name === "InvalidStateError" ? "This device already has a passkey for your account. Try another device or use your existing passkey."
-            : error.message || "Passkey sign-in wasn’t completed. You can use an email sign-in link instead.";
+            : root.hasAttribute('data-onboarding-passkey') && (error instanceof DOMException || error instanceof TypeError)
+                ? "Your device couldn’t create that passkey. Try again, or choose Maybe later."
+                : error.message || "Passkey sign-in wasn’t completed. You can use an email sign-in link instead.";
     } finally {
         delete root.dataset.busy;
+        if(root.hasAttribute('data-onboarding-passkey')) { button.textContent=originalLabel; root.removeAttribute('aria-busy'); }
         root.querySelectorAll("button").forEach(item => item.disabled = false);
+        if (root.closest('#pwa-welcome')) root.dispatchEvent(new CustomEvent('diaperscout:welcome-auth-settled', { bubbles: true, detail: { navigating } }));
     }
 });
 
 function initialise() {
     document.querySelectorAll("[data-passkey-signin], [data-passkey-account]").forEach(root => {
-        if (root.dataset.initialised) return;
+        if (root.hasAttribute('data-backpack-account') && !(matchMedia('(display-mode: standalone)').matches || navigator.standalone === true)) return;
+        // Enhanced navigation can preserve this root while replacing its list with SSR
+        // markup. Rehydrate that list even when the root was initialised previously.
+        const resetList = root.querySelector("[data-passkey-list]")?.textContent.trim() === "Loading your passkeys…";
+        if (root.dataset.initialised && !resetList) return;
         root.dataset.initialised = "true";
-        if (!supported()) root.querySelector("[data-passkey-message]").textContent = "Passkeys aren’t supported in this browser. Email sign-in links are still available.";
-        if (root.matches("[data-passkey-account]")) loadPasskeys(root).catch(error => {
+        if (!supported()) {
+            root.querySelector("[data-passkey-message]").textContent = "Passkeys aren’t supported in this browser. Email sign-in links are still available.";
+            const fallback = root.querySelector("[data-passkey-fallback]");
+            if (fallback) fallback.hidden = false;
+        }
+        if (root.matches("[data-passkey-account]") && !root.hasAttribute('data-onboarding-passkey')) loadPasskeys(root).catch(error => {
             root.querySelector("[data-passkey-list]").textContent = "Your passkeys could not be loaded. Refresh the page to try again.";
             root.querySelector("[data-passkey-message]").textContent = error.message;
         });
     });
 }
 initialise();
-if (window.Blazor) Blazor.addEventListener("enhancedload", initialise);
+if (typeof window.Blazor?.addEventListener === "function") Blazor.addEventListener("enhancedload", initialise);
+else addEventListener("diaperscout:framework-ready", () => Blazor.addEventListener("enhancedload", initialise), { once: true });

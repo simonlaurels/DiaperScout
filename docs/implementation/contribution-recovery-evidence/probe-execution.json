@@ -1,0 +1,10 @@
+{
+  "execution": "ds-bootstrap-admin-as06i3d",
+  "status": "Succeeded",
+  "acrBuild": "db18",
+  "imageDigest": "sha256:1afa6d8a23cee2bef1f04c2d0cca2c156dd396dc2555a28fb9c894f1159dba79",
+  "persistentJobUnchanged": true,
+  "readOnly": true,
+  "writes": 0,
+  "templateOverride": "image, command=dotnet Probe.dll; bootstrap args removed; env secretRef and identity preserved"
+}

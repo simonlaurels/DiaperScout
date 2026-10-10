@@ -1,0 +1,16 @@
+[
+  {
+    "Log_s": "diaperscout-web-vnet has been scaled to 2 by the scaler: http-scaler.",
+    "Reason_s": "SuccessfulRescale",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:48:37.3150136Z"
+  },
+  {
+    "Log_s": "Scale down to 1 as all metrics below target",
+    "Reason_s": "SuccessfulRescale",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:56:27.2808264Z"
+  }
+]

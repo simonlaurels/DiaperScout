@@ -1,0 +1,14 @@
+{
+  "runId": "db1c",
+  "status": "Succeeded",
+  "startTime": "2026-10-02T15:27:59.703900+00:00",
+  "finishTime": "2026-10-02T15:29:28.954915+00:00",
+  "outputImages": [
+    {
+      "digest": "sha256:6090285e3fa879a6152cf1580e2227aa854105d6ec74436dddf7a653a2ccc600",
+      "registry": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io",
+      "repository": "diaperscout-web",
+      "tag": "prototype-c1b2801"
+    }
+  ]
+}

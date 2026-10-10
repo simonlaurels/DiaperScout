@@ -1,0 +1,560 @@
+[
+  {
+    "id": "B03-AP0-M-15",
+    "url": "https://diaperscout.app/products/pants-premium-level0?variantId=f4f4fbc5-3680-4bcd-8a5b-be358f45985c&packTypeId=b5cb0307-14ed-4413-af99-5bc07fb62071",
+    "title": "Pants Premium level0",
+    "count": 15,
+    "gtin": "5713571000823",
+    "productId": "edc38ea9-b8d2-4263-a517-5b7192d8694d",
+    "packId": "b5cb0307-14ed-4413-af99-5bc07fb62071"
+  },
+  {
+    "id": "B03-AP1-M-15",
+    "url": "https://diaperscout.app/products/pants-premium-level1?variantId=d2e911a4-6fa0-4048-83f1-aaf909ad0d5e&packTypeId=83f52bb4-1f84-444b-b134-72905adf29c8",
+    "title": "Pants Premium level1",
+    "count": 15,
+    "gtin": "5713571000861",
+    "productId": "e9369a50-fcf3-45e9-9d70-b12fc3912d04",
+    "packId": "83f52bb4-1f84-444b-b134-72905adf29c8"
+  },
+  {
+    "id": "B03-AP1-S-16",
+    "url": "https://diaperscout.app/products/pants-premium-level1?variantId=d2e911a4-6fa0-4048-83f1-aaf909ad0d5e&packTypeId=3c358d32-d2d4-482f-9d51-b7d28befbd66",
+    "title": "Pants Premium level1",
+    "count": 16,
+    "gtin": "5713571000786",
+    "productId": "e9369a50-fcf3-45e9-9d70-b12fc3912d04",
+    "packId": "3c358d32-d2d4-482f-9d51-b7d28befbd66"
+  },
+  {
+    "id": "B03-APJ-XS2-18",
+    "url": "https://diaperscout.app/products/pants-premium-junior?variantId=29743958-f670-4f9c-80f7-ee705616c01c&packTypeId=a3094d66-b59d-467b-97bb-b38549d045b7",
+    "title": "Pants Premium Junior",
+    "count": 18,
+    "gtin": "5713571000762",
+    "productId": "9566f79c-c49b-453d-8bf9-bf802b5237ce",
+    "packId": "a3094d66-b59d-467b-97bb-b38549d045b7"
+  },
+  {
+    "id": "B04-AP1-L-15",
+    "url": "https://diaperscout.app/products/pants-premium-level1?variantId=d2e911a4-6fa0-4048-83f1-aaf909ad0d5e&packTypeId=2bd8522b-7aab-4113-a0cb-f2bb9f028c56",
+    "title": "Pants Premium level1",
+    "count": 15,
+    "gtin": "5713571000922",
+    "productId": "e9369a50-fcf3-45e9-9d70-b12fc3912d04",
+    "packId": "2bd8522b-7aab-4113-a0cb-f2bb9f028c56"
+  },
+  {
+    "id": "B04-APL-M-15",
+    "url": "https://diaperscout.app/products/pants-premium-light?variantId=40252ff2-2d06-4780-a1dc-df066dc95dd9&packTypeId=b863ee29-87ff-47a5-985c-5b678777e9c4",
+    "title": "Pants Premium Light",
+    "count": 15,
+    "gtin": "5713571001042",
+    "productId": "32750499-a159-4eaa-8f54-d1a480b8f01e",
+    "packId": "b863ee29-87ff-47a5-985c-5b678777e9c4"
+  },
+  {
+    "id": "B05-AS1-30",
+    "url": "https://diaperscout.app/products/san-premium-1?variantId=37abd32d-9242-4ff8-8e17-038f4288a270&packTypeId=82f67b67-7b22-44a7-8f19-8eb72bad6c18",
+    "title": "San Premium 1",
+    "count": 30,
+    "gtin": "5713571000441",
+    "productId": "cce60c02-7b84-4e16-b4c9-f5b42db0f671",
+    "packId": "82f67b67-7b22-44a7-8f19-8eb72bad6c18"
+  },
+  {
+    "id": "B05-AS1A-28",
+    "url": "https://diaperscout.app/products/san-premium-1a?variantId=32610cfd-a35a-4f2b-9ef0-66c7e60f0d35&packTypeId=0b7a61c9-5e26-4e60-bb31-0550f61ba900",
+    "title": "San Premium 1A",
+    "count": 28,
+    "gtin": "5713571000465",
+    "productId": "1fcf6021-b1e8-4b12-9593-8a8641c30f78",
+    "packId": "0b7a61c9-5e26-4e60-bb31-0550f61ba900"
+  },
+  {
+    "id": "B05-AS2-30",
+    "url": "https://diaperscout.app/products/san-premium-2?variantId=1418588b-1826-4ddb-ba4e-67f77654bdb0&packTypeId=bf9b2085-6970-4965-a75e-ab88c54584a9",
+    "title": "San Premium 2",
+    "count": 30,
+    "gtin": "5713571000489",
+    "productId": "eb6dd777-fbce-41df-a961-38fddcb29acd",
+    "packId": "bf9b2085-6970-4965-a75e-ab88c54584a9"
+  },
+  {
+    "id": "B05-AS3-28",
+    "url": "https://diaperscout.app/products/san-premium-3?variantId=bf13f8a9-0d42-48d5-9646-b318c6d40a2b&packTypeId=e46dfa4a-bf1b-4ecd-a52b-46d9efe2a1af",
+    "title": "San Premium 3",
+    "count": 28,
+    "gtin": "5713571000502",
+    "productId": "8d32564b-5694-4553-a469-9195e5ed9198",
+    "packId": "e46dfa4a-bf1b-4ecd-a52b-46d9efe2a1af"
+  },
+  {
+    "id": "B05-AS3A-28",
+    "url": "https://diaperscout.app/products/san-premium-3a?variantId=32fd255d-1ed2-4e80-9c21-fd17726c0ffd&packTypeId=81093cd4-645a-4830-a756-aeaa7bda84e1",
+    "title": "San Premium 3A",
+    "count": 28,
+    "gtin": "5713571000526",
+    "productId": "7da33a70-a611-4b0a-9494-b555626b3783",
+    "packId": "81093cd4-645a-4830-a756-aeaa7bda84e1"
+  },
+  {
+    "id": "B05-AS4-30",
+    "url": "https://diaperscout.app/products/san-premium-4?variantId=ef5c4c15-5a11-46ef-9519-21aafcf26c92&packTypeId=bf6a5518-047b-4bef-8195-02aa7b20be21",
+    "title": "San Premium 4",
+    "count": 30,
+    "gtin": "5713571000540",
+    "productId": "dfd68681-0918-4680-a9ee-5a696c11d555",
+    "packId": "bf6a5518-047b-4bef-8195-02aa7b20be21"
+  },
+  {
+    "id": "B05-AS5-36",
+    "url": "https://diaperscout.app/products/san-premium-5?variantId=3342bd81-d6f7-4236-ba3b-52416157fad3&packTypeId=07d4c59e-2ec1-453f-b40a-aa6caa15b526",
+    "title": "San Premium 5",
+    "count": 36,
+    "gtin": "5713571000564",
+    "productId": "a4bb438a-2a1c-4a4a-8642-e2c4c900e1ae",
+    "packId": "07d4c59e-2ec1-453f-b40a-aa6caa15b526"
+  },
+  {
+    "id": "B05-AS6-34",
+    "url": "https://diaperscout.app/products/san-premium-6?variantId=0702f7d6-7e97-4ddd-a950-cfbf3b865421&packTypeId=0e13acb0-237a-4aba-965e-2efa6c9b1ede",
+    "title": "San Premium 6",
+    "count": 34,
+    "gtin": "5713571000588",
+    "productId": "a00674d2-d2f1-4b60-8c1f-9ee83fbcd272",
+    "packId": "0e13acb0-237a-4aba-965e-2efa6c9b1ede"
+  },
+  {
+    "id": "B05-AS7-30",
+    "url": "https://diaperscout.app/products/san-premium-7?variantId=1fd562e1-5b0c-45e7-9412-7c47fdb93b71&packTypeId=51b75655-4fd4-447c-a75b-ec3ae6e36d80",
+    "title": "San Premium 7",
+    "count": 30,
+    "gtin": "5713571000601",
+    "productId": "5ea1280d-30d0-4e9c-8947-f9e383de84c1",
+    "packId": "51b75655-4fd4-447c-a75b-ec3ae6e36d80"
+  },
+  {
+    "id": "B05-AS8-22",
+    "url": "https://diaperscout.app/products/san-premium-8?variantId=5e31e0be-fd64-4eb8-af6b-b3f65f0f750f&packTypeId=8e37c5ee-e762-4144-9b72-1c7d52a6eb7d",
+    "title": "San Premium 8",
+    "count": 22,
+    "gtin": "5713571000625",
+    "productId": "355dfb80-0542-4787-bb7d-6c2f8fbc708c",
+    "packId": "8e37c5ee-e762-4144-9b72-1c7d52a6eb7d"
+  },
+  {
+    "id": "B05-AS9-28",
+    "url": "https://diaperscout.app/products/san-premium-9?variantId=ba79fc7f-ed8e-472c-b358-d68c31cad38c&packTypeId=ab3a5f6a-93ce-48a0-be88-f0ecdd7bbbed",
+    "title": "San Premium 9",
+    "count": 28,
+    "gtin": "5713571000649",
+    "productId": "a7e1b1ce-7851-4a1b-bde2-abc59cec5775",
+    "packId": "ab3a5f6a-93ce-48a0-be88-f0ecdd7bbbed"
+  },
+  {
+    "id": "B05-AS10-25",
+    "url": "https://diaperscout.app/products/san-premium-10?variantId=dd7f7ede-fe8a-429c-a174-e295594dad72&packTypeId=4feb6c64-4149-49c3-9f25-4e225eef60d0",
+    "title": "San Premium 10",
+    "count": 25,
+    "gtin": "5713571000663",
+    "productId": "b8ce7068-9415-4b9d-b51a-f691720dd637",
+    "packId": "4feb6c64-4149-49c3-9f25-4e225eef60d0"
+  },
+  {
+    "id": "B05-AS11-21",
+    "url": "https://diaperscout.app/products/san-premium-11?variantId=82211f25-5f07-44df-bacb-bd4d3384a450&packTypeId=77be6f92-fe7f-4d1d-be0f-f339763e205b",
+    "title": "San Premium 11",
+    "count": 21,
+    "gtin": "5713571000687",
+    "productId": "6a09a44e-f695-4039-82d7-4f30eebace40",
+    "packId": "77be6f92-fe7f-4d1d-be0f-f339763e205b"
+  },
+  {
+    "id": "B05-AS7-XXL-26",
+    "url": "https://diaperscout.app/products/san-premium-7-xxl?variantId=e869df9a-d8a0-4de9-81eb-cb4725eb2b21&packTypeId=8f1985a8-1566-44ef-9bf3-765addb00818",
+    "title": "San Premium 7/XXL",
+    "count": 26,
+    "gtin": "5713571000724",
+    "productId": "706e2260-86e3-49c0-9d90-29ba26a94511",
+    "packId": "8f1985a8-1566-44ef-9bf3-765addb00818"
+  },
+  {
+    "id": "B05-AS11-XXL-16",
+    "url": "https://diaperscout.app/products/san-premium-11-xxl?variantId=78ec5356-597c-4e02-8f69-682a5ab8144b&packTypeId=aece427b-18dc-4b7b-873d-ca1104a946fb",
+    "title": "San Premium 11/XXL",
+    "count": 16,
+    "gtin": "5713571000748",
+    "productId": "d92b68b9-c37b-41bc-bf65-9555d3f71878",
+    "packId": "aece427b-18dc-4b7b-873d-ca1104a946fb"
+  },
+  {
+    "id": "B06-AS12-16",
+    "url": "https://diaperscout.app/products/san-premium-12?variantId=b51e4c01-d63b-414e-b85a-c2c8e286f8c9&packTypeId=37f7b0ad-a749-45a0-b6ce-57e7ef2795ec",
+    "title": "San Premium 12",
+    "count": 16,
+    "gtin": "5713571008447",
+    "productId": "7b2fe0cf-534b-438d-b929-94535925e72d",
+    "packId": "37f7b0ad-a749-45a0-b6ce-57e7ef2795ec"
+  },
+  {
+    "id": "B07-ASL-standard-M0-27",
+    "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=05875f5b-33dc-4348-98dd-3d3844758ea6",
+    "title": "Slip Premium",
+    "count": 27,
+    "gtin": "5713571000083",
+    "productId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+    "packId": "05875f5b-33dc-4348-98dd-3d3844758ea6"
+  },
+  {
+    "id": "B07-ASL-standard-L0-26",
+    "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=1f49df0a-3c0a-4003-b259-352cdbe31bed",
+    "title": "Slip Premium",
+    "count": 26,
+    "gtin": "5713571000182",
+    "productId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+    "packId": "1f49df0a-3c0a-4003-b259-352cdbe31bed"
+  },
+  {
+    "id": "B07-ASL-standard-M1-26",
+    "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=d9c6892c-ec1b-4921-84fb-a3060c49a898",
+    "title": "Slip Premium",
+    "count": 26,
+    "gtin": "5713571000106",
+    "productId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+    "packId": "d9c6892c-ec1b-4921-84fb-a3060c49a898"
+  },
+  {
+    "id": "B07-ASL-standard-L1-26",
+    "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=a4c355cf-c407-4381-908b-3c0b7e5b6dae",
+    "title": "Slip Premium",
+    "count": 26,
+    "gtin": "5713571000205",
+    "productId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+    "packId": "a4c355cf-c407-4381-908b-3c0b7e5b6dae"
+  },
+  {
+    "id": "B07-ASL-standard-S2-28",
+    "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=1dc36a6e-5df6-4ad8-9287-62ad71de605c",
+    "title": "Slip Premium",
+    "count": 28,
+    "gtin": "5713571000045",
+    "productId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+    "packId": "1dc36a6e-5df6-4ad8-9287-62ad71de605c"
+  },
+  {
+    "id": "B07-ASL-standard-XS2-32",
+    "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=25e02135-583f-41c3-9545-84e48145c13e",
+    "title": "Slip Premium",
+    "count": 32,
+    "gtin": "5713571000021",
+    "productId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+    "packId": "25e02135-583f-41c3-9545-84e48145c13e"
+  },
+  {
+    "id": "B07-ASL-standard-M2-24",
+    "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=6ae9f6e0-b28d-4d07-b4db-b06207624793",
+    "title": "Slip Premium",
+    "count": 24,
+    "gtin": "5713571000120",
+    "productId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+    "packId": "6ae9f6e0-b28d-4d07-b4db-b06207624793"
+  },
+  {
+    "id": "B07-ASL-standard-L2-22",
+    "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=ed642027-98e1-432f-9c0d-dbc12fa8d0cb",
+    "title": "Slip Premium",
+    "count": 22,
+    "gtin": "5713571000229",
+    "productId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+    "packId": "ed642027-98e1-432f-9c0d-dbc12fa8d0cb"
+  },
+  {
+    "id": "B07-ASL-standard-XL2-21",
+    "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=aa0b702d-abd4-4482-858d-036061331732",
+    "title": "Slip Premium",
+    "count": 21,
+    "gtin": "5713571000281",
+    "productId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+    "packId": "aa0b702d-abd4-4482-858d-036061331732"
+  },
+  {
+    "id": "B07-ASL-standard-M3-23",
+    "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=31615c7e-19f4-4476-9270-5dddda4dbd7e",
+    "title": "Slip Premium",
+    "count": 23,
+    "gtin": "5713571000144",
+    "productId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+    "packId": "31615c7e-19f4-4476-9270-5dddda4dbd7e"
+  },
+  {
+    "id": "B07-ASL-standard-L3-20",
+    "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=95c7d310-2fbd-4bce-b297-3bb7de8e0ee7",
+    "title": "Slip Premium",
+    "count": 20,
+    "gtin": "5713571000243",
+    "productId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+    "packId": "95c7d310-2fbd-4bce-b297-3bb7de8e0ee7"
+  },
+  {
+    "id": "B07-ASL-standard-S4-25",
+    "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=502b3916-6b3a-4213-bce4-31065d740a53",
+    "title": "Slip Premium",
+    "count": 25,
+    "gtin": "5713571000069",
+    "productId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+    "packId": "502b3916-6b3a-4213-bce4-31065d740a53"
+  },
+  {
+    "id": "B07-ASL-standard-L4-18",
+    "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=f8308d72-3f7d-43f3-a165-570d2a4d2d90",
+    "title": "Slip Premium",
+    "count": 18,
+    "gtin": "5713571000267",
+    "productId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+    "packId": "f8308d72-3f7d-43f3-a165-570d2a4d2d90"
+  },
+  {
+    "id": "B07-ASL-standard-XL4-12",
+    "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=180641e9-e3f9-4466-99f5-9ff41f133e97",
+    "title": "Slip Premium",
+    "count": 12,
+    "gtin": "5713571000304",
+    "productId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+    "packId": "180641e9-e3f9-4466-99f5-9ff41f133e97"
+  },
+  {
+    "id": "B07-ASL-junior-XS2-32",
+    "url": "https://diaperscout.app/products/slip-premium-junior?variantId=338a2a06-63ef-4024-9039-8b12299faf0d&packTypeId=e21b732e-4a6d-4a3e-aa9f-c9fd9b49e431",
+    "title": "Slip Premium Junior",
+    "count": 32,
+    "gtin": "5713571000007",
+    "productId": "67fc87fb-d580-43cd-b9a6-39d5c823be6e",
+    "packId": "e21b732e-4a6d-4a3e-aa9f-c9fd9b49e431"
+  },
+  {
+    "id": "B07-ASL-special-M4-14",
+    "url": "https://diaperscout.app/products/slip-premium-special?variantId=160455f6-3ed3-4019-8ea1-e9645c6079e1&packTypeId=52bb926b-43af-435d-b984-2eb4ef50170b",
+    "title": "Slip Premium Special",
+    "count": 14,
+    "gtin": "5713571008140",
+    "productId": "4fabda7a-3fe4-411d-9def-ead0203047e5",
+    "packId": "52bb926b-43af-435d-b984-2eb4ef50170b"
+  },
+  {
+    "id": "B07-ASL-special-L4-12",
+    "url": "https://diaperscout.app/products/slip-premium-special?variantId=160455f6-3ed3-4019-8ea1-e9645c6079e1&packTypeId=f62eafeb-e978-4492-b4f3-a14361fe68a8",
+    "title": "Slip Premium Special",
+    "count": 12,
+    "gtin": "5713571008164",
+    "productId": "4fabda7a-3fe4-411d-9def-ead0203047e5",
+    "packId": "f62eafeb-e978-4492-b4f3-a14361fe68a8"
+  },
+  {
+    "id": "B09-ASL-L1-10",
+    "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=196c5283-0d93-405c-9d86-5e92843e48f7",
+    "title": "Slip Premium",
+    "count": 10,
+    "gtin": "5713571000366",
+    "productId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+    "packId": "196c5283-0d93-405c-9d86-5e92843e48f7"
+  },
+  {
+    "id": "B09-ASL-L2-10",
+    "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=9ed0abe2-97e3-4818-9a33-9daba3c497cd",
+    "title": "Slip Premium",
+    "count": 10,
+    "gtin": "5713571000380",
+    "productId": "13edb8c9-b8e7-4328-91dc-5941cd3f8dbf",
+    "packId": "9ed0abe2-97e3-4818-9a33-9daba3c497cd"
+  },
+  {
+    "id": "B10-AFF-M-L1-27",
+    "url": "https://diaperscout.app/products/slip-premium-flexi-fit?variantId=9b049238-a8fd-4602-8490-de2383de512d&packTypeId=4240fd93-d7cf-406b-a065-7e51e6e59426",
+    "title": "Slip Premium Flexi Fit",
+    "count": 27,
+    "gtin": "5703538446047",
+    "productId": "fc7c0a3b-f24b-42fb-a0f1-db6199ee646d",
+    "packId": "4240fd93-d7cf-406b-a065-7e51e6e59426"
+  },
+  {
+    "id": "B10-AFF-M-L2-25",
+    "url": "https://diaperscout.app/products/slip-premium-flexi-fit?variantId=9b049238-a8fd-4602-8490-de2383de512d&packTypeId=c2b85446-1110-498d-b095-bcbb87163655",
+    "title": "Slip Premium Flexi Fit",
+    "count": 25,
+    "gtin": "5703538446061",
+    "productId": "fc7c0a3b-f24b-42fb-a0f1-db6199ee646d",
+    "packId": "c2b85446-1110-498d-b095-bcbb87163655"
+  },
+  {
+    "id": "B10-AFF-M-L3-23",
+    "url": "https://diaperscout.app/products/slip-premium-flexi-fit?variantId=9b049238-a8fd-4602-8490-de2383de512d&packTypeId=268b2b03-134a-4894-838f-a1b6b0c76d8f",
+    "title": "Slip Premium Flexi Fit",
+    "count": 23,
+    "gtin": "5703538446085",
+    "productId": "fc7c0a3b-f24b-42fb-a0f1-db6199ee646d",
+    "packId": "268b2b03-134a-4894-838f-a1b6b0c76d8f"
+  },
+  {
+    "id": "B10-AFF-M-L4-21",
+    "url": "https://diaperscout.app/products/slip-premium-flexi-fit?variantId=9b049238-a8fd-4602-8490-de2383de512d&packTypeId=c93f05e4-07bb-4f66-afd7-08fbe5410e21",
+    "title": "Slip Premium Flexi Fit",
+    "count": 21,
+    "gtin": "5713571001561",
+    "productId": "fc7c0a3b-f24b-42fb-a0f1-db6199ee646d",
+    "packId": "c93f05e4-07bb-4f66-afd7-08fbe5410e21"
+  },
+  {
+    "id": "B10-AFF-L-XL2-22",
+    "url": "https://diaperscout.app/products/slip-premium-flexi-fit?variantId=9b049238-a8fd-4602-8490-de2383de512d&packTypeId=b38345d4-6437-4197-8f9b-ea88cb71be57",
+    "title": "Slip Premium Flexi Fit",
+    "count": 22,
+    "gtin": "5703538446153",
+    "productId": "fc7c0a3b-f24b-42fb-a0f1-db6199ee646d",
+    "packId": "b38345d4-6437-4197-8f9b-ea88cb71be57"
+  },
+  {
+    "id": "B10-AFF-L-XL3-20",
+    "url": "https://diaperscout.app/products/slip-premium-flexi-fit?variantId=9b049238-a8fd-4602-8490-de2383de512d&packTypeId=1c2d71e2-0e3e-4d00-b9f5-8392076ef294",
+    "title": "Slip Premium Flexi Fit",
+    "count": 20,
+    "gtin": "5703538446177",
+    "productId": "fc7c0a3b-f24b-42fb-a0f1-db6199ee646d",
+    "packId": "1c2d71e2-0e3e-4d00-b9f5-8392076ef294"
+  },
+  {
+    "id": "B10-AFF-L-XL4-18",
+    "url": "https://diaperscout.app/products/slip-premium-flexi-fit?variantId=9b049238-a8fd-4602-8490-de2383de512d&packTypeId=79668614-34eb-41fb-9abc-f50dd98ccfb7",
+    "title": "Slip Premium Flexi Fit",
+    "count": 18,
+    "gtin": "5713571001585",
+    "productId": "fc7c0a3b-f24b-42fb-a0f1-db6199ee646d",
+    "packId": "79668614-34eb-41fb-9abc-f50dd98ccfb7"
+  },
+  {
+    "id": "B11-AP2-M2-15",
+    "url": "https://diaperscout.app/products/pants-premium-level2?variantId=ae6cd1ee-c9ff-44f2-a57c-8ae2a03c7a3c&packTypeId=51f649e3-5e05-4fde-8815-0a287322be4a",
+    "title": "Pants Premium level2",
+    "count": 15,
+    "gtin": "5713571000885",
+    "productId": "6d16fe9e-af06-4d08-b0bd-28082b8db63d",
+    "packId": "51f649e3-5e05-4fde-8815-0a287322be4a"
+  },
+  {
+    "id": "B11-AP2-L2-15",
+    "url": "https://diaperscout.app/products/pants-premium-level2?variantId=ae6cd1ee-c9ff-44f2-a57c-8ae2a03c7a3c&packTypeId=04c7c02b-4ed3-4e0b-9e17-3ebfacbe5b01",
+    "title": "Pants Premium level2",
+    "count": 15,
+    "gtin": "5713571000946",
+    "productId": "6d16fe9e-af06-4d08-b0bd-28082b8db63d",
+    "packId": "04c7c02b-4ed3-4e0b-9e17-3ebfacbe5b01"
+  },
+  {
+    "id": "B11-AP2-S2-16",
+    "url": "https://diaperscout.app/products/pants-premium-level2?variantId=ae6cd1ee-c9ff-44f2-a57c-8ae2a03c7a3c&packTypeId=e076aef9-b9f4-431f-b40b-76c44ce64149",
+    "title": "Pants Premium level2",
+    "count": 16,
+    "gtin": "5713571000809",
+    "productId": "6d16fe9e-af06-4d08-b0bd-28082b8db63d",
+    "packId": "e076aef9-b9f4-431f-b40b-76c44ce64149"
+  },
+  {
+    "id": "B11-AP2-XL2-16",
+    "url": "https://diaperscout.app/products/pants-premium-level2?variantId=ae6cd1ee-c9ff-44f2-a57c-8ae2a03c7a3c&packTypeId=98dc0b27-31ad-40d3-9da3-b6fc7d5ee80f",
+    "title": "Pants Premium level2",
+    "count": 16,
+    "gtin": "5713571001004",
+    "productId": "6d16fe9e-af06-4d08-b0bd-28082b8db63d",
+    "packId": "98dc0b27-31ad-40d3-9da3-b6fc7d5ee80f"
+  },
+  {
+    "id": "B11-AP3-M3-15",
+    "url": "https://diaperscout.app/products/pants-premium-level3?variantId=0938dec5-f794-42de-bb97-2f0878fc1c2b&packTypeId=bde77ae3-8c42-4626-9e8a-277777e79c84",
+    "title": "Pants Premium level3",
+    "count": 15,
+    "gtin": "5713571000908",
+    "productId": "34394c5b-e39c-493b-acb5-e633a2b5caa9",
+    "packId": "bde77ae3-8c42-4626-9e8a-277777e79c84"
+  },
+  {
+    "id": "B11-AP3-L3-15",
+    "url": "https://diaperscout.app/products/pants-premium-level3?variantId=0938dec5-f794-42de-bb97-2f0878fc1c2b&packTypeId=78c72038-21f7-4db5-b267-551e0ff81e9c",
+    "title": "Pants Premium level3",
+    "count": 15,
+    "gtin": "5713571000960",
+    "productId": "34394c5b-e39c-493b-acb5-e633a2b5caa9",
+    "packId": "78c72038-21f7-4db5-b267-551e0ff81e9c"
+  },
+  {
+    "id": "B11-AP3-XL3-16",
+    "url": "https://diaperscout.app/products/pants-premium-level3?variantId=0938dec5-f794-42de-bb97-2f0878fc1c2b&packTypeId=bdce6808-9801-43ef-962d-85c1135c7cec",
+    "title": "Pants Premium level3",
+    "count": 16,
+    "gtin": "5713571001028",
+    "productId": "34394c5b-e39c-493b-acb5-e633a2b5caa9",
+    "packId": "bdce6808-9801-43ef-962d-85c1135c7cec"
+  },
+  {
+    "id": "B12-LET-NORMAL-34",
+    "url": "https://diaperscout.app/products/let-normal?variantId=2089b7dc-9666-4268-9a29-d382731b1bec&packTypeId=f3fb8b23-29dd-4894-a74f-cfc012d3ce06",
+    "title": "Let Normal",
+    "count": 34,
+    "gtin": "5713571001288",
+    "productId": "4fd01944-ac77-41b1-a21d-b9f60bbca2e0",
+    "packId": "f3fb8b23-29dd-4894-a74f-cfc012d3ce06"
+  },
+  {
+    "id": "B12-LET-ANATOMIC-30",
+    "url": "https://diaperscout.app/products/let-anatomic?variantId=89fd8a8a-c902-49ec-a8d7-2b1870d34fb6&packTypeId=1dfb0bc3-0911-4624-afbc-732c36f8ed4a",
+    "title": "Let Anatomic",
+    "count": 30,
+    "gtin": "5713571001325",
+    "productId": "08fda3d0-6c3f-460f-ad56-168c789f1a72",
+    "packId": "1dfb0bc3-0911-4624-afbc-732c36f8ed4a"
+  },
+  {
+    "id": "B13-LIGHT-1000021337-20",
+    "url": "https://diaperscout.app/products/light-premium-mini-1?variantId=0d0e3096-00f6-4d91-bc2f-c0368464a471&packTypeId=396c5f2a-32c5-4454-b2e3-58c9acf51b32",
+    "title": "Light Premium Mini 1",
+    "count": 20,
+    "gtin": "5713571001165",
+    "productId": "73f24299-3a6e-48a1-8a4e-fb4c1508fd3e",
+    "packId": "396c5f2a-32c5-4454-b2e3-58c9acf51b32"
+  },
+  {
+    "id": "B13-LIGHT-1000021338-16",
+    "url": "https://diaperscout.app/products/light-premium-mini-plus-1a?variantId=0e97727f-2277-43ff-9a39-ca3346f770e3&packTypeId=3c453c3c-9c9e-4316-94e5-a8c2579a7f95",
+    "title": "Light Premium Mini Plus 1A",
+    "count": 16,
+    "gtin": "5713571001189",
+    "productId": "68a211c8-dd8d-4b62-8619-155a08812cfe",
+    "packId": "3c453c3c-9c9e-4316-94e5-a8c2579a7f95"
+  },
+  {
+    "id": "B13-LIGHT-1000021339-12",
+    "url": "https://diaperscout.app/products/light-premium-normal-2?variantId=42708bb1-7b66-4631-a071-1c65574fd7d3&packTypeId=d3cd8a5f-fd28-4e5b-a7d9-b3a3a22388f8",
+    "title": "Light Premium Normal 2",
+    "count": 12,
+    "gtin": "5713571001202",
+    "productId": "cbfcb6de-be4d-4a44-9893-a955322f2c5e",
+    "packId": "d3cd8a5f-fd28-4e5b-a7d9-b3a3a22388f8"
+  },
+  {
+    "id": "B13-LIGHT-1000021340-10",
+    "url": "https://diaperscout.app/products/light-premium-extra-3?variantId=544661b3-cdf5-41ba-b7ea-3d75702b5b51&packTypeId=4242267c-518a-46fa-a3ec-f74ddc2da6c0",
+    "title": "Light Premium Extra 3",
+    "count": 10,
+    "gtin": "5713571001226",
+    "productId": "d47845b1-f968-4242-bd89-125a298f65d1",
+    "packId": "4242267c-518a-46fa-a3ec-f74ddc2da6c0"
+  },
+  {
+    "id": "B13-LIGHT-1000021342-30",
+    "url": "https://diaperscout.app/products/light-premium-super-4?variantId=8e4ff2aa-f447-4131-a387-5929163c28e5&packTypeId=2352885e-b877-4c78-8402-d5d9787c31b9",
+    "title": "Light Premium Super 4",
+    "count": 30,
+    "gtin": "5713571001264",
+    "productId": "7a12411d-2bc0-47ac-a456-87e0811254d4",
+    "packId": "2352885e-b877-4c78-8402-d5d9787c31b9"
+  }
+]

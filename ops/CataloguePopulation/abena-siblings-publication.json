@@ -1,0 +1,75 @@
+[
+  {
+    "ResearchId": "B04-AP1-L-15",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Pants Premium level1",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "Pants Premium",
+    "ProductType": "PullUp",
+    "Size": "Large",
+    "Quantity": 15,
+    "Gtin": "5713571000922",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 100,
+    "HipMaximumCm": 140,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-l1-premium-15-pcs-154699"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-l1-premium-15-pcs-154699",
+      "https://www.bunzlasiapacific.com/extension/BC/PSPEC/SA1000021325.pdf",
+      "https://www.biomed.gr/en-gb/abena-pants-l1-daytime-15-pcs"
+    ],
+    "SpecificationSources": [
+      "https://www.bunzlasiapacific.com/extension/BC/PSPEC/SA1000021325.pdf",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://www.biomed.gr/en-gb/abena-pants-l1-daytime-15-pcs"
+    ],
+    "EvidenceNotes": "Exact ABENA Pants Premium level1 L1, article1000021325, sealed bag15, GTIN5713571000922; hip100–140 cm agrees between manufacturer technical sheet and official 2025 catalogue. Exact bag barcode/count also agreed by Nordic Swan registry and independent current retail. License-holder manufacturing identity ABENA Produktion A/S corroborated by official Danish production page; regional distributors separate. Optional absorbency volume not promoted. No manufacturer images copied or rights presumed. Add Large size to published level1 product and Current variant, preserving Small16 and Medium15.",
+    "ExistingSubmissionId": "977e80bc-6dd2-431b-a7e9-5aa2232b4420"
+  },
+  {
+    "ResearchId": "B04-APL-M-15",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Pants Premium Light",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "Pants Premium",
+    "ProductType": "PullUp",
+    "Size": "Medium",
+    "Quantity": 15,
+    "Gtin": "5713571001042",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 80,
+    "HipMaximumCm": 110,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-light-medium-15-pcs-117358"
+    ],
+    "IdentifierSources": [
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-light-medium-15-pcs-117358",
+      "https://online.abena.dk/Product/Pdf/1000021331?type=Online_varedatablad",
+      "https://www.apotea.se/abena-pants-light-m-80-110-cm-15-st"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1000021331?type=Online_varedatablad",
+      "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+      "https://www.apotea.se/abena-pants-light-m-80-110-cm-15-st"
+    ],
+    "EvidenceNotes": "Exact ABENA Pants Premium Light M, article1000021331, sealed bag15, GTIN5713571001042; hip80–110 cm agrees between manufacturer technical sheet and official 2025 catalogue. Exact bag barcode/count also agreed by Nordic Swan registry and independent current retail. License-holder manufacturing identity ABENA Produktion A/S corroborated by official Danish production page; regional distributors separate. Optional absorbency volume not promoted. No manufacturer images copied or rights presumed."
+  }
+]

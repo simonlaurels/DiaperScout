@@ -1,0 +1,16 @@
+{
+  "execution": "ds-bootstrap-admin-j8hapxt",
+  "receipt": {
+    "ResearchId": "B06-AS12-16",
+    "SubmissionId": "159f7d86-862e-4f40-8cc2-0941ec263da4",
+    "ProductId": "7b2fe0cf-534b-438d-b929-94535925e72d",
+    "VariantId": "b51e4c01-d63b-414e-b85a-c2c8e286f8c9",
+    "SizeId": "8b21ebcb-ae99-4969-878e-ed070cbd26dc",
+    "PackId": "37f7b0ad-a749-45a0-b6ce-57e7ef2795ec",
+    "IdentifierId": "ab64dafa-3dd3-4834-8ab0-682023b549e3",
+    "AuditId": "067d7129-1941-40dc-be3e-6f3e85eb88d0",
+    "Gtin": "5713571008447",
+    "Created": false
+  },
+  "all_ids_unchanged": true
+}

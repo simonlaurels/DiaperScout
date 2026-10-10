@@ -42,28 +42,36 @@ internal sealed class PasswordlessAuthentication(
                 "Registrations are currently closed. Please check back later.");
         }
 
+        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+        await db.Database.ExecuteSqlInterpolatedAsync(
+            $"SELECT pg_advisory_xact_lock(hashtextextended({normalizedEmail}, 0))", cancellationToken);
         var existingUser = await (
             from userEmail in db.UserEmails.AsNoTracking()
-            join user in db.Users.AsNoTracking()
-                on userEmail.UserId equals user.Id
-            where userEmail.Email == normalizedEmail
-            select user)
-            .SingleOrDefaultAsync(cancellationToken);
-
-        if (existingUser is not null)
-        {
-            throw new InvalidOperationException(
-                "An account already exists for this email address. Please sign in instead.");
-        }
-
+            join user in db.Users.AsNoTracking() on userEmail.UserId equals user.Id
+            where userEmail.Email == normalizedEmail select user).SingleOrDefaultAsync(cancellationToken);
+        if (existingUser is not null && existingUser.Status != UserAccountStatus.Active) return;
         var now = timeProvider.GetUtcNow();
         var expiresAtUtc = now.AddMinutes(magicLinkLifetimeMinutes);
-
-        var pendingRegistration = new PendingRegistration(
-            normalizedEmail,
-            normalizedDisplayName,
-            now,
-            expiresAtUtc);
+        var pendingRegistration = await db.PendingRegistrations.SingleOrDefaultAsync(p => p.Email == normalizedEmail, cancellationToken);
+        if (pendingRegistration is not null && pendingRegistration.ExpiresAtUtc > now && pendingRegistration.CreatedAtUtc > now.AddSeconds(-60))
+        {
+            if (pendingRegistration.DisplayName != normalizedDisplayName)
+                throw new ArgumentException("Wait a minute before changing these details and requesting another link.", nameof(displayName));
+            return;
+        }
+        if (pendingRegistration is null)
+        {
+            pendingRegistration = new PendingRegistration(normalizedEmail, normalizedDisplayName, now, expiresAtUtc);
+            db.PendingRegistrations.Add(pendingRegistration);
+        }
+        else
+        {
+            // A resend supersedes unused older links, so a link can never acquire a later
+            // request's pending nickname. Both resend and consumption hold the email lock.
+            await db.PendingRegistrationTokens.Where(t => t.PendingRegistrationId == pendingRegistration.Id && t.UsedAtUtc == null)
+                .ExecuteUpdateAsync(setters => setters.SetProperty(t => t.UsedAtUtc, now), cancellationToken);
+            pendingRegistration.Renew(normalizedDisplayName, now, expiresAtUtc);
+        }
 
         var token = CreateToken();
         var tokenHash = HashToken(token);
@@ -73,12 +81,12 @@ internal sealed class PasswordlessAuthentication(
             tokenHash,
             expiresAtUtc);
 
-        db.PendingRegistrations.Add(pendingRegistration);
         db.PendingRegistrationTokens.Add(pendingRegistrationToken);
 
         await db.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
 
-        var link = BuildMagicLink(token);
+        var link = BuildMagicLink(token) + "&flow=explorer";
         var encodedLink = HtmlEncoder.Default.Encode(link);
 
         var message = new EmailMessage
@@ -95,7 +103,21 @@ internal sealed class PasswordlessAuthentication(
 
         message.To.Add(normalizedEmail);
 
-        await resend.EmailSendAsync(message);
+        try
+        {
+            var delivery = await resend.EmailSendAsync(message, cancellationToken);
+            if (!delivery.Success) throw new HttpRequestException("The verification email could not be sent.");
+        }
+        catch (Exception e) when (e is ResendException or HttpRequestException or OperationCanceledException)
+        {
+            // A failed send must not make a retry claim that an email was delivered. Keep
+            // the same pending record, but retire the undelivered token and allow a resend.
+            await db.PendingRegistrations.Where(p => p.Id == pendingRegistration.Id && p.CreatedAtUtc == now)
+                .ExecuteUpdateAsync(setters => setters.SetProperty(p => p.ExpiresAtUtc, now), CancellationToken.None);
+            await db.PendingRegistrationTokens.Where(t => t.Id == pendingRegistrationToken.Id)
+                .ExecuteUpdateAsync(setters => setters.SetProperty(t => t.UsedAtUtc, now), CancellationToken.None);
+            throw;
+        }
     }
 
     public async Task RequestSignInLinkAsync(
@@ -181,23 +203,20 @@ internal sealed class PasswordlessAuthentication(
                 cancellationToken);
         }
 
+        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+        var email = await (from t in db.PendingRegistrationTokens.AsNoTracking()
+            join p in db.PendingRegistrations.AsNoTracking() on t.PendingRegistrationId equals p.Id
+            where t.TokenHash == tokenHash select p.Email).SingleOrDefaultAsync(cancellationToken);
+        if (email is null) return null;
+        await db.Database.ExecuteSqlInterpolatedAsync(
+            $"SELECT pg_advisory_xact_lock(hashtextextended({email}, 0))", cancellationToken);
         var consumedRegistrationToken = await db.PendingRegistrationTokens
-            .Where(item =>
-                item.TokenHash == tokenHash &&
-                item.UsedAtUtc == null &&
-                item.ExpiresAtUtc > now)
-            .ExecuteUpdateAsync(
-                setters => setters.SetProperty(
-                    item => item.UsedAtUtc,
-                    now),
-                cancellationToken);
-
-        if (consumedRegistrationToken != 1)
-            return null;
-
-        return await CompleteRegistrationAsync(
-            tokenHash,
-            cancellationToken);
+            .Where(item => item.TokenHash == tokenHash && item.UsedAtUtc == null && item.ExpiresAtUtc > now)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(item => item.UsedAtUtc, now), cancellationToken);
+        if (consumedRegistrationToken != 1) return null;
+        var result = await CompleteRegistrationAsync(tokenHash, cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+        return result;
     }
 
     private async Task<PasswordlessAuthenticationResult?> ConsumeExistingAccountMagicLinkAsync(
@@ -263,36 +282,26 @@ internal sealed class PasswordlessAuthentication(
             select existingAccount)
             .SingleOrDefaultAsync(cancellationToken);
 
-        if (existingUser is not null)
-            return null;
+        var user = existingUser ?? new User(Guid.NewGuid().ToString("N"));
+        if (user.Status != UserAccountStatus.Active) return null;
 
-        await using var transaction =
-            await db.Database.BeginTransactionAsync(cancellationToken);
-
-        var user = new User(Guid.NewGuid().ToString("N"));
-
-        var userEmail = new UserEmail(
-            user.Id,
-            pending.Email);
-
-        var explorerProfile = new ExplorerProfile(
-            user.Id,
-            pending.DisplayName);
-
-        var backpack = new Backpack(explorerProfile.Id);
-
-        db.Users.Add(user);
-        db.UserEmails.Add(userEmail);
-        db.ExplorerProfiles.Add(explorerProfile);
-        db.Backpacks.Add(backpack);
-
-        await db.SaveChangesAsync(cancellationToken);
-        await transaction.CommitAsync(cancellationToken);
-
+        if (existingUser is null)
+        {
+            db.Users.Add(user);
+            db.UserEmails.Add(new UserEmail(user.Id, pending.Email));
+            await db.SaveChangesAsync(cancellationToken);
+        }
+        // Preserve an existing profile. A conflicting public nickname is resolved by its
+        // authenticated owner on continuation, never by fabricating a replacement name.
+        try { await ExplorerProfileLifecycle.SetNameAsync(db, user.Id, pending.DisplayName, false, cancellationToken); }
+        catch (CatalogueValidationException) { }
+        var roles = await db.PrivilegedRoleAssignments.AsNoTracking()
+            .Where(r => r.UserId == user.Id && r.RevokedAtUtc == null).Select(r => r.Role).ToListAsync(cancellationToken);
         return new PasswordlessAuthenticationResult(
             user.Id,
             user.Subject,
-            []);
+            roles,
+            ContinueOnboarding: true);
     }
 
     private async Task<bool> IsRegistrationEnabledAsync(
@@ -341,14 +350,14 @@ internal sealed class PasswordlessAuthentication(
     {
         if (string.IsNullOrWhiteSpace(displayName))
             throw new ArgumentException(
-                "An Explorer Display Name is required.",
+                "Enter your name or nickname.",
                 nameof(displayName));
 
         var normalized = displayName.Trim();
 
         if (normalized.Length > 100)
             throw new ArgumentException(
-                "The Explorer Display Name must be 100 characters or fewer.",
+                "Your name or nickname must be 100 characters or fewer.",
                 nameof(displayName));
 
         return normalized;

@@ -1,0 +1,30 @@
+{
+  "started": "2026-10-03T22:29:24.524Z",
+  "productionWrites": 0,
+  "physicalIphoneProven": false,
+  "sessions": [
+    {
+      "engine": "chromium",
+      "width": 390,
+      "height": 844,
+      "errors": [],
+      "products": 2,
+      "heroHeight": 205,
+      "productHref": "/products/megamax?variantId=bb3ad9fc-9dea-4f07-b179-5bc3f66b7d7e",
+      "productDestination": "https://diaperscout.app/products/megamax?variantId=bb3ad9fc-9dea-4f07-b179-5bc3f66b7d7e",
+      "passed": true
+    },
+    {
+      "engine": "webkit",
+      "width": 430,
+      "height": 932,
+      "errors": [],
+      "products": 2,
+      "heroHeight": 205,
+      "productHref": "/products/megamax?variantId=bb3ad9fc-9dea-4f07-b179-5bc3f66b7d7e",
+      "productDestination": "https://diaperscout.app/products/megamax?variantId=bb3ad9fc-9dea-4f07-b179-5bc3f66b7d7e",
+      "passed": true
+    }
+  ],
+  "finished": "2026-10-03T22:29:40.768Z"
+}

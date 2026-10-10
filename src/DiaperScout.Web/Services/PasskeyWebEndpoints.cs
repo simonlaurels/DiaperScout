@@ -19,6 +19,9 @@ public static class PasskeyWebEndpoints
         services.AddRateLimiter(options =>
         {
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+            options.AddPolicy("onboarding-email", context => RateLimitPartition.GetFixedWindowLimiter(
+                context.Connection.RemoteIpAddress?.ToString() ?? "unknown", _ => new FixedWindowRateLimiterOptions
+                { PermitLimit = 8, Window = TimeSpan.FromMinutes(10), QueueLimit = 0, AutoReplenishment = true }));
             options.AddPolicy("passkeys", context => RateLimitPartition.GetFixedWindowLimiter(
                 context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
                     ?? context.Connection.RemoteIpAddress?.ToString() ?? "unknown", _ => new FixedWindowRateLimiterOptions
@@ -28,6 +31,15 @@ public static class PasskeyWebEndpoints
 
     public static void MapPasskeyWebEndpoints(this WebApplication app)
     {
+        app.MapGet("/backpack/identity", async (HttpContext context, IHttpClientFactory clients, CancellationToken ct) =>
+        {
+            context.Response.Headers.CacheControl = "no-store";
+            using var response = await clients.CreateClient("PasskeyApi").GetAsync("/api/v1/me/explorer", ct);
+            if (response.StatusCode == System.Net.HttpStatusCode.Forbidden) return Results.Ok(new { displayName = (string?)null });
+            if (!response.IsSuccessStatusCode) return Results.StatusCode(503);
+            var identity = await response.Content.ReadFromJsonAsync<ExplorerIdentity>(ct);
+            return Results.Ok(new { displayName = identity?.DisplayName });
+        }).RequireAuthorization();
         var login = app.MapGroup("/signin/passkey").AllowAnonymous().RequireRateLimiting("passkeys").AddEndpointFilter<PasskeyRequestFilter>();
         login.MapPost("/options", (HttpContext context, IHttpClientFactory clients, CancellationToken ct) =>
             Begin(context, clients, false, ct));
@@ -42,7 +54,7 @@ public static class PasskeyWebEndpoints
             var authentication = await response.Content.ReadFromJsonAsync<PasswordlessAuthenticationResult>(ct);
             if (authentication is null) return Failure();
             await AuthenticationSession.SignInAsync(context, authentication, app.Environment);
-            return Results.Ok(new { redirect = "/" });
+            return Results.Ok(new { redirect = ContributionReturn.Consume(context) });
         });
 
         var account = app.MapGroup("/account/passkeys").RequireAuthorization().RequireRateLimiting("passkeys").AddEndpointFilter<PasskeyRequestFilter>();

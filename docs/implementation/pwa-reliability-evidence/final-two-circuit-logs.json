@@ -1,0 +1,191 @@
+[
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-nzpc2",
+    "Log_s": "      Shared Data Protection key ring readiness check passed.",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:16:42.1619952Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-rmp6s",
+    "Log_s": "      Shared Data Protection key ring readiness check passed.",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:16:42.5841354Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-rmp6s",
+    "Log_s": "      Blazor circuit connection up 887B56E0D088",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:17:41.6606347Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-rmp6s",
+    "Log_s": "      Blazor circuit connection down 887B56E0D088",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:18:41.5427115Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-rmp6s",
+    "Log_s": "      Blazor circuit connection down EF6D4813513B",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:18:42.4905062Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-rmp6s",
+    "Log_s": "      Blazor circuit connection up EF6D4813513B",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:18:42.4905062Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-nzpc2",
+    "Log_s": "      Blazor circuit connection up 172620A959D0",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:18:44.6164239Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-nzpc2",
+    "Log_s": "      Blazor circuit connection up F4A37F3B5580",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:19:20.2486852Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-nzpc2",
+    "Log_s": "      Blazor circuit connection down F4A37F3B5580",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:19:20.2486852Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-nzpc2",
+    "Log_s": "      Blazor circuit connection down 172620A959D0",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:19:20.2486852Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-rmp6s",
+    "Log_s": "      Blazor circuit connection up BA1EA71F509F",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:19:22.6850097Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-rmp6s",
+    "Log_s": "      Blazor circuit connection up B93B35E93D2B",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:20:00.3487363Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-rmp6s",
+    "Log_s": "      Blazor circuit connection down BA1EA71F509F",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:20:00.3487363Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-rmp6s",
+    "Log_s": "      Blazor circuit connection down B93B35E93D2B",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:20:00.3487363Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-nzpc2",
+    "Log_s": "      Blazor circuit connection up 4AD85670704B",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:20:01.3048055Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-nzpc2",
+    "Log_s": "      Blazor circuit connection up 71CD95FC9782",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:20:36.1863822Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-nzpc2",
+    "Log_s": "      Blazor circuit connection down 4AD85670704B",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:20:36.1863822Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-nzpc2",
+    "Log_s": "      Blazor circuit connection down 71CD95FC9782",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:20:37.3960428Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-nzpc2",
+    "Log_s": "      Blazor circuit connection up 5A670B66A0F2",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:20:38.6378486Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-nzpc2",
+    "Log_s": "      Blazor circuit connection down 5A670B66A0F2",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:21:15.0624611Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-nzpc2",
+    "Log_s": "      Blazor circuit connection up BB4BA5AB5E2E",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:21:15.0624611Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-nzpc2",
+    "Log_s": "      Blazor circuit connection down BB4BA5AB5E2E",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:21:15.0624611Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-nzpc2",
+    "Log_s": "      Blazor circuit connection up EBC0BE126DA7",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:21:15.1204024Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-nzpc2",
+    "Log_s": "      Blazor circuit connection down EBC0BE126DA7",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:21:50.3653781Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-nzpc2",
+    "Log_s": "      Blazor circuit connection up B01D765E36E4",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:21:51.1901599Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-nzpc2",
+    "Log_s": "      Blazor circuit connection down B01D765E36E4",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:21:51.1901599Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-2b7e35f-66d65d59db-nzpc2",
+    "Log_s": "      Blazor circuit connection up 3F3DF1636BAA",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T08:21:53.3628232Z"
+  }
+]

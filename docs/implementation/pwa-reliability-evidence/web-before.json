@@ -1,0 +1,89 @@
+{
+  "containers": [
+    {
+      "env": [
+        {
+          "name": "Api__BaseUrl",
+          "value": "https://diaperscout-api-vnet.internal.mangograss-ae5d4035.uksouth.azurecontainerapps.io"
+        },
+        {
+          "name": "Authentication__Production__InternalSecret",
+          "secretRef": "production-internal-secret",
+          "value": "[redacted]"
+        },
+        {
+          "name": "DataProtection__ApplicationName",
+          "value": "DiaperScout.Web.Production"
+        },
+        {
+          "name": "DataProtection__BlobUri",
+          "value": "https://dsprodwebkeys21a5de71.blob.core.windows.net/web-production/keys.xml"
+        },
+        {
+          "name": "DataProtection__KeyVaultKeyUri",
+          "value": "https://ds-prod-webkeys-21a5de71.vault.azure.net/keys/web-production"
+        }
+      ],
+      "image": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-web@sha256:a4cf752d97de970779350e66114512d911772f945171f9b7990a965be578f647",
+      "name": "diaperscout-web-vnet",
+      "resources": {
+        "cpu": 0.5,
+        "ephemeralStorage": "2Gi",
+        "memory": "1Gi"
+      }
+    }
+  ],
+  "environmentId": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.App/managedEnvironments/diaperscout-prod-env-vnet",
+  "id": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.App/containerapps/diaperscout-web-vnet",
+  "identity": {
+    "principalId": "2ed34980-da90-483e-8937-fe94e9c5236f",
+    "tenantId": "20b40506-48b5-471d-b73f-7daf978cdff0",
+    "type": "SystemAssigned"
+  },
+  "ingress": {
+    "additionalPortMappings": null,
+    "allowInsecure": false,
+    "clientCertificateMode": null,
+    "corsPolicy": null,
+    "customDomains": [
+      {
+        "bindingType": "SniEnabled",
+        "certificateId": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.App/managedEnvironments/diaperscout-prod-env-vnet/managedCertificates/mc-diaperscout-pr-diaperscout-app-6419",
+        "name": "diaperscout.app"
+      }
+    ],
+    "exposedPort": 0,
+    "external": true,
+    "fqdn": "diaperscout-web-vnet.mangograss-ae5d4035.uksouth.azurecontainerapps.io",
+    "ipSecurityRestrictions": null,
+    "stickySessions": null,
+    "targetPort": 8080,
+    "targetPortHttpScheme": null,
+    "traffic": [
+      {
+        "latestRevision": true,
+        "weight": 100
+      }
+    ],
+    "transport": "Auto"
+  },
+  "latest": "diaperscout-web-vnet--app-icon-f9673ac",
+  "name": "diaperscout-web-vnet",
+  "ready": "diaperscout-web-vnet--app-icon-f9673ac",
+  "registries": [
+    {
+      "identity": "system",
+      "passwordSecretRef": "",
+      "server": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io",
+      "username": ""
+    }
+  ],
+  "revisionMode": "Single",
+  "scale": {
+    "cooldownPeriod": 300,
+    "maxReplicas": 10,
+    "minReplicas": null,
+    "pollingInterval": 30,
+    "rules": null
+  }
+}

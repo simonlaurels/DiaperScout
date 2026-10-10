@@ -1,0 +1,64 @@
+{
+  "CorrelationId": "catalogue-research-premium-elastic-grouping-2026-10-06",
+  "TargetProductId": "debe4cbd-baab-4a45-aa56-d3e077f452a5",
+  "ProductName": "Premium Elastic",
+  "Products": [
+    {
+      "Id": "debe4cbd-baab-4a45-aa56-d3e077f452a5",
+      "Name": "Premium Elastic 6 drops",
+      "Slug": "premium-elastic-6-drops"
+    },
+    {
+      "Id": "eecd0811-cfbd-4f5f-8bc4-dceb0a00fbb6",
+      "Name": "Premium Elastic 10 drops",
+      "Slug": "premium-elastic-10-drops"
+    }
+  ],
+  "Variants": [
+    {
+      "Id": "afc172c0-ebbf-4391-80dc-33aa75bbe3b0",
+      "OriginalProductId": "debe4cbd-baab-4a45-aa56-d3e077f452a5",
+      "OriginalName": "Current",
+      "Name": "6 drops"
+    },
+    {
+      "Id": "9ec537ff-aebd-4ff8-8eca-2b18f9199cbc",
+      "OriginalProductId": "eecd0811-cfbd-4f5f-8bc4-dceb0a00fbb6",
+      "OriginalName": "Current",
+      "Name": "10 drops"
+    }
+  ],
+  "Packs": [
+    {
+      "Id": "e4f8fe7a-bdb8-4523-a8e1-02a7f9f9359b",
+      "VariantId": "afc172c0-ebbf-4391-80dc-33aa75bbe3b0",
+      "Gtin": "4052199297002"
+    },
+    {
+      "Id": "3bd05e71-8223-49cc-9924-2bcfd3959937",
+      "VariantId": "9ec537ff-aebd-4ff8-8eca-2b18f9199cbc",
+      "Gtin": "4052199303413"
+    },
+    {
+      "Id": "277dc733-2be8-4878-9d8c-aaa4ed11cc57",
+      "VariantId": "afc172c0-ebbf-4391-80dc-33aa75bbe3b0",
+      "Gtin": "4052199297033"
+    },
+    {
+      "Id": "0909182d-14d5-4305-abe0-d9e9abadb5c0",
+      "VariantId": "afc172c0-ebbf-4391-80dc-33aa75bbe3b0",
+      "Gtin": "4052199299433"
+    },
+    {
+      "Id": "9cf8f42b-8a36-49a2-a0d9-32dc8077bfbf",
+      "VariantId": "afc172c0-ebbf-4391-80dc-33aa75bbe3b0",
+      "Gtin": "4052199299440"
+    }
+  ],
+  "Rationale": "User-approved correction: MoliCare Premium Elastic 6 drops and 10 drops are absorbency variants of the same product. Retain every original ID, slug, publication state, source/history and old link; do not recreate sizes or packs.",
+  "Sources": [
+    "https://www.hartmann.info/en-gb/products/continence-management/all-in-one/moderate-incontinence/molicare%C2%AE-premium-elastic-6-drops",
+    "https://www.hartmann.info/en-gb/products/continence-management/all-in-one/very-severe-incontinence/molicare%C2%AE-premium-elastic-10-drops",
+    "https://www.hartmann.info/-/media/country/website/archive/incontinence/doc/sales-folder-relaunch-mc-premium-elastic-klinik-hires_0865536-018492.pdf?rev=4fdfcf64f3714b8a9e53082b50453d93&sc_lang=de-de"
+  ]
+}

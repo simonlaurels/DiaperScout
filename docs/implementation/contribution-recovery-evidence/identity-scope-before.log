@@ -1,0 +1,20 @@
+  DiaperScout.Domain -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Domain/bin/Debug/net10.0/DiaperScout.Domain.dll
+  DiaperScout.Application -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Application/bin/Debug/net10.0/DiaperScout.Application.dll
+  DiaperScout.Web -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Web/bin/Debug/net10.0/DiaperScout.Web.dll
+  DiaperScout.Commerce.Plugins.Awin -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Commerce.Plugins.Awin/bin/Debug/net10.0/DiaperScout.Commerce.Plugins.Awin.dll
+  DiaperScout.Infrastructure -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Infrastructure/bin/Debug/net10.0/DiaperScout.Infrastructure.dll
+  DiaperScout.Api -> /Users/sporter/Documents/Projects/DS/src/DiaperScout.Api/bin/Debug/net10.0/DiaperScout.Api.dll
+  DiaperScout.Api.IntegrationTests -> /Users/sporter/Documents/Projects/DS/tests/DiaperScout.Api.IntegrationTests/bin/Debug/net10.0/DiaperScout.Api.IntegrationTests.dll
+Test run for /Users/sporter/Documents/Projects/DS/tests/DiaperScout.Api.IntegrationTests/bin/Debug/net10.0/DiaperScout.Api.IntegrationTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.19]     DiaperScout.Api.IntegrationTests.ContributionIdentityTests.Authenticated_contribution_forwards_current_user_from_request_or_circuit(httpRequest: False) [FAIL]
+  Failed DiaperScout.Api.IntegrationTests.ContributionIdentityTests.Authenticated_contribution_forwards_current_user_from_request_or_circuit(httpRequest: False) [1 ms]
+  Error Message:
+   DiaperScout.Web.Services.ContributionException : Sign in again to save this contribution. Your entered information is still here.
+  Stack Trace:
+     at DiaperScout.Web.Services.PlaceObservationClient.CheckAsync(HttpResponseMessage response) in /Users/sporter/Documents/Projects/DS/src/DiaperScout.Web/Services/PlaceObservationClient.cs:line 41
+   at DiaperScout.Web.Services.PlaceObservationClient.PostAsync[T](String path, Object request) in /Users/sporter/Documents/Projects/DS/src/DiaperScout.Web/Services/PlaceObservationClient.cs:line 28
+   at DiaperScout.Api.IntegrationTests.ContributionIdentityTests.Authenticated_contribution_forwards_current_user_from_request_or_circuit(Boolean httpRequest) in /Users/sporter/Documents/Projects/DS/tests/DiaperScout.Api.IntegrationTests/ContributionIdentityTests.cs:line 46
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     1, Passed:     1, Skipped:     0, Total:     2, Duration: 61 ms - DiaperScout.Api.IntegrationTests.dll (net10.0)

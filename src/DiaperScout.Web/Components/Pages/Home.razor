@@ -1,9 +1,27 @@
 @page "/"
-@inject NavigationManager Navigation
-
-@code {
-    protected override void OnInitialized()
-    {
-        Navigation.NavigateTo("/products", replace: true);
-    }
-}
+<PageTitle>Explore · DiaperScout</PageTitle>
+<AuthorizeView>
+    <NotAuthorized><PwaWelcome /></NotAuthorized>
+</AuthorizeView>
+<PwaExplore @rendermode="InteractiveServer" />
+<section class="explore-page website-explore">
+    <div class="explore-hero">
+        <div class="explore-copy">
+            <p class="pwa-eyebrow">Your explorer’s guide</p>
+            <h1>A little curiosity.<br />A better discovery.</h1>
+            <p>Find absorbent products, explore the options, and discover verified places to buy.</p>
+            <form action="/products" method="get" class="explore-search">
+                <label for="explore-query" class="visually-hidden">Search products and brands</label>
+                <AppIcon Name="search" /><input id="explore-query" name="q" placeholder="Search products, brands…" type="search" />
+                <button type="submit" aria-label="Search the catalogue">→</button>
+            </form>
+        </div>
+        <div class="explore-illustration"><img src="/pwa/guide-map.webp" alt="" width="420" height="420" /><span class="explore-note">Find your next option.</span></div>
+    </div>
+    <div class="explore-heading"><p class="pwa-eyebrow">Choose your next step</p><h2>Let’s explore.</h2></div>
+    <div class="explore-destinations">
+        <a href="/products" class="explore-card explore-card-sage"><span class="explore-card-icon"><AppIcon Name="search" /></span><div><h3>Find a product</h3><p>Browse products and variants, then choose your size and pack.</p></div><span aria-hidden="true">↗</span></a>
+        <a href="/about" class="explore-card explore-card-sand"><span class="explore-card-icon"><AppIcon Name="book" /></span><div><h3>A guide to the guide</h3><p>How to explore the catalogue and find the right place to buy.</p></div><span aria-hidden="true">↗</span></a>
+    </div>
+    <div class="explore-footnote"><AppIcon /><p>One product. Your size. The exact pack.<br /><span>Retailer links follow the option you choose.</span></p></div>
+</section>

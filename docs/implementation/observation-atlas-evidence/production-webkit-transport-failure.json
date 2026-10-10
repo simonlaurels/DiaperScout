@@ -1,0 +1,28 @@
+{
+  "errors": [
+    {
+      "message": "Error: Circuit host not initialized.",
+      "stack": "Unhandled Promise Rejection: Error: Circuit host not initialized.\n    at disconnect (https://diaperscout.app/_framework/blazor.web.9hsif5t8mt.js:1:141569)\n    at unhandledError (https://diaperscout.app/_framework/blazor.web.9hsif5t8mt.js:1:146888)\n    at startConnection (https://diaperscout.app/_framework/blazor.web.9hsif5t8mt.js:1:140320)\n    at async startCore (https://diaperscout.app/_framework/blazor.web.9hsif5t8mt.js:1:138060)\n    at async cr (https://diaperscout.app/_framework/blazor.web.9hsif5t8mt.js:1:164935)"
+    }
+  ],
+  "failed": [],
+  "responses": [
+    {
+      "url": "/_blazor",
+      "status": 404
+    }
+  ],
+  "console": [
+    "WebSocket connection to 'wss://diaperscout.app/_blazor?id=[redacted] failed: There was a bad response from the server.",
+    "[2026-10-01T15:15:51.235Z] Error: Failed to start the transport 'WebSockets': Error: WebSocket failed to connect. The connection could not be found on the server, either the endpoint may not be a SignalR endpoint, the connection ID is not present on the server, or there is a proxy blocking WebSockets. If you have multiple servers check that sticky sessions are enabled.",
+    "Failed to load resource: the server responded with a status of 404 ()",
+    "[2026-10-01T15:15:51.271Z] Error: Failed to start the transport 'LongPolling': Error: No Connection with that ID: Status code '404'",
+    "[2026-10-01T15:15:51.271Z] Error: Failed to start the connection: Error: Unable to connect to the server with any of the available transports. Error: WebSockets failed: Error: WebSocket failed to connect. The connection could not be found on the server, either the endpoint may not be a SignalR endpoint, the connection ID is not present on the server, or there is a proxy blocking WebSockets. If you have multiple servers check that sticky sessions are enabled. ServerSentEvents failed: Error: 'ServerSentEvents' does not support Binary. Error: LongPolling failed: Error: No Connection with that ID: Status code '404'",
+    "[2026-10-01T15:15:51.271Z] Error: Error: Unable to connect to the server with any of the available transports. Error: WebSockets failed: Error: WebSocket failed to connect. The connection could not be found on the server, either the endpoint may not be a SignalR endpoint, the connection ID is not present on the server, or there is a proxy blocking WebSockets. If you have multiple servers check that sticky sessions are enabled. ServerSentEvents failed: Error: 'ServerSentEvents' does not support Binary. Error: LongPolling failed: Error: No Connection with that ID: Status code '404'",
+    "[2026-10-01T15:15:51.273Z] Error: Unable to connect, please ensure WebSockets are available. A VPN or proxy may be blocking the connection.",
+    "[2026-10-01T15:15:51.273Z] Error: Failed to start the circuit."
+  ],
+  "text": "YOUR NEXT DISCOVERY STARTS HERE\n\nWe couldn’t connect.\n\nThe connection to DiaperScout didn’t start. Reload to try again.\n\nReload and try again\nSign in\nSkip to content\n\nHelp fill a gap\n\nAdd a missing product\n\nTell us what the pack says. Moderators will check whether this barcode belongs to an existing product or a new one.\n\n1. Product\n2. Pack\n3. Review\n\nScanned barcode: 96385074\n\nWhat is it called?\nWhat brand is it?\nWhat’s the product called?\nWhich version is this? (optional)\nWho makes it? (optional)\n\nIf you don’t know, leave it empty. A moderator will resolve this before publication.\n\nContinue to pack\n\nOnly enter information from this pack. You can cancel without submitting.\n\nCancel and return to Scan\nExplore\nProducts\nScan\nAtlas\nBackpack\nThe page ran into a problem. Reload to continue exploring. Reload  ×",
+  "failure": "page.waitForFunction: Timeout 45000ms exceeded.",
+  "state": "failed"
+}

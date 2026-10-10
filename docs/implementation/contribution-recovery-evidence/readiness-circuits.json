@@ -1,0 +1,30 @@
+[
+  {
+    "ContainerGroupName_s": "diaperscout-api-vnet--contribution-32bf159-88547b786-j5rvd",
+    "Log_s": "      Application started. Press Ctrl+C to shut down.",
+    "RevisionName_s": "diaperscout-api-vnet--contribution-32bf159",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T13:11:01.3663141Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--contribution-32bf159-b796cd989-xwz8m",
+    "Log_s": "      Shared Data Protection key ring readiness check passed.",
+    "RevisionName_s": "diaperscout-web-vnet--contribution-32bf159",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T13:12:32.2241041Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--contribution-32bf159-b796cd989-xwz8m",
+    "Log_s": "      Application started. Press Ctrl+C to shut down.",
+    "RevisionName_s": "diaperscout-web-vnet--contribution-32bf159",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T13:12:32.2241041Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--contribution-32bf159-b796cd989-xwz8m",
+    "Log_s": "      Blazor circuit connection up DDDBBBC6B2E6",
+    "RevisionName_s": "diaperscout-web-vnet--contribution-32bf159",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T13:13:12.2387171Z"
+  }
+]

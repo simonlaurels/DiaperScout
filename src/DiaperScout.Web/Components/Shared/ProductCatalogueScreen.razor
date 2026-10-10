@@ -1,0 +1,604 @@
+@inject ProductCatalogueClient Catalogue
+@inject PlaceObservationClient PlacesClient
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<PageTitle>@(AvailableIn ? "Available in · " : "")@(product?.Name ?? "Product") · DiaperScout</PageTitle>
+<div class="pwa-prototype @(AvailableIn ? "retailers-page" : "product-page")">
+@if (loading || notFound || failed || product is null) {
+    <main class="product-shell">
+        <header class="product-nav"><a class="icon-button" href="/products" aria-label="Back to products"><PrototypeIcon /></a></header>
+        @if (loading) { <p role="status">Loading product…</p> }
+        else { <h1>@(notFound ? "Product not found" : "Something went wrong")</h1><p>@(notFound ? "We couldn't find that catalogue entry." : "We couldn't load this product just now.")</p> }
+    </main>
+} else if (AvailableIn) {
+    <main class="retailers-shell">
+        <header class="retailers-header">
+            <a class="icon-button" href="@SelectedProductUrl" aria-label="Back to @product.Name"><PrototypeIcon /></a>
+            <h1>Available in</h1>
+            <button class="icon-button" type="button" aria-label="About retailer availability" aria-expanded="@showAvailabilityInfo" @onclick="() => showAvailabilityInfo = !showAvailabilityInfo"><PrototypeIcon Name="info" /></button>
+        </header>
+        @if (showAvailabilityInfo) { <aside class="retailer-filter-panel">Community observations record a specific pack at a physical shop on a date. They do not guarantee current stock. Catalogue listings are separate retailer destinations; prices and availability should be checked with the retailer. Affiliate destinations may support DiaperScout.</aside> }
+        <section class="retailer-product-summary" aria-labelledby="retailer-product-title">
+            @if (product.Images.Count > 0) { <img class="retailer-product-image" src="@CurrentImage.ContentUrl" alt="@product.Name product pack" width="96" height="96" /> }
+            else { <span class="retailer-product-image gallery-empty" aria-label="No product image">—</span> }
+            <div class="retailer-product-info"><h2 id="retailer-product-title">@product.Name</h2>
+                <p class="retailer-product-meta">@(SelectedSize?.ManufacturerSize ?? "Size not recorded") <span aria-hidden="true">•</span> @(PublicProductIdentity.MeaningfulVariantName(product.Variants.FirstOrDefault()?.Name) ?? FormatProductTypeLabel(product.ProductType)) <span aria-hidden="true">•</span> @(SelectedPack is { } pack ? $"Pack of {pack.QuantityPerPack}" : "Pack not recorded")</p>
+                <p class="retailer-product-rating empty-copy">Not rated yet</p>
+            </div>
+        </section>
+        <nav class="retailer-scope-toggle" aria-label="Store scope">
+            <button class="scope-option @(nearby ? "active" : "")" type="button" aria-pressed="@nearby" @onclick="() => nearby = true"><PrototypeIcon Name="map-pin" /><span>Nearby</span></button>
+            <button class="scope-option @(!nearby ? "active" : "")" type="button" aria-pressed="@(!nearby)" @onclick="() => nearby = false"><PrototypeIcon Name="globe" /><span>All Stores</span></button>
+        </nav>
+        <section class="retailer-location-bar">
+            <div class="retailer-location"><span>@(nearby ? "Showing nearby locations" : "Showing all stores")</span>
+                @if (nearby) { <button type="button" class="location-value" @onclick="LocateAsync" disabled="@locating"><PrototypeIcon Name="map-pin" /><span>@(locating ? "Finding your location…" : position is null ? "Choose location" : "Within 25 km of you")</span></button> }
+            </div>
+            <button type="button" class="retailer-filter-button" aria-expanded="@showFilters" @onclick="() => showFilters = !showFilters"><span>Filter</span><PrototypeIcon Name="sliders-horizontal" /></button>
+        </section>
+        @if (showFilters) { <section class="retailer-filter-panel"><label for="availability-filter">Retailer or place</label><input id="availability-filter" @bind="retailerFilter" @bind:event="oninput" type="search" /><label><input type="checkbox" @bind="recentOnly" /> Observed in the last 14 days</label></section> }
+        @if (locationError is not null) { <p role="alert" class="empty-copy">@locationError</p> }
+        <section class="retailer-list" aria-label="Retailer locations">
+            @foreach (var place in VisiblePlaces) {
+                var observed = ObservationFor(place);
+                <article class="retailer-entry">
+                    <div class="retailer-logo"><PrototypeRetailerMark Name="@place.Place.Name" /></div>
+                    <div class="retailer-details"><h2>@place.Place.Name</h2><p class="retailer-address">@place.Place.AddressLine1, @place.Place.Locality</p><p class="retailer-observation"><PrototypeIcon Name="calendar-days" /><span>Observed @RelativeDate(observed.ObservedAtUtc).ToLowerInvariant()</span></p></div>
+                    <div class="retailer-status"><span class="status-badge @(IsRecent(observed.ObservedAtUtc) ? "observed" : "stale")">@(IsRecent(observed.ObservedAtUtc) ? "Observed" : "Not seen recently")</span></div>
+                    <a class="retailer-chevron" href="/atlas?locationId=@place.Place.Id" aria-label="View @place.Place.Name"><PrototypeIcon Name="chevron-right" /></a>
+                </article>
+            }
+            @if (!nearby) {
+                @foreach (var offer in FilteredOffers) {
+                    <article class="retailer-entry">
+                        <div class="retailer-logo"><PrototypeRetailerMark Name="@offer.RetailerName" /></div>
+                        <div class="retailer-details"><h2>@offer.RetailerName</h2><p class="retailer-address">@offer.ManufacturerSize · Pack of @offer.QuantityPerPack · @FormatPackaging(offer.PackagingType)</p><p class="retailer-observation"><PrototypeIcon Name="globe" /><span>@(offer.IsAffiliateBacked ? "Affiliate catalogue destination" : "Catalogue destination")</span></p></div>
+                        <div class="retailer-status"><span class="status-badge none">Catalogue listing</span></div>
+                        <a class="retailer-chevron" href="@offer.DestinationUrl" target="_blank" rel="noopener noreferrer" aria-label="Visit @offer.RetailerName"><PrototypeIcon Name="chevron-right" /></a>
+                    </article>
+                }
+            }
+            @if (!VisiblePlaces.Any() && (nearby || !FilteredOffers.Any())) { <div class="scope-empty" role="status">@(nearby && position is null ? "Choose your location to see nearby observations, or select All Stores." : observationsFailed ? "Community observations could not be loaded. Catalogue destinations are still shown when available." : "No matching locations or listings recorded for this pack.")</div> }
+        </section>
+        <aside class="retailer-contribution"><div class="contribution-icon"><PrototypeIcon Name="map" /></div><div class="contribution-copy"><h2>Help keep this information up to date</h2><p>Add an observation when you see this product in store.</p></div>
+            @if (selectedPackId is not null) { <a class="contribution-button" href="@ObservationUrl">Add Observation</a> } else { <button class="contribution-button" type="button" disabled title="Choose a recorded pack first">Add Observation</button> }
+        </aside>
+    </main>
+} else {
+    <main class="product-shell">
+        <header class="product-nav"><a class="icon-button" href="/products" aria-label="Back to products" title="Back"><PrototypeIcon /></a>
+            <div class="product-nav-actions"><button class="icon-button" type="button" aria-label="Share @product.Name" title="Share" @onclick="ShareAsync"><PrototypeIcon Name="share-2" /></button><button class="icon-button" type="button" aria-label="Saved products coming soon" title="Saved products coming soon" disabled aria-pressed="false"><PrototypeIcon Name="heart" /></button></div>
+        </header>
+        @if (shareMessage is not null) { <p class="visually-hidden" role="status">@shareMessage</p> }
+        <section class="product-intro" aria-labelledby="product-title"><h1 id="product-title">@product.Name</h1><p class="product-rating">Not rated yet</p></section>
+        <section class="product-gallery" aria-label="@product.Name product gallery">
+            <div class="gallery-viewport" @ref="galleryElement" tabindex="0" aria-roledescription="carousel" aria-label="Product images. Use left and right arrow keys to change image.">
+                @if (product.Images.Count > 0) {
+                    <div class="gallery-counter" aria-live="polite">@(currentImageIndex+1) / @product.Images.Count</div>
+                    <div class="gallery-track" style="transform:translateX(-@(currentImageIndex*100)%)">
+                        @foreach (var image in product.Images) { <figure class="gallery-slide"><img draggable="false" src="@image.ContentUrl" alt="@($"{product.Name} — {FormatImageRole(image.Role)}")" width="800" height="800" loading="@(image.IsPrimary ? "eager" : "lazy")" /></figure> }
+                    </div>
+                } else { <figure class="gallery-slide"><div class="gallery-empty">No product image yet</div></figure> }
+            </div>
+        </section>
+        <article class="observation-card" aria-labelledby="observed-heading"><h2 id="observed-heading">Observed</h2>
+            @if (LatestObservation is { } latest) {
+                <div class="observation-facts"><p class="observation-item observation-date"><PrototypeIcon Name="calendar-days" /><span>@RelativeDate(latest.Observation.ObservedAtUtc)</span></p><p class="observation-item observation-place"><PrototypeIcon Name="map-pin" /><span>@latest.Place.Locality, @latest.Place.CountryCode</span></p></div><p class="observation-item observation-retailer"><PrototypeIcon Name="store" /><span>@latest.Place.Name</span></p>
+            } else { <p class="empty-copy">@(observationsFailed ? "Community observations could not be loaded." : "No observations recorded for this pack yet.")</p> }
+        </article>
+        <article class="observation-card availability-card"><div class="card-header"><h2 id="availability-heading">Available In</h2><a class="view-all" href="@AvailableUrl">View all</a></div>
+            <div class="retailer-logos">
+                @foreach (var offer in SelectedOffers.Take(3)) { <a href="@offer.DestinationUrl" target="_blank" rel="noopener noreferrer" aria-label="Visit @offer.RetailerName"><PrototypeRetailerMark Name="@offer.RetailerName" /></a> }
+                @if (SelectedOffers.Count == 0) { @foreach (var place in ObservedPlaces.Take(3)) { <a href="@AvailableUrl" aria-label="View @place.Place.Name"><PrototypeRetailerMark Name="@place.Place.Name" /></a> } }
+                @if (SelectedOffers.Count == 0 && !ObservedPlaces.Any()) { <p class="empty-copy">No locations or listings recorded for this pack yet.</p> }
+            </div>
+        </article>
+        <article class="product-details-card" aria-labelledby="product-details-heading"><div class="card-header"><h2 id="product-details-heading">Product Details</h2><button type="button" class="view-all" aria-expanded="@showDetails" @onclick="() => showDetails = !showDetails">@(showDetails ? "Show less" : "View all")</button></div>
+            @if (product.AvailableVariants?.Count > 1) { <div class="product-detail-row"><label class="product-detail-label" for="public-product-variant">Variant</label><select id="public-product-variant" value="@product.ProductVariantId" @onchange="SelectVariant">@foreach(var variant in product.AvailableVariants){<option value="@variant.Id">@variant.Name</option>}</select></div> }
+            <div class="product-detail-row"><div class="product-detail-label"><PrototypeIcon Name="ruler" /><span>Sizes</span></div><div class="product-sizes" aria-label="Available sizes">@foreach(var size in AllSizes){<button type="button" class="ds-size-pill @(size.Id==selectedSizeId ? "current" : "")" aria-pressed="@(size.Id==selectedSizeId)" title="@FormatWaistShort(size.WaistMinimumCm,size.WaistMaximumCm)" @onclick="() => SelectSize(size.Id)">@size.ManufacturerSize</button>}</div></div>
+            <div class="product-detail-row"><label class="product-detail-label" for="selected-pack">Pack size</label>@if(SelectedSize?.Packs.Count>0){<select id="selected-pack" aria-label="Pack size" value="@selectedPackId" @onchange="SelectPack">@foreach(var pack in SelectedSize.Packs){<option value="@pack.Id">@pack.QuantityPerPack pieces · @FormatPackaging(pack.PackagingType)</option>}</select>}else{<span class="empty-copy">Not recorded</span>}</div>
+            @if(showDetails) { <div class="detail-expanded"><dl><div><dt>Brand</dt><dd>@(product.BrandName ?? "Not recorded")</dd></div><div><dt>Manufacturer</dt><dd>@product.ManufacturerName</dd></div><div><dt>Type</dt><dd>@FormatProductTypeLabel(product.ProductType)</dd></div><div><dt>Waist</dt><dd>@FormatWaistShort(SelectedSize?.WaistMinimumCm,SelectedSize?.WaistMaximumCm)</dd></div><div><dt>GTIN</dt><dd>@(SelectedPack is {Gtins.Count:>0} gtinPack ? string.Join(", ",gtinPack.Gtins) : "Not recorded")</dd></div>@foreach(var feature in ProductFeatures){<div><dt>Feature</dt><dd>@feature.Label</dd></div>}</dl>@if(!string.IsNullOrWhiteSpace(product.Description)){<p>@product.Description</p>}@if(product.OfficialWebsiteUrl is not null){<a href="@product.OfficialWebsiteUrl" target="_blank" rel="noopener noreferrer">Manufacturer website</a>}</div> }
+        </article>
+        <article class="community-photos-card" aria-labelledby="community-photos-heading"><div class="card-header"><h2 id="community-photos-heading">Community Photos</h2><button class="view-all" type="button" disabled title="No community photos available">View all</button></div><p class="empty-copy">No community photos recorded for this pack.</p></article>
+        <article class="observation-history-card" aria-labelledby="history-heading"><div class="card-header"><h2 id="history-heading">Observation History</h2><button class="view-all" type="button" aria-expanded="@showHistory" @onclick="() => showHistory = !showHistory">@(showHistory ? "Show less" : "View all")</button></div>
+            @if (History.Count > 0) { <div class="observation-timeline" style="--entries:@Math.Min(History.Count,3)" aria-label="Observation history timeline"><div class="timeline-line" aria-hidden="true"></div>@foreach(var observation in History.Take(3)){<div class="timeline-entry @(observation==History[0] ? "current" : "")"><span class="timeline-dot" aria-hidden="true"></span><time class="timeline-date" datetime="@observation.ObservedAtUtc.ToString("O")">@RelativeDate(observation.ObservedAtUtc)</time></div>}</div>
+                @if(showHistory){<div class="detail-expanded">@foreach(var entry in History){<p>@entry.ObservedAtUtc.ToString("d MMM yyyy, HH:mm 'UTC'") · @entry.Size · Pack of @entry.Quantity</p>}</div>}
+            } else { <p class="empty-copy">No observation history for this pack yet.</p> }
+        </article>
+        <section class="add-observation-card" aria-labelledby="add-observation-heading"><div class="add-observation-content"><h2 id="add-observation-heading">Seen this product?</h2><p>Help other Explorers by adding an observation.</p></div>
+            @if(selectedPackId is not null){<a class="add-observation-button" href="@ObservationUrl"><PrototypeIcon Name="plus" /><span>Add Observation</span></a>}else{<button class="add-observation-button" type="button" disabled title="Choose a recorded pack first"><PrototypeIcon Name="plus" /><span>Add Observation</span></button>}
+        </section>
+    </main>
+}
+</div>
+
+@if (!AvailableIn) {
+@if (loading)
+{
+    <section class="ds-product-page ds-desktop-product"><div class="ds-product-shell"><div class="ds-product-state">Loading the Guide…</div></div></section>
+}
+else if (notFound)
+{
+    <section class="ds-product-page ds-desktop-product"><div class="ds-product-shell"><div class="ds-product-state"><span class="ds-product-eyebrow">THE ATLAS</span><h1>Product not found</h1><p>We couldn't find that catalogue entry.</p><a class="ds-product-button ds-product-button-primary" href="/products">Back to catalogue</a></div></div></section>
+}
+else if (failed || product is null)
+{
+    <section class="ds-product-page ds-desktop-product"><div class="ds-product-shell"><div class="ds-product-state ds-product-state-error"><span class="ds-product-eyebrow">THE ATLAS</span><h1>Something went wrong</h1><p>We couldn't load this product just now.</p><a class="ds-product-button ds-product-button-primary" href="/products">Back to catalogue</a></div></div></section>
+}
+else
+{
+    <section class="ds-product-page ds-desktop-product">
+        <div class="ds-product-shell">
+            <div class="ds-guide-scene" aria-hidden="true">
+                <img src="/images/diaperscout/guide-header-scene.png" alt="" loading="lazy" />
+            </div>
+
+            <nav class="ds-breadcrumbs" aria-label="Breadcrumb">
+                <a href="/" aria-label="Home" class="ds-home-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5v9a1.5 1.5 0 0 1-1.5 1.5H4.5A1.5 1.5 0 0 1 3 19.5v-9Z" /><path d="M9 21v-6h6v6" /></svg>
+                </a>
+                <span>›</span><a href="/products">Products</a><span>›</span>
+                <span>@FormatProductTypeLabel(product.ProductType)</span><span>›</span>
+                <strong>@product.Name</strong>
+            </nav>
+
+            <section class="ds-product-hero">
+                <div class="ds-product-gallery-column">
+                    <div class="ds-product-gallery">
+                        <div class="ds-gallery-tape" aria-hidden="true"></div>
+                        @if (product.Images.Count > 0)
+                        {
+                            <div class="ds-gallery-main" tabindex="0" @onkeydown="HandleGalleryKeyDown" aria-label="Product image gallery">
+                                <img src="@CurrentImage.ContentUrl" alt="@($"{product.Name} — {FormatImageRole(CurrentImage.Role)}")" />
+                                @if (product.Images.Count > 1)
+                                {
+                                    <button type="button" class="ds-gallery-arrow ds-gallery-arrow-left" @onclick="PreviousImage" aria-label="Previous image">‹</button>
+                                    <button type="button" class="ds-gallery-arrow ds-gallery-arrow-right" @onclick="NextImage" aria-label="Next image">›</button>
+                                    <span class="ds-gallery-count">@(currentImageIndex + 1) / @product.Images.Count</span>
+                                }
+                            </div>
+                            <div class="ds-gallery-caption">
+                                <strong>@product.Name</strong>
+                                <span>@FormatImageRole(CurrentImage.Role)</span>
+                            </div>
+                            @if (product.Images.Count > 1)
+                            {
+                                <div class="ds-gallery-thumbs" aria-label="Product image selection">
+                                    @for (var i = 0; i < product.Images.Count; i++)
+                                    {
+                                        var imageIndex = i;
+                                        <button type="button" class="ds-gallery-thumb @(imageIndex == currentImageIndex ? "is-active" : "")" @onclick="() => SelectImage(imageIndex)" aria-label="Show image @(imageIndex + 1)">
+                                            <img src="@product.Images[imageIndex].ContentUrl" alt="" />
+                                        </button>
+                                    }
+                                    <button type="button" class="ds-gallery-more" aria-label="Next image" @onclick="NextImage">⌄</button>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="ds-gallery-main ds-gallery-empty" tabindex="0">
+                                <div class="ds-gallery-empty-icon">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16 4.5-4.5 3 3L15 11l5 5" /><path d="M4 19.5h16A1.5 1.5 0 0 0 21.5 18V6A1.5 1.5 0 0 0 20 4.5H4A1.5 1.5 0 0 0 2.5 6v12A1.5 1.5 0 0 0 4 19.5Z" /><circle cx="8" cy="8" r="1.4" /></svg>
+                                </div>
+                                <strong>No product image yet</strong>
+                                <span>The Atlas is still waiting for a suitable image.</span>
+                            </div>
+                            <div class="ds-gallery-caption"><strong>@product.Name</strong><span>Image pending</span></div>
+                        }
+                    </div>
+                </div>
+
+                <div class="ds-product-summary">
+                    <span class="ds-type-ribbon">@FormatProductTypeLabel(product.ProductType)</span>
+                    <h1>@product.Name</h1>
+                    <div class="ds-product-byline">
+                        <strong>@product.ManufacturerName</strong><span>•</span><span>@(product.BrandName ?? "Independent catalogue entry")</span><span>•</span><span>@FormatProductTypeLabel(product.ProductType)</span>
+                    </div>
+
+                    <p class="ds-product-description">
+                        @(string.IsNullOrWhiteSpace(product.Description)
+                            ? "A DiaperScout catalogue entry with recorded product details, variants, sizes and known retail destinations."
+                            : product.Description)
+                    </p>
+
+                    @if (ProductFeatures.Count > 0)
+                    {
+                        <div class="ds-feature-strip" aria-label="Product features">
+                            @foreach (var feature in ProductFeatures.Take(4))
+                            {
+                                <div class="ds-feature">
+                                    <span class="ds-feature-icon">@FeatureIcon(feature.Key)</span>
+                                    <span>@feature.Label</span>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <aside class="ds-product-sidebar">
+                    <div class="ds-product-details-card">
+                        <div class="ds-card-heading">
+                            <span class="ds-heading-icon">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14v15H5z" /><path d="M8 4.5v15M8 8h7M11 11h5M11 14h4M11 17h5" /></svg>
+                            </span>
+                            <h2>Product details</h2>
+                        </div>
+                        <dl>
+                            <div><dt>Brand</dt><dd>@(product.BrandName ?? "Not recorded")</dd></div>
+                            <div><dt>Manufacturer</dt><dd>@product.ManufacturerName</dd></div>
+                            <div><dt>Type</dt><dd>@FormatProductTypeLabel(product.ProductType)</dd></div>
+                            <div><dt>Variants</dt><dd>@(product.AvailableVariants?.Count ?? product.Variants.Count)</dd></div>
+                            <div><dt>Images</dt><dd>@product.Images.Count</dd></div>
+                            <div><dt>Retail destinations</dt><dd>@SelectedOffers.Count</dd></div>
+                            <div><dt>GTINs</dt><dd>@GtinCount</dd></div>
+                        </dl>
+                        <span class="ds-card-clip" aria-hidden="true"></span>
+                    </div>
+                </aside>
+            </section>
+
+            @if (product.AvailableVariants?.Count > 1)
+            {
+                <div class="ds-choice-card">
+                    <label for="desktop-product-variant">Choose a variant</label>
+                    <select id="desktop-product-variant" class="ds-pack-select" value="@product.ProductVariantId" @onchange="SelectVariant">
+                        @foreach (var variant in product.AvailableVariants)
+                        {
+                            <option value="@variant.Id">@variant.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+            <section class="ds-choice-row" aria-label="Product options">
+                <div class="ds-choice-card ds-choice-size">
+                    <div class="ds-choice-heading">
+                        <span class="ds-choice-art ds-size-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="8" cy="12" r="6"/><circle cx="8" cy="12" r="2.2"/><path d="M14 7h6v10h-6"/></svg></span>
+                        <h2>Choose a size</h2>
+                        <span class="ds-size-help" title="Recorded manufacturer measurements">?</span>
+                    </div>
+                    <div class="ds-size-pills">@if (!AllSizes.Any()) { <p class="ds-side-empty">Sizes not recorded</p> }
+                        @foreach (var item in AllSizes)
+                        {
+                            <button type="button" class="ds-size-pill @(item.Id == selectedSizeId ? "is-selected" : "")" aria-pressed="@(item.Id == selectedSizeId)" @onclick="() => SelectSize(item.Id)">
+                                <strong>@item.ManufacturerSize</strong>
+                                <span>@FormatWaistShort(item.WaistMinimumCm, item.WaistMaximumCm)</span>
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                <div class="ds-choice-card ds-choice-pack">
+                    <div class="ds-choice-heading">
+                        <span class="ds-choice-art" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3.5 8 8.5-4 8.5 4-8.5 4-8.5-4Z"/><path d="M3.5 8v8l8.5 4 8.5-4V8M12 12v8"/></svg></span>
+                        <h2>Pack size</h2>
+                    </div>
+                    @if (SelectedSize?.Packs.Count > 0)
+                    {
+                        <select class="ds-pack-select" value="@selectedPackId" @onchange="SelectPack" aria-label="Pack size">
+                            @foreach (var pack in SelectedSize.Packs)
+                            {
+                                <option value="@pack.Id">@pack.QuantityPerPack pieces · @FormatPackaging(pack.PackagingType)</option>
+                            }
+                        </select>
+                    }
+                    else
+                    {
+                        <div class="ds-pack-empty">Pack information not recorded</div>
+                    }
+                </div>
+            </section>
+
+            <section class="ds-lower-grid">
+                <div class="ds-buy-main" aria-labelledby="desktop-where-to-buy">
+                    <div class="ds-section-heading">
+                        <div>
+                            <span class="ds-section-icon ds-cart-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 4h2l2.1 10.2a2 2 0 0 0 2 1.6h8.5a2 2 0 0 0 1.9-1.4L21 8H6"/><circle cx="9" cy="19" r="1.5"/><circle cx="18" cy="19" r="1.5"/><path d="M13 6h5M15.5 3.5v5"/></svg></span>
+                            <div><p class="ds-product-eyebrow">FIND IT</p><h2 id="desktop-where-to-buy">Where to buy</h2></div>
+                        </div>
+                        <span>@(SelectedOffers.Count) known destination@(SelectedOffers.Count == 1 ? "" : "s")</span>
+                    </div>
+                    <p class="ds-section-intro">Compare known retailer destinations for this size and pack. Prices and availability may change at the retailer.</p>
+                    <div class="ds-desktop-observations">
+                        @if (LatestObservation is { } desktopObservation)
+                        {
+                            <p>Observed @RelativeDate(desktopObservation.Observation.ObservedAtUtc).ToLowerInvariant() at @desktopObservation.Place.Name, @desktopObservation.Place.Locality. Reports do not guarantee current stock.</p>
+                        }
+                        else
+                        {
+                            <p>@(observationsFailed ? "Community observations could not be loaded." : "No observations recorded for this pack yet.")</p>
+                        }
+                        <a class="ds-product-button" href="@AvailableUrl">View all locations and listings</a>
+                        @if (selectedPackId is not null)
+                        {
+                            <a class="ds-product-button" href="@ObservationUrl">Add Observation</a>
+                        }
+                    </div>
+
+                    @if (SelectedOffers.Count == 0)
+                    {
+                        <div class="ds-empty-retail"><strong>No retail destinations yet</strong><span>We don’t know where to buy this size and pack yet. Places to find it will appear here as they are added to the Atlas.</span></div>
+                    }
+                    else
+                    {
+                        <div class="ds-retail-list">
+                            @foreach (var offer in SelectedOffers)
+                            {
+                                <div class="ds-retail-row">
+                                    <div class="ds-retailer-mark">@RetailerInitial(offer.RetailerName)</div>
+                                    <div class="ds-retailer-info"><strong>@offer.RetailerName</strong><span>@offer.ManufacturerSize · @offer.QuantityPerPack pieces · @FormatPackaging(offer.PackagingType)</span></div>
+                                    <span class="ds-retailer-status">Catalogue listing</span>
+                                    <a href="@offer.DestinationUrl" target="_blank" rel="noopener noreferrer" class="ds-retailer-button">@(offer.IsAffiliateBacked ? "Buy now" : "Visit retailer") <span>↗</span></a>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <aside class="ds-side-stack">
+                    <section class="ds-facts-card">
+                        <div class="ds-facts-heading"><span class="ds-heading-icon ds-compass-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15.8 8.2-2.1 5.5-5.5 2.1 2.1-5.5 5.5-2.1Z"/><circle cx="12" cy="12" r="1"/></svg></span><h2>Key features</h2></div>
+                        @if (ProductFeatures.Count > 0)
+                        {
+                            <ul>
+                                @foreach (var feature in ProductFeatures)
+                                {
+                                    <li><span>✓</span>@feature.Label</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="ds-side-empty">No feature attributes are recorded for this variant yet.</p>
+                        }
+                    </section>
+
+                    <section class="ds-about-card">
+                        <div><span class="ds-about-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14v15H5z"/><path d="M8 4.5v15M11 9h5M11 12h5M11 15h4"/></svg></span><h2>About this product</h2></div>
+                        <p>@(string.IsNullOrWhiteSpace(product.Description) ? "DiaperScout separates the product record from retailer listings, so you can understand the catalogue entry before choosing where to find it." : product.Description)</p>
+                    </section>
+                </aside>
+            </section>
+        </div>
+    </section>
+}
+
+
+}
+@code {
+    [Parameter] public string Slug { get; set; } = string.Empty;
+    [Parameter] public string? VariantId { get; set; }
+    [Parameter] public string? PackTypeId { get; set; }
+    [Parameter] public bool AvailableIn {get;set;}
+    private bool showDetails, showHistory, showFilters, showAvailabilityInfo, nearby = true, recentOnly, locating;
+    private string retailerFilter = "";
+    private string? shareMessage, locationError, wiredGallery;
+    private IReadOnlyList<AtlasPlace> atlasPlaces = [];
+    private bool observationsFailed;
+    private BrowserPosition? position;
+    private ElementReference galleryElement;
+    private IJSObjectReference? interactionModule;
+    private bool disposed;
+    private CatalogueProductPack? SelectedPack => SelectedSize?.Packs.FirstOrDefault(p=>p.Id==selectedPackId);
+    private string SelectedProductUrl => PublicProductIdentity.ProductUrl(Slug, product?.ProductVariantId) + (selectedPackId is null ? "" : (product?.ProductVariantId is null ? "?" : "&")+"packTypeId="+selectedPackId);
+    private string AvailableUrl => $"/products/{Uri.EscapeDataString(Slug)}/retailers" + new Uri(Navigation.ToAbsoluteUri(SelectedProductUrl).ToString()).Query;
+    private string ObservationUrl => "/observations/new?packTypeId="+selectedPackId;
+    private IEnumerable<AtlasPlace> ObservedPlaces => atlasPlaces.Where(p=>p.Observations.Any(o=>o.PackTypeId==selectedPackId));
+    private PlaceProductObservation ObservationFor(AtlasPlace place) => place.Observations.Where(o=>o.PackTypeId==selectedPackId).OrderByDescending(o=>o.ObservedAtUtc).First();
+    private IEnumerable<AtlasPlace> VisiblePlaces => ObservedPlaces.Where(p=>Matches(p.Place.Name+" "+p.Place.Locality) && (!recentOnly || IsRecent(ObservationFor(p).ObservedAtUtc)) && (!nearby || position is not null && DistanceKm(position,p.Place)<25)).OrderBy(p=>nearby && position is not null ? DistanceKm(position,p.Place) : 0).ThenByDescending(p=>ObservationFor(p).ObservedAtUtc);
+    private IEnumerable<CatalogueRetailOffer> FilteredOffers => SelectedOffers.Where(o=>!recentOnly && Matches(o.RetailerName));
+    private bool Matches(string text)=>string.IsNullOrWhiteSpace(retailerFilter)||text.Contains(retailerFilter.Trim(),StringComparison.OrdinalIgnoreCase);
+    private sealed record ObservationView(PlaceItem Place,PlaceProductObservation Observation);
+    private ObservationView? LatestObservation => ObservedPlaces.Select(p=>new ObservationView(p.Place,ObservationFor(p))).OrderByDescending(p=>p.Observation.ObservedAtUtc).FirstOrDefault();
+    private List<PlaceProductObservation> History => ObservedPlaces.SelectMany(p=>p.Observations).Where(o=>o.PackTypeId==selectedPackId).OrderByDescending(o=>o.ObservedAtUtc).ToList();
+    private static bool IsRecent(DateTimeOffset value)=>value>=DateTimeOffset.UtcNow.AddDays(-14);
+    private static string RelativeDate(DateTimeOffset value) {
+        var days=Math.Max(0,(DateTimeOffset.UtcNow.Date-value.UtcDateTime.Date).Days);
+        return days switch {0=>"Today",1=>"Yesterday",<14=>$"{days} days ago",<30=>$"{days/7} weeks ago",<60=>"1 month ago",<365=>$"{days/30} months ago",_=>$"{days/365} years ago"};
+    }
+    public sealed record BrowserPosition(double Latitude,double Longitude);
+    private static double DistanceKm(BrowserPosition point,PlaceItem place) {
+        const double radians=Math.PI/180;
+        var lat=((double)place.Latitude-point.Latitude)*radians;var lon=((double)place.Longitude-point.Longitude)*radians;
+        var a=Math.Pow(Math.Sin(lat/2),2)+Math.Cos(point.Latitude*radians)*Math.Cos((double)place.Latitude*radians)*Math.Pow(Math.Sin(lon/2),2);
+        return 6371*2*Math.Asin(Math.Sqrt(Math.Clamp(a,0,1)));
+    }
+    private async Task<IJSObjectReference> InteractionsAsync()=>interactionModule ??= await JS.InvokeAsync<IJSObjectReference>("import","/js/product-prototype.js");
+    private async Task ShareAsync() {
+        try { shareMessage=await (await InteractionsAsync()).InvokeAsync<string>("share",product!.Name,Navigation.ToAbsoluteUri(SelectedProductUrl).ToString()); }
+        catch(JSException){shareMessage="Sharing is unavailable in this browser.";}
+    }
+    private async Task LocateAsync() {
+        if(locating)return;locating=true;locationError=null;
+        try { position=await (await InteractionsAsync()).InvokeAsync<BrowserPosition>("locate"); }
+        catch(JSException){locationError="Your location was unavailable. You can still use All Stores.";}
+        finally{locating=false;}
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if(loading || product is null || AvailableIn || product.Images.Count==0){wiredGallery=null;return;}
+        var key=product.Id.ToString()+product.ProductVariantId;
+        if(wiredGallery==key)return;
+        var revision=selectionRevision;
+        var element=galleryElement;
+        var initialIndex=currentImageIndex;
+        try {
+            var module=await InteractionsAsync();
+            if(disposed || revision!=selectionRevision)return;
+            // A pending render/navigation can remove the element while import is awaited.
+            // Only mark the gallery wired when the browser confirms a live element.
+            var attached=await module.InvokeAsync<bool>("gallery",element,initialIndex);
+            if(attached && !disposed && revision==selectionRevision)wiredGallery=key;
+        }catch(JSDisconnectedException){}
+    }
+    public async ValueTask DisposeAsync() {
+        if(disposed)return;
+        disposed=true;
+        // DOM cleanup belongs to the browser observer: enhanced navigation may already
+        // have removed the gallery when Blazor disposes this component.
+        try {if(interactionModule is not null)await interactionModule.DisposeAsync();}catch(JSDisconnectedException){}
+    }
+    private async Task<(IReadOnlyList<AtlasPlace> Places,bool Failed)> ReadPlacesAsync() {
+        try{return(await PlacesClient.AtlasAsync(),false);}catch(Exception e) when(e is HttpRequestException or TaskCanceledException or System.Text.Json.JsonException){return([],true);}
+    }
+    private int selectionRevision;
+    private IReadOnlyList<CatalogueRetailOffer> SelectedOffers = [];
+
+    private CatalogueProductDetails? product;
+    private bool loading = true;
+    private bool notFound;
+    private bool failed;
+    private int currentImageIndex;
+    private Guid? selectedSizeId;
+    private Guid? selectedPackId;
+
+    private CatalogueProductImage CurrentImage => product?.Images[Math.Clamp(currentImageIndex, 0, Math.Max(product.Images.Count - 1, 0))] ?? throw new InvalidOperationException("Current image requested before product images were loaded.");
+
+    private IEnumerable<CatalogueProductSize> AllSizes => product?.Variants.SingleOrDefault()?.Sizes ?? Enumerable.Empty<CatalogueProductSize>();
+    private CatalogueProductSize? SelectedSize => AllSizes.FirstOrDefault(s => s.Id == selectedSizeId);
+
+    private IReadOnlyList<(string Key, string Label)> ProductFeatures
+    {
+        get
+        {
+            var features = new List<(string, string)>();
+            var variant = product?.Variants.FirstOrDefault();
+            if (variant is not null)
+            {
+                if (variant.BackingType != BackingType.Unknown) features.Add(("backing", FormatBacking(variant.BackingType)));
+                if (variant.HasStandingLeakGuards == true) features.Add(("leak-guards", "Standing leak guards"));
+                if (variant.HasWetnessIndicator == true) features.Add(("wetness", "Wetness indicator"));
+                if (variant.IsLatexFree == true) features.Add(("latex", "Latex free"));
+                if (variant.FastenerCount.HasValue) features.Add(("fasteners", $"{variant.FastenerCount} fasteners"));
+                if (variant.FastenerType != FastenerType.Unknown) features.Add(("fastener-type", FormatFastener(variant.FastenerType)));
+                if (variant.WaistbandStyle != WaistbandStyle.Unknown) features.Add(("waistband", FormatEnum(variant.WaistbandStyle)));
+                if (variant.Appearance != CatalogueVariantAppearance.Unknown) features.Add(("appearance", FormatEnum(variant.Appearance)));
+                if (variant.PrimaryColour != CatalogueVariantColour.Unknown) features.Add(("colour", FormatEnum(variant.PrimaryColour)));
+                if (variant.DesignedFor != CatalogueVariantDesignedFor.Unknown) features.Add(("designed-for", $"Designed for {FormatEnum(variant.DesignedFor).ToLowerInvariant()}"));
+            }
+            return features;
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var revision = ++selectionRevision;
+        SelectedOffers = [];
+        wiredGallery=null;
+        product = null;
+        loading = true; notFound = false; failed = false; currentImageIndex = 0; selectedSizeId = null; selectedPackId = null;
+        Guid? requestedVariantId = null;
+        if (VariantId is not null)
+        {
+            if (!Guid.TryParse(VariantId, out var parsedVariantId))
+            {
+                notFound = true;
+                loading = false;
+                return;
+            }
+            requestedVariantId = parsedVariantId;
+        }
+        Guid? requestedPackId = null;
+        if (PackTypeId is not null)
+        {
+            if (!Guid.TryParse(PackTypeId, out var packId)) { notFound = true; loading = false; return; }
+            requestedPackId = packId;
+        }
+        var placesTask=ReadPlacesAsync();
+        var result = await Catalogue.GetAsync(Slug, variantId: requestedVariantId, packTypeId: requestedPackId);
+        var places=await placesTask;
+        if (revision != selectionRevision) return;
+        atlasPlaces=places.Places;observationsFailed=places.Failed;
+        switch (result.Status)
+        {
+            case ProductCatalogueDetailStatus.Found:
+                product = result.Product;
+                currentImageIndex = product?.Images.Select((image, index) => new { image, index }).FirstOrDefault(x => x.image.IsPrimary)?.index ?? 0;
+                selectedSizeId = product?.Variants.SelectMany(v => v.Sizes).FirstOrDefault(s => !requestedPackId.HasValue || s.Packs.Any(p => p.Id == requestedPackId))?.Id;
+                selectedPackId = requestedPackId ?? SelectedSize?.Packs.FirstOrDefault()?.Id;
+                SelectedOffers = product?.RetailOffers ?? [];
+                break;
+            case ProductCatalogueDetailStatus.NotFound: product = null; notFound = true; break;
+            default: product = null; failed = true; break;
+        }
+        loading = false;
+    }
+
+    private void SelectVariant(ChangeEventArgs args)
+    {
+        if (Guid.TryParse(args.Value?.ToString(), out var id) && product?.AvailableVariants?.Any(v => v.Id == id) == true)
+        {
+            ++selectionRevision;
+            SelectedOffers = [];
+            selectedSizeId = null;
+            selectedPackId = null;
+            Navigation.NavigateTo(PublicProductIdentity.ProductUrl(Slug, id));
+        }
+    }
+
+    private async Task SelectSize(Guid id)
+    {
+        if (!AllSizes.Any(s => s.Id == id)) return;
+        selectedSizeId = id;
+        selectedPackId = SelectedSize?.Packs.FirstOrDefault()?.Id;
+        await RefreshOffersAsync();
+    }
+
+    private async Task SelectPack(ChangeEventArgs args)
+    {
+        if (!Guid.TryParse(args.Value?.ToString(), out var id) || SelectedSize?.Packs.Any(p => p.Id == id) != true) return;
+        selectedPackId = id;
+        await RefreshOffersAsync();
+    }
+
+    private async Task RefreshOffersAsync()
+    {
+        var revision = ++selectionRevision;
+        SelectedOffers = [];
+        if (!selectedPackId.HasValue || product is null) return;
+        var result = await Catalogue.GetAsync(Slug, variantId: product.ProductVariantId, packTypeId: selectedPackId);
+        if (revision == selectionRevision && result.Status == ProductCatalogueDetailStatus.Found)
+            SelectedOffers = result.Product?.RetailOffers ?? [];
+    }
+
+    private static string FormatProductTypeLabel(ProductType type)
+    {
+        var raw = type.ToString();
+        return raw.Equals("Tape", StringComparison.OrdinalIgnoreCase)
+            ? "Adult Diaper"
+            : raw.Replace("Adult", "Adult ");
+    }
+    private static string FormatBacking(BackingType backing) => backing switch { BackingType.Plastic => "Plastic backing", BackingType.Cloth => "Cloth-like backing", BackingType.Hybrid => "Hybrid backing", _ => FormatEnum(backing) };
+    private static string FormatFastener(FastenerType fastener) => fastener switch { FastenerType.AdhesiveTape => "Adhesive tape", FastenerType.HookAndLoop => "Hook & loop", _ => FormatEnum(fastener) };
+    private static string FormatEnum<T>(T value) where T : struct, Enum => value.ToString().Replace("And", " & ").Replace("HookAndLoop", "Hook & Loop");
+    private static string FormatPackaging(PackagingType packaging) => packaging.ToString();
+    private static string FormatWaistShort(int? minimum, int? maximum) => WaistMeasurementFormatting.FormatRange(minimum, maximum);
+    private static string FormatImageRole(CatalogueSubmissionImageRole role) => role.ToString().Replace("Image", string.Empty).Replace("Product", "Product ").Trim();
+
+    private int GtinCount => product?.Variants.SelectMany(v => v.Sizes).SelectMany(s => s.Packs).SelectMany(p => p.Gtins).Distinct(StringComparer.OrdinalIgnoreCase).Count() ?? 0;
+    private void PreviousImage() { if (product is null || product.Images.Count < 2) return; currentImageIndex = (currentImageIndex - 1 + product.Images.Count) % product.Images.Count; }
+    private void NextImage() { if (product is null || product.Images.Count < 2) return; currentImageIndex = (currentImageIndex + 1) % product.Images.Count; }
+    private void SelectImage(int index) { if (product is null || index < 0 || index >= product.Images.Count) return; currentImageIndex = index; }
+    private void HandleGalleryKeyDown(KeyboardEventArgs args) { if (args.Key == "ArrowLeft") PreviousImage(); else if (args.Key == "ArrowRight") NextImage(); }
+    private static string RetailerInitial(string name) => string.IsNullOrWhiteSpace(name) ? "?" : name.Trim()[0].ToString().ToUpperInvariant();
+    private static MarkupString FeatureIcon(string key)
+    {
+        var path = key switch
+        {
+            "backing" => "<path d=\"M11 16.5 24 9l13 7.5-13 7-13-7Z\"/><path d=\"M11 22.5 24 30l13-7.5\"/><path d=\"M11 28.5 24 36l13-7.5\"/><path d=\"M18 13.2 24 10l6 3.2\"/>",
+            "leak-guards" => "<path d=\"M10 34V16.5c0-2.5 2-4.5 4.5-4.5S19 14 19 16.5V34\"/><path d=\"M29 34V16.5c0-2.5 2-4.5 4.5-4.5s4.5 2 4.5 4.5V34\"/><path d=\"M19 19c1.5 2 3.2 3 5 3s3.5-1 5-3\"/>",
+            "wetness" => "<path d=\"M24 7c5.5 7.2 9 12.2 9 18a9 9 0 1 1-18 0c0-5.8 3.5-10.8 9-18Z\"/><path d=\"M20 27c.8 2.1 2.1 3.3 4 3.8\"/>",
+            "latex" => "<path d=\"M14 31c-2.5-4.2-1.9-9.8 1.8-13.5 3.7-3.7 9.3-4.3 13.5-1.8-1.3 3.4-3.3 6.4-6.1 9.2-2.8 2.8-5.8 4.8-9.2 6.1Z\"/><path d=\"M12 12 36 36\"/><path d=\"M17 17c5 1 10 4 14 8\"/>",
+            "fasteners" => "<circle cx=\"16\" cy=\"24\" r=\"6\"/><circle cx=\"32\" cy=\"24\" r=\"6\"/><path d=\"M16 18v12M10 24h12M32 18v12M26 24h12\"/>",
+            "fastener-type" => "<path d=\"M10 17h16c3.3 0 6 2.7 6 6v2c0 3.3-2.7 6-6 6H10Z\"/><path d=\"M32 21h6v6h-6\"/><path d=\"M14 20h8M14 24h8M14 28h5\"/>",
+            "waistband" => "<path d=\"M9 16c6 4 24 4 30 0\"/><path d=\"M9 32c6-4 24-4 30 0\"/><path d=\"M12 17v14M36 17v14\"/><path d=\"M17 18v12M31 18v12\"/>",
+            "appearance" => "<path d=\"M9 13h30v22H9z\"/><circle cx=\"17\" cy=\"20\" r=\"2.5\"/><path d=\"m12 31 7-7 6 5 5-6 6 8\"/>",
+            "colour" => "<path d=\"M24 9c8.3 0 15 5.8 15 13 0 4.8-3.4 8-7.6 8-2.8 0-4.2-1.6-6.4-1.6-3.2 0-4.2 4.6-7.7 4.6C13.1 33 9 28.1 9 22 9 14.8 15.7 9 24 9Z\"/><circle cx=\"17\" cy=\"18\" r=\"1.7\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"24\" cy=\"15\" r=\"1.7\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"31\" cy=\"19\" r=\"1.7\" fill=\"currentColor\" stroke=\"none\"/>",
+            "designed-for" => "<circle cx=\"24\" cy=\"14\" r=\"5\"/><path d=\"M14 38c1.3-7.5 4.7-12 10-12s8.7 4.5 10 12\"/><path d=\"M9 24h7M32 24h7\"/><circle cx=\"9\" cy=\"24\" r=\"2\"/><circle cx=\"39\" cy=\"24\" r=\"2\"/>",
+            _ => "<path d=\"M24 7 28 19 41 24 28 29 24 41 20 29 7 24 20 19 24 7Z\"/>"
+        };
+
+        return new MarkupString($"<svg viewBox=\"0 0 48 48\" aria-hidden=\"true\" focusable=\"false\" class=\"ds-feature-svg\">{path}</svg>");
+    }
+}

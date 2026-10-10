@@ -1,0 +1,44 @@
+[
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--scale-policy-20261002092936-6d57c7949g6n4",
+    "Log_s": "      Shared Data Protection key ring readiness check passed.",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T10:09:45.8351321Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--scale-policy-20261002092936-6d57c7949g6n4",
+    "Log_s": "      Blazor circuit connection up 272D113B54A9",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T10:09:51.8983811Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--scale-policy-20261002092936-6d57c7947xgbm",
+    "Log_s": "      Shared Data Protection key ring readiness check passed.",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T10:10:23.3956965Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--scale-policy-20261002092936-6d57c7949g6n4",
+    "Log_s": "      Blazor circuit connection down 272D113B54A9",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T10:10:58.7881587Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--scale-policy-20261002092936-6d57c7947xgbm",
+    "Log_s": "      Blazor circuit connection up 7F40E413D918",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T10:11:00.7480229Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--scale-policy-20261002092936-6d57c7947xgbm",
+    "Log_s": "      Blazor circuit connection down 7F40E413D918",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T10:11:00.7480229Z"
+  }
+]

@@ -1,0 +1,23 @@
+@page "/backpack/settings"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+<PageTitle>Account settings · DiaperScout</PageTitle>
+<section class="backpack-personal-page" data-backpack-settings>
+    <a href="/backpack">‹ Backpack</a><h1>Account settings</h1>
+    <section class="backpack-settings-panel"><h2>Profile</h2><AntiforgeryToken />
+        <label for="explorer-name">Explorer name</label><input id="explorer-name" maxlength="100" disabled />
+        <p>Your public Explorer name appears on your ID. Your email stays in account settings.</p>
+        <button type="button" data-save-explorer-name disabled>Save name</button>
+        <p data-profile-message role="status">Opening your profile…</p>
+        <h3>Sign-in email</h3><p data-account-email>Loading…</p>
+        <p>Email changes require verification and are not available here.</p>
+    </section>
+    <section class="backpack-settings-panel"><h2>Preferences on this device</h2>
+        <label><input type="checkbox" data-keep-product-drafts /> Keep product draft recovery copies</label>
+        <p>Copies expire after 30 minutes. Turning this off prevents new copies; existing drafts keep their original expiry. This preference applies to this browser.</p>
+        <p data-preference-message role="status"></p>
+    </section>
+    <section class="backpack-settings-panel"><h2>Security</h2>
+        <a href="/backpack/passkeys">Manage passkeys</a><p>Email sign-in links remain available. Passkey changes require a recent sign-in.</p>
+        <a href="/signout" data-enhance-nav="false">Sign out on this device</a>
+    </section>
+</section>

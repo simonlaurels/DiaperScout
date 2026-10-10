@@ -6,8 +6,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddWebDataProtection(builder.Configuration, builder.Environment);
 
 if (builder.Environment.IsDevelopment())
 {
@@ -38,6 +40,8 @@ else
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
 
+builder.Services.AddScoped<Microsoft.AspNetCore.Components.Server.Circuits.CircuitHandler, ReliabilityCircuitHandler>();
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddServiceDiscovery();
@@ -58,6 +62,13 @@ builder.Services.AddHttpClient<ProductLookupClient>(client =>
             ?? "https+http://api"))
     .AddServiceDiscovery();
 
+builder.Services.AddHttpClient<PlaceObservationClient>(client =>
+        client.BaseAddress = new Uri(builder.Configuration["Api:BaseUrl"] ?? "https+http://api"))
+    .AddHttpMessageHandler<DevelopmentSubjectForwardingHandler>()
+    .AddHttpMessageHandler<ProductionIdentityForwardingHandler>()
+    .RemoveAllLoggers()
+    .AddServiceDiscovery();
+
 builder.Services.AddHttpClient<UserManagementClient>(client =>
         client.BaseAddress = new Uri(
             builder.Configuration["Api:BaseUrl"]
@@ -70,6 +81,12 @@ builder.Services.AddHttpClient<ProductCatalogueClient>(client =>
         client.BaseAddress = new Uri(
             builder.Configuration["Api:BaseUrl"]
             ?? "https+http://api"))
+    .AddHttpMessageHandler<DevelopmentSubjectForwardingHandler>()
+    .AddHttpMessageHandler<ProductionIdentityForwardingHandler>()
+    .AddServiceDiscovery();
+
+builder.Services.AddHttpClient<CommercePluginClient>(client =>
+        client.BaseAddress = new Uri(builder.Configuration["Api:BaseUrl"] ?? "https+http://api"))
     .AddHttpMessageHandler<DevelopmentSubjectForwardingHandler>()
     .AddHttpMessageHandler<ProductionIdentityForwardingHandler>()
     .AddServiceDiscovery();
@@ -92,6 +109,16 @@ builder.Services.AddHttpClient<RetailerManagementClient>(client =>
 
 var app = builder.Build();
 
+if (!app.Environment.IsDevelopment())
+{
+    // Do not advertise a healthy replica until it can read/write the protected shared ring.
+    var protector = app.Services.GetRequiredService<IDataProtectionProvider>()
+        .CreateProtector("DiaperScout.Web.KeyRingReadiness.v1");
+    if (protector.Unprotect(protector.Protect("ready")) != "ready")
+        throw new InvalidOperationException("The shared Data Protection key ring failed its startup check.");
+    app.Logger.LogInformation("Shared Data Protection key ring readiness check passed.");
+}
+
 if (app.Environment.IsDevelopment() &&
     app.Configuration.GetValue<bool>("LanTesting:Enabled") &&
     !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("DOTNET_LAUNCH_PROFILE")))
@@ -112,12 +139,27 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+// Worker updates must be checked against network truth; this does not change TLS or ingress configuration.
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path == "/service-worker.js" || context.Request.Path == "/manifest.webmanifest")
+        context.Response.Headers.CacheControl = "no-cache";
+    await next();
+});
 app.UseHttpsRedirection();
 app.UseAuthentication();
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path == "/signin") ContributionReturn.Remember(context);
+    await next();
+});
 app.UseAuthorization();
 app.UseRateLimiter();
 app.UseAntiforgery();
 app.MapPasskeyWebEndpoints();
+app.MapBackpackAccountWebEndpoints();
+app.MapExplorerOnboardingEndpoints();
+app.MapProposalEvidenceWebEndpoints();
 
 app.MapGet(
     "/catalogue/import-template",
@@ -199,59 +241,53 @@ app.MapPost("/signin/request", async (
     .DisableAntiforgery();
 
 app.MapPost("/join/request", async (
-    IHttpClientFactory httpClientFactory,
-    [FromForm] string email,
-    [FromForm] string displayName,
-    CancellationToken cancellationToken) =>
+    HttpContext context, IHttpClientFactory clients,
+    [FromForm] string email, [FromForm] string displayName, CancellationToken ct) =>
 {
-    var client = httpClientFactory.CreateClient("DiaperScoutApi");
-
-    using var response = await client.PostAsJsonAsync(
-        "/api/v1/auth/registration-link",
-        new
-        {
-            Email = email,
-            DisplayName = displayName
-        },
-        cancellationToken);
-
-    return Results.LocalRedirect(
-        response.IsSuccessStatusCode
-            ? "/join?sent=true"
-            : "/join?error=true");
-})
-    .AllowAnonymous()
-    .DisableAntiforgery();
+    var sent = await ExplorerOnboardingEndpoints.SendAsync(context, clients, new(displayName, email), ct);
+    return Results.LocalRedirect(sent ? "/join/check-email" : "/join/details?error=true");
+}).AllowAnonymous().RequireRateLimiting("onboarding-email");
 
 app.MapGet("/signin/magic-link", async (
     HttpContext httpContext,
     IHttpClientFactory httpClientFactory,
     string token,
+    [FromQuery] string? flow,
     CancellationToken cancellationToken) =>
 {
+    // This query only selects a fixed local error screen. Verified continuation comes
+    // exclusively from the consumed, server-held registration token's result.
+    var failureUrl = flow == "explorer" ? "/join/details?error=true" : "/signin?error=true";
+    httpContext.Response.Headers.CacheControl = "no-store";
+    httpContext.Response.Headers["Referrer-Policy"] = "no-referrer";
     if (string.IsNullOrWhiteSpace(token))
-        return Results.LocalRedirect("/signin?error=true");
+        return Results.LocalRedirect(failureUrl);
 
     var client = httpClientFactory.CreateClient("DiaperScoutApi");
 
-    using var response = await client.PostAsync(
-        $"/api/v1/auth/magic-link/consume?token={Uri.EscapeDataString(token)}",
-        content: null,
-        cancellationToken);
+    HttpResponseMessage response;
+    // Keep the token out of HttpClient request-URL diagnostics. The API retains its
+    // legacy query contract during rollout; all current Web consumption uses the body.
+    try { response = await client.PostAsJsonAsync(
+        "/api/v1/auth/magic-link/consume", new { Token = token }, cancellationToken); }
+    catch (HttpRequestException) { return Results.LocalRedirect(failureUrl); }
+    catch (TaskCanceledException) { return Results.LocalRedirect(failureUrl); }
+    using var consumedResponse = response;
 
     if (!response.IsSuccessStatusCode)
-        return Results.LocalRedirect("/signin?error=true");
+        return Results.LocalRedirect(failureUrl);
 
     var authentication =
         await response.Content.ReadFromJsonAsync<PasswordlessAuthenticationResult>(
             cancellationToken);
 
     if (authentication is null)
-        return Results.LocalRedirect("/signin?error=true");
+        return Results.LocalRedirect(failureUrl);
 
     await AuthenticationSession.SignInAsync(httpContext, authentication, app.Environment);
 
-    return Results.LocalRedirect("/");
+    return Results.LocalRedirect(authentication.ContinueOnboarding
+        ? "/join/continue" : ContributionReturn.Consume(httpContext));
 })
     .AllowAnonymous();
 
@@ -290,10 +326,16 @@ if (app.Environment.IsDevelopment())
             principal,
             new AuthenticationProperties { IsPersistent = false });
 
-        return Results.LocalRedirect("/catalogue/products");
+        return Results.LocalRedirect(ContributionReturn.Consume(httpContext, "/catalogue/products"));
     });
 
 }
+
+app.MapGet("/places/open-data", async (IHttpClientFactory clients, CancellationToken ct) => {
+    using var response = await clients.CreateClient("DiaperScoutApi").GetAsync("api/v1/places/open-data", ct);
+    if (!response.IsSuccessStatusCode) return Results.StatusCode(503);
+    return Results.Text(await response.Content.ReadAsStringAsync(ct), "application/json");
+});
 
 app.Run();
 

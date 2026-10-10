@@ -1,0 +1,86 @@
+[
+  {
+    "ResearchId": "B11-AP2-M2-15",
+    "SubmissionId": "b9600d35-a31b-4bec-9c31-1d0a77624a1b",
+    "ProductId": "6d16fe9e-af06-4d08-b0bd-28082b8db63d",
+    "VariantId": "ae6cd1ee-c9ff-44f2-a57c-8ae2a03c7a3c",
+    "SizeId": "070a1aad-d464-484e-8d57-2a0183eda72a",
+    "PackId": "51f649e3-5e05-4fde-8815-0a287322be4a",
+    "IdentifierId": "d73fa2f8-7f5f-4163-a586-9a6b5094200d",
+    "AuditId": "203779a2-b2b0-4839-b14f-59a6bfd8d30d",
+    "Gtin": "5713571000885",
+    "Created": false
+  },
+  {
+    "ResearchId": "B11-AP2-L2-15",
+    "SubmissionId": "b9600d35-a31b-4bec-9c31-1d0a77624a1b",
+    "ProductId": "6d16fe9e-af06-4d08-b0bd-28082b8db63d",
+    "VariantId": "ae6cd1ee-c9ff-44f2-a57c-8ae2a03c7a3c",
+    "SizeId": "780d50bb-5325-41be-9b9b-81ba0690b9b3",
+    "PackId": "04c7c02b-4ed3-4e0b-9e17-3ebfacbe5b01",
+    "IdentifierId": "dca32302-0c63-42c7-953e-8a0ff97570ef",
+    "AuditId": "77ae9c86-5c16-4c87-9d73-531c3366d7d1",
+    "Gtin": "5713571000946",
+    "Created": false
+  },
+  {
+    "ResearchId": "B11-AP2-S2-16",
+    "SubmissionId": "b9600d35-a31b-4bec-9c31-1d0a77624a1b",
+    "ProductId": "6d16fe9e-af06-4d08-b0bd-28082b8db63d",
+    "VariantId": "ae6cd1ee-c9ff-44f2-a57c-8ae2a03c7a3c",
+    "SizeId": "35bf1159-9911-4d5b-81b4-c0e3facc40a5",
+    "PackId": "e076aef9-b9f4-431f-b40b-76c44ce64149",
+    "IdentifierId": "2cb03c00-8f78-47a3-b369-9c2d11d488bb",
+    "AuditId": "d86e64de-ca1a-47ba-9814-6e6780d49a92",
+    "Gtin": "5713571000809",
+    "Created": false
+  },
+  {
+    "ResearchId": "B11-AP2-XL2-16",
+    "SubmissionId": "b9600d35-a31b-4bec-9c31-1d0a77624a1b",
+    "ProductId": "6d16fe9e-af06-4d08-b0bd-28082b8db63d",
+    "VariantId": "ae6cd1ee-c9ff-44f2-a57c-8ae2a03c7a3c",
+    "SizeId": "38a4cc87-d01d-4641-bb78-90b21e5f0f48",
+    "PackId": "98dc0b27-31ad-40d3-9da3-b6fc7d5ee80f",
+    "IdentifierId": "4919c99c-63d2-4dbd-89fa-0b57fb3a06da",
+    "AuditId": "e5636f49-3022-49a4-b29d-57e0dd6152d5",
+    "Gtin": "5713571001004",
+    "Created": false
+  },
+  {
+    "ResearchId": "B11-AP3-M3-15",
+    "SubmissionId": "c3390935-b0fb-4483-afda-cc6c2c7b9869",
+    "ProductId": "34394c5b-e39c-493b-acb5-e633a2b5caa9",
+    "VariantId": "0938dec5-f794-42de-bb97-2f0878fc1c2b",
+    "SizeId": "5f507218-8a1f-4808-9ef5-a62f5dadba5a",
+    "PackId": "bde77ae3-8c42-4626-9e8a-277777e79c84",
+    "IdentifierId": "bf4a0f3c-9b7d-43e8-8864-19d1fc3c5039",
+    "AuditId": "c64a6d33-faca-4bd6-aff4-afdfed181f04",
+    "Gtin": "5713571000908",
+    "Created": false
+  },
+  {
+    "ResearchId": "B11-AP3-L3-15",
+    "SubmissionId": "c3390935-b0fb-4483-afda-cc6c2c7b9869",
+    "ProductId": "34394c5b-e39c-493b-acb5-e633a2b5caa9",
+    "VariantId": "0938dec5-f794-42de-bb97-2f0878fc1c2b",
+    "SizeId": "8c509981-6189-4e69-bde1-67430f1abef5",
+    "PackId": "78c72038-21f7-4db5-b267-551e0ff81e9c",
+    "IdentifierId": "968bedf7-0b66-4b0c-8601-4a9bb6417888",
+    "AuditId": "a917a7cc-b422-44ec-9160-54ae0dc81a35",
+    "Gtin": "5713571000960",
+    "Created": false
+  },
+  {
+    "ResearchId": "B11-AP3-XL3-16",
+    "SubmissionId": "c3390935-b0fb-4483-afda-cc6c2c7b9869",
+    "ProductId": "34394c5b-e39c-493b-acb5-e633a2b5caa9",
+    "VariantId": "0938dec5-f794-42de-bb97-2f0878fc1c2b",
+    "SizeId": "5f4650d9-98ea-46f6-ae04-608d087cdde1",
+    "PackId": "bdce6808-9801-43ef-962d-85c1135c7cec",
+    "IdentifierId": "8f4511a6-09ad-4edf-b13b-6d769bcaf1f2",
+    "AuditId": "7f1acfee-35c3-4407-972f-cffdd8d2399c",
+    "Gtin": "5713571001028",
+    "Created": false
+  }
+]

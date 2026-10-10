@@ -1,0 +1,14 @@
+  DiaperScout.Domain -> C:\Users\hails\.codex\.chatgpt-projects\g-p-6a5fc1e552e48191b387b855f8288fa2\DiaperScout\src\DiaperScout.Domain\bin\Release\net10.0\DiaperScout.Domain.dll
+  DiaperScout.Application -> C:\Users\hails\.codex\.chatgpt-projects\g-p-6a5fc1e552e48191b387b855f8288fa2\DiaperScout\src\DiaperScout.Application\bin\Release\net10.0\DiaperScout.Application.dll
+  DiaperScout.Commerce.Plugins.Awin -> C:\Users\hails\.codex\.chatgpt-projects\g-p-6a5fc1e552e48191b387b855f8288fa2\DiaperScout\src\DiaperScout.Commerce.Plugins.Awin\bin\Release\net10.0\DiaperScout.Commerce.Plugins.Awin.dll
+  DiaperScout.Infrastructure -> C:\Users\hails\.codex\.chatgpt-projects\g-p-6a5fc1e552e48191b387b855f8288fa2\DiaperScout\src\DiaperScout.Infrastructure\bin\Release\net10.0\DiaperScout.Infrastructure.dll
+  DiaperScout.Web -> C:\Users\hails\.codex\.chatgpt-projects\g-p-6a5fc1e552e48191b387b855f8288fa2\DiaperScout\src\DiaperScout.Web\bin\Release\net10.0\DiaperScout.Web.dll
+  DiaperScout.Domain.Tests -> C:\Users\hails\.codex\.chatgpt-projects\g-p-6a5fc1e552e48191b387b855f8288fa2\DiaperScout\tests\DiaperScout.Domain.Tests\bin\Release\net10.0\DiaperScout.Domain.Tests.dll
+  DiaperScout.Api -> C:\Users\hails\.codex\.chatgpt-projects\g-p-6a5fc1e552e48191b387b855f8288fa2\DiaperScout\src\DiaperScout.Api\bin\Release\net10.0\DiaperScout.Api.dll
+  DiaperScout.Api.IntegrationTests -> C:\Users\hails\.codex\.chatgpt-projects\g-p-6a5fc1e552e48191b387b855f8288fa2\DiaperScout\tests\DiaperScout.Api.IntegrationTests\bin\Release\net10.0\DiaperScout.Api.IntegrationTests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:06.39

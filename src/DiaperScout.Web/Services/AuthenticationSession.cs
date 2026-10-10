@@ -16,6 +16,7 @@ public static class AuthenticationSession
             new("sub", authentication.Subject),
             new("auth_time", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(System.Globalization.CultureInfo.InvariantCulture))
         };
+        if (authentication.ContinueOnboarding) claims.Add(new Claim("explorer_onboarding", "verified"));
         claims.AddRange(authentication.Roles.Select(role => new Claim(ClaimTypes.Role, role.ToString())));
         return context.SignInAsync(scheme, new ClaimsPrincipal(new ClaimsIdentity(claims, scheme)),
             new AuthenticationProperties { IsPersistent = true });

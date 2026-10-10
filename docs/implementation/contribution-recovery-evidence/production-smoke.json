@@ -1,0 +1,110 @@
+{
+  "started": "2026-10-02T13:13:09.676Z",
+  "productionSubmissions": 0,
+  "productionObservations": 0,
+  "authenticatedProductionTest": false,
+  "physicalIosProven": false,
+  "sessions": [
+    {
+      "engine": "chromium",
+      "errors": [],
+      "transport": [
+        {
+          "path": "/_blazor/initializers",
+          "status": 200
+        },
+        {
+          "path": "/_blazor/negotiate",
+          "status": 200
+        }
+      ],
+      "socket": {
+        "sent": 67,
+        "received": 68
+      },
+      "steps": [
+        "Unknown lookup and Product/Pack/Review on live circuit",
+        "Interactive after 35 seconds",
+        "Passkey sign-in with contribution return URL; no authentication performed",
+        "Exact draft and stable contribution ID restored at Review in new tab",
+        "Review restored after full reload"
+      ],
+      "http": 200,
+      "draftHash": "707e4f94c87a5bb9cce2605137e8fc405550664e9a68f52daa6295a213f4a66a",
+      "affinity": [
+        {
+          "name": "acaAffinity",
+          "httpOnly": true,
+          "secure": true,
+          "sameSite": "None"
+        }
+      ],
+      "cachedPaths": [
+        "/pwa/offline.html",
+        "/pwa/offline.css",
+        "/pwa/offline.js",
+        "/images/brand/DiaperScout.svg",
+        "/pwa/guide-map.webp",
+        "/pwa/icons/icon-192.png",
+        "/pwa/icons/icon-512.png",
+        "/pwa/icons/maskable-512.png",
+        "/pwa/icons/apple-touch-icon.png"
+      ],
+      "passed": true,
+      "ended": "2026-10-02T13:13:55.046Z"
+    },
+    {
+      "engine": "webkit",
+      "errors": [],
+      "transport": [
+        {
+          "path": "/_blazor/initializers",
+          "status": 200
+        },
+        {
+          "path": "/_blazor/negotiate",
+          "status": 200
+        },
+        {
+          "path": "/_blazor/disconnect",
+          "status": 200
+        }
+      ],
+      "socket": {
+        "sent": 67,
+        "received": 65
+      },
+      "steps": [
+        "Unknown lookup and Product/Pack/Review on live circuit",
+        "Interactive after 35 seconds",
+        "Passkey sign-in with contribution return URL; no authentication performed",
+        "Exact draft and stable contribution ID restored at Review in new tab",
+        "Review restored after full reload"
+      ],
+      "http": 200,
+      "draftHash": "722c56976736013835d2862b4eb5950d461ff70d0547bf0b6693ce3d49f9ae3b",
+      "affinity": [
+        {
+          "name": "acaAffinity",
+          "httpOnly": true,
+          "secure": true,
+          "sameSite": "None"
+        }
+      ],
+      "cachedPaths": [
+        "/pwa/offline.html",
+        "/pwa/offline.css",
+        "/pwa/icons/icon-192.png",
+        "/pwa/offline.js",
+        "/pwa/guide-map.webp",
+        "/pwa/icons/maskable-512.png",
+        "/pwa/icons/icon-512.png",
+        "/pwa/icons/apple-touch-icon.png",
+        "/images/brand/DiaperScout.svg"
+      ],
+      "passed": true,
+      "ended": "2026-10-02T13:14:35.116Z"
+    }
+  ],
+  "ended": "2026-10-02T13:14:35.155Z"
+}

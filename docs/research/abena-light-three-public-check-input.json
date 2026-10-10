@@ -1,0 +1,23 @@
+[
+  {
+    "id": "B14-LIGHT-1000021341-10",
+    "url": "https://diaperscout.app/products/light-premium-extra-plus-3a?variantId=63f9da6a-5a47-463f-9dd3-9d10bb31d622&packTypeId=8086e7e2-63a9-4c7a-a939-d5aa64b65114",
+    "title": "Light Premium Extra Plus 3A",
+    "count": 10,
+    "gtin": "5713571001240"
+  },
+  {
+    "id": "B14-LIGHT-1999905383-8",
+    "url": "https://diaperscout.app/products/light-premium-maxi-4a?variantId=67c3ee67-762c-49bb-a853-6386ebc6815d&packTypeId=5d88a679-6b85-46ff-8a22-720f158fbef2",
+    "title": "Light Premium Maxi 4A",
+    "count": 8,
+    "gtin": "5703538459023"
+  },
+  {
+    "id": "B14-LIGHT-1999905382-24",
+    "url": "https://diaperscout.app/products/light-premium-ultra-mini-0?variantId=11019a35-74ce-4d0a-976c-aaf78bdf84ee&packTypeId=3adf3928-b1a4-4728-9e66-7abb027c7e44",
+    "title": "Light Premium Ultra Mini 0",
+    "count": 24,
+    "gtin": "5703538458873"
+  }
+]

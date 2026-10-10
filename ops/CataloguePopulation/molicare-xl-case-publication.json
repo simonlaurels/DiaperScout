@@ -1,0 +1,43 @@
+[
+  {
+    "ResearchId": "B08-H6-XL-CASE56",
+    "Outcome": "READY",
+    "Manufacturer": "PAUL HARTMANN AG",
+    "Brand": "MoliCare",
+    "Product": "Premium Elastic 6 drops",
+    "ManufacturerAliases": [
+      "PAUL HARTMANN"
+    ],
+    "ProductAliases": [
+      "MoliCare Premium Elastic 6 drops"
+    ],
+    "Family": "Premium Elastic",
+    "ProductType": "Tape",
+    "Size": "X-Large",
+    "Quantity": 56,
+    "Gtin": "4052199299440",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 140,
+    "HipMaximumCm": 175,
+    "OfficialWebsite": "https://www.hartmann.info/en-gb/products/continence-management/all-in-one/moderate-incontinence/molicare%C2%AE-premium-elastic-6-drops",
+    "IdentitySources": [
+      "https://www.hartmann.info/de-de/produkte/inkontinenzversorgung/inkontinenz-slips/mittlere-inkontinenz/molicare%C2%AE-premium-elastic-6-tropfen"
+    ],
+    "IdentifierSources": [
+      "https://www.hartmann.info/-/media/country/website/archive/incontinence/doc/sales-folder-relaunch-mc-premium-elastic-klinik-hires_0865536-018492.pdf?rev=4fdfcf64f3714b8a9e53082b50453d93&sc_lang=de-de",
+      "https://mediq.se/inko-skydd-molicare-premium-elastic-6xl-hoft-140175cmabs-iso-2762ml/p/10021132"
+    ],
+    "SpecificationSources": [
+      "https://www.hartmann.info/de-de/produkte/inkontinenzversorgung/inkontinenz-slips/mittlere-inkontinenz/molicare%C2%AE-premium-elastic-6-tropfen",
+      "https://www.hartmann.info/-/media/country/website/archive/incontinence/doc/sales-folder-relaunch-mc-premium-elastic-klinik-hires_0865536-018492.pdf?rev=4fdfcf64f3714b8a9e53082b50453d93&sc_lang=de-de",
+      "https://mediq.se/inko-skydd-molicare-premium-elastic-6xl-hoft-140175cmabs-iso-2762ml/p/10021132"
+    ],
+    "EvidenceNotes": "Verified European carton: MoliCare Premium Elastic 6 drops X-Large, 56 pieces in four inner bags of 14. Article 165274. Manufacturer logistics table explicitly distinguishes bag EAN 4052199299433 from carton EAN 4052199299440; Mediq independently confirms carton sellable unit 56, same article, manufacturer and hip range 140–175 cm. Preserve existing X-Large shared size and 14-piece bag with all IDs. CaseQuantity left unknown because domain field semantics are not established; inner-bag structure retained here. No images copied; rights unknown; no UK/US equivalence inferred.",
+    "ExistingSubmissionId": "78bf7d46-87cb-4b1c-b464-f1f077692f03",
+    "ReconcileDraftAttributes": false,
+    "VerifiedVariantAttributes": null,
+    "PackagingType": "Case"
+  }
+]

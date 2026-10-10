@@ -1,0 +1,17 @@
+{
+  "API configuration image scale ingress and secret references unchanged": false,
+  "Web identity unchanged": true,
+  "Web environmentId unchanged": true,
+  "Web registries unchanged": true,
+  "Web revisionMode unchanged": true,
+  "Web resources env DP URI isolation and secret references unchanged": false,
+  "Web ingress except affinity unchanged": true,
+  "Web final 1/1 sticky Single ready revision": true,
+  "Web exact tested immutable image": true,
+  "db unchanged": true,
+  "private-links unchanged": true,
+  "env unchanged": true,
+  "storage unchanged": true,
+  "vault unchanged": true,
+  "web-roles unchanged": true
+}

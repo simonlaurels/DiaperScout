@@ -1,0 +1,58 @@
+[
+  {
+    "id": "B11-AP2-M2-15",
+    "url": "https://diaperscout.app/products/pants-premium-level2?variantId=ae6cd1ee-c9ff-44f2-a57c-8ae2a03c7a3c&packTypeId=51f649e3-5e05-4fde-8815-0a287322be4a",
+    "status": 200,
+    "title_present": true,
+    "count_present": true,
+    "placeholder_present": true
+  },
+  {
+    "id": "B11-AP2-L2-15",
+    "url": "https://diaperscout.app/products/pants-premium-level2?variantId=ae6cd1ee-c9ff-44f2-a57c-8ae2a03c7a3c&packTypeId=04c7c02b-4ed3-4e0b-9e17-3ebfacbe5b01",
+    "status": 200,
+    "title_present": true,
+    "count_present": true,
+    "placeholder_present": true
+  },
+  {
+    "id": "B11-AP2-S2-16",
+    "url": "https://diaperscout.app/products/pants-premium-level2?variantId=ae6cd1ee-c9ff-44f2-a57c-8ae2a03c7a3c&packTypeId=e076aef9-b9f4-431f-b40b-76c44ce64149",
+    "status": 200,
+    "title_present": true,
+    "count_present": true,
+    "placeholder_present": true
+  },
+  {
+    "id": "B11-AP2-XL2-16",
+    "url": "https://diaperscout.app/products/pants-premium-level2?variantId=ae6cd1ee-c9ff-44f2-a57c-8ae2a03c7a3c&packTypeId=98dc0b27-31ad-40d3-9da3-b6fc7d5ee80f",
+    "status": 200,
+    "title_present": true,
+    "count_present": true,
+    "placeholder_present": true
+  },
+  {
+    "id": "B11-AP3-M3-15",
+    "url": "https://diaperscout.app/products/pants-premium-level3?variantId=0938dec5-f794-42de-bb97-2f0878fc1c2b&packTypeId=bde77ae3-8c42-4626-9e8a-277777e79c84",
+    "status": 200,
+    "title_present": true,
+    "count_present": true,
+    "placeholder_present": true
+  },
+  {
+    "id": "B11-AP3-L3-15",
+    "url": "https://diaperscout.app/products/pants-premium-level3?variantId=0938dec5-f794-42de-bb97-2f0878fc1c2b&packTypeId=78c72038-21f7-4db5-b267-551e0ff81e9c",
+    "status": 200,
+    "title_present": true,
+    "count_present": true,
+    "placeholder_present": true
+  },
+  {
+    "id": "B11-AP3-XL3-16",
+    "url": "https://diaperscout.app/products/pants-premium-level3?variantId=0938dec5-f794-42de-bb97-2f0878fc1c2b&packTypeId=bdce6808-9801-43ef-962d-85c1135c7cec",
+    "status": 200,
+    "title_present": true,
+    "count_present": true,
+    "placeholder_present": true
+  }
+]

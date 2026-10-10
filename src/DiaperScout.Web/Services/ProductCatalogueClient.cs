@@ -9,6 +9,8 @@ namespace DiaperScout.Web.Services;
 
 public sealed class ProductCatalogueClient(HttpClient client)
 {
+    public async Task<IReadOnlyList<RecentCatalogueProduct>> RecentAsync(CancellationToken ct = default) =>
+        await client.GetFromJsonAsync<RecentCatalogueProduct[]>("api/v1/explore/recent-products", ct) ?? [];
 
     public async Task<HttpResponseMessage> GetProductImageAsync(
         Guid productId,
@@ -486,11 +488,15 @@ public sealed class ProductCatalogueClient(HttpClient client)
 
     public async Task<ProductCatalogueDetailResult> GetAsync(
         string slug,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        Guid? variantId = null, Guid? packTypeId = null)
     {
-        using var response = await client.GetAsync(
-            $"api/v1/products/{Uri.EscapeDataString(slug)}",
-            cancellationToken);
+        var parameters = new List<string>();
+        if (variantId.HasValue) parameters.Add($"variantId={variantId.Value}");
+        if (packTypeId.HasValue) parameters.Add($"packTypeId={packTypeId.Value}");
+        var path = $"api/v1/products/{Uri.EscapeDataString(slug)}";
+        if (parameters.Count > 0) path += "?" + string.Join("&", parameters);
+        using var response = await client.GetAsync(path, cancellationToken);
 
         if (response.StatusCode == HttpStatusCode.NotFound)
             return ProductCatalogueDetailResult.NotFound();
@@ -663,6 +669,17 @@ public sealed class ProductCatalogueClient(HttpClient client)
             ? CatalogueSubmissionSizeVariantsResult.Failed()
             : CatalogueSubmissionSizeVariantsResult.Found(sizes);
     }
+
+    public async Task<CatalogueSubmissionSizeVariantResult> SeedSubmissionSizeVariantAsync(
+        Guid submissionId,
+        Guid variantId,
+        AddCatalogueSubmissionSizeVariantRequest request,
+        CancellationToken cancellationToken = default) =>
+        await SendSizeVariantAsync(
+            HttpMethod.Post,
+            $"api/v1/catalogue-submissions/{submissionId}/variants/{variantId}/sizes/seed",
+            request,
+            cancellationToken);
 
     public async Task<CatalogueSubmissionSizeVariantResult> AddSubmissionSizeVariantAsync(
         Guid submissionId,
@@ -1301,6 +1318,20 @@ public sealed class ProductCatalogueClient(HttpClient client)
         return workspace is null
             ? CatalogueSubmissionVerificationWorkspaceResult.Failed()
             : CatalogueSubmissionVerificationWorkspaceResult.Found(workspace);
+    }
+
+    public async Task<CatalogueSubmissionResult> ReturnToDraftAsync(
+        Guid submissionId,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await client.PostAsync(
+            $"api/v1/catalogue-submissions/{submissionId}/return-to-draft",
+            content: null,
+            cancellationToken);
+
+        return await ReadSubmissionResponseAsync(
+            response,
+            cancellationToken);
     }
 
     public async Task<CatalogueSubmissionResult> BeginVerificationAsync(

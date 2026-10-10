@@ -1,0 +1,15 @@
+docs/implementation/welcome-auth-busy-evidence/changed-files.txt
+docs/implementation/welcome-auth-busy-evidence/config-preservation.json
+docs/implementation/welcome-auth-busy-evidence/join-busy-chromium.png
+docs/implementation/welcome-auth-busy-evidence/join-busy-webkit.png
+docs/implementation/welcome-auth-busy-evidence/production-smoke-initial.json
+docs/implementation/welcome-auth-busy-evidence/production-smoke.cjs
+docs/implementation/welcome-auth-busy-evidence/production-smoke.json
+docs/implementation/welcome-auth-busy-evidence/signin-busy-chromium.png
+docs/implementation/welcome-auth-busy-evidence/signin-busy-webkit.png
+docs/implementation/welcome-auth-busy-evidence/test-runs.json
+docs/implementation/welcome-auth-busy.md
+src/DiaperScout.Web/wwwroot/css/pwa-welcome.css
+src/DiaperScout.Web/wwwroot/js/passkeys.js
+src/DiaperScout.Web/wwwroot/pwa/welcome.js
+tests/DiaperScout.Api.IntegrationTests/PwaWelcomeBrowserTests.cs

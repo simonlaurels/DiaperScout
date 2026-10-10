@@ -1,0 +1,121 @@
+@inject PlaceObservationClient Proposals
+@inject ProductCatalogueClient Catalogue
+@inject AuthenticationStateProvider Authentication
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+@implements IAsyncDisposable
+<main class="contribution-page proposal-flow">
+    <a href="/scan" class="scan-back" aria-label="Back to Scan">‹</a>
+    @if (!ready) { <p role="status">Opening your product proposal…</p> }
+    else if (authenticated && !initialised) { <p role="alert">@error</p><a href="@Navigation.Uri" data-enhance-nav="false" class="ds-button ds-button-primary">Reload saved proposal</a> }
+    else if (proposalStatus is CatalogueSubmissionStatus.Rejected or CatalogueSubmissionStatus.Published) {
+        <section class="discovery-completion"><h1>@(proposalStatus == CatalogueSubmissionStatus.Rejected ? "Proposal reviewed" : "Proposal processed")</h1>
+            <p>@(proposalStatus == CatalogueSubmissionStatus.Rejected ? "This proposal was not accepted. Your original evidence remains with the moderation record." : "A moderator has processed this proposal. Any qualifying discovery evidence was handled with its verified catalogue identity.")</p>
+            <a href="/" class="ds-button ds-button-primary">Done</a></section>
+    }
+    else if (submitted) {
+        <section class="discovery-completion"><img class="discovery-illustration" src="/pwa/product-evidence-recorded.webp?v=guide-style-v2" alt="The Guide noting your packaging evidence inside Wanderer, with her plush Fox in the backpack." /><h1>Product submitted!</h1><p>Thank you. Your packaging evidence has been sent for review.</p><p>Moderators will identify the product and exact pack before it becomes public catalogue data.</p></section>
+        <section class="contribution-card"><h2>Did you find this in a shop?</h2><p>Keep where you found it with this proposal while it awaits identification.</p><a class="ds-button ds-button-primary" href="@($"/contribute/product/discovery?submissionId={form.SubmissionId}")">Record where I found it</a></section><a href="/" class="ds-button ds-button-secondary">Done</a>
+    } else {
+        <h1>@(form.UiStep switch { 1 => "Take photos of the pack", 2 => "Tell us about this product", 3 => "Could it be one of these?", _ => "Review your submission" })</h1>
+        <p class="contribution-barcode">Barcode: <strong>@Gtin</strong></p>
+        @if (error is not null) { <p role="alert" class="contribution-message">@error</p> }
+        @if (!authenticated) { <section class="contribution-card"><h2>Sign in to keep your packaging evidence</h2><p>Your barcode and any entered details will be waiting when you return.</p><button class="ds-button ds-button-primary" @onclick="SignInAsync" disabled="@busy">Sign in and continue</button></section> }
+        else if (form.UiStep == 1) {
+            <p>Show the front of the pack. You can add a back or side photograph if it helps our moderators identify it.</p>
+            <div class="proposal-photos">@foreach (var photo in photos) { <div><img src="@photo.Value" alt="Your packaging evidence" /><small>@photo.Key.Role</small></div> }</div>
+            <label for="proposal-photo">@(photos.Count == 0 ? "Front of pack (required)" : "Add packaging photo (optional)")</label>
+            <InputFile id="proposal-photo" OnChange="UploadAsync" accept="image/jpeg,image/png,image/webp" capture="environment" disabled="@busy" />
+            <label for="proposal-library-photo" class="proposal-library-label">Choose an existing photo instead</label><InputFile id="proposal-library-photo" OnChange="UploadAsync" accept="image/jpeg,image/png,image/webp" disabled="@busy" />
+            @if (busy) { <p role="status">Uploading and keeping your photograph…</p> }
+            <button class="ds-button ds-button-primary" @onclick="() => StepAsync(2)" disabled="@(busy || !photos.Keys.Any(p => p.Role == CatalogueSubmissionImageRole.PackFront))">Continue</button>
+        } else if (form.UiStep == 2) {
+            <section class="contribution-card contribution-fields"><p>Enter details as they appear on the pack. Our moderators will sort out variants, sizes and packs.</p>
+                <label for="proposal-brand">Brand / manufacturer</label><input id="proposal-brand" @bind="form.BrandName" @bind:after="PersistAsync" maxlength="200" disabled="@busy" />
+                <label for="proposal-name">Product name</label><input id="proposal-name" @bind="form.ProductName" @bind:after="PersistAsync" maxlength="250" disabled="@busy" />
+                <label for="proposal-type">Product type (optional)</label><select id="proposal-type" @bind="form.ProductType" @bind:after="PersistAsync" disabled="@busy"><option value="">Not sure</option>@foreach (var type in Enum.GetValues<ProductType>()) { <option value="@type">@type</option> }</select>
+                <label for="proposal-notes">Notes (optional)</label><textarea id="proposal-notes" @bind="form.Notes" @bind:after="PersistAsync" disabled="@busy" maxlength="2000" placeholder="Tell us anything useful printed on the packaging."></textarea>
+                <p>You don't need to add variants, structured sizes or pack details.</p>
+                <button class="ds-button ds-button-primary" @onclick="CheckCatalogueAsync" disabled="@busy"><span class="scan-busy">@(busy ? "Checking the catalogue…" : "Continue")</span></button><button class="ds-button ds-button-secondary" @onclick="() => StepAsync(1)" disabled="@busy">Back</button>
+            </section>
+        } else if (form.UiStep == 3) {
+            <p>We searched using the brand and product name you entered. An existing product may have a pack or barcode we haven't seen yet.</p>
+            @foreach (var candidate in candidates) { <button class="proposal-candidate" @onclick="() => SelectAsync(candidate)"><strong>@candidate.Name</strong><span> · @candidate.BrandName</span>@if (candidate.ImageUrl is not null) { <img src="@candidate.ImageUrl" alt="" width="60" height="70" style="object-fit:contain" /> }</button> }
+            @if (candidates.Count == 0) { <p>No plausible catalogue candidates were found.</p> }
+            <button class="ds-button ds-button-primary" @onclick="NewProductAsync">No, this is a new product</button><button class="ds-button ds-button-secondary" @onclick="() => StepAsync(2)">Edit the details</button>
+        } else {
+            <section class="contribution-card"><h2>@form.BrandName · @form.ProductName</h2><p>@form.ProductType</p><p>@form.Notes</p>
+                @if (form.SuggestedExistingProductId.HasValue) { <p>Suggested existing product: <strong>@form.SuggestedName</strong>. A moderator will verify the relationship.</p> }
+                <div class="proposal-photos">@foreach (var photo in photos) { <img src="@photo.Value" alt="Packaging evidence included for review" /> }</div>
+                <p>This barcode and your photos will be reviewed before any catalogue relationship is established. Photos remain evidence, rather than automatically becoming product images.</p>
+                <button class="ds-button ds-button-primary" @onclick="SubmitAsync" disabled="@busy"><span class="scan-busy">@(busy ? "Submitting…" : "Submit for review")</span></button><button class="ds-button ds-button-secondary" @onclick="() => StepAsync(2)" disabled="@busy">Edit details</button>
+            </section>
+        }
+    }
+</main>
+@code {
+    [Parameter, EditorRequired] public string Gtin {get;set;} = "";
+    private EvidenceForm form = new();
+    private bool ready, busy, authenticated, submitted, initialised;
+    private CatalogueSubmissionStatus? proposalStatus;
+    private string? owner, error;
+    private IJSObjectReference? module;
+    private Dictionary<CatalogueSubmissionImageReceipt,string> photos = [];
+    private IReadOnlyList<CatalogueProductListItem> candidates = [];
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (!firstRender) return;
+        var actor = (await Authentication.GetAuthenticationStateAsync()).User; authenticated = actor.Identity?.IsAuthenticated == true; owner = actor.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        try {
+            module = await JS.InvokeAsync<IJSObjectReference>("import", "/js/contribution-draft.js");
+            form = await module.InvokeAsync<EvidenceForm?>("loadDraft", Gtin, owner) ?? new();
+            if (form.ContributionId == Guid.Empty) form.ContributionId = Guid.NewGuid();
+            form.UiStep = Math.Clamp(form.UiStep, 1, 4);
+            if (authenticated) {
+                var receipt = await Proposals.BeginProposalAsync(Gtin, form.ContributionId); form.SubmissionId = receipt.SubmissionId;
+                var identity = await Proposals.ProposalIdentityAsync(receipt.SubmissionId) ?? throw new ContributionException("Your proposal could not be loaded."); proposalStatus = identity.Status; submitted = identity.Status != CatalogueSubmissionStatus.Draft; form.Submitted = submitted;
+                await LoadPhotosAsync();
+                if (!submitted && form.UiStep > 1 && photos.Count == 0) form.UiStep = 1;
+                if (!submitted && form.UiStep == 3) await SearchAsync();
+                await PersistAsync();
+            }
+            initialised = true;
+        } catch (Exception e) when (e is JSException or HttpRequestException or TaskCanceledException or ContributionException) { error = "We couldn’t open your recovery evidence. Check your connection and reload; your saved proposal is retained."; }
+        ready = true; StateHasChanged();
+    }
+    private async Task LoadPhotosAsync() { photos.Clear(); foreach (var photo in await Proposals.ProposalImagesAsync(form.SubmissionId)) photos[photo] = $"/contribute/product/images/{form.SubmissionId}/{photo.Id}"; }
+    private async Task PersistAsync() { if (module is not null && !await module.InvokeAsync<bool>("saveDraft", Gtin, form, owner, Math.Min(form.UiStep,3))) error = "Your browser could not keep a recovery copy. Keep this page open to retain entered details. Uploaded photos are already kept privately."; }
+    private async Task StepAsync(int step) { form.UiStep = step; error = null; await PersistAsync(); }
+    private async Task SignInAsync() { if (module is null || !await module.InvokeAsync<bool>("saveDraft", Gtin, form, owner, 1)) { error = "Enable recovery storage or sign in before entering details; this browser cannot preserve them during sign-in."; return; } Navigation.NavigateTo("/signin?returnUrl=" + Uri.EscapeDataString("/contribute/product?gtin="+Gtin), true); }
+    private async Task UploadAsync(InputFileChangeEventArgs args) => await Act(async () => {
+        var file = args.File;
+        if (file.Size is <= 0 or > 15 * 1024 * 1024 || file.ContentType is not "image/jpeg" and not "image/png" and not "image/webp")
+            throw new ContributionException("Choose a JPEG, PNG or WebP packaging photograph up to 15 MB.");
+        if (form.UploadName != file.Name || form.UploadSize != file.Size || form.UploadId == Guid.Empty) { form.UploadId = Guid.NewGuid(); form.UploadName = file.Name; form.UploadSize = file.Size; }
+        await PersistAsync();
+        await Proposals.UploadProposalImageAsync(form.SubmissionId, form.UploadId, photos.Count == 0 ? CatalogueSubmissionImageRole.PackFront : photos.Count == 1 ? CatalogueSubmissionImageRole.PackBack : CatalogueSubmissionImageRole.Other, file);
+        form.UploadId = Guid.Empty; await LoadPhotosAsync(); await PersistAsync();
+    });
+    private async Task SearchAsync() {
+        var result = await Catalogue.SearchAsync(form.ProductName, limit:24);
+        if (result.Catalogue is null) throw new ContributionException("The catalogue check couldn’t complete. Your details are still here; try again.");
+        candidates = result.Catalogue.Products.Where(p => p.Status == ProductStatus.Current &&
+            ((p.BrandName?.Contains(form.BrandName.Trim(), StringComparison.OrdinalIgnoreCase) ?? false) || p.ManufacturerName.Contains(form.BrandName.Trim(), StringComparison.OrdinalIgnoreCase))).Take(12).ToArray();
+    }
+    private async Task CheckCatalogueAsync() => await Act(async () => { if (string.IsNullOrWhiteSpace(form.BrandName) || string.IsNullOrWhiteSpace(form.ProductName)) throw new ContributionException("Enter the brand and product name printed on the pack."); await SearchAsync(); await StepAsync(3); });
+    private async Task SelectAsync(CatalogueProductListItem product) { form.SuggestedExistingProductId = product.Id; form.SuggestedName = product.Name; await StepAsync(4); }
+    private async Task NewProductAsync() { form.SuggestedExistingProductId = null; form.SuggestedName = null; await StepAsync(4); }
+    private async Task SubmitAsync() => await Act(async () => {
+        var receipt = await Proposals.ProposeAsync(new(Gtin, form.BrandName, form.ProductName, form.Version, form.ManufacturerName, form.Size, form.Quantity, form.ContributionId, form.Notes, form.ProductType, form.SuggestedExistingProductId));
+        form.SubmissionId = receipt.SubmissionId; submitted = form.Submitted = true; await PersistAsync();
+    });
+    private async Task Act(Func<Task> action) { if (busy) return; busy = true; error = null; try { await action(); } catch (ContributionException e) { error = e.Message; } catch (Exception e) when (e is HttpRequestException or TaskCanceledException or JSException or IOException) { error = "We couldn’t confirm that action. Your evidence is retained; check your connection and try again."; } finally { busy = false; } }
+    public async ValueTask DisposeAsync() { try { if (module is not null) await module.DisposeAsync(); } catch (JSDisconnectedException) {} }
+    public sealed class EvidenceForm {
+        public string BrandName {get;set;} = ""; public string ProductName {get;set;} = "";
+        public string? Version {get;set;} public string? ManufacturerName {get;set;} public string? Size {get;set;} public int? Quantity {get;set;}
+        public Guid ContributionId {get;set;} = Guid.NewGuid(); public Guid SubmissionId {get;set;}
+        public string? Notes {get;set;} public ProductType? ProductType {get;set;} public Guid? SuggestedExistingProductId {get;set;} public string? SuggestedName {get;set;}
+        public int UiStep {get;set;} = 1; public Guid UploadId {get;set;} public string? UploadName {get;set;} public long UploadSize {get;set;}
+        public bool Submitted {get;set;}
+    }
+}

@@ -1,0 +1,136 @@
+@page "/observations/new"
+@page "/contribute/product/discovery"
+@rendermode InteractiveServer
+@inject PlaceObservationClient PlacesClient
+@inject AuthenticationStateProvider Authentication
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+<PageTitle>Create observation · DiaperScout</PageTitle>
+<main class="contribution-page discovery-flow">
+    <a class="scan-back" href="/scan" aria-label="Back to Scan">‹</a>
+    @if (!pwa || (saved is null && !pendingSaved)) { <p class="catalogue-kicker">A real place, a moment in time</p><h1>@(pwa ? step == 1 ? "Where did you find it?" : step == 2 ? "Add discovery details" : "Review your discovery" : "Record where you found it")</h1> }
+    @if (loading) { <p role="status">Checking this exact pack…</p> }
+    else if (SubmissionId.HasValue && !authenticated) { <p>Sign in to preserve where you found your submitted product.</p><a href="@SignInUrl" class="ds-button ds-button-primary" data-enhance-nav="false">Sign in and continue</a> }
+    else if (pack is null && pendingProposal is null) { <p role="alert">@(error ?? "This pack is no longer available. Scan another item to continue.")</p><a href="/scan" class="ds-button ds-button-primary">Scan another item</a> }
+    else if (pendingSaved) { <section class="contribution-card discovery-completion"><img class="discovery-illustration" src="/pwa/product-evidence-recorded.webp?v=guide-style-v2" alt="The Guide keeping your packaging evidence in her notebook inside Wanderer." /><h2>Discovery evidence saved</h2><p>We’ve kept where you found this product with your proposal. It will remain private until a moderator identifies its exact pack.</p><a href="/" class="ds-button ds-button-primary">Done</a></section> }
+    else if (saved is not null) {
+        <section class="contribution-card discovery-completion" role="status"><img class="discovery-illustration" src="/pwa/discovery-recorded.webp" alt="The Guide marking a discovery in her Atlas, with her plush Fox in the backpack." /><h2>@(pwa ? "Discovery recorded!" : "Observation saved")</h2><p>Your report records this pack at @selectedShop?.Name at @saved.ObservedAtUtc.ToString("d MMM yyyy, HH:mm 'UTC'"). It does not promise future stock.</p></section>
+        <div class="contribution-actions"><a href="@($"/atlas?locationId={saved.LocationId}")" class="ds-button ds-button-primary">View in Atlas</a><a href="@ProductUrl" class="ds-button ds-button-secondary">View product</a><a href="/scan" class="ds-button ds-button-secondary">Scan another item</a></div>
+    } else {
+        @if (pack is not null) { <section class="contribution-card exact-pack"><ScanPackCard Pack="pack" /></section> }
+        else { <section class="contribution-card"><h2>@pendingProposal?.ProductName</h2><p>Your submitted product · awaiting moderator identification</p></section> }
+        @if (!authenticated) {
+            <section class="contribution-card"><h2>Sign in to save an observation</h2><p>The exact pack is waiting for you. You won’t need to scan again.</p><a class="ds-button ds-button-primary" href="@SignInUrl" data-enhance-nav="false">Sign in and continue</a></section>
+        } else {
+            @if (error is not null) { <p role="alert" class="contribution-message">@error</p> }
+            @if (!pwa || step == 1) {
+            <section class="discovery-place-picker"><h2>Where did you find it?</h2>
+                <p>Help put this discovery on the Atlas.</p>
+                <aside class="discovery-note">We’ll show nearby shops using your location. We keep the shop you select, not your phone position. Nothing is added to the Atlas until you confirm.</aside>
+                <button class="ds-button ds-button-primary" @onclick="NearbyAsync" disabled="@(busy || module is null)">@(busy ? "Searching nearby shops…" : "Find nearby shops")</button>
+                @if (locationMessage is not null) { <p role="status">@locationMessage</p> }
+                @if (shops.Count > 0) { <label for="place-query">Filter nearby shops</label><input id="place-query" @bind="query" @bind:event="oninput" maxlength="150" /> }
+                <div class="place-options">@foreach (var shop in shops.Where(s => string.IsNullOrWhiteSpace(query) || s.Name.Contains(query, StringComparison.OrdinalIgnoreCase) || s.AddressLine1.Contains(query, StringComparison.OrdinalIgnoreCase))) {
+                    <button type="button" class="atlas-place-choice @(selectedShop?.Id == shop.Id ? "selected" : "")" @onclick="() => Choose(shop)"><strong>@shop.Name</strong><span>@shop.AddressLine1, @shop.Locality, @shop.Postcode</span><span>@PlaceCategoryPresentation.Label(shop.Category) @(distances.TryGetValue(shop.Id, out var metres) ? $"· {metres / 1000:0.0} km away" : "")</span></button>
+                }</div>
+                <details class="discovery-missing"><summary>Can’t see the shop?</summary><p>DiaperScout can’t find every place yet. Try refreshing your location or looking a little further away. If the right shop still isn’t listed, you can’t record it here just yet.</p>
+                    <button class="ds-button ds-button-secondary" @onclick="async () => { radius = 3000; await NearbyAsync(); }" disabled="@busy">Look within 3 km</button><a href="/scan">Return to your scan</a></details>
+                <p class="map-attribution">Places © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a> · Powered by <a href="https://www.geoapify.com/">Geoapify</a>. Listings may be out of date; choose only the shop where you found this pack.</p>
+            </section>
+            @if (pwa && selectedShop is not null) { <button class="ds-button ds-button-primary" @onclick="() => StepAsync(2)">Continue</button> }
+            }
+            @if (!pwa || step == 2) {
+            <section class="contribution-card contribution-fields"><h2>What did you observe?</h2>
+                <label for="observed-at">Observed at (your local time)</label><input id="observed-at" type="datetime-local" value="@observedLocal" @onchange="async e => { observedLocal = e.Value?.ToString() ?? string.Empty; await PersistAsync(); }" disabled="@busy" />
+                <div class="contribution-columns"><div><label for="observed-price">Price (optional)</label><input id="observed-price" type="number" step="0.01" min="0" @bind="price" @bind:after="PersistAsync" disabled="@busy" inputmode="decimal" /></div><div><label for="observed-currency">Currency</label><input id="observed-currency" @bind="currency" @bind:after="PersistAsync" disabled="@busy" maxlength="3" placeholder="GBP" /></div></div>
+                <p>This saves a dated contributor report for this exact pack at this shop. Your account identity is retained privately for provenance.</p>
+                @if (pwa) { <button class="ds-button ds-button-primary" @onclick="() => StepAsync(3)" disabled="@(busy || selectedShop is null || module is null)">Review discovery</button><button class="ds-button ds-button-secondary" @onclick="() => StepAsync(1)">Change shop</button> }
+                else { <button type="button" class="ds-button ds-button-primary" @onclick="SaveAsync" disabled="@(busy || selectedShop is null || module is null)">@(busy ? "Saving…" : "Save observation")</button> }
+                <a href="@SignInUrl" data-enhance-nav="false">Sign in again if your session has expired</a>
+            </section>
+            }
+            @if (pwa && step == 3) {
+                <section class="discovery-review"><div><p><strong>@selectedShop?.Name</strong><br />@selectedShop?.AddressLine1, @selectedShop?.Locality</p><button @onclick="() => StepAsync(1)">Edit</button></div>
+                    <div><p>Physically found at this shop</p></div><div><p>@(price.HasValue ? $"{price:0.00} {currency}" : "No shelf price supplied")</p><button @onclick="() => StepAsync(2)">Edit</button></div><div><p>@observedLocal.Replace('T', ' ')</p><button @onclick="() => StepAsync(2)">Edit</button></div></section>
+                <p>Discoveries record what someone found at a particular time. They do not guarantee current stock.</p>
+                <button class="ds-button ds-button-primary" @onclick="SaveAsync" disabled="@busy"><span class="scan-busy">@(busy ? "Recording…" : "Record discovery")</span></button>
+            }
+        }
+    }
+</main>
+@code {
+    [SupplyParameterFromQuery(Name="packTypeId")] public Guid? PackTypeId { get; set; }
+    [SupplyParameterFromQuery(Name="submissionId")] public Guid? SubmissionId { get; set; }
+    private PublicProposalIdentity? pendingProposal;
+    private bool pendingSaved;
+    private string? locationMessage;
+    private Dictionary<Guid,double> distances = [];
+    private string DraftKey => "discovery-" + (SubmissionId ?? PackTypeId);
+    private ProductIdentification? pack;
+    private PhysicalObservationReceipt? saved;
+    private IReadOnlyList<PlaceItem> shops = [];
+    private PlaceItem? selectedShop;
+    private bool loading = true, authenticated, busy;
+    private string? error;
+    private string query = "", currency = "GBP", observedLocal = "";
+    private decimal? price;
+    private Guid contributionId = Guid.NewGuid();
+    private bool pwa;
+    private int step = 1;
+    private string? draftOwner;
+    private IJSObjectReference? module;
+    private string ProductUrl => pack is null ? "/scan" : PublicProductIdentity.ProductUrl(pack.Product.Slug, pack.ProductVariantId) + "&packTypeId=" + pack.PackTypeId;
+    private string SignInUrl => "/signin?returnUrl=" + Uri.EscapeDataString(SubmissionId.HasValue ? "/contribute/product/discovery?submissionId=" + SubmissionId : "/observations/new?packTypeId=" + PackTypeId);
+    protected override async Task OnInitializedAsync() {
+        var actor = (await Authentication.GetAuthenticationStateAsync()).User;
+        authenticated = actor.Identity?.IsAuthenticated == true;
+        draftOwner = actor.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        try { if (SubmissionId.HasValue && authenticated) pendingProposal = await PlacesClient.ProposalIdentityAsync(SubmissionId.Value); else if (PackTypeId.HasValue) pack = await PlacesClient.PackAsync(PackTypeId.Value); }
+        catch (ContributionException e) { error = e.Message; }
+        catch (Exception e) when (e is HttpRequestException or TaskCanceledException) { error = "We couldn’t load this pack. Check your connection, then return to Scan and try again."; }
+        loading = false;
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (!firstRender) return;
+        try { module = await JS.InvokeAsync<IJSObjectReference>("import", "/js/contribution-draft.js"); pwa = true; observedLocal = await module.InvokeAsync<string>("localNow");
+            if (authenticated && (PackTypeId.HasValue || SubmissionId.HasValue) && await module.InvokeAsync<DiscoveryDraft?>("loadDraft", DraftKey, draftOwner) is { } draft && draft.ContributionId != Guid.Empty) {
+                selectedShop = draft.Shop; observedLocal = draft.ObservedLocal; price = draft.Price; currency = draft.Currency; contributionId = draft.ContributionId; step = draft.Step;
+                if (selectedShop?.SelectionToken is null && selectedShop?.Attribution is null) { selectedShop = null; step = 1; }
+
+            }
+            StateHasChanged(); }
+        catch (Exception e) when (e is JSException or JSDisconnectedException) { error = "We couldn’t initialise the observation time. Reload when connected to continue."; StateHasChanged(); }
+    }
+    private async Task Choose(PlaceItem shop) { selectedShop = shop; await PersistAsync(); }
+    private async Task StepAsync(int value) { step = value; await PersistAsync(); }
+    private async Task PersistAsync() {
+        if (module is not null && authenticated && (PackTypeId.HasValue || SubmissionId.HasValue) && !await module.InvokeAsync<bool>("saveDraft", DraftKey, new DiscoveryDraft(selectedShop, observedLocal, price, currency, contributionId, step), draftOwner, step))
+            error = "This browser could not keep a recovery copy. Keep this page open to retain your discovery.";
+    }
+    private sealed record DiscoveryDraft(PlaceItem? Shop, string ObservedLocal, decimal? Price, string Currency, Guid ContributionId, int Step);
+    private int radius = 1000;
+    private async Task SaveAsync() => await Act(async () => {
+        if (selectedShop is null || (pack is null && pendingProposal is null) || module is null) return;
+        if (selectedShop.SelectionToken is not null) selectedShop = await PlacesClient.SelectProviderPlaceAsync(selectedShop.SelectionToken);
+        var iso = await module.InvokeAsync<string>("toUtc", observedLocal);
+        if (!DateTimeOffset.TryParse(iso, out var observed)) throw new ContributionException("Choose when you observed the pack.");
+        if (SubmissionId.HasValue) { await PlacesClient.AttachDiscoveryAsync(SubmissionId.Value, new(selectedShop.Id, observed, price, currency)); pendingSaved = true; }
+        else saved = await PlacesClient.ObserveAsync(new(pack!.PackTypeId, selectedShop.Id, observed, price, currency, contributionId));
+        await module.InvokeVoidAsync("clearDraft", DraftKey, contributionId);
+    });
+    private async Task NearbyAsync() => await Act(async () => {
+        if (module is null) return;
+        var position = await module.InvokeAsync<NearbyPosition>("nearbyPosition");
+        if (position.Status != "found") { locationMessage = "Location isn’t available. Enable location for DiaperScout in your device settings, then try again. You can return to Scan without losing the recognised pack."; return; }
+        var nearby = await PlacesClient.NearbyAsync(new(position.Latitude, position.Longitude, radius)); shops = nearby.Select(p => p.Place).ToArray(); distances = nearby.ToDictionary(p => p.Place.Id, p => p.DistanceMetres);
+        locationMessage = shops.Count == 0 ? "We couldn’t find a suitable nearby shop. Try looking within 3 km, or return to Scan." : "Select the branch where you found this pack. These listings do not guarantee stock.";
+    });
+    private sealed record NearbyPosition(string Status, decimal Latitude, decimal Longitude);
+    private async Task Act(Func<Task> action) {
+        if (busy) return; busy = true; error = null;
+        try { await PersistAsync(); await action(); } catch (ContributionException e) { error = e.Message; }
+        catch (Exception e) when (e is HttpRequestException or TaskCanceledException or JSException) { error = "We couldn’t complete that action. Your entered information is still here; check your connection and try again."; }
+        finally { busy = false; }
+    }
+    public async ValueTask DisposeAsync() { try { if (module is not null) await module.DisposeAsync(); } catch (JSDisconnectedException) { } }
+}

@@ -1,0 +1,102 @@
+[
+  {
+    "article": "1000021333",
+    "sha256": "e43ced03829efa269ff52ee40f1c531db497610dc7e25ce5f18578b2e7b0993f",
+    "fields": [
+      "PRODUKTDATABLAD  |  07.09.2026",
+      "Produktbetegnelse Herrebind",
+      "Vareserie Man Premium",
+      "Størrelse Special",
+      "Længde/dybde 73 cm",
+      "Bredde 37 cm",
+      "PRODUKTDATABLAD  |  07.09.2026",
+      "Enhed Indeholder Længde Bredde Højde EAN",
+      "kll 92 stk 60 cm 40 cm 45.2 cm 5713571001097",
+      "pk 23 stk 34.5 cm 20 cm 29 cm 5713571001080",
+      "PRODUKTDATABLAD  |  07.09.2026"
+    ]
+  },
+  {
+    "article": "1000021334",
+    "sha256": "25a7dc7bf5a9ded252fd83e2192fa8e17c6072aac77d3f5442c0f407d2e69514",
+    "fields": [
+      "PRODUKTDATABLAD  |  27.06.2026",
+      "Produktbetegnelse Herrebind",
+      "Vareserie Man Premium",
+      "Størrelse Formula 0",
+      "Længde/dybde 23 cm",
+      "Bredde 19 cm",
+      "PRODUKTDATABLAD  |  27.06.2026",
+      "Enhed Indeholder Længde Bredde Højde EAN",
+      "kll 16 pk 40 cm 30.3 cm 32 cm 5713571001110",
+      "pk 14 stk 13 cm 9 cm 14.5 cm 5713571001103",
+      "PRODUKTDATABLAD  |  27.06.2026"
+    ]
+  },
+  {
+    "article": "1000021335",
+    "sha256": "ae996ab350a997731748a1c102797e61327ec5bf6d4b3e8eb80a31d97261f0f0",
+    "fields": [
+      "PRODUKTDATABLAD  |  27.06.2026",
+      "Produktbetegnelse Herrebind",
+      "Vareserie Man Premium",
+      "Størrelse Formula 1",
+      "Længde/dybde 29 cm",
+      "Bredde 23 cm",
+      "PRODUKTDATABLAD  |  27.06.2026",
+      "Enhed Indeholder Længde Bredde Højde EAN",
+      "kll 12 pk 56 cm 23.6 cm 36.2 cm 5713571001134",
+      "pk 15 stk 20 cm 9 cm 17.5 cm 5713571001127",
+      "PRODUKTDATABLAD  |  27.06.2026"
+    ]
+  },
+  {
+    "article": "1000021336",
+    "sha256": "4abb9afff4a06cba377ebd5f053480fd27cefea74396a2b3cd30a7f29df8d046",
+    "fields": [
+      "PRODUKTDATABLAD  |  27.06.2026",
+      "Produktbetegnelse Herrebind",
+      "Vareserie Man Premium",
+      "Størrelse Formula 2",
+      "Længde/dybde 29 cm",
+      "Bredde 23 cm",
+      "PRODUKTDATABLAD  |  27.06.2026",
+      "Enhed Indeholder Længde Bredde Højde EAN",
+      "kll 12 pk 56 cm 23.6 cm 36.2 cm 5713571001158",
+      "pk 15 stk 20 cm 9 cm 17.5 cm 5713571001141",
+      "PRODUKTDATABLAD  |  27.06.2026"
+    ]
+  },
+  {
+    "article": "1999905432",
+    "sha256": "712e59682f335148ea18585207ed8cae4fb932b5f03042dde3fa0a607d7d9de4",
+    "fields": [
+      "PRODUKTDATABLAD  |  26.06.2026",
+      "Produktbetegnelse Herrebind",
+      "Vareserie Man Premium",
+      "Størrelse Zero",
+      "Længde/dybde 18 cm",
+      "Bredde 9 cm",
+      "PRODUKTDATABLAD  |  26.06.2026",
+      "Enhed Indeholder Længde Bredde Højde EAN",
+      "kll 384 stk 39.8 cm 39.2 cm 34.2 cm 5703538461309",
+      "pk 24 stk 19 cm 16 cm 9.5 cm 5703538461316"
+    ]
+  },
+  {
+    "article": "1999905433",
+    "sha256": "c631bcd15c81f14d9db62f191508d6281763df2eb9737ed735e084976cf32aff",
+    "fields": [
+      "PRODUKTDATABLAD  |  27.06.2026",
+      "Produktbetegnelse Herrebind",
+      "Vareserie Man Premium",
+      "Størrelse Slipguard",
+      "Længde/dybde 40 cm",
+      "Bredde 9 cm",
+      "PRODUKTDATABLAD  |  27.06.2026",
+      "Enhed Indeholder Længde Bredde Højde EAN",
+      "kll 100 stk 36.3 cm 18.5 cm 44 cm 5703538461323",
+      "pk 20 stk 36 cm 25 cm 9 cm 5703538461347"
+    ]
+  }
+]

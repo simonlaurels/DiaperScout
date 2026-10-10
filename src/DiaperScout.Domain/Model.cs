@@ -3,6 +3,7 @@ namespace DiaperScout.Domain;
 public abstract class Entity
 {
     protected Entity() => Id = Guid.NewGuid();
+    protected Entity(Guid id) => Id = id != Guid.Empty ? id : throw new ArgumentException("An entity ID is required.", nameof(id));
     public Guid Id { get; private set; }
 }
 
@@ -11,7 +12,7 @@ public enum ProductStatus { Current, Discontinued, Prototype }
 public enum RetailerStatus { Discovered, Verified, NeedsReview, Inactive }
 public enum RetailerIdentityVerificationOutcome { Verified, NeedsReview }
 public enum RetailerProductDiscoveryStatus { Discovered, Verified, NeedsReview, Inactive }
-public enum RetailerProductAvailability { Unknown, InStock, OutOfStock, PreOrder, Discontinued }
+public enum RetailerProductAvailability { Unknown, InStock, OutOfStock, PreOrder, Discontinued, Limited }
 public enum BackingType { Unknown, Plastic, Cloth, Hybrid, Other }
 public enum FastenerType { Unknown, AdhesiveTape, HookAndLoop, Other }
 public enum CatalogueVariantAppearance { Unknown, Plain, Printed }
@@ -122,6 +123,7 @@ public sealed class Manufacturer : Entity
 {
     private Manufacturer() { Name = null!; Slug = null!; }
     public Manufacturer(string name, string slug, string? websiteUrl = null) { Name = name; Slug = slug; WebsiteUrl = websiteUrl; }
+    public Manufacturer(Guid id, string name, string slug, string? websiteUrl = null) : base(id) { Name = name; Slug = slug; WebsiteUrl = websiteUrl; }
     public string Name { get; private set; }
     public string Slug { get; private set; }
     public string? WebsiteUrl { get; private set; }
@@ -135,6 +137,12 @@ public sealed class Brand : Entity
     public Guid ManufacturerId { get; private set; }
     public string Name { get; private set; }
     public string Slug { get; private set; }
+    public void ReassignManufacturer(Guid expectedManufacturerId, Guid manufacturerId)
+    {
+        if (ManufacturerId != expectedManufacturerId || manufacturerId == Guid.Empty)
+            throw new InvalidOperationException("The expected brand manufacturer relationship has changed.");
+        ManufacturerId = manufacturerId;
+    }
 }
 
 public sealed class Product : Entity
@@ -177,6 +185,13 @@ public sealed class Product : Entity
 
     public void SetDescriptionVisibility(CatalogueContentVisibility visibility) =>
         DescriptionVisibility = visibility;
+
+    public void ReassignManufacturer(Guid expectedManufacturerId, Guid manufacturerId)
+    {
+        if (ManufacturerId != expectedManufacturerId || manufacturerId == Guid.Empty)
+            throw new InvalidOperationException("The expected product manufacturer relationship has changed.");
+        ManufacturerId = manufacturerId;
+    }
 
     public void SetStatus(ProductStatus status)
     {
@@ -263,6 +278,15 @@ public sealed class ProductVariant : Entity
     public int? FastenerCount { get; private set; }
     public string? ConstructionNotes { get; private set; }
     public ICollection<SizeVariant> Sizes { get; } = new List<SizeVariant>();
+
+    public void ReconcileProduct(Guid expectedProductId, Guid productId, string expectedName, string name)
+    {
+        if (ProductId != expectedProductId || Name != expectedName || productId == Guid.Empty ||
+            string.IsNullOrWhiteSpace(name) || name.Trim().Length > 200)
+            throw new InvalidOperationException("The expected variant identity has changed.");
+        ProductId = productId;
+        Name = name.Trim();
+    }
 
     public void UpdateDetails(
         string name,
@@ -736,12 +760,14 @@ public sealed class CatalogueSubmissionRetailDestination : Entity
     public DateTimeOffset AddedAtUtc { get; private set; }
 }
 
+public enum PlaceCategory { Pharmacy = 1, Supermarket = 2, SpecialistRetailer = 3, GeneralRetailer = 4, ConvenienceStore = 5, Other = 6 }
+
 public sealed class Location : Entity
 {
     private Location() { Name = null!; AddressLine1 = null!; Locality = null!; Postcode = null!; }
     public Location(Guid retailerId, Guid countryId, string name, string addressLine1, string locality, string postcode)
     { RetailerId = retailerId; CountryId = countryId; Name = name; AddressLine1 = addressLine1; Locality = locality; Postcode = postcode; }
-    public Guid RetailerId { get; private set; }
+    public Guid? RetailerId { get; private set; }
     public Guid CountryId { get; private set; }
     public string Name { get; private set; }
     public string AddressLine1 { get; private set; }
@@ -750,6 +776,33 @@ public sealed class Location : Entity
     public string Postcode { get; private set; }
     public decimal? Latitude { get; private set; }
     public decimal? Longitude { get; private set; }
+    public bool IsPublicCommercialPlace { get; private set; }
+    public Guid? CreatedByUserId { get; private set; }
+    public DateTimeOffset? CreatedAtUtc { get; private set; }
+    public string? PlaceIdentity { get; private set; }
+    public string? ProviderSnapshotJson { get; private set; }
+    public void RecordProviderSnapshot(string snapshot) {
+        if (ProviderSnapshotJson is not null) throw new InvalidOperationException("Historical place snapshots are immutable.");
+        ProviderSnapshotJson = snapshot;
+    }
+    public PlaceCategory? Category { get; private set; }
+    public void SetCategory(PlaceCategory? category) {
+        if (category.HasValue && !Enum.IsDefined(category.Value)) throw new ArgumentException("Choose a supported place type.", nameof(category));
+        Category = category;
+    }
+    public static Location PublicShop(Guid author, Guid country, string name, string address, string locality,
+        string postcode, decimal latitude, decimal longitude, string identity, PlaceCategory? category = null)
+    {
+        if (author == Guid.Empty || country == Guid.Empty || latitude is < -90 or > 90 || longitude is < -180 or > 180)
+            throw new ArgumentException("A contributor, country and valid shop coordinates are required.");
+        var location = new Location(Guid.Empty, country, name, address, locality, postcode)
+        {
+            RetailerId = null, IsPublicCommercialPlace = true, CreatedByUserId = author,
+            CreatedAtUtc = DateTimeOffset.UtcNow, Latitude = latitude, Longitude = longitude, PlaceIdentity = identity
+        };
+        location.SetCategory(category);
+        return location;
+    }
 }
 
 public sealed class PlatformSetting : Entity
@@ -921,6 +974,14 @@ public sealed class PendingRegistration : Entity
     public string DisplayName { get; private set; }
     public DateTimeOffset CreatedAtUtc { get; private set; }
     public DateTimeOffset ExpiresAtUtc { get; private set; }
+
+    public void Renew(string displayName, DateTimeOffset now, DateTimeOffset expiresAtUtc)
+    {
+        if (string.IsNullOrWhiteSpace(displayName) || displayName.Trim().Length > 100)
+            throw new ArgumentException("Enter a name or nickname of 1 to 100 characters.", nameof(displayName));
+        if (expiresAtUtc <= now) throw new ArgumentException("The link must expire in the future.", nameof(expiresAtUtc));
+        DisplayName = displayName.Trim(); CreatedAtUtc = now; ExpiresAtUtc = expiresAtUtc;
+    }
 }
 
 public sealed class PendingRegistrationToken : Entity
@@ -1088,6 +1149,10 @@ public sealed class CatalogueSubmissionImage : Entity
 
     public Guid SubmissionId { get; private set; }
     public Guid? ProductId { get; private set; }
+    public bool IsExplorerEvidence { get; private set; }
+    public Guid? EvidenceUploadId { get; private set; }
+    public string? EvidenceContentHash { get; private set; }
+    public void MarkExplorerEvidence(Guid uploadId, string contentHash) { IsExplorerEvidence = true; EvidenceUploadId = uploadId; EvidenceContentHash = contentHash; }
     public CatalogueSubmissionImageRole Role { get; private set; }
     public string StorageKey { get; private set; }
     public string OriginalFileName { get; private set; }
@@ -1693,6 +1758,61 @@ public sealed class CatalogueSubmission : Entity
     public string? Notes { get; private set; }
 
     public Guid? PublishedProductId { get; private set; }
+    public Guid? ResolvedPackTypeId { get; private set; }
+    public Guid? PublicContributionId { get; private set; }
+    public Guid? SuggestedExistingProductId { get; private set; }
+    public void UpdateProductType(ProductType? productType)
+    {
+        if (Status != CatalogueSubmissionStatus.Draft || (productType.HasValue && !Enum.IsDefined(productType.Value)))
+            throw new InvalidOperationException("Set a valid proposed product type while preparing the draft.");
+        ProposedProductType = productType; Touch();
+    }
+    public Guid? PendingLocationId { get; private set; }
+    public DateTimeOffset? PendingObservedAtUtc { get; private set; }
+    public decimal? PendingPriceAmount { get; private set; }
+    public string? PendingCurrencyCode { get; private set; }
+    public Guid? ResultingObservationId { get; private set; }
+    public void AttachPendingDiscovery(Guid locationId, DateTimeOffset observedAt, decimal? price, string? currency)
+    {
+        if (Source != CatalogueSubmissionSource.Explorer || PublicContributionId is null || Status is CatalogueSubmissionStatus.Published or CatalogueSubmissionStatus.Rejected || PendingLocationId.HasValue)
+            throw new InvalidOperationException("Add pending discovery evidence once, before the proposal has been resolved or rejected.");
+        PendingLocationId = locationId; PendingObservedAtUtc = observedAt; PendingPriceAmount = price;
+        PendingCurrencyCode = price.HasValue ? currency : null; Touch();
+    }
+    public void SetExplorerEvidence(Guid? suggestedProductId, Guid? locationId, DateTimeOffset? observedAt, decimal? price, string? currency)
+    {
+        if (Source != CatalogueSubmissionSource.Explorer || Status != CatalogueSubmissionStatus.Draft)
+            throw new InvalidOperationException("Only an Explorer proposal draft can change its proposed evidence.");
+        SuggestedExistingProductId = suggestedProductId; PendingLocationId = locationId;
+        PendingObservedAtUtc = observedAt; PendingPriceAmount = price;
+        PendingCurrencyCode = price.HasValue ? currency : null; Touch();
+    }
+    public void LinkResolvedDiscovery(Guid packId, Guid observationId)
+    {
+        if (Status != CatalogueSubmissionStatus.Published || packId == Guid.Empty || observationId == Guid.Empty ||
+            (ResultingObservationId.HasValue && (ResultingObservationId != observationId || ResolvedPackTypeId != packId)))
+            throw new InvalidOperationException("Discovery reconciliation requires the published exact pack and a stable observation.");
+        ResolvedPackTypeId = packId; ResultingObservationId = observationId; Touch();
+    }
+    public int? ProposedPackQuantity { get; private set; }
+    public void SetPublicContribution(Guid contributionId)
+    {
+        if (Source != CatalogueSubmissionSource.Explorer || Status != CatalogueSubmissionStatus.Draft || contributionId == Guid.Empty)
+            throw new ArgumentException("A new public proposal requires its contribution identifier.");
+        PublicContributionId = contributionId;
+    }
+    public void SetProposedPackQuantity(int? quantity)
+    {
+        if (Status != CatalogueSubmissionStatus.Draft || quantity is < 1 or > 100000)
+            throw new ArgumentException("Set the proposed pack quantity while preparing the submission.");
+        ProposedPackQuantity = quantity;
+    }
+    public void ResolveToExistingPack(Guid productId, Guid packId)
+    {
+        if (Status != CatalogueSubmissionStatus.Approved || packId == Guid.Empty)
+            throw new InvalidOperationException("Only an approved submission can be resolved to an existing pack.");
+        Publish(productId); ResolvedPackTypeId = packId;
+    }
 
     public DateTimeOffset CreatedAtUtc { get; private set; }
 
@@ -1897,6 +2017,16 @@ public sealed class CatalogueSubmission : Entity
         Touch();
     }
 
+    public void ReturnToDraft()
+    {
+        if (Status is not CatalogueSubmissionStatus.InVerification
+            and not CatalogueSubmissionStatus.ReadyForReview
+            and not CatalogueSubmissionStatus.Approved)
+            throw new InvalidOperationException("Only unpublished submissions in verification, review or approval can be returned to draft.");
+
+        Status = CatalogueSubmissionStatus.Draft;
+        Touch();
+    }
     public void ReturnToVerification()
     {
         if (Status != CatalogueSubmissionStatus.Approved)
@@ -1926,6 +2056,12 @@ public sealed class ExplorerProfile : Entity
 {
     private ExplorerProfile() { DisplayName = null!; }
     public ExplorerProfile(Guid userId, string displayName) { UserId = userId; DisplayName = displayName; }
+    public void Rename(string displayName)
+    {
+        if (string.IsNullOrWhiteSpace(displayName) || displayName.Trim().Length > 100)
+            throw new ArgumentException("Enter an Explorer name of 1 to 100 characters.", nameof(displayName));
+        DisplayName = displayName.Trim();
+    }
     public Guid UserId { get; private set; }
     public string DisplayName { get; private set; }
     public Backpack? Backpack { get; private set; }
@@ -1977,6 +2113,18 @@ public sealed class Observation : Entity
     public string? Narrative { get; private set; }
     public decimal? PriceAmount { get; private set; }
     public string? PriceCurrencyCode { get; private set; }
+    public Guid? PackTypeId { get; private set; }
+    public Guid? ContributionId { get; private set; }
+    public void RecordExactPack(Guid packTypeId, Guid contributionId, decimal? price, string? currency)
+    {
+        if (State != ObservationState.Draft || Type != ObservationType.RetailAvailability || LocationId is null ||
+            packTypeId == Guid.Empty || contributionId == Guid.Empty)
+            throw new ArgumentException("A physical observation requires an exact pack, place and contribution identifier.");
+        if (price is < 0 or > 9999999999.99m || (price.HasValue && string.IsNullOrWhiteSpace(currency)))
+            throw new ArgumentException("Price must be nonnegative and have a currency.");
+        PackTypeId = packTypeId; ContributionId = contributionId; PriceAmount = price;
+        PriceCurrencyCode = price.HasValue ? currency : null;
+    }
     public void Submit() { if (State != ObservationState.Draft) throw new InvalidOperationException("Only drafts can be submitted."); State = ObservationState.Submitted; }
     public ICollection<EvidenceItem> Evidence { get; } = new List<EvidenceItem>();
 }

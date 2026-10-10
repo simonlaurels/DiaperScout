@@ -1,0 +1,69 @@
+{
+  "started": "2026-10-04T10:23:05.021Z",
+  "productionWrites": 0,
+  "authenticatedProductionChecks": false,
+  "physicalIphoneProven": false,
+  "sessions": [
+    {
+      "engine": "chromium",
+      "width": 390,
+      "height": 844,
+      "errors": [],
+      "routes": [
+        {
+          "route": "/",
+          "status": 200
+        },
+        {
+          "route": "/products",
+          "status": 200
+        },
+        {
+          "route": "/atlas",
+          "status": 200
+        },
+        {
+          "route": "/backpack",
+          "status": 200
+        },
+        {
+          "route": "/scan",
+          "status": 200
+        }
+      ],
+      "privateImageStatus": 302,
+      "passed": true
+    },
+    {
+      "engine": "webkit",
+      "width": 430,
+      "height": 932,
+      "errors": [],
+      "routes": [
+        {
+          "route": "/",
+          "status": 200
+        },
+        {
+          "route": "/products",
+          "status": 200
+        },
+        {
+          "route": "/atlas",
+          "status": 200
+        },
+        {
+          "route": "/backpack",
+          "status": 200
+        },
+        {
+          "route": "/scan",
+          "status": 200
+        }
+      ],
+      "privateImageStatus": 302,
+      "passed": true
+    }
+  ],
+  "finished": "2026-10-04T10:23:40.543Z"
+}

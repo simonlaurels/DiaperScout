@@ -1,0 +1,28 @@
+{
+  "retry_execution": "ds-bootstrap-admin-ahfd313",
+  "inventory_execution": "ds-bootstrap-admin-jb9w5a0",
+  "retry": [
+    {
+      "ResearchId": "B15-LET-MAXI-28",
+      "SubmissionId": "947f0f98-53bf-4c49-99b3-63d0d85ce838",
+      "ProductId": "bfecf571-175d-4053-9725-aa8130289295",
+      "VariantId": "3cc93bf2-1781-4648-82c3-c1cf0ca9a7c5",
+      "SizeId": "ec505d51-5c0e-4084-b804-2665e9ac3401",
+      "PackId": "63e08847-2440-4ef9-b39b-9c910baf3eac",
+      "IdentifierId": "de863224-d988-438d-9207-bf667180642d",
+      "AuditId": "c30d6cdd-d07f-412f-9ded-96f703358401",
+      "Gtin": "5703538461422",
+      "Created": false
+    }
+  ],
+  "preserved_existing_rows": {
+    "products": true,
+    "variants": true,
+    "sizes": true,
+    "packs": true,
+    "identifiers": true,
+    "submissions": true,
+    "submissionVariants": true,
+    "submissionSizes": true
+  }
+}

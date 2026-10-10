@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DiaperScout.Application\DiaperScout.Application.csproj" />
     <ProjectReference Include="..\DiaperScout.Domain\DiaperScout.Domain.csproj" />
+    <ProjectReference Include="../DiaperScout.Commerce.Plugins.Awin/DiaperScout.Commerce.Plugins.Awin.csproj" />
   </ItemGroup>
 
   <ItemGroup>

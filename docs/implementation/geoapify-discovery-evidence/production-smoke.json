@@ -1,0 +1,107 @@
+[
+  {
+    "engine": "chromium",
+    "path": "/",
+    "status": 200
+  },
+  {
+    "engine": "chromium",
+    "path": "/products",
+    "status": 200
+  },
+  {
+    "engine": "chromium",
+    "path": "product-details",
+    "status": 200
+  },
+  {
+    "engine": "chromium",
+    "path": "/atlas",
+    "status": 200
+  },
+  {
+    "engine": "chromium",
+    "path": "atlas-attribution",
+    "status": 200
+  },
+  {
+    "engine": "chromium",
+    "path": "/signin",
+    "status": 200
+  },
+  {
+    "engine": "chromium",
+    "path": "/backpack",
+    "status": 200
+  },
+  {
+    "engine": "chromium",
+    "path": "/scan",
+    "status": 200
+  },
+  {
+    "engine": "chromium",
+    "path": "manual-unknown-product-evidence",
+    "status": 200
+  },
+  {
+    "engine": "webkit",
+    "path": "/",
+    "status": 200
+  },
+  {
+    "engine": "webkit",
+    "path": "/products",
+    "status": 200
+  },
+  {
+    "engine": "webkit",
+    "path": "product-details",
+    "status": 200
+  },
+  {
+    "engine": "webkit",
+    "path": "/atlas",
+    "status": 200
+  },
+  {
+    "engine": "webkit",
+    "path": "atlas-attribution",
+    "status": 200
+  },
+  {
+    "engine": "webkit",
+    "path": "/signin",
+    "status": 200
+  },
+  {
+    "engine": "webkit",
+    "path": "/backpack",
+    "status": 200
+  },
+  {
+    "engine": "webkit",
+    "path": "/scan",
+    "status": 200
+  },
+  {
+    "engine": "webkit",
+    "path": "manual-unknown-product-evidence",
+    "status": 200
+  },
+  {
+    "engine": "http",
+    "path": "licensed-place-export",
+    "status": 200
+  },
+  {
+    "engine": "http",
+    "path": "discovery-recorded",
+    "status": 200
+  },
+  {
+    "engine": "http",
+    "path": "product-evidence-recorded",
+    "status": 200
+  }
+]

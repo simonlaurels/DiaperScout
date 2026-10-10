@@ -1,0 +1,84 @@
+[
+  {
+    "ResearchId": "B02-H6-L-30",
+    "Outcome": "READY",
+    "Manufacturer": "PAUL HARTMANN AG",
+    "Brand": "MoliCare",
+    "Product": "Premium Elastic 6 drops",
+    "ManufacturerAliases": [
+      "PAUL HARTMANN"
+    ],
+    "ProductAliases": [
+      "MoliCare Premium Elastic 6 drops"
+    ],
+    "Family": "Premium Elastic",
+    "ProductType": "Tape",
+    "Size": "Large",
+    "Quantity": 30,
+    "Gtin": "4052199297033",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 115,
+    "HipMaximumCm": 145,
+    "OfficialWebsite": "https://www.hartmann.info/en-gb/products/continence-management/all-in-one/moderate-incontinence/molicare%C2%AE-premium-elastic-6-drops",
+    "IdentitySources": [
+      "https://www.hartmann.info/de-de/produkte/inkontinenzversorgung/inkontinenz-slips/mittlere-inkontinenz/molicare%C2%AE-premium-elastic-6-tropfen"
+    ],
+    "IdentifierSources": [
+      "https://www.hartmann.info/de-de/produkte/inkontinenzversorgung/inkontinenz-slips/mittlere-inkontinenz/molicare%C2%AE-premium-elastic-6-tropfen",
+      "https://www.hartmann.info/-/media/country/website/archive/incontinence/doc/sales-folder-relaunch-mc-premium-elastic-klinik-hires_0865536-018492.pdf?rev=4fdfcf64f3714b8a9e53082b50453d93&sc_lang=de-de",
+      "https://comenzi.farmaciatei.ro/ingrijire-personala/ingrijire-intima/incontinenta-urinara/slip-pentru-incontinenta-molicare-premium-elastic-marimea-l-30-bucati-hartmann-p348582"
+    ],
+    "SpecificationSources": [
+      "https://www.hartmann.info/de-de/produkte/inkontinenzversorgung/inkontinenz-slips/mittlere-inkontinenz/molicare%C2%AE-premium-elastic-6-tropfen",
+      "https://www.hartmann.info/-/media/country/website/archive/incontinence/doc/sales-folder-relaunch-mc-premium-elastic-klinik-hires_0865536-018492.pdf?rev=4fdfcf64f3714b8a9e53082b50453d93&sc_lang=de-de",
+      "https://comenzi.farmaciatei.ro/ingrijire-personala/ingrijire-intima/incontinenta-urinara/slip-pentru-incontinenta-molicare-premium-elastic-marimea-l-30-bucati-hartmann-p348582"
+    ],
+    "EvidenceNotes": "Independently verified EU assortment: Premium Elastic 6 drops Large, sealed bag 30, EAN 4052199297033, article 165273, hip/abdomen 115–145 cm. Exact manufacturer row corroborated by EU pharmacy. No waist inferred, no absorbency volume inferred without method. Existing current product and variant reused; existing Medium left unchanged. No images copied; image permission unknown.",
+    "ExistingSubmissionId": "78bf7d46-87cb-4b1c-b464-f1f077692f03",
+    "ReconcileDraftAttributes": false,
+    "VerifiedVariantAttributes": null
+  },
+  {
+    "ResearchId": "B02-H6-XL-14",
+    "Outcome": "READY",
+    "Manufacturer": "PAUL HARTMANN AG",
+    "Brand": "MoliCare",
+    "Product": "Premium Elastic 6 drops",
+    "ManufacturerAliases": [
+      "PAUL HARTMANN"
+    ],
+    "ProductAliases": [
+      "MoliCare Premium Elastic 6 drops"
+    ],
+    "Family": "Premium Elastic",
+    "ProductType": "Tape",
+    "Size": "X-Large",
+    "Quantity": 14,
+    "Gtin": "4052199299433",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 140,
+    "HipMaximumCm": 175,
+    "OfficialWebsite": "https://www.hartmann.info/en-gb/products/continence-management/all-in-one/moderate-incontinence/molicare%C2%AE-premium-elastic-6-drops",
+    "IdentitySources": [
+      "https://www.hartmann.info/de-de/produkte/inkontinenzversorgung/inkontinenz-slips/mittlere-inkontinenz/molicare%C2%AE-premium-elastic-6-tropfen"
+    ],
+    "IdentifierSources": [
+      "https://www.hartmann.info/de-de/produkte/inkontinenzversorgung/inkontinenz-slips/mittlere-inkontinenz/molicare%C2%AE-premium-elastic-6-tropfen",
+      "https://www.hartmann.info/-/media/country/website/archive/incontinence/doc/sales-folder-relaunch-mc-premium-elastic-klinik-hires_0865536-018492.pdf?rev=4fdfcf64f3714b8a9e53082b50453d93&sc_lang=de-de",
+      "https://www.benu.cz/kalhotky-absorpcni-molicare-premium-elastic-extra-large-boky-140-175cm-2762ml-14ks"
+    ],
+    "SpecificationSources": [
+      "https://www.hartmann.info/de-de/produkte/inkontinenzversorgung/inkontinenz-slips/mittlere-inkontinenz/molicare%C2%AE-premium-elastic-6-tropfen",
+      "https://www.hartmann.info/-/media/country/website/archive/incontinence/doc/sales-folder-relaunch-mc-premium-elastic-klinik-hires_0865536-018492.pdf?rev=4fdfcf64f3714b8a9e53082b50453d93&sc_lang=de-de",
+      "https://www.benu.cz/kalhotky-absorpcni-molicare-premium-elastic-extra-large-boky-140-175cm-2762ml-14ks"
+    ],
+    "EvidenceNotes": "Independently verified EU assortment: Premium Elastic 6 drops X-Large, sealed bag 14, EAN 4052199299433, article 165274, hip/abdomen 140–175 cm. Exact manufacturer row corroborated by EU pharmacy. No waist inferred, no absorbency volume inferred without method. Existing current product and variant reused; existing Medium left unchanged. No images copied; image permission unknown.",
+    "ExistingSubmissionId": "78bf7d46-87cb-4b1c-b464-f1f077692f03",
+    "ReconcileDraftAttributes": false,
+    "VerifiedVariantAttributes": null
+  }
+]

@@ -1,0 +1,100 @@
+[
+  {
+    "run": "scanner-validation/product-readiness-recheck.trx",
+    "total": 3,
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0
+  },
+  {
+    "run": "scanner-validation/scanner-and-contribution.trx",
+    "total": 21,
+    "passed": 21,
+    "failed": 0,
+    "skipped": 0
+  },
+  {
+    "run": "scanner-validation/scanner-final-focused.trx",
+    "total": 12,
+    "passed": 12,
+    "failed": 0,
+    "skipped": 0
+  },
+  {
+    "run": "scanner-validation/scanner-focused-2.trx",
+    "total": 9,
+    "passed": 4,
+    "failed": 5,
+    "skipped": 0
+  },
+  {
+    "run": "scanner-validation/scanner-focused-3.trx",
+    "total": 9,
+    "passed": 4,
+    "failed": 5,
+    "skipped": 0
+  },
+  {
+    "run": "scanner-validation/scanner-focused-4.trx",
+    "total": 9,
+    "passed": 7,
+    "failed": 2,
+    "skipped": 0
+  },
+  {
+    "run": "scanner-validation/scanner-focused.trx",
+    "total": 9,
+    "passed": 2,
+    "failed": 7,
+    "skipped": 0
+  },
+  {
+    "run": "scanner-validation/scanner-product-recheck.trx",
+    "total": 15,
+    "passed": 14,
+    "failed": 1,
+    "skipped": 0
+  },
+  {
+    "run": "scanner-validation/scanner-webkit-diagnostic.trx",
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0
+  },
+  {
+    "run": "scanner-validation/scanner-webkit-trace.trx",
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0
+  },
+  {
+    "run": "final-full/hails_LAPTOP-B9K6D45G_2026-10-02_23_06_18_net10.0.trx",
+    "total": 51,
+    "passed": 51,
+    "failed": 0,
+    "skipped": 0
+  },
+  {
+    "run": "final-full/hails_LAPTOP-B9K6D45G_2026-10-02_23_06_39_net10.0.trx",
+    "total": 252,
+    "passed": 252,
+    "failed": 0,
+    "skipped": 0
+  },
+  {
+    "run": "full/hails_LAPTOP-B9K6D45G_2026-10-02_22_47_38_net10.0.trx",
+    "total": 51,
+    "passed": 51,
+    "failed": 0,
+    "skipped": 0
+  },
+  {
+    "run": "full/hails_LAPTOP-B9K6D45G_2026-10-02_22_47_54_net10.0.trx",
+    "total": 252,
+    "passed": 251,
+    "failed": 1,
+    "skipped": 0
+  }
+]

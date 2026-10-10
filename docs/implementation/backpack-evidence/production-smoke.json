@@ -1,0 +1,25 @@
+{
+  "started": "2026-10-04T08:27:34.794Z",
+  "productionWrites": 0,
+  "authenticatedProductionChecks": false,
+  "physicalIphoneProven": false,
+  "sessions": [
+    {
+      "engine": "chromium",
+      "width": 390,
+      "height": 844,
+      "errors": [],
+      "privateStatus": 302,
+      "passed": true
+    },
+    {
+      "engine": "webkit",
+      "width": 430,
+      "height": 932,
+      "errors": [],
+      "privateStatus": 302,
+      "passed": true
+    }
+  ],
+  "finished": "2026-10-04T08:27:42.297Z"
+}

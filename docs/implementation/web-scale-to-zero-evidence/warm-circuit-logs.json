@@ -1,0 +1,44 @@
+[
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--scale-policy-20261002092936-6d57c794n6hz6",
+    "Log_s": "      Shared Data Protection key ring readiness check passed.",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:47:22.7361854Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--scale-policy-20261002092936-6d57c794n6hz6",
+    "Log_s": "      Blazor circuit connection up 8E887B0A5F4C",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:48:21.7698059Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--scale-policy-20261002092936-6d57c794dcnjz",
+    "Log_s": "      Shared Data Protection key ring readiness check passed.",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:49:02.4624489Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--scale-policy-20261002092936-6d57c794n6hz6",
+    "Log_s": "      Blazor circuit connection down 8E887B0A5F4C",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:49:16.7978991Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--scale-policy-20261002092936-6d57c794dcnjz",
+    "Log_s": "      Blazor circuit connection up 9A60A67A3D0A",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:49:18.0262798Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--scale-policy-20261002092936-6d57c794dcnjz",
+    "Log_s": "      Blazor circuit connection down 9A60A67A3D0A",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:49:18.0262798Z"
+  }
+]

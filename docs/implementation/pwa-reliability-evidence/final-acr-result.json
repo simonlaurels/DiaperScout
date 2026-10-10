@@ -1,0 +1,13 @@
+{
+  "end": "2026-10-02T08:14:27.706728+00:00",
+  "images": [
+    {
+      "digest": "sha256:5e86abc43fb532bd0ba5c90371c657683d951fe8f9787ff99e2e4438879a569f",
+      "registry": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io",
+      "repository": "diaperscout-web",
+      "tag": "reliability-final-2b7e35f"
+    }
+  ],
+  "start": "2026-10-02T08:12:56.033585+00:00",
+  "status": "Succeeded"
+}

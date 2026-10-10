@@ -1,0 +1,30 @@
+[
+  {
+    "engine": "chromium",
+    "simulatedStandalone": true,
+    "darkPreference": true,
+    "passed": true,
+    "state": {
+      "background": "rgb(250, 245, 236)",
+      "colorScheme": "light",
+      "title": "Preparing your map…",
+      "visible": "flex",
+      "frameworkLoaded": false,
+      "appLoaded": false
+    }
+  },
+  {
+    "engine": "webkit",
+    "simulatedStandalone": true,
+    "darkPreference": true,
+    "passed": true,
+    "state": {
+      "background": "rgb(250, 245, 236)",
+      "colorScheme": "light",
+      "title": "Preparing your map…",
+      "visible": "flex",
+      "frameworkLoaded": false,
+      "appLoaded": false
+    }
+  }
+]

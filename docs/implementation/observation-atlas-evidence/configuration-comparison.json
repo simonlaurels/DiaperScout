@@ -1,0 +1,38 @@
+{
+  "web": {
+    "unchanged": {
+      "identity": true,
+      "environmentId": true,
+      "ingress": true,
+      "scale": true,
+      "registries": true,
+      "environmentVariables": true
+    },
+    "image": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-web@sha256:53e3c1abfacfff8c86fc3573a3cc3d6b3b2bfa3b4398fd599f64ac69e49393b3",
+    "scale": {
+      "cooldownPeriod": 300,
+      "maxReplicas": 10,
+      "minReplicas": null,
+      "pollingInterval": 30,
+      "rules": null
+    }
+  },
+  "api": {
+    "unchanged": {
+      "identity": true,
+      "environmentId": true,
+      "ingress": true,
+      "scale": true,
+      "registries": true,
+      "environmentVariables": true
+    },
+    "image": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-api@sha256:0ee3d21f3f70308008ca3416b001d1482bf06f19624eae15850678ea6bdb05b7",
+    "scale": {
+      "cooldownPeriod": 300,
+      "maxReplicas": 10,
+      "minReplicas": 0,
+      "pollingInterval": 30,
+      "rules": null
+    }
+  }
+}

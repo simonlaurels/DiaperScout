@@ -1,0 +1,16 @@
+[
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-8cf8032-6b4bb58784-9vsng",
+    "Log_s": "      Shared Data Protection key ring readiness check passed.",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-8cf8032",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T07:39:10.7893431Z"
+  },
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--reliability-2-8cf8032-6b4bb58784-vxnpb",
+    "Log_s": "      Shared Data Protection key ring readiness check passed.",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-2-8cf8032",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T07:39:11.2109987Z"
+  }
+]

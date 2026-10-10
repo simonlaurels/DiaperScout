@@ -1,0 +1,69 @@
+/* Atlas only: preserve the approved shell and other screens. */
+body:has(.atlas-page) .ds-main { max-width: none; margin: 0; padding: 0; }
+body:has(.atlas-page) .ds-app-header { position: relative; background: var(--pwa-paper); }
+.atlas-page { position: relative; height: max(560px,calc(100dvh - 64px)); min-width: 0; color: #253d38; font-family: Inter,system-ui,sans-serif; overflow: hidden; background: #e7ecdf; }
+.atlas-page .place-map-shell,.atlas-page .place-map { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 0; }
+.atlas-tools { position: absolute; z-index: 500; top: max(12px,env(safe-area-inset-top)); left: max(12px,env(safe-area-inset-left)); right: max(74px,env(safe-area-inset-right)); display: flex; align-items: center; gap: 8px; pointer-events: none; }
+.atlas-tools h1,.atlas-control { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; border: 1px solid #dcd3c1; border-radius: 16px; background: #fffcf6f5; color: #28594e; box-shadow: 0 3px 12px #463c2b12; font: 650 13px/1.3 Inter,system-ui,sans-serif; padding: 10px 12px; pointer-events: auto; }
+.atlas-tools h1 { margin: 0; font-size: 17px; }
+.atlas-tools svg,.atlas-control svg,.atlas-field-note a svg { width: 20px; height: 20px; flex-shrink: 0; }
+.atlas-control { cursor: pointer; }
+.atlas-status { position: absolute; z-index: 500; top: calc(max(12px,env(safe-area-inset-top)) + 54px); left: 12px; max-width: min(360px,calc(100% - 86px)); margin: 0; padding: 10px 14px; background: #fffcf6f5; border: 1px solid #dcd3c1; border-radius: 16px; font-size: 13px; line-height: 1.5; }
+.atlas-status button { margin-top: 8px; }
+.atlas-field-note { position: absolute; z-index: 500; bottom: 38px; left: max(12px,env(safe-area-inset-left)); width: min(360px,calc(100% - 24px)); display: flex; gap: 10px; padding: 14px; background: #fffcf6f5; border: 1px solid #dcd3c1; border-radius: 20px; box-shadow: 0 4px 20px #463c2b12; }
+.atlas-field-note img { width: 68px; height: 64px; object-fit: contain; align-self: center; flex-shrink: 0; }
+.atlas-field-note h2 { margin: 0 0 5px; font: 750 16px/1.3 Inter,system-ui,sans-serif; }
+.atlas-field-note p { margin: 0; font-size: 12px; line-height: 1.5; }
+.atlas-field-note a { display: inline-flex; align-items: center; min-height: 44px; color: #28594e; font-size: 13px; font-weight: 700; }
+.atlas-sheet { position: absolute; z-index: 600; bottom: 26px; right: 12px; width: min(440px,calc(100% - 24px)); max-height: 55%; overflow-y: auto; overscroll-behavior: contain; padding: 18px; background: #fffcf6; border: 1px solid #dcd3c1; border-radius: 24px; box-shadow: 0 4px 24px #463c2b25; }
+.atlas-sheet header { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; }
+.atlas-sheet h2 { font: 750 20px/1.25 Inter,system-ui,sans-serif; margin: 3px 0 8px; overflow-wrap: anywhere; }
+.atlas-sheet p { font-size: 13px; line-height: 1.5; margin: 8px 0; }
+.atlas-sheet .atlas-eyebrow { font-size: 10px; text-transform: uppercase; letter-spacing: .1em; margin: 0; color: #5d6b61; }
+.atlas-evidence-summary { font-weight: 650; }
+.atlas-stock-note { color: #5d6b61; }
+.atlas-place-type { color: #28594e; font-weight: 650; }
+.atlas-category-editor { padding: 10px 0; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid #dcd3c1; font-size: 13px; }
+.atlas-category-editor select { min-height: 44px; max-width: 100%; border: 1px solid #dcd3c1; border-radius: 12px; padding: 8px; background: #fffcf6; color: #28594e; font: 16px/1.3 Inter,system-ui,sans-serif; }
+.atlas-page .atlas-place-list { display: grid; grid-template-columns: 1fr; margin-bottom: 0; }
+.atlas-sheet .atlas-place-choice { min-height: 64px; box-shadow: none; font-size: 13px; }
+.atlas-sheet .atlas-observation { padding: 12px 0; }
+.atlas-observation a { color: #28594e; }
+.atlas-page .map-attribution { position: absolute; z-index: 500; bottom: 0; left: 0; margin: 0; padding: 4px 8px; background: #fffcf6e8; font-size: 10px; max-width: calc(100% - 100px); line-height: 1.25; }
+.atlas-page .leaflet-bottom { bottom: 22px; }
+.atlas-page .leaflet-top { top: max(4px,env(safe-area-inset-top)); }
+.atlas-page .leaflet-right { right: max(2px,env(safe-area-inset-right)); }
+.atlas-page .leaflet-control-zoom { border: 1px solid #dcd3c1; border-radius: 16px; overflow: hidden; }
+.atlas-page .leaflet-control-zoom a { width: 44px; height: 44px; line-height: 44px; color: #28594e; background: #fffcf6; }
+.atlas-page .place-map-shell > .contribution-message { position: absolute; z-index: 550; top: calc(max(12px,env(safe-area-inset-top)) + 106px); left: 12px; max-width: calc(100% - 90px); font-size: 12px; background: #fbebdcf5; }
+.atlas-discovery-marker { color: #28594e; background: transparent; border: 0; filter: drop-shadow(0 2px 3px #17384155); }
+.atlas-marker-art { width: 48px; height: 58px; }
+.atlas-marker-shadow { fill: #28463d; }
+.atlas-marker-body { fill: #527d55; stroke: #fff9e9; stroke-width: 2; }
+.atlas-marker-inset { fill: #fff9e9; }
+.atlas-marker-count { position: absolute; top: -5px; right: -5px; min-width: 23px; height: 23px; border-radius: 50%; background: #28594e; border: 2px solid #fff9e9; color: #fff9e9; text-align: center; font: 750 10px/19px Inter,system-ui,sans-serif; }
+.atlas-category-pharmacy .atlas-marker-body { fill: #4c817e; }
+.atlas-category-supermarket .atlas-marker-body { fill: #527d55; }
+.atlas-category-specialist .atlas-marker-body { fill: #a8844f; }
+.atlas-category-retailer .atlas-marker-body { fill: #9a7260; }
+.atlas-category-convenience .atlas-marker-body { fill: #66818b; }
+.atlas-category-other .atlas-marker-body { fill: #73816e; }
+.atlas-discovery-marker.atlas-marker-selected .atlas-marker-body { fill: #28594e; stroke-width: 3; }
+@media (max-width:700px), (display-mode:standalone) {
+  body:has(.atlas-page) .ds-app-header { display: none; }
+  .atlas-page { position: fixed; inset: 0 0 var(--atlas-nav-height,calc(var(--pwa-nav-height) + env(safe-area-inset-bottom))); height: auto; width: auto; z-index: 1; }
+  .atlas-sheet { left: 12px; right: 12px; width: auto; }
+}
+html[data-standalone="true"]:has(.atlas-page) .ds-app-header { display: none; }
+html[data-standalone="true"] .atlas-page { position: fixed; inset: 0 0 var(--atlas-nav-height,calc(var(--pwa-nav-height) + env(safe-area-inset-bottom))); height: auto; width: auto; z-index: 1; }
+@media (orientation:landscape) and (max-height:500px) { .atlas-field-note { width: 310px; padding: 10px; } .atlas-field-note img { width: 48px; height: 48px; } .atlas-sheet { max-height: 64%; width: min(440px,calc(100% - 90px)); left: auto; } }
+@media(prefers-reduced-motion:reduce) { .atlas-page * { animation: none !important; } }
+@media (min-width: 701px) {
+  html[data-standalone="true"]:has(.atlas-page) .pwa-mobile-nav { position: fixed; z-index: 110; bottom: 0; left: 0; right: 0; display: grid; grid-template-columns: repeat(5,1fr); background: #fffcf6f5; border-top: 1px solid #dfd7c7; border-radius: 22px 22px 0 0; box-shadow: 0 -4px 24px #463c2b08; padding: 8px max(8px,env(safe-area-inset-right)) env(safe-area-inset-bottom) max(8px,env(safe-area-inset-left)); backdrop-filter: blur(12px); min-height: calc(var(--pwa-nav-height) + env(safe-area-inset-bottom)); }
+  html[data-standalone="true"]:has(.atlas-page) .pwa-mobile-nav a { min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; color: #596355; text-decoration: none; font-size: 11px; font-weight: 600; border-radius: 14px; }
+  html[data-standalone="true"]:has(.atlas-page) .pwa-mobile-nav a[aria-current] { background: #e8eee0; color: #28594e; font-weight: 750; }
+  html[data-standalone="true"]:has(.atlas-page) .pwa-mobile-nav .pwa-scan-link { position: relative; transform: translateY(-14px); border-radius: 50%; height: 64px; width: 64px; margin: auto; background: #527d55; color: #fffdf7; box-shadow: 0 3px 12px #35543830; border: 4px solid #faf5ec; }
+  html[data-standalone="true"]:has(.atlas-page) .pwa-mobile-nav .pwa-scan-link[aria-current] { background: #28594e; color: white; }
+  html[data-standalone="true"]:has(.atlas-page) .pwa-mobile-nav .pwa-scan-link .app-icon { width: 24px; height: 24px; }
+  html[data-standalone="true"]:has(.atlas-page) .pwa-mobile-nav .pwa-scan-link span { font-size: 10px; line-height: 1; }
+}

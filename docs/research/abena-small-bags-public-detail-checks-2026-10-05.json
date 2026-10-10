@@ -1,0 +1,18 @@
+[
+  {
+    "id": "B09-ASL-L1-10",
+    "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=196c5283-0d93-405c-9d86-5e92843e48f7",
+    "status": 200,
+    "title_present": true,
+    "count_present": true,
+    "placeholder_present": true
+  },
+  {
+    "id": "B09-ASL-L2-10",
+    "url": "https://diaperscout.app/products/slip-premium?variantId=eedd9541-0628-4fc0-9b3d-e87ab4da55aa&packTypeId=9ed0abe2-97e3-4818-9a33-9daba3c497cd",
+    "status": 200,
+    "title_present": true,
+    "count_present": true,
+    "placeholder_present": true
+  }
+]

@@ -1,0 +1,9 @@
+[
+  {
+    "ContainerGroupName_s": "diaperscout-web-vnet--scale-policy-20261002092936-6d57c7948gqfj",
+    "Log_s": "      Shared Data Protection key ring readiness check passed.",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:30:10.8175702Z"
+  }
+]

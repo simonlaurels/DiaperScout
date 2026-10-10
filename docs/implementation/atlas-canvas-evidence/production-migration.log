@@ -1,0 +1,11 @@
+Observed production migration outcome (recorded from successful CLI checks):
+Execution: ds-bootstrap-admin-svf40yt
+Status: Succeeded
+Start: 2026-10-03T11:25:32Z
+End: 2026-10-03T11:26:05Z
+Observed at 2026-10-03T11:26:32Z:
+2026-10-03T11:26:00Z Cannot load library libgssapi_krb5.so.2 (known nonfatal image warning)
+2026-10-03T11:26:01Z Acquiring an exclusive lock for migration application.
+2026-10-03T11:26:01Z Applying migration '20261003102616_AddPlaceCategory'.
+2026-10-03T11:26:01Z Done.
+A later export attempt found no remaining execution replica; this file records the observed outcome, not a later raw-log export.

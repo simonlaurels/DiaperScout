@@ -1,0 +1,27 @@
+.pwa-welcome[hidden] { display: none !important; }
+.pwa-welcome { position: fixed; inset: 0; z-index: 900; overflow-y: auto; background: #b7e7ed; color: #50331c; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding: var(--welcome-safe-top, env(safe-area-inset-top)) 18px max(16px, var(--welcome-safe-bottom, env(safe-area-inset-bottom))); font-family: var(--font-body); }
+.welcome-art { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: center top; pointer-events: none; }
+.welcome-card h1:focus { outline: none; }
+.welcome-card { position: relative; flex: 0 0 auto; width: 100%; max-width: 440px; margin-top: 0; padding: 17px 20px 13px; border: 1px solid #b78b56; border-radius: 27px; background: radial-gradient(ellipse at top, #fff8e9, #fae9ca); box-shadow: 0 3px 8px #50331c24; text-align: center; }
+.welcome-card::before { content: ''; position: absolute; inset: 7px; border: 1px dashed #cb9d66; border-radius: 21px; pointer-events: none; }
+.welcome-card h1 { position: relative; margin: 0 0 7px; font: 750 24px/1.2 var(--font-body); color: #50331c; }
+.welcome-card h1 span { color: #72895a; font-weight: 400; }
+.welcome-card p { margin: 0 0 10px; font-size: 15px; line-height: 1.4; }
+.welcome-card a, .welcome-card button { position: relative; display: flex; justify-content: center; align-items: center; width: 100%; min-height: 44px; border-radius: 25px; font: 600 18px/1.2 var(--font-body); text-decoration: none; }
+.welcome-primary { background: linear-gradient(#779776, #5c7c59); border: 2px solid #4b6546; color: #fff9e9; box-shadow: inset 0 1px 2px #fff8; text-shadow: 0 1px 1px #32442b; }
+.welcome-secondary { margin-top: 7px; color: #50331c; border: 1px solid #795633; background: #fff8e580; }
+#welcome-continue { margin-top: 4px; background: transparent; border: 0; color: #476a43; font-size: 14px; font-weight: 500; cursor: pointer; }
+.welcome-card a:focus-visible, .welcome-card button:focus-visible { outline: 3px solid #174b45; outline-offset: 3px; }
+html[data-welcome-active] .ds-app-header, html[data-welcome-active] .pwa-mobile-nav, html[data-welcome-active] .explore-page, html[data-welcome-active] .pwa-skip-link { display: none !important; }
+@media (max-height: 700px) { .welcome-card { padding: 14px 17px 10px; } .welcome-card h1 { font-size: 22px; } }
+
+.welcome-signin [data-passkey-message]:empty { display: none; }
+.welcome-signin [data-passkey-message] { font-size: 13px; margin: 6px 0; }
+.welcome-card [data-passkey-fallback] { font-size: 14px; color: #476a43; text-decoration: underline; }
+
+html[data-welcome-active], html[data-welcome-active] body { background-color: #b7e7ed; }
+
+.welcome-card [aria-busy="true"] { gap: 8px; cursor: wait; }
+.welcome-auth-spinner { flex: 0 0 16px; width: 16px; height: 16px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: welcome-auth-spin .8s linear infinite; }
+@keyframes welcome-auth-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .welcome-auth-spinner { animation: none; } }

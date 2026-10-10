@@ -1,0 +1,4 @@
+2026-10-01T15:06:19.6946767Z stderr F Cannot load library libgssapi_krb5.so.2 
+2026-10-01T15:06:19.6947384Z stderr F Error: libgssapi_krb5.so.2: cannot open shared object file: No such file or directory
+2026-10-01T15:06:20.2805078Z stdout F Applying migration '20261001141156_PhysicalObservationsAndPublicProposals'.
+2026-10-01T15:06:20.4940957Z stdout F Done.

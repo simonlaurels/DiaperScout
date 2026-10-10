@@ -8,6 +8,7 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
     public DbSet<Manufacturer> Manufacturers => Set<Manufacturer>();
     public DbSet<Brand> Brands => Set<Brand>();
     public DbSet<Product> Products => Set<Product>();
+    public DbSet<ProductRouteRedirect> ProductRouteRedirects => Set<ProductRouteRedirect>();
     public DbSet<ProductVariant> ProductVariants => Set<ProductVariant>();
     public DbSet<SizeVariant> SizeVariants => Set<SizeVariant>();
     public DbSet<PackType> PackTypes => Set<PackType>();
@@ -94,6 +95,15 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
                 .WithMany()
                 .HasForeignKey(x => x.BrandId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<ProductRouteRedirect>(entity =>
+        {
+            entity.ToTable("product_route_redirects");
+            entity.HasIndex(x => x.SourceProductId).IsUnique();
+            entity.HasOne<Product>().WithMany().HasForeignKey(x => x.SourceProductId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne<Product>().WithMany().HasForeignKey(x => x.TargetProductId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne<ProductVariant>().WithMany().HasForeignKey(x => x.DefaultVariantId).OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<ProductVariant>(entity =>
@@ -308,6 +318,15 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
         });
 
 
+        modelBuilder.Entity<CatalogueSubmission>().HasIndex(x => new { x.SubmittedByUserId, x.PublicContributionId }).IsUnique();
+        modelBuilder.Entity<CatalogueSubmission>().HasOne<PackType>().WithMany().HasForeignKey(x => x.ResolvedPackTypeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<CatalogueSubmission>().HasOne<Product>().WithMany().HasForeignKey(x => x.SuggestedExistingProductId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<CatalogueSubmission>().HasOne<Location>().WithMany().HasForeignKey(x => x.PendingLocationId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<CatalogueSubmission>().HasOne<Observation>().WithMany().HasForeignKey(x => x.ResultingObservationId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<CatalogueSubmission>().Property(x => x.PendingPriceAmount).HasPrecision(12, 2);
+        modelBuilder.Entity<CatalogueSubmission>().Property(x => x.PendingCurrencyCode).HasMaxLength(3);
+        modelBuilder.Entity<CatalogueSubmissionImage>().HasIndex(x => new { x.SubmissionId, x.EvidenceUploadId }).IsUnique();
+        modelBuilder.Entity<CatalogueSubmissionImage>().Property(x => x.EvidenceContentHash).HasMaxLength(64);
         modelBuilder.Entity<Location>(entity =>
         {
             entity.ToTable("locations");
@@ -317,6 +336,10 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
             entity.Property(x => x.Postcode).HasMaxLength(32).IsRequired();
             entity.Property(x => x.Latitude).HasPrecision(9, 6);
             entity.Property(x => x.Longitude).HasPrecision(9, 6);
+            entity.Property(x => x.PlaceIdentity).HasMaxLength(64);
+            entity.Property(x => x.ProviderSnapshotJson).HasColumnType("jsonb");
+            entity.HasIndex(x => x.PlaceIdentity).IsUnique();
+            entity.HasOne<User>().WithMany().HasForeignKey(x => x.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
             entity.HasIndex(x => new { x.RetailerId, x.Postcode, x.Name }).IsUnique();
             entity.HasOne<Retailer>()
                 .WithMany()
@@ -782,6 +805,8 @@ public sealed class DiaperScoutDbContext(DbContextOptions<DiaperScoutDbContext> 
             entity.Property(x => x.CandidateProductName).HasMaxLength(250);
             entity.Property(x => x.PriceAmount).HasPrecision(12, 2);
             entity.Property(x => x.PriceCurrencyCode).HasMaxLength(3);
+            entity.HasOne<PackType>().WithMany().HasForeignKey(x => x.PackTypeId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasIndex(x => new { x.AuthorUserId, x.ContributionId }).IsUnique();
             entity.HasIndex(x => new { x.ProductId, x.ObservedAtUtc });
             entity.HasIndex(x => new { x.LocationId, x.ObservedAtUtc });
             entity.HasIndex(x => new { x.AuthorUserId, x.CreatedAtUtc });

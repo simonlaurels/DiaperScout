@@ -61,7 +61,8 @@ public sealed record CatalogueProductListItem(
     IReadOnlyList<string> Sizes,
     IReadOnlyList<BackingType> Backings,
     IReadOnlyList<PackagingType> PackagingTypes,
-    IReadOnlyList<CatalogueRetailDestination> RetailDestinations);
+    IReadOnlyList<CatalogueRetailDestination> RetailDestinations,
+    Guid? ProductVariantId = null);
 
 public sealed record CatalogueProductSearch(
     IReadOnlyList<CatalogueProductListItem> Products,
@@ -265,6 +266,15 @@ public sealed record CreateCanonicalProductSizeManagement(
     string EditorialRationale,
     string? CorrelationId);
 
+public sealed record CreateCanonicalProductPackManagement(
+    int QuantityPerPack,
+    PackagingType PackagingType,
+    string Gtin,
+    string SourceSummary,
+    IReadOnlyList<string> SourceReferences,
+    string EditorialRationale,
+    string? CorrelationId);
+
 public sealed record UpdateCanonicalProductSizeManagement(
     string ManufacturerSize,
     int? WaistMinimumCm,
@@ -343,7 +353,11 @@ public sealed record CatalogueProductDetails(
     string? OfficialWebsiteUrl,
     IReadOnlyList<CatalogueProductVariant> Variants,
     IReadOnlyList<CatalogueProductImage> Images,
-    IReadOnlyList<CatalogueRetailOffer> RetailOffers);
+    IReadOnlyList<CatalogueRetailOffer> RetailOffers,
+    Guid? ProductVariantId = null,
+    IReadOnlyList<CatalogueVariantOption>? AvailableVariants = null);
+
+public sealed record CatalogueVariantOption(Guid Id, string Name);
 
 public sealed record ExplorerIdentity(
     Guid UserId,
@@ -358,7 +372,8 @@ public sealed record AuthenticatedUser(
 public sealed record PasswordlessAuthenticationResult(
     Guid UserId,
     string Subject,
-    IReadOnlyList<PrivilegedRole> Roles);
+    IReadOnlyList<PrivilegedRole> Roles,
+    bool ContinueOnboarding = false);
 
 public interface IPasswordlessAuthentication
 {
@@ -527,8 +542,29 @@ public sealed record RetailerProductListingItem(
     DateTimeOffset LastCheckedAtUtc);
 
 
+public sealed record UpsertRetailerListing(Guid PackTypeId, Guid RetailerId, string ListingUrl,
+    string DiscoveryProvider, string? SourceUrl = null, string? ExternalListingId = null);
+public sealed record ManualRetailerListingRequest(Guid ProductId, Guid ProductVariantId, Guid SizeVariantId,
+    Guid PackTypeId, Guid RetailerId, string ListingUrl, string? SourceUrl = null, string? ExternalListingId = null);
+public sealed record RetailerListingUpdate(string ListingUrl, string? SourceUrl = null, string? ExternalListingId = null);
+public sealed record RetailerListingStatusUpdate(RetailerProductDiscoveryStatus Status);
+public sealed record RetailListingPackOption(Guid Id, int Quantity, PackagingType PackagingType, string? Gtin);
+public sealed record RetailListingSizeOption(Guid Id, string Name, IReadOnlyList<RetailListingPackOption> Packs);
+public sealed record RetailListingVariantOption(Guid Id, string? Name, IReadOnlyList<RetailListingSizeOption> Sizes);
+public sealed record RetailListingProductOption(Guid Id, string Name, string Slug, IReadOnlyList<RetailListingVariantOption> Variants);
+public sealed record ManagedRetailerListing(RetailerProductListingItem Listing, Guid ProductId, string ProductName,
+    string ProductSlug, Guid ProductVariantId, string? VariantName, Guid SizeVariantId, string SizeName,
+    int Quantity, PackagingType PackagingType);
 public interface IRetailerDiscovery
 {
+    // Provider-neutral canonical operation. Existing GTIN discovery is an adapter to this operation.
+    Task<RetailerProductListingItem> UpsertAsync(UpsertRetailerListing command, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<RetailListingProductOption>> GetListingCatalogueAsync(AuthenticatedUser actor, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<ManagedRetailerListing>> GetListingsAsync(AuthenticatedUser actor, Guid? retailerId = null, CancellationToken cancellationToken = default);
+    Task<RetailerProductListingItem> CreateManualListingAsync(AuthenticatedUser actor, ManualRetailerListingRequest command, CancellationToken cancellationToken = default);
+    Task<RetailerProductListingItem> UpdateListingAsync(AuthenticatedUser actor, Guid listingId, RetailerListingUpdate command, CancellationToken cancellationToken = default);
+    Task<RetailerProductListingItem> SetListingStatusAsync(AuthenticatedUser actor, Guid listingId, RetailerProductDiscoveryStatus status, CancellationToken cancellationToken = default);
+
     Task<RetailerProductListingItem> RecordAsync(
         RetailerDiscoveryResult result,
         CancellationToken cancellationToken = default);
@@ -595,6 +631,8 @@ public interface IRetailerManagement
 
 public interface IAtlasQueries
 {
+    Task<IReadOnlyList<RecentCatalogueProduct>> RecentProductsAsync(CancellationToken cancellationToken = default);
+
     Task<ProductSummary?> GetProductBySlugAsync(
         string slug,
         CancellationToken cancellationToken = default);
@@ -626,7 +664,9 @@ public interface IAtlasQueries
 
     Task<CatalogueProductDetails?> GetProductDetailsBySlugAsync(
         string slug,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default,
+        Guid? variantId = null,
+        Guid? packTypeId = null);
 
     Task<CatalogueModeratorProductDetails?> GetProductDetailsForModeratorAsync(
         AuthenticatedUser actor,
@@ -919,7 +959,12 @@ public sealed record CatalogueSubmissionReceipt(
     string? SharedConstructionNotes,
     string? Notes,
     DateTimeOffset CreatedAtUtc,
-    DateTimeOffset UpdatedAtUtc);
+    DateTimeOffset UpdatedAtUtc,
+    int? ProposedPackQuantity = null,
+    Guid? ResolvedPackTypeId = null,
+    Guid? SuggestedExistingProductId = null,
+    PendingPhysicalDiscovery? PendingDiscovery = null,
+    Guid? ResultingObservationId = null);
 
 public sealed record UpdateCatalogueSubmissionIdentity(
     string? ProposedGtin,
@@ -1222,6 +1267,13 @@ public interface ICatalogueSubmissions
         Guid variantId,
         CancellationToken cancellationToken = default);
 
+    Task<CatalogueSubmissionSizeVariantReceipt> AddSizeVariantToAllVariantsAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        Guid variantId,
+        AddCatalogueSubmissionSizeVariant command,
+        CancellationToken cancellationToken = default);
+
     Task<CatalogueSubmissionSizeVariantReceipt> AddSizeVariantAsync(
         AuthenticatedUser actor,
         Guid submissionId,
@@ -1364,6 +1416,11 @@ public interface ICatalogueSubmissions
         ReviewCatalogueSubmission command,
         CancellationToken cancellationToken = default);
 
+    Task<CatalogueSubmissionReceipt> ReturnToDraftAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        CancellationToken cancellationToken = default);
+
     Task<CatalogueSubmissionReceipt> ReturnToVerificationAsync(
         AuthenticatedUser actor,
         Guid submissionId,
@@ -1500,6 +1557,14 @@ public interface ICanonicalCatalogue
         Guid productId,
         Guid variantId,
         CreateCanonicalProductSizeManagement command,
+        CancellationToken cancellationToken = default);
+
+    Task AddProductPackAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        Guid variantId,
+        Guid sizeId,
+        CreateCanonicalProductPackManagement command,
         CancellationToken cancellationToken = default);
 
     Task UpdateProductSizeAsync(

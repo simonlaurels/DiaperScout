@@ -1,0 +1,247 @@
+{
+  "requests": [
+    {
+      "id": "B05-AS1-30",
+      "url": "https://diaperscout.app/products/san-premium-1?variantId=37abd32d-9242-4ff8-8e17-038f4288a270&packTypeId=82f67b67-7b22-44a7-8f19-8eb72bad6c18",
+      "product": "ABENA San Premium 1",
+      "size": "1",
+      "count": 30
+    },
+    {
+      "id": "B05-AS1A-28",
+      "url": "https://diaperscout.app/products/san-premium-1a?variantId=32610cfd-a35a-4f2b-9ef0-66c7e60f0d35&packTypeId=0b7a61c9-5e26-4e60-bb31-0550f61ba900",
+      "product": "ABENA San Premium 1A",
+      "size": "1A",
+      "count": 28
+    },
+    {
+      "id": "B05-AS2-30",
+      "url": "https://diaperscout.app/products/san-premium-2?variantId=1418588b-1826-4ddb-ba4e-67f77654bdb0&packTypeId=bf9b2085-6970-4965-a75e-ab88c54584a9",
+      "product": "ABENA San Premium 2",
+      "size": "2",
+      "count": 30
+    },
+    {
+      "id": "B05-AS3-28",
+      "url": "https://diaperscout.app/products/san-premium-3?variantId=bf13f8a9-0d42-48d5-9646-b318c6d40a2b&packTypeId=e46dfa4a-bf1b-4ecd-a52b-46d9efe2a1af",
+      "product": "ABENA San Premium 3",
+      "size": "3",
+      "count": 28
+    },
+    {
+      "id": "B05-AS3A-28",
+      "url": "https://diaperscout.app/products/san-premium-3a?variantId=32fd255d-1ed2-4e80-9c21-fd17726c0ffd&packTypeId=81093cd4-645a-4830-a756-aeaa7bda84e1",
+      "product": "ABENA San Premium 3A",
+      "size": "3A",
+      "count": 28
+    },
+    {
+      "id": "B05-AS4-30",
+      "url": "https://diaperscout.app/products/san-premium-4?variantId=ef5c4c15-5a11-46ef-9519-21aafcf26c92&packTypeId=bf6a5518-047b-4bef-8195-02aa7b20be21",
+      "product": "ABENA San Premium 4",
+      "size": "4",
+      "count": 30
+    },
+    {
+      "id": "B05-AS5-36",
+      "url": "https://diaperscout.app/products/san-premium-5?variantId=3342bd81-d6f7-4236-ba3b-52416157fad3&packTypeId=07d4c59e-2ec1-453f-b40a-aa6caa15b526",
+      "product": "ABENA San Premium 5",
+      "size": "5",
+      "count": 36
+    },
+    {
+      "id": "B05-AS6-34",
+      "url": "https://diaperscout.app/products/san-premium-6?variantId=0702f7d6-7e97-4ddd-a950-cfbf3b865421&packTypeId=0e13acb0-237a-4aba-965e-2efa6c9b1ede",
+      "product": "ABENA San Premium 6",
+      "size": "6",
+      "count": 34
+    },
+    {
+      "id": "B05-AS7-30",
+      "url": "https://diaperscout.app/products/san-premium-7?variantId=1fd562e1-5b0c-45e7-9412-7c47fdb93b71&packTypeId=51b75655-4fd4-447c-a75b-ec3ae6e36d80",
+      "product": "ABENA San Premium 7",
+      "size": "7",
+      "count": 30
+    },
+    {
+      "id": "B05-AS8-22",
+      "url": "https://diaperscout.app/products/san-premium-8?variantId=5e31e0be-fd64-4eb8-af6b-b3f65f0f750f&packTypeId=8e37c5ee-e762-4144-9b72-1c7d52a6eb7d",
+      "product": "ABENA San Premium 8",
+      "size": "8",
+      "count": 22
+    },
+    {
+      "id": "B05-AS9-28",
+      "url": "https://diaperscout.app/products/san-premium-9?variantId=ba79fc7f-ed8e-472c-b358-d68c31cad38c&packTypeId=ab3a5f6a-93ce-48a0-be88-f0ecdd7bbbed",
+      "product": "ABENA San Premium 9",
+      "size": "9",
+      "count": 28
+    },
+    {
+      "id": "B05-AS10-25",
+      "url": "https://diaperscout.app/products/san-premium-10?variantId=dd7f7ede-fe8a-429c-a174-e295594dad72&packTypeId=4feb6c64-4149-49c3-9f25-4e225eef60d0",
+      "product": "ABENA San Premium 10",
+      "size": "10",
+      "count": 25
+    },
+    {
+      "id": "B05-AS11-21",
+      "url": "https://diaperscout.app/products/san-premium-11?variantId=82211f25-5f07-44df-bacb-bd4d3384a450&packTypeId=77be6f92-fe7f-4d1d-be0f-f339763e205b",
+      "product": "ABENA San Premium 11",
+      "size": "11",
+      "count": 21
+    },
+    {
+      "id": "B05-AS7-XXL-26",
+      "url": "https://diaperscout.app/products/san-premium-7-xxl?variantId=e869df9a-d8a0-4de9-81eb-cb4725eb2b21&packTypeId=8f1985a8-1566-44ef-9bf3-765addb00818",
+      "product": "ABENA San Premium 7/XXL",
+      "size": "7/XXL",
+      "count": 26
+    },
+    {
+      "id": "B05-AS11-XXL-16",
+      "url": "https://diaperscout.app/products/san-premium-11-xxl?variantId=78ec5356-597c-4e02-8f69-682a5ab8144b&packTypeId=aece427b-18dc-4b7b-873d-ca1104a946fb",
+      "product": "ABENA San Premium 11/XXL",
+      "size": "11/XXL",
+      "count": 16
+    },
+    {
+      "id": "B06-AS12-16",
+      "url": "https://diaperscout.app/products/san-premium-12?variantId=b51e4c01-d63b-414e-b85a-c2c8e286f8c9&packTypeId=37f7b0ad-a749-45a0-b6ce-57e7ef2795ec",
+      "product": "ABENA San Premium 12",
+      "size": "12",
+      "count": 16
+    }
+  ],
+  "results": [
+    {
+      "id": "B05-AS1-30",
+      "url": "https://diaperscout.app/products/san-premium-1?variantId=37abd32d-9242-4ff8-8e17-038f4288a270&packTypeId=82f67b67-7b22-44a7-8f19-8eb72bad6c18",
+      "status": 200,
+      "title_present": true,
+      "placeholder_present": true,
+      "bag_count_present": true
+    },
+    {
+      "id": "B05-AS1A-28",
+      "url": "https://diaperscout.app/products/san-premium-1a?variantId=32610cfd-a35a-4f2b-9ef0-66c7e60f0d35&packTypeId=0b7a61c9-5e26-4e60-bb31-0550f61ba900",
+      "status": 200,
+      "title_present": true,
+      "placeholder_present": true,
+      "bag_count_present": true
+    },
+    {
+      "id": "B05-AS2-30",
+      "url": "https://diaperscout.app/products/san-premium-2?variantId=1418588b-1826-4ddb-ba4e-67f77654bdb0&packTypeId=bf9b2085-6970-4965-a75e-ab88c54584a9",
+      "status": 200,
+      "title_present": true,
+      "placeholder_present": true,
+      "bag_count_present": true
+    },
+    {
+      "id": "B05-AS3-28",
+      "url": "https://diaperscout.app/products/san-premium-3?variantId=bf13f8a9-0d42-48d5-9646-b318c6d40a2b&packTypeId=e46dfa4a-bf1b-4ecd-a52b-46d9efe2a1af",
+      "status": 200,
+      "title_present": true,
+      "placeholder_present": true,
+      "bag_count_present": true
+    },
+    {
+      "id": "B05-AS3A-28",
+      "url": "https://diaperscout.app/products/san-premium-3a?variantId=32fd255d-1ed2-4e80-9c21-fd17726c0ffd&packTypeId=81093cd4-645a-4830-a756-aeaa7bda84e1",
+      "status": 200,
+      "title_present": true,
+      "placeholder_present": true,
+      "bag_count_present": true
+    },
+    {
+      "id": "B05-AS4-30",
+      "url": "https://diaperscout.app/products/san-premium-4?variantId=ef5c4c15-5a11-46ef-9519-21aafcf26c92&packTypeId=bf6a5518-047b-4bef-8195-02aa7b20be21",
+      "status": 200,
+      "title_present": true,
+      "placeholder_present": true,
+      "bag_count_present": true
+    },
+    {
+      "id": "B05-AS5-36",
+      "url": "https://diaperscout.app/products/san-premium-5?variantId=3342bd81-d6f7-4236-ba3b-52416157fad3&packTypeId=07d4c59e-2ec1-453f-b40a-aa6caa15b526",
+      "status": 200,
+      "title_present": true,
+      "placeholder_present": true,
+      "bag_count_present": true
+    },
+    {
+      "id": "B05-AS6-34",
+      "url": "https://diaperscout.app/products/san-premium-6?variantId=0702f7d6-7e97-4ddd-a950-cfbf3b865421&packTypeId=0e13acb0-237a-4aba-965e-2efa6c9b1ede",
+      "status": 200,
+      "title_present": true,
+      "placeholder_present": true,
+      "bag_count_present": true
+    },
+    {
+      "id": "B05-AS7-30",
+      "url": "https://diaperscout.app/products/san-premium-7?variantId=1fd562e1-5b0c-45e7-9412-7c47fdb93b71&packTypeId=51b75655-4fd4-447c-a75b-ec3ae6e36d80",
+      "status": 200,
+      "title_present": true,
+      "placeholder_present": true,
+      "bag_count_present": true
+    },
+    {
+      "id": "B05-AS8-22",
+      "url": "https://diaperscout.app/products/san-premium-8?variantId=5e31e0be-fd64-4eb8-af6b-b3f65f0f750f&packTypeId=8e37c5ee-e762-4144-9b72-1c7d52a6eb7d",
+      "status": 200,
+      "title_present": true,
+      "placeholder_present": true,
+      "bag_count_present": true
+    },
+    {
+      "id": "B05-AS9-28",
+      "url": "https://diaperscout.app/products/san-premium-9?variantId=ba79fc7f-ed8e-472c-b358-d68c31cad38c&packTypeId=ab3a5f6a-93ce-48a0-be88-f0ecdd7bbbed",
+      "status": 200,
+      "title_present": true,
+      "placeholder_present": true,
+      "bag_count_present": true
+    },
+    {
+      "id": "B05-AS10-25",
+      "url": "https://diaperscout.app/products/san-premium-10?variantId=dd7f7ede-fe8a-429c-a174-e295594dad72&packTypeId=4feb6c64-4149-49c3-9f25-4e225eef60d0",
+      "status": 200,
+      "title_present": true,
+      "placeholder_present": true,
+      "bag_count_present": true
+    },
+    {
+      "id": "B05-AS11-21",
+      "url": "https://diaperscout.app/products/san-premium-11?variantId=82211f25-5f07-44df-bacb-bd4d3384a450&packTypeId=77be6f92-fe7f-4d1d-be0f-f339763e205b",
+      "status": 200,
+      "title_present": true,
+      "placeholder_present": true,
+      "bag_count_present": true
+    },
+    {
+      "id": "B05-AS7-XXL-26",
+      "url": "https://diaperscout.app/products/san-premium-7-xxl?variantId=e869df9a-d8a0-4de9-81eb-cb4725eb2b21&packTypeId=8f1985a8-1566-44ef-9bf3-765addb00818",
+      "status": 200,
+      "title_present": true,
+      "placeholder_present": true,
+      "bag_count_present": true
+    },
+    {
+      "id": "B05-AS11-XXL-16",
+      "url": "https://diaperscout.app/products/san-premium-11-xxl?variantId=78ec5356-597c-4e02-8f69-682a5ab8144b&packTypeId=aece427b-18dc-4b7b-873d-ca1104a946fb",
+      "status": 200,
+      "title_present": true,
+      "placeholder_present": true,
+      "bag_count_present": true
+    },
+    {
+      "id": "B06-AS12-16",
+      "url": "https://diaperscout.app/products/san-premium-12?variantId=b51e4c01-d63b-414e-b85a-c2c8e286f8c9&packTypeId=37f7b0ad-a749-45a0-b6ce-57e7ef2795ec",
+      "status": 200,
+      "title_present": true,
+      "placeholder_present": true,
+      "bag_count_present": true
+    }
+  ],
+  "all_passed": true
+}

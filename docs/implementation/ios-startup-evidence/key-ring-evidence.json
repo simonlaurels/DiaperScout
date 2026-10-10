@@ -1,0 +1,32 @@
+{
+  "observedWebRevision": "diaperscout-web-vnet--pwa-704722c03657",
+  "observedApiRevision": "diaperscout-api-vnet--plugins-fe5e45522a",
+  "apiScaleToZero": "enabled, unchanged",
+  "webKeyFileIdentifiers": {
+    "7k5qq": [
+      "57e1e38b-b6b6-42d7-a71b-d641cdeb8516"
+    ],
+    "j6zr9": [
+      "757dc150-1d1a-43fc-b920-daeaa77e0635"
+    ],
+    "szt44": [
+      "abeb8484-3d12-4bfc-a58b-b8d701ffb137"
+    ]
+  },
+  "keyMaterialRead": false,
+  "sanitizedLogEvidence": {
+    "initial_szt44": {
+      "antiforgeryExceptions": 2,
+      "cryptographicExceptions": 2,
+      "missingKeyInRing": true
+    },
+    "subsequent_7k5qq": {
+      "keyDirectoryNotPersistedWarning": true,
+      "antiforgeryDeserializationFailed": "2026-10-01T11:32:35.079762+00:00",
+      "keyMissingFromRing": "2026-10-01T11:32:35.0797653+00:00"
+    }
+  },
+  "physicalIphoneRootCauseConfirmed": false,
+  "infrastructureChanges": false,
+  "deploymentPerformed": false
+}

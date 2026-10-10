@@ -1,0 +1,53 @@
+{
+  "started": "2026-10-02T22:22:52.578Z",
+  "productionWrites": 0,
+  "physicalIosProven": false,
+  "sessions": [
+    {
+      "engine": "chromium",
+      "width": 390,
+      "height": 844,
+      "errors": [],
+      "failure": "locator.waitFor: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.detail-expanded') to be visible\u001b[22m\n",
+      "passed": false,
+      "ended": "2026-10-02T22:24:57.064Z"
+    },
+    {
+      "engine": "webkit",
+      "width": 430,
+      "height": 932,
+      "errors": [],
+      "geometry": {
+        "videoTop": 0,
+        "videoWidth": 430,
+        "videoBottom": 860,
+        "navTop": 859,
+        "navHeight": 73
+      },
+      "permissionRecovery": true,
+      "contributionPath": "/contribute/product?gtin=96385074",
+      "failure": "locator.waitFor: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('heading', { name: 'Add a Missing Product', exact: true }) to be visible\u001b[22m\n",
+      "passed": false,
+      "ended": "2026-10-02T22:26:30.998Z"
+    },
+    {
+      "engine": "webkit-landscape",
+      "width": 844,
+      "height": 390,
+      "errors": [],
+      "geometry": {
+        "videoTop": 0,
+        "videoWidth": 844,
+        "videoBottom": 318,
+        "navTop": 317,
+        "navHeight": 73
+      },
+      "permissionRecovery": true,
+      "contributionPath": "/contribute/product?gtin=96385074",
+      "failure": "locator.waitFor: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('heading', { name: 'Add a Missing Product', exact: true }) to be visible\u001b[22m\n",
+      "passed": false,
+      "ended": "2026-10-02T22:28:03.933Z"
+    }
+  ],
+  "ended": "2026-10-02T22:28:03.972Z"
+}

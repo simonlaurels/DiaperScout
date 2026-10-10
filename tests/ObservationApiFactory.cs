@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using DiaperScout.Infrastructure;
+using DiaperScout.Commerce.Plugins.Awin;
 using DiaperScout.Infrastructure.Persistence;
 
 namespace DiaperScout.Api.IntegrationTests;
@@ -29,13 +30,7 @@ public sealed class ObservationApiFactory(PostgreSqlFixture fixture) : WebApplic
             // Keep the integration test deterministic while still exercising the real
             // Awin resolver implementation. The publisher ID is test-owned configuration,
             // not a production setting.
-            services.RemoveAll<IAffiliateLinkResolver>();
-            services.AddSingleton<IAffiliateLinkResolver>(_ =>
-                new AwinAffiliateLinkResolver(
-                    Options.Create(new AwinAffiliateProgrammeDiscoveryOptions
-                    {
-                        PublisherId = "999"
-                    })));
+            services.Configure<AwinAffiliateProgrammeDiscoveryOptions>(o => o.PublisherId = "999");
 
             services.RemoveAll<DbContextOptions<DiaperScoutDbContext>>();
             services.RemoveAll<DiaperScoutDbContext>();

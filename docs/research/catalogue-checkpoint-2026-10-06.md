@@ -1,0 +1,17 @@
+# Catalogue checkpoint — 6 October 2026
+
+ABENA manufacturer stop is resolved. The user approved the signed-declaration interpretation and narrow audited reconciliation. All 33 affected products and every attached pack were checked against explicit declaration articles. The read-only preview, transaction rollback, stale-preview, scope guards and idempotent retry passed. Production correction created a separate ABENA A/S legal organisation and changed only the intended product/brand manufacturer relationship, appending 33 audit records. ABENA Produktion A/S remains unchanged and separate, with its supported production/licence-holder provenance retained. All original canonical IDs, slugs, publication states, source evidence and submission/audit history were preserved.
+
+See abena-manufacturer-before-after-preview-2026-10-06.json, abena-manufacturer-reconciliation-receipt-2026-10-06.json and abena-manufacturer-reconciliation-verification-2026-10-06.json. Every one of the 62 existing ABENA public pack pages and barcode lookups passed preservation checks. The current public page layout does not display the manufacturer name; the legal relationship is verified through the canonical inventory.
+
+75 exact packs have now been published by this research project. After reconciliation, three additional Light packs were rebuilt from current canonical state in db34, then Let Maxi bag28 in db35 and Slip Premium M4 bag21 in db36 were published. All five passed exact public page/barcode, idempotent retry and inventory preservation checks. The conflicted db32 was never executed and MUST NOT be run.
+
+Research/publication continues autonomously. ABENA Man current exact article sheets and independent registry/retailer evidence are under review; current Formula 0 and Zero remain distinct. Uncertain legacy revisions and unverified barcodes remain individual research holds. The broad UK + USA discovery set is incomplete; European pack verification does not imply current UK/USA retail availability.
+
+Latest relevant importer/API/reconciliation safety suite: 88 passed, 0 failed, 0 skipped, 1m8s. Manifest tests: 13 passed, 0 failed; validator passed with 2,177 candidates and 75 packs. Operational build: 0 warnings, 0 errors. Earlier broad Python discovery had four inherited Windows/Unix shell-policy environment failures, retained in the ledger; catalogue manifest tests pass. No application deployment, schema migration or ad-hoc production SQL mutation was performed.
+
+Source and research changes remain uncommitted/unpushed. Private inventories and downloaded evidence stay on D:. Synced sources/ files are read-only and untouched.
+
+## New grouping issue identified by the user
+
+Premium Elastic 6 drops and 10 drops were incorrectly published as separate products with Current variants. They must share Premium Elastic as one product with explicit absorbency variants. The read-only concrete preview is premium-elastic-grouping-preview-2026-10-06.json. It recommends retaining the older product identity, both variant IDs and all descendant IDs/history, retaining the original second product as historical identity and preserving old public routes. No grouping mutation has been applied. The Current-only publisher assumption also requires correction. San, Light and Pants absorbency splits are flagged for individual review, not an automatic family-name merge. Production publications are on hold at verified pack75 pending this material grouping reconciliation decision; the ABENA manufacturer stop remains fully resolved.

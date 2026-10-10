@@ -1,0 +1,842 @@
+{
+  "schema": "DiaperScout research manifest v1; NOT an import contract",
+  "research_date": "2026-10-04",
+  "repository_revision": "ce30d408e48403dda493ca5eafc785bc0b70b20b",
+  "discovery_source": {
+    "url": "https://diapstash.com/catalog/",
+    "scope": "Candidate names only; excluded from canonical fact provenance"
+  },
+  "import_allowed": false,
+  "production_changes_allowed": false,
+  "sources": {
+    "H6": {
+      "url": "https://www.hartmann.info/en-gb/products/continence-management/all-in-one/moderate-incontinence/molicare%C2%AE-premium-elastic-6-drops",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "H8": {
+      "url": "https://www.hartmann.info/en-gb/products/continence-management/all-in-one/severe-incontinence/molicare%C2%AE-premium-elastic-8-drops",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "H8US": {
+      "url": "https://www.hartmann.info/en-us/our-products/incontinence-management/briefs/severe-incontinence/molicare-premium-elastic-8d",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "H9": {
+      "url": "https://www.hartmann.info/en-gb/products/continence-management/all-in-one/very-severe-incontinence/molicare%C2%AE-premium-elastic-9-drops",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "H10": {
+      "url": "https://www.hartmann.info/en-gb/products/continence-management/all-in-one/very-severe-incontinence/molicare%C2%AE-premium-elastic-10-drops",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "H10DE": {
+      "url": "https://www.hartmann.info/de-de/produkte/inkontinenzversorgung/inkontinenz-slips/schwerste-inkontinenz/molicare%C2%AE-premium-elastic-10-tropfen",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "HPDF": {
+      "url": "https://www.hartmann.info/-/media/country/website/archive/incontinence/doc/sales-folder-relaunch-mc-premium-elastic-klinik-hires_0865536-018492.pdf?rev=4fdfcf64f3714b8a9e53082b50453d93&sc_lang=de-de",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "R6": {
+      "url": "https://medi-inn.de/products/molicare-premium-elastic-6-tropfen-gr-m-85-120-cm-hueftumfang",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "R9": {
+      "url": "https://www.kiwisto.de/MoliCare-Premium-Elastic-9-Tropfen-Medium-90-120-cm/1655720",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "R10": {
+      "url": "https://www.easycaresolutions.co.uk/molicare-premium-elastic-10-drops-medium-4-packs-of-14/",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "US6": {
+      "url": "https://www.genesishcp.com/products/molicare-premium-elastic-6-drops",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "TPLUS": {
+      "url": "https://www.tena.co.uk/professionals/products/unisex/slip-incontinence-briefs-with-tabs/tena-proskin-slip-plus/",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "TSUPER": {
+      "url": "https://www.tena.co.uk/professionals/products/unisex/slip-incontinence-briefs-with-tabs/tena-proskin-slip-super/",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "TSUPERPL": {
+      "url": "https://www.tena.pl/profesjonalisci/produkty/uniwersalne/tena-protective-underwear-pieluchomajtki-z-rzepami/tena-slip-proskin-super-m-l/",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "RSUPER": {
+      "url": "https://www.123drogisterij.nl/tena-slip-super-medium-1",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "TMAXI": {
+      "url": "https://www.tena.co.uk/professionals/products/unisex/slip-incontinence-briefs-with-tabs/tena-proskin-slip-maxi/",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "RMAXI": {
+      "url": "https://internet-apotheke-freiburg.de/shop/tena-slip-18914864",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "TAF": {
+      "url": "https://www.tena.co.uk/professionals/products/unisex/slip-incontinence-briefs-with-tabs/tena-slip-active-fit-maxi/",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "RAF": {
+      "url": "https://www.kiwisto.de/Tena-Slip-Active-Fit-Maxi-Medium-Windeln-mit-Folie/710949",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "TPANTS": {
+      "url": "https://www.tena.co.uk/professionals/products/unisex/incontinence-pants/tena-proskin-pants-super/",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "RTPANTS": {
+      "url": "https://www.superdrug.com/toiletries/incontinence/incontinence-pants/tena-pants-super-medium/p/618153",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "TFLEX": {
+      "url": "https://www.tena.co.uk/professionals/products/unisex/belted-briefs/tena-flex-maxi-belted-incontinence-briefs/",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "RFLEX": {
+      "url": "https://www.redcare-pharmacie.fr/hygiene-et-sante/BE04105714/tena-flex-maxi-m.htm",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "AM4": {
+      "url": "https://www.abena.co.uk/product-catalogue/incontinence/abena/all-in-one-brief-abri-form-delta-form/briefs-abena-slip-premium/p-9200-pm029458/v-1000021287",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "AM4PDF": {
+      "url": "https://cdn-abena.azureedge.net/assets/Global/Datasheets/en-GB/1000021287_en-GB.pdf",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "AM2": {
+      "url": "https://www.abena.co.uk/product-catalogue/incontinence/abena/pull-up-abri-flex/pants-abena-pants-premium/p-9200-pm029650/v-1000021323",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "AM2PDF": {
+      "url": "https://cdn-abena.azureedge.net/assets/Global/Datasheets/en-GB/1000021323_en-GB.pdf",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "AM3": {
+      "url": "https://www.abena.co.uk/product-catalogue/incontinence/abena/pull-up-abri-flex/pants-abena-pants-premium/p-9200-pm029650/v-1000021324",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "AM3PDF": {
+      "url": "https://cdn-abena.azureedge.net/assets/Global/Datasheets/en-GB/1000021324_en-GB.pdf",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "RAM4": {
+      "url": "https://www.houseofnappies.com.au/abena-slip-premium-m4-medium-waist-70-110cm-unisex",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "RAM2": {
+      "url": "https://www.123drogisterij.nl/abena-pants-m2",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "RAM3": {
+      "url": "https://www.hygi.de/abena-pants-m3-premium-1-packung-15-stueck-pd-217213",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "ARENAME": {
+      "url": "https://www.abenaprivat.dk/viden/ny-emballage",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "SP": {
+      "url": "https://en.seni-global.com/en/product/seni-super-plus-en",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "SPUS": {
+      "url": "https://seni-usa.com/en_US/product/seni-super-plus-briefs",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "RSP": {
+      "url": "https://www.proficleanshop.de/seni-super-plus-gr-m-inkontinenzslip-mit-klebeklettverschluessen-1-beutel-30-stueck",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "SQ": {
+      "url": "https://seni.pl/pl/produkt/seni-super-quatro",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "RSQ": {
+      "url": "https://www.1plushygiene.de/de/seni-super-quatro-medium/14064.html",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "SA": {
+      "url": "https://en.seni-global.com/en/product/seni-active-super-en",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "RSA": {
+      "url": "https://www.dryonline.de/seni-active-super-pants-medium",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "A8": {
+      "url": "https://shop.attends.co.uk/shop/pull-ons-8-medium",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "RA8": {
+      "url": "https://www.redcare-pharmacie.fr/hygiene-et-sante/BE03130978/attends-pull-ons-8-medium.htm",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "AT": {
+      "url": "https://www.attends.co.uk/terms-and-services",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "RA10": {
+      "url": "https://sana.swiss/en/attends-slip-regular-3148",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "NS": {
+      "url": "https://www.northshorecare.com/adult-diapers/adult-diapers-with-tabs/northshore-supreme-tab-style-briefs",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "RNS": {
+      "url": "https://medistoreweb.com/products/northshore-supreme-incontinence-tab-style-briefs-for-men-and-women-white-medium-pack-15",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "ZNS": {
+      "url": "https://www.zoro.com/northshore-supreme-briefs-60pk-1231/i/G010914295/",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "NG": {
+      "url": "https://www.northshorecare.com/adult-diapers/adult-pull-ups/gosupreme-product-line",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    },
+    "NG8": {
+      "url": "https://www.northshorecare.com/adult-diapers/adult-pull-ups/northshore-gosupreme-pull-on-underwear",
+      "access_date": "2026-10-04",
+      "inspection_method": "See report source register; opened pages may be cached"
+    }
+  },
+  "candidates": [
+    {
+      "id": "C01",
+      "name": "TENA ProSkin Slip Plus",
+      "outcome": "NEEDS RESEARCH",
+      "blocker": "Exact current UK M/30 revision GTIN not verified",
+      "evidence_source_ids": [
+        "TPLUS"
+      ],
+      "production_change_allowed": false
+    },
+    {
+      "id": "C02",
+      "name": "TENA ProSkin Slip Super",
+      "outcome": "CONFLICT",
+      "blocker": "70-122 versus 73-122 cm hip fit for same article/EAN",
+      "evidence_source_ids": [
+        "TSUPER",
+        "TSUPERPL",
+        "RSUPER"
+      ],
+      "production_change_allowed": false
+    },
+    {
+      "id": "C03",
+      "name": "TENA ProSkin Slip Maxi",
+      "outcome": "NEEDS RESEARCH",
+      "blocker": "Exact current UK M/24 barcode evidence not directly verified",
+      "evidence_source_ids": [
+        "TMAXI",
+        "RMAXI"
+      ],
+      "production_change_allowed": false
+    },
+    {
+      "id": "C04",
+      "name": "TENA Slip Active Fit Maxi",
+      "outcome": "NEEDS RESEARCH",
+      "blocker": "Capacity/revision leads require current manufacturer technical verification",
+      "evidence_source_ids": [
+        "TAF",
+        "RAF"
+      ],
+      "production_change_allowed": false
+    },
+    {
+      "id": "C05",
+      "name": "TENA ProSkin Pants Super",
+      "outcome": "NEEDS RESEARCH",
+      "blocker": "Current UK article 793565/12 identifier unresolved",
+      "evidence_source_ids": [
+        "TPANTS",
+        "RTPANTS"
+      ],
+      "production_change_allowed": false
+    },
+    {
+      "id": "C06",
+      "name": "TENA ProSkin Flex Maxi",
+      "outcome": "CONFLICT",
+      "blocker": "Manufacturer waist/hooks versus retailer hips/adhesive wording",
+      "evidence_source_ids": [
+        "TFLEX",
+        "RFLEX"
+      ],
+      "production_change_allowed": false
+    },
+    {
+      "id": "C07",
+      "name": "MoliCare Premium Elastic 6 drops",
+      "outcome": "READY",
+      "blocker": null,
+      "evidence_source_ids": [
+        "H6",
+        "HPDF",
+        "R6"
+      ],
+      "production_change_allowed": false,
+      "selected_pack_proposal": {
+        "manufacturer": "PAUL HARTMANN AG",
+        "brand": "MoliCare",
+        "family": "Premium Elastic",
+        "product": "Premium Elastic 6 drops",
+        "product_type": "Tape",
+        "size": "Medium",
+        "measurement_basis": "hip",
+        "minimum_cm": 85,
+        "maximum_cm": 120,
+        "count": 30,
+        "gtin": "4052199297002",
+        "article": "165272",
+        "markets": [
+          "UK manufacturer",
+          "DE retailer"
+        ],
+        "spec_sources": [
+          "H6",
+          "HPDF"
+        ],
+        "image_source": "H6",
+        "identifier_sources": [
+          "H6",
+          "HPDF",
+          "R6"
+        ],
+        "manufacturer_absorbency_ml": null,
+        "packaging_type": "Bag",
+        "barcode_format": "GTIN-13 (source EAN designation; printed symbol not decoded)",
+        "proposed_variant": "One ordinary required variant; editorial display label not yet assigned",
+        "variant_scope": "No manufacturer-defined alternate variant established for this selected product",
+        "image_permission_status": "Unknown",
+        "image_copied": false,
+        "public_gtin_lookup": "No match found on2026-10-04",
+        "hidden_record_duplicate_check": "Required before import",
+        "publish_allowed": false
+      }
+    },
+    {
+      "id": "C08",
+      "name": "MoliCare Premium Elastic 8 drops",
+      "outcome": "CONFLICT",
+      "blocker": "Same Medium EAN assigned UK bag26 and US bag78",
+      "evidence_source_ids": [
+        "H8",
+        "H8US",
+        "HPDF"
+      ],
+      "production_change_allowed": false
+    },
+    {
+      "id": "C09",
+      "name": "MoliCare Premium Elastic 9 drops",
+      "outcome": "CONFLICT",
+      "blocker": "Medium hip lower limit 85 versus90 cm",
+      "evidence_source_ids": [
+        "H9",
+        "HPDF",
+        "R9"
+      ],
+      "production_change_allowed": false
+    },
+    {
+      "id": "C10",
+      "name": "MoliCare Premium Elastic 10 drops",
+      "outcome": "READY",
+      "blocker": null,
+      "evidence_source_ids": [
+        "H10",
+        "H10DE",
+        "HPDF",
+        "R10"
+      ],
+      "production_change_allowed": false,
+      "selected_pack_proposal": {
+        "manufacturer": "PAUL HARTMANN AG",
+        "brand": "MoliCare",
+        "family": "Premium Elastic",
+        "product": "Premium Elastic 10 drops",
+        "product_type": "Tape",
+        "size": "Medium",
+        "measurement_basis": "hip",
+        "minimum_cm": 85,
+        "maximum_cm": 120,
+        "count": 14,
+        "gtin": "4052199303413",
+        "article": "165672",
+        "markets": [
+          "UK manufacturer and case retailer",
+          "DE manufacturer"
+        ],
+        "spec_sources": [
+          "H10",
+          "H10DE",
+          "HPDF"
+        ],
+        "image_source": "H10",
+        "identifier_sources": [
+          "H10",
+          "H10DE",
+          "HPDF"
+        ],
+        "manufacturer_absorbency_ml": null,
+        "packaging_type": "Bag",
+        "barcode_format": "GTIN-13 (source EAN designation; printed symbol not decoded)",
+        "proposed_variant": "One ordinary required variant; editorial display label not yet assigned",
+        "variant_scope": "No manufacturer-defined alternate variant established for this selected product",
+        "image_permission_status": "Unknown",
+        "image_copied": false,
+        "public_gtin_lookup": "No match found on2026-10-04",
+        "hidden_record_duplicate_check": "Required before import",
+        "publish_allowed": false
+      }
+    },
+    {
+      "id": "C11",
+      "name": "ABENA Slip Premium level4",
+      "outcome": "CONFLICT",
+      "blocker": "Manufacturer tab brief versus retailer pull-up description",
+      "evidence_source_ids": [
+        "AM4",
+        "AM4PDF",
+        "RAM4"
+      ],
+      "production_change_allowed": false
+    },
+    {
+      "id": "C12",
+      "name": "ABENA Pants Premium level2",
+      "outcome": "CONFLICT",
+      "blocker": "Manufacturer Rothwell1900 versus retailer structured1800 ml",
+      "evidence_source_ids": [
+        "AM2",
+        "AM2PDF",
+        "RAM2"
+      ],
+      "production_change_allowed": false
+    },
+    {
+      "id": "C13",
+      "name": "ABENA Pants Premium level3",
+      "outcome": "CONFLICT",
+      "blocker": "Manufacturer M3 bag EAN differs from retailer M3 EAN",
+      "evidence_source_ids": [
+        "AM3",
+        "AM3PDF",
+        "RAM3"
+      ],
+      "production_change_allowed": false
+    },
+    {
+      "id": "C14",
+      "name": "Seni Super Plus",
+      "outcome": "NEEDS RESEARCH",
+      "blocker": "Retail unit bag30 versus sales unit three bags unresolved",
+      "evidence_source_ids": [
+        "SP",
+        "SPUS",
+        "RSP"
+      ],
+      "production_change_allowed": false
+    },
+    {
+      "id": "C15",
+      "name": "Seni Super Quatro",
+      "outcome": "CONFLICT",
+      "blocker": "Manufacturer Medium75-110 versus retailer80-110 cm",
+      "evidence_source_ids": [
+        "SQ",
+        "RSQ"
+      ],
+      "production_change_allowed": false
+    },
+    {
+      "id": "C16",
+      "name": "Seni Active Super",
+      "outcome": "READY",
+      "blocker": null,
+      "evidence_source_ids": [
+        "SA",
+        "RSA"
+      ],
+      "production_change_allowed": false,
+      "selected_pack_proposal": {
+        "manufacturer": "TZMO SA",
+        "brand": "Seni",
+        "family": "Active",
+        "product": "Active Super",
+        "product_type": "PullUp",
+        "size": "Medium",
+        "measurement_basis": "waist/hip as published",
+        "minimum_cm": 80,
+        "maximum_cm": 110,
+        "count": 10,
+        "gtin": "5900516695750",
+        "article": null,
+        "markets": [
+          "European manufacturer",
+          "DE retailer"
+        ],
+        "spec_sources": [
+          "SA"
+        ],
+        "image_source": "SA",
+        "identifier_sources": [
+          "RSA"
+        ],
+        "manufacturer_absorbency_ml": null,
+        "packaging_type": "Bag",
+        "barcode_format": "GTIN-13 (source EAN designation; printed symbol not decoded)",
+        "proposed_variant": "One ordinary required variant; editorial display label not yet assigned",
+        "variant_scope": "No manufacturer-defined alternate variant established for this selected product",
+        "image_permission_status": "Unknown",
+        "image_copied": false,
+        "public_gtin_lookup": "No match found on2026-10-04",
+        "hidden_record_duplicate_check": "Required before import",
+        "publish_allowed": false
+      }
+    },
+    {
+      "id": "C17",
+      "name": "Attends Slip Regular10",
+      "outcome": "NEEDS RESEARCH",
+      "blocker": "Current Medium bag/case EAN and Regular/AirComfort identity unverified",
+      "evidence_source_ids": [
+        "RA10"
+      ],
+      "production_change_allowed": false
+    },
+    {
+      "id": "C18",
+      "name": "Attends Pull-Ons8",
+      "outcome": "READY",
+      "blocker": null,
+      "evidence_source_ids": [
+        "A8",
+        "RA8",
+        "AT"
+      ],
+      "production_change_allowed": false,
+      "selected_pack_proposal": {
+        "manufacturer": "Attends",
+        "brand": "Attends",
+        "family": "Pull-Ons",
+        "product": "Pull-Ons 8",
+        "product_type": "PullUp",
+        "size": "Medium",
+        "measurement_basis": "waist",
+        "minimum_cm": 80,
+        "maximum_cm": 110,
+        "count": 16,
+        "gtin": "7332152207383",
+        "article": "207406",
+        "markets": [
+          "UK manufacturer shop",
+          "FR retailer unavailable"
+        ],
+        "spec_sources": [
+          "A8"
+        ],
+        "image_source": "A8",
+        "identifier_sources": [
+          "RA8"
+        ],
+        "manufacturer_absorbency_ml": null,
+        "packaging_type": "Bag",
+        "barcode_format": "GTIN-13 (source EAN designation; printed symbol not decoded)",
+        "proposed_variant": "One ordinary required variant; editorial display label not yet assigned",
+        "variant_scope": "No manufacturer-defined alternate variant established for this selected product",
+        "image_permission_status": "Unknown",
+        "image_copied": false,
+        "public_gtin_lookup": "No match found on2026-10-04",
+        "hidden_record_duplicate_check": "Required before import",
+        "publish_allowed": false
+      }
+    },
+    {
+      "id": "C19",
+      "name": "NorthShore Supreme",
+      "outcome": "NEEDS RESEARCH",
+      "blocker": "Current exact colour/size/bag/case UPC unverified",
+      "evidence_source_ids": [
+        "NS",
+        "RNS",
+        "ZNS"
+      ],
+      "production_change_allowed": false
+    },
+    {
+      "id": "C20",
+      "name": "NorthShore GoSupreme",
+      "outcome": "NEEDS RESEARCH",
+      "blocker": "Exact selected product/colour/size/count/GTIN unresolved",
+      "evidence_source_ids": [
+        "NG",
+        "NG8"
+      ],
+      "production_change_allowed": false
+    }
+  ],
+  "identifier_evidence": [
+    {
+      "candidate_id": "C07",
+      "unit_scope": "Medium bag30",
+      "gtin": "4052199297002",
+      "source_ids": [
+        "H6",
+        "HPDF",
+        "R6"
+      ],
+      "import_allowed": false
+    },
+    {
+      "candidate_id": "C07",
+      "unit_scope": "Medium case3x30",
+      "gtin": "4052199297019",
+      "source_ids": [
+        "HPDF"
+      ],
+      "import_allowed": false
+    },
+    {
+      "candidate_id": "C10",
+      "unit_scope": "Medium bag14",
+      "gtin": "4052199303413",
+      "source_ids": [
+        "H10",
+        "H10DE",
+        "HPDF"
+      ],
+      "import_allowed": false
+    },
+    {
+      "candidate_id": "C10",
+      "unit_scope": "Medium case4x14",
+      "gtin": "4052199301556",
+      "source_ids": [
+        "HPDF",
+        "R10"
+      ],
+      "import_allowed": false
+    },
+    {
+      "candidate_id": "C16",
+      "unit_scope": "Medium pack10",
+      "gtin": "5900516695750",
+      "source_ids": [
+        "RSA"
+      ],
+      "import_allowed": false
+    },
+    {
+      "candidate_id": "C18",
+      "unit_scope": "Medium bag16",
+      "gtin": "7332152207383",
+      "source_ids": [
+        "RA8"
+      ],
+      "import_allowed": false
+    },
+    {
+      "candidate_id": "C02",
+      "unit_scope": "Medium bag30; fit disputed",
+      "gtin": "7322541802268",
+      "source_ids": [
+        "TSUPERPL",
+        "RSUPER"
+      ],
+      "import_allowed": false
+    },
+    {
+      "candidate_id": "C06",
+      "unit_scope": "Medium pack22; fit basis/fastener disputed",
+      "gtin": "7322541407432",
+      "source_ids": [
+        "RFLEX"
+      ],
+      "import_allowed": false
+    },
+    {
+      "candidate_id": "C08",
+      "unit_scope": "Medium bag26 versus US78 disputed",
+      "gtin": "4052199297248",
+      "source_ids": [
+        "HPDF",
+        "H8US"
+      ],
+      "import_allowed": false
+    },
+    {
+      "candidate_id": "C09",
+      "unit_scope": "Medium bag26; fit disputed",
+      "gtin": "4052199297309",
+      "source_ids": [
+        "HPDF",
+        "H9",
+        "R9"
+      ],
+      "import_allowed": false
+    },
+    {
+      "candidate_id": "C11",
+      "unit_scope": "M4 bag21; retail style disputed",
+      "gtin": "5713571000168",
+      "source_ids": [
+        "AM4PDF",
+        "RAM4"
+      ],
+      "import_allowed": false
+    },
+    {
+      "candidate_id": "C11",
+      "unit_scope": "M4 carton4x21",
+      "gtin": "5713571000175",
+      "source_ids": [
+        "AM4PDF"
+      ],
+      "import_allowed": false
+    },
+    {
+      "candidate_id": "C12",
+      "unit_scope": "M2 bag15; capacity disputed",
+      "gtin": "5713571000885",
+      "source_ids": [
+        "AM2PDF",
+        "RAM2"
+      ],
+      "import_allowed": false
+    },
+    {
+      "candidate_id": "C12",
+      "unit_scope": "M2 carton6x15",
+      "gtin": "5713571000892",
+      "source_ids": [
+        "AM2PDF"
+      ],
+      "import_allowed": false
+    },
+    {
+      "candidate_id": "C13",
+      "unit_scope": "M3 bag15; retail identifier disputed",
+      "gtin": "5713571000908",
+      "source_ids": [
+        "AM3PDF"
+      ],
+      "import_allowed": false
+    },
+    {
+      "candidate_id": "C13",
+      "unit_scope": "M3 carton6x15",
+      "gtin": "5713571000915",
+      "source_ids": [
+        "AM3PDF"
+      ],
+      "import_allowed": false
+    },
+    {
+      "candidate_id": "C13",
+      "unit_scope": "Retail claim on M3 page; no exact pack assigned",
+      "gtin": "5713571000847",
+      "source_ids": [
+        "RAM3"
+      ],
+      "import_allowed": false
+    },
+    {
+      "candidate_id": "C15",
+      "unit_scope": "Medium pack10; fit/revision disputed",
+      "gtin": "5900516803391",
+      "source_ids": [
+        "RSQ"
+      ],
+      "import_allowed": false
+    }
+  ],
+  "existing_product_matches": [
+    {
+      "product": "NorthShore MEGAMAX",
+      "outcome": "DUPLICATE / ALREADY COVERED",
+      "scope": "Public product and six colour variants; exhaustive identifier coverage not asserted"
+    },
+    {
+      "product": "Crinklz Original",
+      "outcome": "DUPLICATE / ALREADY COVERED",
+      "scope": "Public product/sizes; exhaustive identifier coverage not asserted"
+    }
+  ],
+  "unverifiable_gtin_priority": [
+    "C01",
+    "C03",
+    "C05",
+    "C17",
+    "C19",
+    "C20"
+  ],
+  "validation": {
+    "status": "Passed",
+    "checks": 185,
+    "ready_count": 4,
+    "needs_research_count": 8,
+    "conflict_count": 8,
+    "verified_ledger_identifiers": 18,
+    "source_references": 49,
+    "application_tests": "Not run: research documents only"
+  }
+}

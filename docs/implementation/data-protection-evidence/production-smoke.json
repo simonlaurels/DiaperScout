@@ -1,0 +1,284 @@
+{
+  "pages": [
+    {
+      "engine": "webkit",
+      "standalone": false,
+      "path": "/",
+      "errors": [],
+      "transport": [],
+      "status": 200,
+      "state": {
+        "ready": "ready",
+        "cover": "none",
+        "error": "none",
+        "controller": true
+      },
+      "nav": [
+        "Explore",
+        "Products",
+        "Scan",
+        "Atlas",
+        "Backpack"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "standalone": false,
+      "path": "/products",
+      "errors": [],
+      "transport": [],
+      "status": 200,
+      "state": {
+        "ready": "ready",
+        "cover": "none",
+        "error": "none",
+        "controller": true
+      }
+    },
+    {
+      "engine": "webkit",
+      "standalone": false,
+      "path": "/scan",
+      "errors": [],
+      "transport": [],
+      "status": 200,
+      "state": {
+        "ready": "ready",
+        "cover": "none",
+        "error": "none",
+        "controller": true
+      }
+    },
+    {
+      "engine": "webkit",
+      "standalone": false,
+      "path": "/signin",
+      "errors": [],
+      "transport": [],
+      "status": 200,
+      "state": {
+        "ready": "ready",
+        "cover": "none",
+        "error": "none",
+        "controller": true
+      },
+      "passkeyButtons": 1
+    },
+    {
+      "engine": "webkit",
+      "standalone": true,
+      "path": "/",
+      "errors": [],
+      "transport": [],
+      "status": 200,
+      "state": {
+        "ready": "ready",
+        "cover": "none",
+        "error": "none",
+        "controller": true
+      },
+      "nav": [
+        "Explore",
+        "Products",
+        "Scan",
+        "Atlas",
+        "Backpack"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "standalone": true,
+      "path": "/products",
+      "errors": [],
+      "transport": [],
+      "status": 200,
+      "state": {
+        "ready": "ready",
+        "cover": "none",
+        "error": "none",
+        "controller": true
+      }
+    },
+    {
+      "engine": "webkit",
+      "standalone": true,
+      "path": "/scan",
+      "errors": [],
+      "transport": [],
+      "status": 200,
+      "state": {
+        "ready": "ready",
+        "cover": "none",
+        "error": "none",
+        "controller": true
+      }
+    },
+    {
+      "engine": "webkit",
+      "standalone": true,
+      "path": "/signin",
+      "errors": [],
+      "transport": [],
+      "status": 200,
+      "state": {
+        "ready": "ready",
+        "cover": "none",
+        "error": "none",
+        "controller": true
+      },
+      "passkeyButtons": 1
+    },
+    {
+      "engine": "chromium",
+      "standalone": false,
+      "path": "/",
+      "errors": [],
+      "transport": [],
+      "status": 200,
+      "state": {
+        "ready": "ready",
+        "cover": "none",
+        "error": "none",
+        "controller": true
+      },
+      "nav": [
+        "Explore",
+        "Products",
+        "Scan",
+        "Atlas",
+        "Backpack"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "standalone": false,
+      "path": "/products",
+      "errors": [],
+      "transport": [],
+      "status": 200,
+      "state": {
+        "ready": "ready",
+        "cover": "none",
+        "error": "none",
+        "controller": true
+      }
+    },
+    {
+      "engine": "chromium",
+      "standalone": false,
+      "path": "/scan",
+      "errors": [],
+      "transport": [],
+      "status": 200,
+      "state": {
+        "ready": "ready",
+        "cover": "none",
+        "error": "none",
+        "controller": true
+      }
+    },
+    {
+      "engine": "chromium",
+      "standalone": false,
+      "path": "/signin",
+      "errors": [],
+      "transport": [],
+      "status": 200,
+      "state": {
+        "ready": "ready",
+        "cover": "none",
+        "error": "none",
+        "controller": true
+      },
+      "passkeyButtons": 1
+    },
+    {
+      "engine": "chromium",
+      "standalone": true,
+      "path": "/",
+      "errors": [],
+      "transport": [],
+      "status": 200,
+      "state": {
+        "ready": "ready",
+        "cover": "none",
+        "error": "none",
+        "controller": true
+      },
+      "nav": [
+        "Explore",
+        "Products",
+        "Scan",
+        "Atlas",
+        "Backpack"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "standalone": true,
+      "path": "/products",
+      "errors": [],
+      "transport": [],
+      "status": 200,
+      "state": {
+        "ready": "ready",
+        "cover": "none",
+        "error": "none",
+        "controller": true
+      }
+    },
+    {
+      "engine": "chromium",
+      "standalone": true,
+      "path": "/scan",
+      "errors": [],
+      "transport": [],
+      "status": 200,
+      "state": {
+        "ready": "ready",
+        "cover": "none",
+        "error": "none",
+        "controller": true
+      }
+    },
+    {
+      "engine": "chromium",
+      "standalone": true,
+      "path": "/signin",
+      "errors": [],
+      "transport": [],
+      "status": 200,
+      "state": {
+        "ready": "ready",
+        "cover": "none",
+        "error": "none",
+        "controller": true
+      },
+      "passkeyButtons": 1
+    }
+  ],
+  "descriptorKeyIds": [
+    "3ab78896-4823-4ed8-bca6-8809146fbb0b",
+    "3ab78896-4823-4ed8-bca6-8809146fbb0b",
+    "3ab78896-4823-4ed8-bca6-8809146fbb0b",
+    "3ab78896-4823-4ed8-bca6-8809146fbb0b",
+    "3ab78896-4823-4ed8-bca6-8809146fbb0b",
+    "3ab78896-4823-4ed8-bca6-8809146fbb0b",
+    "3ab78896-4823-4ed8-bca6-8809146fbb0b",
+    "3ab78896-4823-4ed8-bca6-8809146fbb0b",
+    "3ab78896-4823-4ed8-bca6-8809146fbb0b",
+    "3ab78896-4823-4ed8-bca6-8809146fbb0b",
+    "3ab78896-4823-4ed8-bca6-8809146fbb0b",
+    "3ab78896-4823-4ed8-bca6-8809146fbb0b"
+  ],
+  "checks": [
+    {
+      "name": "all browser and simulated standalone pages ready without error UI",
+      "passed": true
+    },
+    {
+      "name": "fresh SSR descriptors use verified shared key",
+      "passed": true
+    }
+  ]
+}

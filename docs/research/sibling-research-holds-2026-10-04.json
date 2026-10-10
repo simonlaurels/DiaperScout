@@ -1,0 +1,163 @@
+{
+  "research_date": "2026-10-04",
+  "status": "IN_PROGRESS",
+  "import_allowed": false,
+  "publish_allowed": false,
+  "notes": "These are research leads, not import records. Identifiers are recorded only where explicitly observed; source conflicts remain unresolved.",
+  "leads": [
+    {
+      "product": "Seni Active Super",
+      "size": "Small",
+      "count": 10,
+      "gtin": "5900516695743",
+      "outcome": "CONFLICT",
+      "blocker": "Same GTIN is advertised as Active Classic on Healthstore despite Super URL; manufacturer revision/name equivalence not established.",
+      "sources": [
+        "https://en.seni-global.com/en/product/seni-active-super-en",
+        "https://idc-pharma.com/seni-active-super-s-sac-a10/",
+        "https://healthstore.lv/en/catalog/goods-for-care/adult-diapers/panties/seni_active_super_s_bikstes_10_gab/"
+      ]
+    },
+    {
+      "product": "MoliCare Premium Elastic 10 drops",
+      "size": "X-Large",
+      "count": 14,
+      "gtin": "4052199301723",
+      "outcome": "CONFLICT",
+      "blocker": "Manufacturer and BENU fit 140–175 cm versus Shop Apotheke 150–175 cm for same identifier; do not silently select a range.",
+      "sources": [
+        "https://www.hartmann.info/en-gb/products/continence-management/all-in-one/very-severe-incontinence/molicare%C2%AE-premium-elastic-10-drops",
+        "https://www.hartmann.info/-/media/country/website/archive/incontinence/doc/sales-folder-relaunch-mc-premium-elastic-klinik-hires_0865536-018492.pdf?rev=4fdfcf64f3714b8a9e53082b50453d93&sc_lang=de-de"
+      ]
+    },
+    {
+      "product": "MoliCare Premium Elastic 10 drops",
+      "size": "Small",
+      "count": 22,
+      "gtin": "4052199303468",
+      "outcome": "NEEDS RESEARCH",
+      "blocker": "Primary explicit article/GTIN/count verified; independent exact pack corroboration required.",
+      "sources": [
+        "https://www.hartmann.info/en-gb/products/continence-management/all-in-one/very-severe-incontinence/molicare%C2%AE-premium-elastic-10-drops",
+        "https://www.hartmann.info/-/media/country/website/archive/incontinence/doc/sales-folder-relaunch-mc-premium-elastic-klinik-hires_0865536-018492.pdf?rev=4fdfcf64f3714b8a9e53082b50453d93&sc_lang=de-de"
+      ]
+    },
+    {
+      "product": "MoliCare Premium Elastic 10 drops",
+      "size": "Large",
+      "count": 14,
+      "gtin": "4052199301679",
+      "outcome": "NEEDS RESEARCH",
+      "blocker": "Retail carton 4×14 uses individual bag EAN; isolate sealed-bag identity and independent current market evidence before publication.",
+      "sources": [
+        "https://www.hartmann.info/en-gb/products/continence-management/all-in-one/very-severe-incontinence/molicare%C2%AE-premium-elastic-10-drops",
+        "https://www.hartmann.info/-/media/country/website/archive/incontinence/doc/sales-folder-relaunch-mc-premium-elastic-klinik-hires_0865536-018492.pdf?rev=4fdfcf64f3714b8a9e53082b50453d93&sc_lang=de-de"
+      ]
+    },
+    {
+      "product": "MoliCare Premium Elastic 6 drops",
+      "size": "Small",
+      "count": 30,
+      "gtin": "4052199296975",
+      "outcome": "NEEDS RESEARCH",
+      "blocker": "Primary small 70–90 cm; one retail source mislabels same identifier Medium. Preserve contradiction and establish revision/retail correction before clearance.",
+      "sources": [
+        "https://www.hartmann.info/de-de/produkte/inkontinenzversorgung/inkontinenz-slips/mittlere-inkontinenz/molicare%C2%AE-premium-elastic-6-tropfen",
+        "https://www.hartmann.info/-/media/country/website/archive/incontinence/doc/sales-folder-relaunch-mc-premium-elastic-klinik-hires_0865536-018492.pdf?rev=4fdfcf64f3714b8a9e53082b50453d93&sc_lang=de-de"
+      ]
+    },
+    {
+      "product": "Attends Pull-Ons 8",
+      "size": "Medium",
+      "count": 64,
+      "gtin": "7332152207406",
+      "outcome": "NEEDS RESEARCH",
+      "blocker": "Case of four bags of 16, not bag GTIN. Existing bag16 must not receive case identifier. Case/inner-pack domain path requires separate review.",
+      "sources": [
+        "https://www.citycare24.de/attends-pull-ons-8-m-ve?btgsterne=5"
+      ]
+    },
+    {
+      "product": "ABENA Pants Premium level0",
+      "size": "Large",
+      "count": 15,
+      "gtin": "5713571000847",
+      "outcome": "CONFLICT",
+      "blocker": "Authoritative registry names L0 bag15, but hygi.de assigns this exact GTIN to M3 article1000021324; exact regional/revision identity conflict remains unresolved.",
+      "sources": [
+        "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+        "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-l0-premium-15-pcs-154698",
+        "https://www.hygi.de/abena-pants-m3-premium-1-packung-15-stueck-pd-217213"
+      ],
+      "import_allowed": false,
+      "publish_allowed": false,
+      "research_date": "2026-10-04"
+    },
+    {
+      "product": "ABENA Pants Premium level1",
+      "size": "X-Large",
+      "count": 16,
+      "gtin": "5713571000984",
+      "outcome": "CONFLICT",
+      "blocker": "Registry and primary 2025 catalogue identify XL1 bag16, while Plusmed and CaliSante give14 under same GTIN. Current packaging/revision equivalence unproven.",
+      "sources": [
+        "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+        "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-xl1-16-pcs-109932",
+        "https://calisante.fr/collections/gamme-complete/products/abena-pants-xl1",
+        "https://www.plusmed.gr/panes-brakaki-akratias-enilikes/3775-pana-vrakaki-akrateias-abena-pants-premium-xl1-5713571000984.html"
+      ],
+      "import_allowed": false,
+      "publish_allowed": false,
+      "research_date": "2026-10-04"
+    },
+    {
+      "product": "ABENA Pants Premium level3",
+      "size": "X-Large",
+      "count": 16,
+      "gtin": "5713571001028",
+      "outcome": "CONFLICT",
+      "blocker": "Primary 2025 article1000021330 hip130–170 cm conflicts with AVB exact-GTIN waist120–160 cm. Material fit/basis/revision discrepancy unresolved.",
+      "sources": [
+        "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+        "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-xl3-16-pcs-109933",
+        "https://avb-care.fr/en/incontinence-protection/63-abena-pants-premium-xl3-absorbent-underwear-5713571001028.html"
+      ],
+      "import_allowed": false,
+      "publish_allowed": false,
+      "research_date": "2026-10-04"
+    },
+    {
+      "product": "ABENA Pants Premium Light",
+      "size": "Large",
+      "count": 15,
+      "gtin": "5713571001066",
+      "outcome": "CONFLICT",
+      "blocker": "Primary 2025 and registry LightLarge15 versus Med24 sameGTIN advertised PantsL0 14; cannot prove legacy name/count revision equivalence.",
+      "sources": [
+        "https://www.abena.com/-/media/Project/B2B/Abena-COM/Business-Areas/ABENA-Healthcare-Catalog-2025.pdf",
+        "https://svanemerket.no/miljomerkede-produkter/produkt/abena-pants-light-large-15-pcs-117357",
+        "https://www.med24.se/haelsa-och-medicin/inkontinens-skydd/vuxenbloejor/abena-pants-l0-14-st"
+      ],
+      "import_allowed": false,
+      "publish_allowed": false,
+      "research_date": "2026-10-04"
+    },
+    {
+      "product": "MoliCare Premium Elastic 6 drops",
+      "size": "Medium",
+      "count": 90,
+      "gtin": "4052199297019",
+      "packaging_type": "Case",
+      "outcome": "CONFLICT",
+      "blocker": "Primary article165272 and Inkosafe hip85–120 cm versus Mediq exact-case GTIN hip80–120 cm. Case barcode never assigned to bag30.",
+      "sources": [
+        "https://www.hartmann.info/-/media/country/website/archive/incontinence/doc/sales-folder-relaunch-mc-premium-elastic-klinik-hires_0865536-018492.pdf?rev=4fdfcf64f3714b8a9e53082b50453d93&sc_lang=de-de",
+        "https://www.inkosafe.de/molicare-premium-elastic-6-tropfen-gr-m-1652721.html",
+        "https://mediq.se/inko-skydd-molicare-premium-elastic-6m-hoft-80120cm-abs-iso-2159ml/p/10021130"
+      ],
+      "import_allowed": false,
+      "publish_allowed": false,
+      "research_date": "2026-10-04"
+    }
+  ]
+}

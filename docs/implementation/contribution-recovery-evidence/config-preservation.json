@@ -1,0 +1,67 @@
+{
+  "applicationImageOnly": true,
+  "apps": {
+    "web": {
+      "checks": {
+        "configuration": true,
+        "templateExceptImageAndRevisionSuffix": true,
+        "identity": true,
+        "environment": true,
+        "scaling": true,
+        "secretReferences": true
+      },
+      "beforeImage": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-web@sha256:7f97686bf116ed3601fc63112e6266b9bca2fd72e1dfb00e0c9733c652ebb5b9",
+      "afterImage": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-web@sha256:8b1baa2246cbc0df3cb7bcf7e2137efada42c45d33520eb09d526119fe997efd",
+      "readyRevision": "diaperscout-web-vnet--contribution-32bf159",
+      "latestRevision": "diaperscout-web-vnet--contribution-32bf159",
+      "provisioningState": "Succeeded",
+      "scale": {
+        "cooldownPeriod": 600,
+        "maxReplicas": 2,
+        "minReplicas": 0,
+        "pollingInterval": 30,
+        "rules": null
+      },
+      "revisionMode": "Single",
+      "stickySessionAffinity": {
+        "affinity": "sticky"
+      },
+      "traffic": [
+        {
+          "latestRevision": true,
+          "weight": 100
+        }
+      ]
+    },
+    "api": {
+      "checks": {
+        "configuration": true,
+        "templateExceptImageAndRevisionSuffix": true,
+        "identity": true,
+        "environment": true,
+        "scaling": true,
+        "secretReferences": true
+      },
+      "beforeImage": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-api@sha256:0ee3d21f3f70308008ca3416b001d1482bf06f19624eae15850678ea6bdb05b7",
+      "afterImage": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-api@sha256:0c76df4d408ff96c0915a337f000598332d9b6c472f90597b4e5e11b5feced0f",
+      "readyRevision": "diaperscout-api-vnet--contribution-32bf159",
+      "latestRevision": "diaperscout-api-vnet--contribution-32bf159",
+      "provisioningState": "Succeeded",
+      "scale": {
+        "cooldownPeriod": 300,
+        "maxReplicas": 10,
+        "minReplicas": 0,
+        "pollingInterval": 30,
+        "rules": null
+      },
+      "revisionMode": "Single",
+      "stickySessionAffinity": null,
+      "traffic": [
+        {
+          "latestRevision": true,
+          "weight": 100
+        }
+      ]
+    }
+  }
+}

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddDiaperScoutInfrastructure(builder.Configuration);
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("contributions", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "anonymous",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = 30, Window = TimeSpan.FromMinutes(1), QueueLimit = 0, AutoReplenishment = true }));
+});
 
 if (builder.Environment.IsDevelopment() &&
     builder.Configuration.GetValue<bool>("Authentication:Development:Enabled"))
@@ -52,6 +61,10 @@ builder.Services
             .AddRequirements(new PublishAtlasRequirement()));
 
 var app = builder.Build();
+app.MapRetailListingEndpoints();
+app.MapCommercePluginEndpoints();
+app.MapPlaceObservationEndpoints();
+app.MapBackpackAccountEndpoints();
 
 if (app.Environment.IsDevelopment() &&
     builder.Configuration.GetValue<bool>("DevelopmentCatalogue:Enabled"))
@@ -68,6 +81,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 
 app.MapUserManagementEndpoints();
 app.MapPasskeyEndpoints();
@@ -607,6 +621,7 @@ app.MapGet(
     async (
         string gtin,
         IAtlasQueries atlasQueries,
+        ILogger<Program> logger,
         CancellationToken cancellationToken) =>
     {
         var normalizedGtin =
@@ -614,22 +629,25 @@ app.MapGet(
                 .Replace(" ", string.Empty)
                 .Replace("-", string.Empty);
 
-        if (!Regex.IsMatch(normalizedGtin, "^[0-9]{8,14}$"))
+        if (RetailGtin.Normalise(normalizedGtin) is null)
         {
             return Results.ValidationProblem(
                 new Dictionary<string, string[]>
                 {
                     ["gtin"] =
                     [
-                        "GTIN must contain 8 to 14 digits."
+                        "Enter a valid GTIN-8, GTIN-12, GTIN-13 or GTIN-14 barcode, including its check digit."
                     ]
                 });
         }
 
-        var identification =
-            await atlasQueries.GetProductByGtinAsync(
-                normalizedGtin,
-                cancellationToken);
+        ProductIdentification? identification;
+        try { identification = await atlasQueries.GetProductByGtinAsync(normalizedGtin, cancellationToken); }
+        catch (CatalogueValidationException)
+        {
+            logger.LogWarning("Canonical barcode {Gtin} resolves to multiple current packs; editorial data-quality review is required", normalizedGtin);
+            return Results.Conflict(new { code = "ambiguous_barcode", message = "This barcode has conflicting catalogue matches. Please try another item; the catalogue needs review." });
+        }
 
         return identification is null
             ? Results.NotFound(
@@ -645,6 +663,9 @@ app.MapGet(
     .Produces<ProductIdentification>()
     .Produces(StatusCodes.Status404NotFound)
     .ProducesValidationProblem();
+
+app.MapGet("/api/v1/explore/recent-products", async (IAtlasQueries queries, CancellationToken ct) =>
+    Results.Ok(await queries.RecentProductsAsync(ct))).WithTags("Products");
 
 app.MapGet(
     "/api/v1/products",
@@ -828,6 +849,8 @@ app.MapGet(
     "/api/v1/products/{slug}",
     async (
         string slug,
+        Guid? variantId,
+        Guid? packTypeId,
         IAtlasQueries atlasQueries,
         CancellationToken cancellationToken) =>
     {
@@ -837,7 +860,7 @@ app.MapGet(
         var product =
             await atlasQueries.GetProductDetailsBySlugAsync(
                 slug.Trim(),
-                cancellationToken);
+                cancellationToken, variantId, packTypeId);
 
         return product is null
             ? Results.NotFound()
@@ -1258,6 +1281,62 @@ if (builder.Configuration.GetValue<bool>(
         .WithName("GetCatalogueSubmissionSizeVariants")
         .WithTags("Catalogue Submissions")
         .Produces<IReadOnlyList<CatalogueSubmissionSizeVariantReceipt>>();
+
+    app.MapPost(
+        "/api/v1/catalogue-submissions/{id:guid}/variants/{variantId:guid}/sizes/seed",
+        async (
+            Guid id,
+            Guid variantId,
+            AddCatalogueSubmissionSizeVariantRequest request,
+            ICurrentUser currentUser,
+            ICatalogueSubmissions submissions,
+            CancellationToken cancellationToken) =>
+        {
+            var actor = await currentUser.GetAsync(cancellationToken);
+            if (actor is null) return Results.Forbid();
+
+            try
+            {
+                var receipt = await submissions.AddSizeVariantToAllVariantsAsync(
+                    actor,
+                    id,
+                    variantId,
+                    new AddCatalogueSubmissionSizeVariant(
+                        request.ManufacturerSize,
+                        request.WaistMinimumCm,
+                        request.WaistMaximumCm,
+                        request.HipMinimumCm,
+                        request.HipMaximumCm,
+                        request.ManufacturerStatedAbsorbencyMl,
+                        request.FitMeasurementBasis,
+                        request.AbsorbencyBasisMethod,
+                        request.AbsorbencySource,
+                        request.LengthMm,
+                        request.WidthMm,
+                        request.WeightGrams,
+                        request.ManufacturerPackQuantity,
+                        request.Gtin),
+                    cancellationToken);
+
+                return Results.Created(
+                    $"/api/v1/catalogue-submissions/{id}/variants/{variantId}/sizes/{receipt.Id}",
+                    receipt);
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(
+                    new Dictionary<string, string[]> { [exception.Field] = [exception.Message] });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("SeedCatalogueSubmissionSizeVariant")
+        .WithTags("Catalogue Submissions")
+        .Produces<CatalogueSubmissionSizeVariantReceipt>(StatusCodes.Status201Created)
+        .ProducesValidationProblem();
 
     app.MapPost(
         "/api/v1/catalogue-submissions/{id:guid}/variants/{variantId:guid}/sizes",
@@ -2366,6 +2445,49 @@ if (builder.Configuration.GetValue<bool>(
         .ProducesValidationProblem();
 
     app.MapPost(
+        "/api/v1/catalogue-submissions/{id:guid}/return-to-draft",
+        async (
+            Guid id,
+            ICurrentUser currentUser,
+            ICatalogueSubmissions submissions,
+            CancellationToken cancellationToken) =>
+        {
+            var actor =
+                await currentUser.GetAsync(cancellationToken);
+
+            if (actor is null)
+                return Results.Forbid();
+
+            try
+            {
+                var receipt =
+                    await submissions.ReturnToDraftAsync(
+                        actor,
+                        id,
+                        cancellationToken);
+
+                return Results.Ok(receipt);
+            }
+            catch (CatalogueValidationException exception)
+            {
+                return Results.ValidationProblem(
+                    new Dictionary<string, string[]>
+                    {
+                        [exception.Field] = new[] { exception.Message }
+                    });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+        })
+        .RequireAuthorization("PublishAtlas")
+        .WithName("ReturnCatalogueSubmissionToDraft")
+        .WithTags("Catalogue Submissions")
+        .Produces<CatalogueSubmissionReceipt>()
+        .ProducesValidationProblem();
+
+    app.MapPost(
         "/api/v1/catalogue-submissions/{id:guid}/return-to-verification",
         async (
             Guid id,
@@ -3238,15 +3360,23 @@ app.MapPost(
         IPasswordlessAuthentication authentication,
         CancellationToken cancellationToken) =>
     {
-        await authentication.RequestRegistrationLinkAsync(
-            request.Email,
-            request.DisplayName,
-            cancellationToken);
-
-        return Results.Ok(new
+        try
         {
-            message = "If that email address can receive DiaperScout registration links, one has been sent."
-        });
+            await authentication.RequestRegistrationLinkAsync(request.Email, request.DisplayName, cancellationToken);
+            return Results.Ok(new { message = "Check your email for a secure DiaperScout link." });
+        }
+        catch (ArgumentException e)
+        {
+            return Results.ValidationProblem(new Dictionary<string, string[]> { [e.ParamName ?? "details"] = [e.Message.Split(" (Parameter")[0]] });
+        }
+        catch (Exception e) when (e is HttpRequestException or Resend.ResendException)
+        {
+            return Results.Json(new { message = "The email service is temporarily unavailable. Please try again." }, statusCode: 503);
+        }
+        catch (InvalidOperationException e) when (e.Message == "Registrations are currently closed. Please check back later.")
+        {
+            return Results.Json(new { message = "Account creation is unavailable right now. Please try again later." }, statusCode: 503);
+        }
     })
     .AllowAnonymous();
 
@@ -3271,12 +3401,13 @@ app.MapPost(
 app.MapPost(
     "/api/v1/auth/magic-link/consume",
     async (
-        [FromQuery] string token,
+        [FromQuery] string? token,
+        [FromBody(EmptyBodyBehavior = Microsoft.AspNetCore.Mvc.ModelBinding.EmptyBodyBehavior.Allow)] MagicLinkConsumptionRequest? request,
         IPasswordlessAuthentication authentication,
         CancellationToken cancellationToken) =>
     {
         var result = await authentication.ConsumeMagicLinkAsync(
-            token,
+            request?.Token ?? token ?? "",
             cancellationToken);
 
         return result is null
@@ -3293,6 +3424,8 @@ app.Run();
 public sealed record RegistrationLinkRequest(
     string Email,
     string DisplayName);
+
+public sealed record MagicLinkConsumptionRequest(string Token);
 
 public sealed record SignInLinkRequest(
     string Email);

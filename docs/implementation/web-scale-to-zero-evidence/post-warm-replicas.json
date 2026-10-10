@@ -1,0 +1,22 @@
+[
+  {
+    "created": "2026-10-02T09:48:36Z",
+    "name": "diaperscout-web-vnet--scale-policy-20261002092936-6d57c794dcnjz",
+    "ready": [
+      true
+    ],
+    "restarts": [
+      0
+    ]
+  },
+  {
+    "created": "2026-10-02T09:47:03Z",
+    "name": "diaperscout-web-vnet--scale-policy-20261002092936-6d57c794n6hz6",
+    "ready": [
+      true
+    ],
+    "restarts": [
+      0
+    ]
+  }
+]

@@ -1,0 +1,63 @@
+{
+  "started": "2026-10-03T11:30:33.824Z",
+  "productionWrites": 0,
+  "physicalIphoneProven": false,
+  "syntheticTiles": true,
+  "sessions": [
+    {
+      "engine": "chromium",
+      "width": 390,
+      "height": 844,
+      "errors": [],
+      "discoveryLabel": "Discoveries (0)",
+      "markerCount": 0,
+      "geometry": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 771,
+        "fits": true
+      },
+      "listCount": 0,
+      "unchartedNote": true,
+      "passed": true
+    },
+    {
+      "engine": "webkit",
+      "width": 430,
+      "height": 932,
+      "errors": [],
+      "discoveryLabel": "Discoveries (0)",
+      "markerCount": 0,
+      "geometry": {
+        "x": 0,
+        "y": 0,
+        "width": 430,
+        "height": 859,
+        "fits": true
+      },
+      "listCount": 0,
+      "unchartedNote": true,
+      "passed": true
+    },
+    {
+      "engine": "desktop",
+      "width": 1280,
+      "height": 800,
+      "errors": [],
+      "discoveryLabel": "Discoveries (0)",
+      "markerCount": 0,
+      "geometry": {
+        "x": 0,
+        "y": 65.484375,
+        "width": 1280,
+        "height": 736,
+        "fits": true
+      },
+      "listCount": 0,
+      "unchartedNote": true,
+      "passed": true
+    }
+  ],
+  "finished": "2026-10-03T11:30:42.671Z"
+}

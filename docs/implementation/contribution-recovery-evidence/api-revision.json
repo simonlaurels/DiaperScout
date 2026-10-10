@@ -1,0 +1,9 @@
+{
+  "active": true,
+  "healthState": "Healthy",
+  "name": "diaperscout-api-vnet--contribution-32bf159",
+  "provisioningState": "Provisioned",
+  "replicas": 1,
+  "runningState": "Running",
+  "trafficWeight": 100
+}

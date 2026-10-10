@@ -199,6 +199,9 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db, IEditorialAuth
         var product = await db.Products.SingleOrDefaultAsync(value => value.Id == productId, cancellationToken)
             ?? throw new KeyNotFoundException("The catalogue product was not found.");
 
+        if (await db.ProductRouteRedirects.AnyAsync(r => r.SourceProductId == productId, cancellationToken))
+            throw new CatalogueValidationException("productId", "This historical product was reconciled. Add variants to its canonical product.");
+
         var duplicate = await db.ProductVariants.AnyAsync(
             value => value.ProductId == productId && value.Name.ToLower() == command.Name.Trim().ToLower(),
             cancellationToken);
@@ -345,6 +348,46 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db, IEditorialAuth
             command,
             new[] { productId, variantId, size.Id, pack.Id },
             cancellationToken);
+    }
+
+    public async Task AddProductPackAsync(
+        AuthenticatedUser actor,
+        Guid productId,
+        Guid variantId,
+        Guid sizeId,
+        CreateCanonicalProductPackManagement command,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireCatalogueManagerAsync(actor, cancellationToken);
+        ValidateAudit(command.SourceSummary, command.EditorialRationale);
+        if (command.QuantityPerPack <= 0)
+            throw new CatalogueValidationException("quantityPerPack", "Pack quantity must be greater than zero.");
+        if (!Enum.IsDefined(command.PackagingType))
+            throw new CatalogueValidationException("packagingType", "The packaging type is invalid.");
+        var gtin = RetailGtin.Normalise(command.Gtin)
+            ?? throw new CatalogueValidationException("gtin", "A valid exact-pack GTIN is required.");
+        if (!await db.ProductVariants.AnyAsync(v => v.Id == variantId && v.ProductId == productId, cancellationToken) ||
+            !await db.SizeVariants.AnyAsync(s => s.Id == sizeId && s.ProductVariantId == variantId, cancellationToken))
+            throw new KeyNotFoundException("The product size was not found.");
+        var identifiers = await db.ProductIdentifiers.AsNoTracking()
+            .Where(i => i.Type == IdentifierType.Gtin).Select(i => i.Value).ToListAsync(cancellationToken);
+        identifiers.AddRange((await db.CatalogueSubmissions.AsNoTracking()
+            .Where(s => s.ProposedGtin != null).Select(s => s.ProposedGtin!).ToListAsync(cancellationToken)));
+        identifiers.AddRange((await db.CatalogueSubmissionSizeVariants.AsNoTracking()
+            .Where(s => s.Gtin != null).Select(s => s.Gtin!).ToListAsync(cancellationToken)));
+        if (identifiers.Any(value => value.Replace(" ", "").Replace("-", "").PadLeft(14, '0') == gtin.PadLeft(14, '0')))
+            throw new CatalogueValidationException("gtin", "An equivalent GTIN is already assigned to a catalogue pack.");
+        if (await db.PackTypes.AnyAsync(p => p.SizeVariantId == sizeId &&
+                p.QuantityPerPack == command.QuantityPerPack && p.PackagingType == command.PackagingType, cancellationToken))
+            throw new CatalogueValidationException("pack", "An equivalent pack already exists; revision reconciliation is required.");
+
+        var pack = new PackType(sizeId, command.QuantityPerPack, command.PackagingType);
+        var identifier = new ProductIdentifier(pack.Id, IdentifierType.Gtin, gtin);
+        db.AddRange(pack, identifier);
+        // The pack, identifier and provenance audit are saved together; existing size and packs are untouched.
+        await AddAuditAsync(CatalogueAuditAction.ProductChanged, productId, actor, command,
+            new[] { productId, variantId, sizeId, pack.Id, identifier.Id }, cancellationToken,
+            command.SourceSummary, command.SourceReferences, command.EditorialRationale, command.CorrelationId);
     }
 
     public async Task UpdateProductSizeAsync(
@@ -773,7 +816,7 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db, IEditorialAuth
         Validate(command);
 
         await using var transaction =
-            await db.Database.BeginTransactionAsync(cancellationToken);
+            db.Database.CurrentTransaction is null ? await db.Database.BeginTransactionAsync(cancellationToken) : null;
 
         var manufacturerExists = await db.Manufacturers.AnyAsync(
             manufacturer => manufacturer.Id == command.ManufacturerId,
@@ -911,7 +954,7 @@ internal sealed class CanonicalCatalogue(DiaperScoutDbContext db, IEditorialAuth
 
         db.CatalogueAuditRecords.Add(audit);
         await db.SaveChangesAsync(cancellationToken);
-        await transaction.CommitAsync(cancellationToken);
+        if (transaction is not null) await transaction.CommitAsync(cancellationToken);
 
         var firstVariantId = createdVariantIds[0];
         var firstSizeId = await db.SizeVariants

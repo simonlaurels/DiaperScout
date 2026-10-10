@@ -12,11 +12,16 @@
 
         <div class="ds-passkey-signin" data-passkey-signin>
             <AntiforgeryToken />
-            <button class="ds-button ds-button-primary" type="button" data-passkey-action="signin">Sign in with a passkey</button>
+            <button class="ds-button ds-button-primary" type="button" data-passkey-action="signin">Sign in</button>
             <p data-passkey-message role="status" aria-live="polite"></p>
             <p>Already added a passkey? Use your fingerprint, face, device PIN, or security key.</p>
         </div>
         <p>Or sign in with an email link.</p>
+        @if (ContributionReturn.Validate(ReturnUrl) is { } target)
+        {
+            <p>Your contribution is waiting. After sign-in, you’ll return to it.</p>
+            <a href="@target">Back to your contribution</a>
+        }
 
         @if (Sent)
         {
@@ -31,6 +36,7 @@
         else
         {
             <form class="ds-auth-form" method="post" action="/signin/request">
+                <AntiforgeryToken />
                 <label for="email">Email address</label>
                 <input id="email"
                        name="email"
@@ -76,4 +82,5 @@
 
     [SupplyParameterFromQuery(Name = "error")]
     private bool Error { get; set; }
+    [SupplyParameterFromQuery(Name = "returnUrl")] private string? ReturnUrl { get; set; }
 }

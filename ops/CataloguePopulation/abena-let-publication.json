@@ -1,0 +1,72 @@
+[
+  {
+    "ResearchId": "B12-LET-NORMAL-34",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Let Normal",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "Let",
+    "ProductType": "Booster",
+    "Size": "Normal",
+    "Quantity": 34,
+    "Gtin": "5713571001288",
+    "MeasurementBasis": "Product dimensions; no waist or hip fit stated",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": null,
+    "HipMaximumCm": null,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://cdn-abena.azureedge.net/assets/Global/Datasheets/en-GB/1000021343_en-GB.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-let-normal-34-stk-128964/"
+    ],
+    "IdentifierSources": [
+      "https://cdn-abena.azureedge.net/assets/Global/Datasheets/en-GB/1000021343_en-GB.pdf",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-let-normal-34-stk-128964/"
+    ],
+    "SpecificationSources": [
+      "https://cdn-abena.azureedge.net/assets/Global/Datasheets/en-GB/1000021343_en-GB.pdf"
+    ],
+    "EvidenceNotes": "Current manufacturer article 1000021343 confirms Let Normal, flow-through nonwoven backing allowing use as a booster, exact bag 34 EAN 5713571001288, product 390×140mm. Independent registry confirms named pack/count/GTIN and production license holder. Current count is not assigned to historical Abri-Let packs; historical conversion changed pack quantities. No waist/hip claim, optional capacity unknown, images not copied because permission unknown. Current is an editorial structural variant; no alternate manufacturer variant established.",
+    "LengthMm": 390,
+    "WidthMm": 140
+  },
+  {
+    "ResearchId": "B12-LET-ANATOMIC-30",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA Produktion A/S",
+    "Brand": "ABENA",
+    "Product": "Let Anatomic",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "Let",
+    "ProductType": "Booster",
+    "Size": "Anatomic",
+    "Quantity": 30,
+    "Gtin": "5713571001325",
+    "MeasurementBasis": "Product dimensions; no waist or hip fit stated",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": null,
+    "HipMaximumCm": null,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://online.abena.dk/Product/Pdf/1000021345?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-let-anatomic-30-stk-128966/"
+    ],
+    "IdentifierSources": [
+      "https://online.abena.dk/Product/Pdf/1000021345?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-let-anatomic-30-stk-128966/"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1000021345?type=Online_varedatablad"
+    ],
+    "EvidenceNotes": "Current manufacturer article 1000021345 confirms Let Anatomic, flow-through nonwoven backing allowing use as a booster, exact bag 30 EAN 5713571001325, product 440×200mm. Independent registry confirms named pack/count/GTIN and production license holder. Current count is not assigned to historical Abri-Let packs; historical conversion changed pack quantities. No waist/hip claim, optional capacity unknown, images not copied because permission unknown. Current is an editorial structural variant; no alternate manufacturer variant established.",
+    "LengthMm": 440,
+    "WidthMm": 200
+  }
+]

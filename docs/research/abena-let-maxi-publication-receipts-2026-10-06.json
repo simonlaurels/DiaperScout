@@ -1,0 +1,20 @@
+{
+  "execution": "ds-bootstrap-admin-i93ilpu",
+  "build": "db35",
+  "image": "sha256:1ca065b85164b4361adafce83a7fd1bf8388822a2569f4647c6c5d3af476e778",
+  "batch_sha256": "56BD80D0BCEEA8A57FB159334672ABA670EEBB9772B0B45941F1408061F750ED",
+  "receipts": [
+    {
+      "ResearchId": "B15-LET-MAXI-28",
+      "SubmissionId": "947f0f98-53bf-4c49-99b3-63d0d85ce838",
+      "ProductId": "bfecf571-175d-4053-9725-aa8130289295",
+      "VariantId": "3cc93bf2-1781-4648-82c3-c1cf0ca9a7c5",
+      "SizeId": "ec505d51-5c0e-4084-b804-2665e9ac3401",
+      "PackId": "63e08847-2440-4ef9-b39b-9c910baf3eac",
+      "IdentifierId": "de863224-d988-438d-9207-bf667180642d",
+      "AuditId": "c30d6cdd-d07f-412f-9ded-96f703358401",
+      "Gtin": "5703538461422",
+      "Created": true
+    }
+  ]
+}

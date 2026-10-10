@@ -1,0 +1,39 @@
+[
+  {
+    "ResearchId": "B16-ASL-M4-21",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA A/S",
+    "Brand": "ABENA",
+    "Product": "Slip Premium",
+    "ManufacturerAliases": [],
+    "ProductAliases": [
+      "ABENA Slip Premium"
+    ],
+    "Family": "Slip",
+    "ProductType": "Tape",
+    "Size": "M4",
+    "Quantity": 21,
+    "Gtin": "5713571000168",
+    "MeasurementBasis": "hip",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": 70,
+    "HipMaximumCm": 110,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.fvdvooren.nl/uploads/pdf/Conformiteitsverklaring%2008-43063_87128.pdf",
+      "https://online.abena.dk/Product/Pdf/1000021287?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m4-21-pcs-109944/"
+    ],
+    "IdentifierSources": [
+      "https://online.abena.dk/Product/Pdf/1000021287?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-slip-m4-21-pcs-109944/"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1000021287?type=Online_varedatablad"
+    ],
+    "EvidenceNotes": "Current manufacturer sheet27June2026 article1000021287 Slip Premium M4 tab brief, bag21 GTIN5713571000168; independently matches current registry15Sept2026 exactM4/count21/GTIN; hip70-110cm and product840x670mm. Legal manufacturer ABENA A/S declarationpage2 expresslylists1000021287; ABENA Produktion A/S is separately supported Nordiclicenceholder50230001, not samelegalentity. Original pilotC11 retailerpullup description remains excluded/preserved; not used for canonical type. OldAbriFormM4 article43063 bag14 documentedconversion to newSliparticle1287 bag21 does not imply samepackGTIN or aliases. USplasticbackedComfortM4article4163 bag14 is separate, not this breathablePremiumtabbrief. Current structural variant already exists; add verifiedM4size/pack only without changing earlier packs or historical submission. Optionalcapacity not promoted; no copiedimages/rightsunknown.",
+    "LengthMm": 840,
+    "WidthMm": 670
+  }
+]

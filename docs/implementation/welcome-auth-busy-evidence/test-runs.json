@@ -1,0 +1,51 @@
+[
+  {
+    "run": "DiaperScout-welcome-validation/hails_LAPTOP-B9K6D45G_2026-10-03_10_05_08_net10.0.trx",
+    "total": 9,
+    "passed": 5,
+    "failed": 4,
+    "skipped": 0
+  },
+  {
+    "run": "final/hails_LAPTOP-B9K6D45G_2026-10-03_10_20_03_net10.0.trx",
+    "total": 11,
+    "passed": 11,
+    "failed": 0,
+    "skipped": 0
+  },
+  {
+    "run": "final-focused/hails_LAPTOP-B9K6D45G_2026-10-03_10_13_26_net10.0.trx",
+    "total": 11,
+    "passed": 9,
+    "failed": 2,
+    "skipped": 0
+  },
+  {
+    "run": "full/hails_LAPTOP-B9K6D45G_2026-10-03_10_21_39_net10.0.trx",
+    "total": 51,
+    "passed": 51,
+    "failed": 0,
+    "skipped": 0
+  },
+  {
+    "run": "full/hails_LAPTOP-B9K6D45G_2026-10-03_10_21_51_net10.0.trx",
+    "total": 258,
+    "passed": 258,
+    "failed": 0,
+    "skipped": 0
+  },
+  {
+    "run": "recheck/hails_LAPTOP-B9K6D45G_2026-10-03_10_07_33_net10.0.trx",
+    "total": 9,
+    "passed": 7,
+    "failed": 2,
+    "skipped": 0
+  },
+  {
+    "run": "third/hails_LAPTOP-B9K6D45G_2026-10-03_10_10_56_net10.0.trx",
+    "total": 9,
+    "passed": 9,
+    "failed": 0,
+    "skipped": 0
+  }
+]

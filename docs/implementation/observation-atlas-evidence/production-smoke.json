@@ -1,0 +1,330 @@
+{
+  "pages": [
+    {
+      "engine": "webkit",
+      "standalone": false,
+      "path": "/",
+      "errors": [],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true
+    },
+    {
+      "engine": "webkit",
+      "standalone": false,
+      "path": "/products",
+      "errors": [],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true
+    },
+    {
+      "engine": "webkit",
+      "standalone": false,
+      "path": "/scan",
+      "errors": [],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true
+    },
+    {
+      "engine": "webkit",
+      "standalone": false,
+      "path": "/atlas",
+      "errors": [],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true,
+      "atlasText": "Places and observations\n\nAtlas\n\nReal places, with dated reports of the packs people found there. An observation is not a guarantee of current stock.\n\nThe first place is waiting.\n\nNo qualifying physical observations have been recorded yet. Scan a known pack and record where you found it.\n\nScan a product"
+    },
+    {
+      "engine": "webkit",
+      "standalone": false,
+      "path": "/backpack",
+      "errors": [],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true
+    },
+    {
+      "engine": "webkit",
+      "standalone": false,
+      "path": "/contribute/product?gtin=96385074",
+      "errors": [
+        "TypeError: Load failed"
+      ],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true
+    },
+    {
+      "engine": "webkit",
+      "standalone": true,
+      "path": "/",
+      "errors": [],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true
+    },
+    {
+      "engine": "webkit",
+      "standalone": true,
+      "path": "/products",
+      "errors": [],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true
+    },
+    {
+      "engine": "webkit",
+      "standalone": true,
+      "path": "/scan",
+      "errors": [],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true
+    },
+    {
+      "engine": "webkit",
+      "standalone": true,
+      "path": "/atlas",
+      "errors": [],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true,
+      "atlasText": "Places and observations\n\nAtlas\n\nReal places, with dated reports of the packs people found there. An observation is not a guarantee of current stock.\n\nThe first place is waiting.\n\nNo qualifying physical observations have been recorded yet. Scan a known pack and record where you found it.\n\nScan a product"
+    },
+    {
+      "engine": "webkit",
+      "standalone": true,
+      "path": "/backpack",
+      "errors": [],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true
+    },
+    {
+      "engine": "webkit",
+      "standalone": true,
+      "path": "/contribute/product?gtin=96385074",
+      "errors": [
+        "TypeError: Load failed"
+      ],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true
+    },
+    {
+      "engine": "chromium",
+      "standalone": false,
+      "path": "/",
+      "errors": [],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true
+    },
+    {
+      "engine": "chromium",
+      "standalone": false,
+      "path": "/products",
+      "errors": [],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true
+    },
+    {
+      "engine": "chromium",
+      "standalone": false,
+      "path": "/scan",
+      "errors": [],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true
+    },
+    {
+      "engine": "chromium",
+      "standalone": false,
+      "path": "/atlas",
+      "errors": [],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true,
+      "atlasText": "Places and observations\n\nAtlas\n\nReal places, with dated reports of the packs people found there. An observation is not a guarantee of current stock.\n\nLoading observations…"
+    },
+    {
+      "engine": "chromium",
+      "standalone": false,
+      "path": "/backpack",
+      "errors": [],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true
+    },
+    {
+      "engine": "chromium",
+      "standalone": false,
+      "path": "/contribute/product?gtin=96385074",
+      "errors": [],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true
+    },
+    {
+      "engine": "chromium",
+      "standalone": true,
+      "path": "/",
+      "errors": [],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true
+    },
+    {
+      "engine": "chromium",
+      "standalone": true,
+      "path": "/products",
+      "errors": [],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true
+    },
+    {
+      "engine": "chromium",
+      "standalone": true,
+      "path": "/scan",
+      "errors": [],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true
+    },
+    {
+      "engine": "chromium",
+      "standalone": true,
+      "path": "/atlas",
+      "errors": [],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true,
+      "atlasText": "Places and observations\n\nAtlas\n\nReal places, with dated reports of the packs people found there. An observation is not a guarantee of current stock.\n\nThe first place is waiting.\n\nNo qualifying physical observations have been recorded yet. Scan a known pack and record where you found it.\n\nScan a product"
+    },
+    {
+      "engine": "chromium",
+      "standalone": true,
+      "path": "/backpack",
+      "errors": [],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true
+    },
+    {
+      "engine": "chromium",
+      "standalone": true,
+      "path": "/contribute/product?gtin=96385074",
+      "errors": [],
+      "status": 200,
+      "errorVisible": false,
+      "fits": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "webkit/false proposal keeps prefilled GTIN",
+      "passed": true
+    },
+    {
+      "name": "webkit/false unknown GTIN offers proposal",
+      "passed": true
+    },
+    {
+      "name": "webkit/false unknown proposal remains public",
+      "passed": false
+    },
+    {
+      "name": "webkit/false exact pack survives URL",
+      "passed": true
+    },
+    {
+      "name": "webkit/false observation requires sign-in with exact pack",
+      "passed": true
+    },
+    {
+      "name": "webkit/false existing passkey sign-in available",
+      "passed": true
+    },
+    {
+      "name": "webkit/true proposal keeps prefilled GTIN",
+      "passed": true
+    },
+    {
+      "name": "webkit/true unknown GTIN offers proposal",
+      "passed": true
+    },
+    {
+      "name": "webkit/true unknown proposal remains public",
+      "passed": false
+    },
+    {
+      "name": "webkit/true exact pack survives URL",
+      "passed": true
+    },
+    {
+      "name": "webkit/true observation requires sign-in with exact pack",
+      "passed": true
+    },
+    {
+      "name": "webkit/true existing passkey sign-in available",
+      "passed": true
+    },
+    {
+      "name": "chromium/false proposal keeps prefilled GTIN",
+      "passed": true
+    },
+    {
+      "name": "chromium/false unknown GTIN offers proposal",
+      "passed": true
+    },
+    {
+      "name": "chromium/false unknown proposal remains public",
+      "passed": false
+    },
+    {
+      "name": "chromium/false exact pack survives URL",
+      "passed": true
+    },
+    {
+      "name": "chromium/false observation requires sign-in with exact pack",
+      "passed": true
+    },
+    {
+      "name": "chromium/false existing passkey sign-in available",
+      "passed": true
+    },
+    {
+      "name": "chromium/true proposal keeps prefilled GTIN",
+      "passed": true
+    },
+    {
+      "name": "chromium/true unknown GTIN offers proposal",
+      "passed": true
+    },
+    {
+      "name": "chromium/true unknown proposal remains public",
+      "passed": false
+    },
+    {
+      "name": "chromium/true exact pack survives URL",
+      "passed": true
+    },
+    {
+      "name": "chromium/true observation requires sign-in with exact pack",
+      "passed": true
+    },
+    {
+      "name": "chromium/true existing passkey sign-in available",
+      "passed": true
+    },
+    {
+      "name": "24 public/browser/standalone pages healthy without overflow",
+      "passed": false
+    }
+  ]
+}

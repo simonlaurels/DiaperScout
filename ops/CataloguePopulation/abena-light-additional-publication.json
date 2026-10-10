@@ -1,0 +1,113 @@
+[
+  {
+    "ResearchId": "B14-LIGHT-1000021341-10",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA A/S",
+    "Brand": "ABENA",
+    "Product": "Light Premium Extra Plus 3A",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "Light Premium",
+    "ProductType": "Pad",
+    "Size": "Extra Plus 3A",
+    "Quantity": 10,
+    "Gtin": "5713571001240",
+    "MeasurementBasis": "Product dimensions; no waist or hip fit stated",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": null,
+    "HipMaximumCm": null,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.fvdvooren.nl/uploads/pdf/Conformiteitsverklaring%2008-43063_87128.pdf",
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://online.abena.dk/Product/Pdf/1000021341?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-light-premium-3a-10-pcs-117310/",
+      "https://www.med24.dk/medicin-og-pleje/inkontinens/bind/abena-light-extra-plus-3a-10-stk"
+    ],
+    "IdentifierSources": [
+      "https://online.abena.dk/Product/Pdf/1000021341?type=Online_varedatablad",
+      "https://www.med24.dk/medicin-og-pleje/inkontinens/bind/abena-light-extra-plus-3a-10-stk"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1000021341?type=Online_varedatablad"
+    ],
+    "EvidenceNotes": "Current manufacturer article1000021341: Light Premium Extra Plus 3A, anatomical adhesive incontinence pad, exactsealedbag10 EAN5713571001240. Manufacturer plus independent retailer corroborate exact pack identity. Registry only supports named product/count/productionlicenseholder, its missing or malformed identifiers are not canonical evidence. Registry printed713571001240 fails checksum and is excluded as GTIN evidence, not repaired. Manufacturer and Med24 both33x11cm but another retailer Q&A16.5x9.4cm; optional product dimensions remain unknown and discrepancy preserved. Current is editorial structural variant; no alternate variant inferred. No body fit claims, capacity unknown, no images copied/rightsunknown. Signed declaration 13 August 2025 explicitly covers article 1000021341; legal manufacturer ABENA A/S SRN DK-MF-000002482. ABENA Produktion A/S remains separate supported production/licence-holder provenance, not an alias.",
+    "LengthMm": null,
+    "WidthMm": null
+  },
+  {
+    "ResearchId": "B14-LIGHT-1999905383-8",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA A/S",
+    "Brand": "ABENA",
+    "Product": "Light Premium Maxi 4A",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "Light Premium",
+    "ProductType": "Pad",
+    "Size": "Maxi 4A",
+    "Quantity": 8,
+    "Gtin": "5703538459023",
+    "MeasurementBasis": "Product dimensions; no waist or hip fit stated",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": null,
+    "HipMaximumCm": null,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.fvdvooren.nl/uploads/pdf/Conformiteitsverklaring%2008-43063_87128.pdf",
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://online.abena.dk/Product/Pdf/1999905383?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-light-premium-maxi-4a-8-pcs-119597/",
+      "https://www.apotea.se/abena-light-maxi-4a-41x15-cm-8-st"
+    ],
+    "IdentifierSources": [
+      "https://online.abena.dk/Product/Pdf/1999905383?type=Online_varedatablad",
+      "https://www.apotea.se/abena-light-maxi-4a-41x15-cm-8-st"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1999905383?type=Online_varedatablad"
+    ],
+    "EvidenceNotes": "Current manufacturer article1999905383: Light Premium Maxi 4A, anatomical adhesive incontinence pad, exactsealedbag8 EAN5703538459023. Manufacturer plus independent retailer corroborate exact pack identity. Registry only supports named product/count/productionlicenseholder, its missing or malformed identifiers are not canonical evidence. Registry printed570358459023 fails checksum and is excluded as GTIN evidence, not repaired. Manufacturer and independent Apotea exact bag8/EAN/product41x15cm agree. Current is editorial structural variant; no alternate variant inferred. No body fit claims, capacity unknown, no images copied/rightsunknown. Signed declaration 13 August 2025 explicitly covers article 1999905383; legal manufacturer ABENA A/S SRN DK-MF-000002482. ABENA Produktion A/S remains separate supported production/licence-holder provenance, not an alias.",
+    "LengthMm": 410,
+    "WidthMm": 150
+  },
+  {
+    "ResearchId": "B14-LIGHT-1999905382-24",
+    "Outcome": "READY",
+    "Manufacturer": "ABENA A/S",
+    "Brand": "ABENA",
+    "Product": "Light Premium Ultra Mini 0",
+    "ManufacturerAliases": [],
+    "ProductAliases": [],
+    "Family": "Light Premium",
+    "ProductType": "Pad",
+    "Size": "Ultra Mini 0",
+    "Quantity": 24,
+    "Gtin": "5703538458873",
+    "MeasurementBasis": "Product dimensions; no waist or hip fit stated",
+    "WaistMinimumCm": null,
+    "WaistMaximumCm": null,
+    "HipMinimumCm": null,
+    "HipMaximumCm": null,
+    "OfficialWebsite": "https://www.abena.com",
+    "IdentitySources": [
+      "https://www.fvdvooren.nl/uploads/pdf/Conformiteitsverklaring%2008-43063_87128.pdf",
+      "https://www.abena.dk/om-os/produktion-og-distribution/produktionsproces",
+      "https://online.abena.dk/Product/Pdf/1999905382?type=Online_varedatablad",
+      "https://svanemerket.no/miljomerkede-produkter/produkt/abena-light-ultra-mini-0-24-pcs-119142/",
+      "https://www.deonlinedrogist.nl/drogist/abena-light-premium-ultra-mini-0-inlegverband-24st.htm"
+    ],
+    "IdentifierSources": [
+      "https://online.abena.dk/Product/Pdf/1999905382?type=Online_varedatablad",
+      "https://www.deonlinedrogist.nl/drogist/abena-light-premium-ultra-mini-0-inlegverband-24st.htm"
+    ],
+    "SpecificationSources": [
+      "https://online.abena.dk/Product/Pdf/1999905382?type=Online_varedatablad"
+    ],
+    "EvidenceNotes": "Current manufacturer article1999905382: Light Premium Ultra Mini 0, anatomical adhesive incontinence pad, exactsealedbag24 EAN5703538458873. Manufacturer plus independent retailer corroborate exact pack identity. Registry only supports named product/count/productionlicenseholder, its missing or malformed identifiers are not canonical evidence. Registry omits barcode; identifier evidence comes from manufacturer packaging table and independent retailer exactbag24/EAN. Optional numeric capacity remains unknown; differing retailer capacity80vs100ml preserved, no canonical claim. Current is editorial structural variant; no alternate variant inferred. No body fit claims, capacity unknown, no images copied/rightsunknown. Signed declaration 13 August 2025 explicitly covers article 1999905382; legal manufacturer ABENA A/S SRN DK-MF-000002482. ABENA Produktion A/S remains separate supported production/licence-holder provenance, not an alias.",
+    "LengthMm": 190,
+    "WidthMm": 75
+  }
+]

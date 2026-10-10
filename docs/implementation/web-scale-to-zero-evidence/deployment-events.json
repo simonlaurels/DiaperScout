@@ -1,0 +1,191 @@
+[
+  {
+    "Log_s": "Creating a new revision: diaperscout-web-vnet--scale-policy-20261002092936",
+    "Reason_s": "RevisionCreation",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-1-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:45.3249256Z"
+  },
+  {
+    "Log_s": "Rolling Transition: Successfully completed rolling over existing to latest revision for containerApp: diaperscout-web-vnet",
+    "Reason_s": "RollingRevisionCompleted",
+    "RevisionName_s": "",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:45.3249256Z"
+  },
+  {
+    "Log_s": "Scaler external-push is built",
+    "Reason_s": "KEDAScalersStarted",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:46.26858Z"
+  },
+  {
+    "Log_s": "Replica 'diaperscout-web-vnet--scale-policy-20261002092936-6d57c7948gqfj' has been scheduled to run on a node.",
+    "Reason_s": "AssigningReplica",
+    "RevisionName_s": "diaperscout-web-vnet--scale",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:46.26858Z"
+  },
+  {
+    "Log_s": "KEDA is starting a watch for revision 'diaperscout-web-vnet--scale-policy-20261002092936' to monitor scale operations for this revision",
+    "Reason_s": "KEDAScalersStarted",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:46.26858Z"
+  },
+  {
+    "Log_s": "Scaler external-push is built",
+    "Reason_s": "KEDAScalersStarted",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:46.26858Z"
+  },
+  {
+    "Log_s": "Binding Domain 'diaperscout.app' for the container app 'diaperscout-web-vnet'",
+    "Reason_s": "ContainerAppUpdate",
+    "RevisionName_s": "",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:47.2124161Z"
+  },
+  {
+    "Log_s": "Binding Domain 'diaperscout.app' for the container app 'diaperscout-web-vnet'",
+    "Reason_s": "ContainerAppUpdate",
+    "RevisionName_s": "",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:47.2124161Z"
+  },
+  {
+    "Log_s": "Setting traffic weight of '100%' for revision 'diaperscout-web-vnet--reliability-1-2b7e35f'",
+    "Reason_s": "RevisionUpdate",
+    "RevisionName_s": "",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:47.2124161Z"
+  },
+  {
+    "Log_s": "Successfully updated containerApp: diaperscout-web-vnet",
+    "Reason_s": "ContainerAppReady",
+    "RevisionName_s": "",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:47.2124161Z"
+  },
+  {
+    "Log_s": "Setting traffic weight of '100%' for revision 'diaperscout-web-vnet--reliability-1-2b7e35f'",
+    "Reason_s": "RevisionUpdate",
+    "RevisionName_s": "",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:47.2124161Z"
+  },
+  {
+    "Log_s": "Setting traffic weight of '100%' for revision 'diaperscout-web-vnet--reliability-1-2b7e35f'",
+    "Reason_s": "RevisionUpdate",
+    "RevisionName_s": "",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:47.2124161Z"
+  },
+  {
+    "Log_s": "Rolling Transition: Successfully completed rolling over existing to latest revision for containerApp: diaperscout-web-vnet",
+    "Reason_s": "RollingRevisionCompleted",
+    "RevisionName_s": "",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:47.2124161Z"
+  },
+  {
+    "Log_s": "No revision restart or provisioning was needed.",
+    "Reason_s": "ContainerAppReady",
+    "RevisionName_s": "",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:47.2124161Z"
+  },
+  {
+    "Log_s": "Deactivating old revisions for ContainerApp 'diaperscout-web-vnet'",
+    "Reason_s": "RevisionDeactivating",
+    "RevisionName_s": "",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:47.2124161Z"
+  },
+  {
+    "Log_s": "Revision 'diaperscout-web-vnet--scale-policy-20261002092936' updated. No new revision was provisioned.",
+    "Reason_s": "RevisionUpdate",
+    "RevisionName_s": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:47.2124161Z"
+  },
+  {
+    "Log_s": "Deactivating old revisions for ContainerApp 'diaperscout-web-vnet'",
+    "Reason_s": "RevisionDeactivating",
+    "RevisionName_s": "",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:47.2124161Z"
+  },
+  {
+    "Log_s": "Successfully updated containerApp: diaperscout-web-vnet",
+    "Reason_s": "ContainerAppReady",
+    "RevisionName_s": "",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:47.2124161Z"
+  },
+  {
+    "Log_s": "No revision restart or provisioning was needed.",
+    "Reason_s": "ContainerAppReady",
+    "RevisionName_s": "",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:47.2124161Z"
+  },
+  {
+    "Log_s": "Binding Domain 'diaperscout.app' for the container app 'diaperscout-web-vnet'",
+    "Reason_s": "ContainerAppUpdate",
+    "RevisionName_s": "",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:47.2124161Z"
+  },
+  {
+    "Log_s": "Deactivating old revisions for ContainerApp 'diaperscout-web-vnet'",
+    "Reason_s": "RevisionDeactivating",
+    "RevisionName_s": "",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:29:47.2124161Z"
+  },
+  {
+    "Log_s": "Created container 'diaperscout-web-vnet'",
+    "Reason_s": "ContainerCreated",
+    "RevisionName_s": "diaperscout-web-vnet--scale",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:30:08.2538324Z"
+  },
+  {
+    "Log_s": "Started container 'diaperscout-web-vnet'",
+    "Reason_s": "ContainerStarted",
+    "RevisionName_s": "diaperscout-web-vnet--scale",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:30:08.2538324Z"
+  },
+  {
+    "Log_s": "Probe of StartUp failed with status code: 1",
+    "Reason_s": "ProbeFailed",
+    "RevisionName_s": "diaperscout-web-vnet--scale",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:30:09.1991651Z"
+  },
+  {
+    "Log_s": "KEDA is stopping the watch for revision 'diaperscout-web-vnet--reliability-1-2b7e35f' to monitor scale operations for this revision",
+    "Reason_s": "KEDAScalersStopped",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-1-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:30:47.2122631Z"
+  },
+  {
+    "Log_s": "ScaledObject was removed from KEDA watch and would not be auto-scaled.",
+    "Reason_s": "ScaledObjectDeleted",
+    "RevisionName_s": "diaperscout-web-vnet--reliability-1-2b7e35f",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:30:47.2122631Z"
+  },
+  {
+    "Log_s": "Container 'diaperscout-web-vnet' was terminated with exit code '' and reason 'ManuallyStopped'",
+    "Reason_s": "ContainerTerminated",
+    "RevisionName_s": "diaperscout-web-vnet--reliability",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-02T09:30:47.2122631Z"
+  }
+]

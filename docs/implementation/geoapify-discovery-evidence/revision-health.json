@@ -1,0 +1,14 @@
+{
+  "diaperscout-api-vnet": {
+    "revision": "diaperscout-api-vnet--geo-f5ae02e",
+    "healthy": true,
+    "provisioned": true,
+    "running": "Running"
+  },
+  "diaperscout-web-vnet": {
+    "revision": "diaperscout-web-vnet--geo-abbb333",
+    "healthy": true,
+    "provisioned": true,
+    "running": "RunningAtMaxScale"
+  }
+}

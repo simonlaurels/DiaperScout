@@ -1,0 +1,7 @@
+{
+  "environmentId": true,
+  "identity": true,
+  "workloadProfileName": true,
+  "template": true,
+  "configuration": true
+}

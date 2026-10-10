@@ -1,0 +1,3 @@
+ContainerAppConsoleLogs_CL
+| where TimeGenerated > ago(30m) and RevisionName_s == 'diaperscout-web-vnet--prototype-c1b2801'
+| summarize rows=count(), unhandledFailures=countif(Log_s contains 'Unhandled'), circuitRoutingFailures=countif(Log_s contains 'No Connection with that ID'), cryptographicFailures=countif(Log_s contains 'CryptographicException'), interopFailures=countif(Log_s contains 'JSException') by RevisionName_s

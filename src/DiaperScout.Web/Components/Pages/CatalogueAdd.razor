@@ -41,6 +41,16 @@
             <div class="submission-message submission-message-success" role="status">@saveMessage</div>
         }
 
+        @if (submission?.ProposedPackQuantity is { } proposedQuantity)
+        {
+            <p class="submission-help">Contributor’s proposed pack quantity: @proposedQuantity</p>
+        }
+        @if (submission?.SuggestedExistingProductId is { } suggestedProduct) { <p class="submission-help">Explorer’s suggested existing product: @suggestedProduct. This is an unverified moderation hint; the barcode has not been attached.</p> }
+        @if (submission?.PendingDiscovery is { } discovery) { <p class="submission-help">Private pending shop evidence: location @discovery.LocationId, @discovery.ObservedAtUtc.ToString("u"), @(discovery.PriceAmount.HasValue ? $"{discovery.PriceAmount:0.00} {discovery.CurrencyCode}" : "no shelf price"). Publishing or resolving the verified exact pack reconciles this evidence into one observation. Rejection creates no observation.</p> }
+        @if (submission?.ProposedGtin is not null && submission.Status is CatalogueSubmissionStatus.Approved or CatalogueSubmissionStatus.ReadyForReview)
+        {
+            <ResolveBarcodeToPack SubmissionId="submission.Id" Status="submission.Status" Resolved="OnParametersSetAsync" />
+        }
         <ol class="submission-steps" aria-label="Product creation progress">
             <li class="@(StepClass(1)) @(IsStepNavigable(1) ? "submission-step-navigable" : "")"
                 @onclick="() => NavigateToStepFromTab(1)"
@@ -161,6 +171,15 @@
         }
         else
         {
+            @if (submission.Status is CatalogueSubmissionStatus.InVerification
+                or CatalogueSubmissionStatus.ReadyForReview
+                or CatalogueSubmissionStatus.Approved)
+            {
+                <div class="submission-actions">
+                    <button class="ds-button ds-button-secondary" type="button" @onclick="ReturnToDraftAsync" disabled="@saving">Return to draft to edit</button>
+                    <small>Preserves entered data. Complete verification and review again after editing.</small>
+                </div>
+            }
             @if (currentStep == 1)
             {
                 <section class="submission-panel">
@@ -300,7 +319,7 @@
             {
                 <section class="submission-panel">
                     <div class="submission-panel-heading"><div><p class="catalogue-kicker">STEP 3 OF 6</p><h2>Size Variants</h2></div></div>
-                    <p class="submission-help">Add the physical sizes available for each product variant. Size-specific manufacturer information can differ between sizes. Leave information blank when it is not known or published.</p>
+                    <p class="submission-help">Adding a new size creates an independent copy for every product variant that does not already have that size. Later edits and removals affect only that variant. Barcodes stay with the variant where they were entered.</p>
 
                     @if (variantsLoading)
                     {
@@ -327,8 +346,12 @@
                                             <label>Manufacturer size *</label>
                                             <input class="ds-input" @bind="sizeEditor.ManufacturerSize" @bind:event="oninput" placeholder="e.g. Medium" />
                                         </div>
-                                        <div class="submission-field"><label>Waist minimum (cm)</label><InputNumber class="ds-input" @bind-Value="sizeEditor.WaistMinimumCm" /></div>
-                                        <div class="submission-field"><label>Waist maximum (cm)</label><InputNumber class="ds-input" @bind-Value="sizeEditor.WaistMaximumCm" /></div>
+                                        <div class="waist-measurements">
+                                            <div class="submission-field"><label>Waist minimum (@sizeEditor.WaistUnitLabel)</label><InputNumber aria-label="Waist minimum" class="ds-input" min="0" step="any" @bind-Value="sizeEditor.WaistMinimum" /></div>
+                                            <div class="submission-field"><label>Waist maximum (@sizeEditor.WaistUnitLabel)</label><InputNumber aria-label="Waist maximum" class="ds-input" min="0" step="any" @bind-Value="sizeEditor.WaistMaximum" /></div>
+                                            <div class="submission-field"><label>Waist units</label><select aria-label="Waist units" class="ds-select" @bind="sizeEditor.WaistUnit"><option value="@WaistMeasurementUnit.Centimetres">cm</option><option value="@WaistMeasurementUnit.Inches">inches</option></select></div>
+                                            @if (sizeEditor.WaistUnit == WaistMeasurementUnit.Inches) { <small class="waist-unit-note">Inches are converted to the nearest whole centimetre when saved.</small> }
+                                        </div>
                                         <div class="submission-field"><label>Hip minimum (cm)</label><InputNumber class="ds-input" @bind-Value="sizeEditor.HipMinimumCm" /></div>
                                         <div class="submission-field"><label>Hip maximum (cm)</label><InputNumber class="ds-input" @bind-Value="sizeEditor.HipMaximumCm" /></div>
                                         <div class="submission-field submission-field-wide"><label>Fit measurement basis</label><InputText class="ds-input" @bind-Value="sizeEditor.FitMeasurementBasis" placeholder="e.g. Waist and hip; use larger measurement" /></div>
@@ -1527,6 +1550,7 @@
 
         try
         {
+            if (sizeEditor.ValidateWaist() is { } waistError) { saveError = waistError; return; }
             var request = new UpdateCatalogueSubmissionSizeVariantRequest(
                 manufacturerSize,
                 sizeEditor.WaistMinimumCm,
@@ -1547,7 +1571,7 @@
 
             if (editingSizeId is null)
             {
-                result = await Catalogue.AddSubmissionSizeVariantAsync(
+                result = await Catalogue.SeedSubmissionSizeVariantAsync(
                     submission.Id,
                     editingSizeVariantId.Value,
                     new AddCatalogueSubmissionSizeVariantRequest(
@@ -1577,56 +1601,6 @@
 
             if (result.Status == CatalogueSubmissionSizeVariantResultStatus.Saved)
             {
-                // Sizes are entered against Original/base first. When a new size
-                // is added there, seed that size into every existing named
-                // variant. Copies are independent afterwards; GTIN is never
-                // propagated.
-                if (editingSizeId is null)
-                {
-                    var originalVariant = variants.FirstOrDefault(value => value.Name is null);
-
-                    if (originalVariant is not null &&
-                        editingSizeVariantId.Value == originalVariant.Id)
-                    {
-                        foreach (var namedVariant in variants.Where(value => value.Name is not null))
-                        {
-                            var alreadyExists = GetSizes(namedVariant.Id)
-                                .Any(value => string.Equals(
-                                    value.ManufacturerSize?.Trim(),
-                                    request.ManufacturerSize,
-                                    StringComparison.OrdinalIgnoreCase));
-
-                            if (alreadyExists)
-                                continue;
-
-                            var copyResult = await Catalogue.AddSubmissionSizeVariantAsync(
-                                submission.Id,
-                                namedVariant.Id,
-                                new AddCatalogueSubmissionSizeVariantRequest(
-                                    request.ManufacturerSize,
-                                    request.WaistMinimumCm,
-                                    request.WaistMaximumCm,
-                                    request.HipMinimumCm,
-                                    request.HipMaximumCm,
-                                    request.ManufacturerStatedAbsorbencyMl,
-                                    request.FitMeasurementBasis,
-                                    request.AbsorbencyBasisMethod,
-                                    request.AbsorbencySource,
-                                    request.LengthMm,
-                                    request.WidthMm,
-                                    request.WeightGrams,
-                                    request.ManufacturerPackQuantity,
-                                    null));
-
-                            if (copyResult.Status != CatalogueSubmissionSizeVariantResultStatus.Saved)
-                            {
-                                saveError = $"The Original size was saved, but it could not be copied to {namedVariant.Name}. {copyResult.Message}".Trim();
-                                break;
-                            }
-                        }
-                    }
-                }
-
                 await LoadSizeVariantsAsync();
                 CancelEditSize();
             }
@@ -2091,6 +2065,23 @@
         saving = false;
     }
 
+    private async Task ReturnToDraftAsync()
+    {
+        if (submission is null) return;
+        saving = true;
+        saveError = null;
+        saveMessage = null;
+        var result = await Catalogue.ReturnToDraftAsync(submission.Id);
+        Apply(result);
+        if (result.Status == CatalogueSubmissionResultStatus.Saved)
+        {
+            verificationEditorArea = null;
+            saveMessage = "Returned to draft. Edit the sizes, then complete verification and review again.";
+            GoToStep(3);
+            await LoadVariantsAsync();
+        }
+        saving = false;
+    }
     private async Task ReturnToVerificationAsync()
     {
         if (submission is null)
@@ -2259,11 +2250,9 @@
         }
     }
 
-    private sealed class SizeEditorModel
+    private sealed class SizeEditorModel : WaistMeasurementEditor
     {
         public string ManufacturerSize { get; set; } = "";
-        public int? WaistMinimumCm { get; set; }
-        public int? WaistMaximumCm { get; set; }
         public int? HipMinimumCm { get; set; }
         public int? HipMaximumCm { get; set; }
         public int? ManufacturerStatedAbsorbencyMl { get; set; }
@@ -2278,6 +2267,7 @@
 
         public void Clear()
         {
+            WaistUnit = WaistMeasurementUnit.Centimetres;
             ManufacturerSize = "";
             WaistMinimumCm = null;
             WaistMaximumCm = null;
@@ -2296,6 +2286,7 @@
 
         public void Load(CatalogueSubmissionSizeVariantReceipt size)
         {
+            WaistUnit = WaistMeasurementUnit.Centimetres;
             ManufacturerSize = size.ManufacturerSize;
             WaistMinimumCm = size.WaistMinimumCm;
             WaistMaximumCm = size.WaistMaximumCm;

@@ -1,0 +1,108 @@
+{
+  "phase": "cold-webkit",
+  "started": "2026-10-02T10:09:24.410Z",
+  "sessions": [
+    {
+      "round": 1,
+      "engine": "webkit",
+      "standalone": true,
+      "started": "2026-10-02T10:09:25.371Z",
+      "steps": [
+        "Manifest start URL Explore ready",
+        "Scan interactive",
+        "Unknown barcode lookup completed",
+        "Proposal step transition handled by live circuit",
+        "Circuit remained interactive after 35 seconds/keepalives",
+        "Existing passkey sign-in reached; no authentication or submission",
+        "Atlas loaded",
+        "Scan lookup still interactive after Atlas navigation"
+      ],
+      "errors": [],
+      "consoleErrors": [],
+      "transport": [
+        {
+          "at": "2026-10-02T10:09:50.402Z",
+          "path": "/_blazor/initializers",
+          "status": 200
+        },
+        {
+          "at": "2026-10-02T10:09:50.428Z",
+          "path": "/_blazor/negotiate",
+          "status": 200
+        },
+        {
+          "at": "2026-10-02T10:10:57.093Z",
+          "path": "/_blazor/disconnect",
+          "status": 200
+        },
+        {
+          "at": "2026-10-02T10:10:57.758Z",
+          "path": "/_blazor/initializers",
+          "status": 200
+        },
+        {
+          "at": "2026-10-02T10:10:57.780Z",
+          "path": "/_blazor/negotiate",
+          "status": 200
+        }
+      ],
+      "webSockets": [
+        {
+          "path": "/_blazor",
+          "opened": "2026-10-02T10:09:50.485Z",
+          "received": 41,
+          "sent": 40,
+          "closed": "2026-10-02T10:10:57.020Z"
+        },
+        {
+          "path": "/_blazor",
+          "opened": "2026-10-02T10:10:57.840Z",
+          "received": 17,
+          "sent": 17
+        }
+      ],
+      "finished": true,
+      "coldHtmlMs": 24104,
+      "frameworkReadyMs": 24183,
+      "circuitReadyMs": 24620,
+      "descriptorKeyIds": [
+        "3ab78896-4823-4ed8-bca6-8809146fbb0b"
+      ],
+      "circuitDwellMs": 35002,
+      "authReturnPreserved": true,
+      "affinityCookies": [
+        {
+          "name": "acaAffinity",
+          "secure": true,
+          "httpOnly": true,
+          "sameSite": "None",
+          "cookieValueHash": "6074a3eafa74"
+        }
+      ],
+      "cachedPaths": [
+        "/pwa/offline.html",
+        "/pwa/offline.css",
+        "/pwa/offline.js",
+        "/pwa/guide-map.webp",
+        "/pwa/icons/icon-192.png",
+        "/images/brand/DiaperScout.svg",
+        "/pwa/icons/maskable-512.png",
+        "/pwa/icons/icon-512.png",
+        "/pwa/icons/apple-touch-icon.png"
+      ],
+      "ended": "2026-10-02T10:10:58.279Z"
+    }
+  ],
+  "productionWrites": 0,
+  "physicalIosProven": false,
+  "preColdRevision": {
+    "health": "Healthy",
+    "name": "diaperscout-web-vnet--scale-policy-20261002092936",
+    "replicas": 0,
+    "state": "ScaledToZero",
+    "traffic": 100
+  },
+  "preColdReplicas": [],
+  "ended": "2026-10-02T10:10:58.316Z",
+  "passed": true
+}

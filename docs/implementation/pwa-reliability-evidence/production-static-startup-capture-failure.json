@@ -1,0 +1,21 @@
+[
+  {
+    "engine": "chromium",
+    "simulatedStandalone": true,
+    "darkPreference": true,
+    "passed": true,
+    "state": {
+      "background": "rgb(250, 245, 236)",
+      "colorScheme": "light",
+      "title": "Preparing your map…",
+      "visible": "flex",
+      "frameworkLoaded": false,
+      "appLoaded": false
+    }
+  },
+  {
+    "engine": "webkit",
+    "passed": false,
+    "error": "page.screenshot: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n"
+  }
+]

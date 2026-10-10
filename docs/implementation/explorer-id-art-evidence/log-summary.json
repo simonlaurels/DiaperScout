@@ -1,0 +1,14 @@
+{
+  "diaperscout-web-vnet": {
+    "commandSucceeded": true,
+    "lines": 2,
+    "tlsDnsDatabaseFailureLines": 0,
+    "exceptionLines": 0
+  },
+  "diaperscout-api-vnet": {
+    "commandSucceeded": true,
+    "lines": 147,
+    "tlsDnsDatabaseFailureLines": 0,
+    "exceptionLines": 0
+  }
+}

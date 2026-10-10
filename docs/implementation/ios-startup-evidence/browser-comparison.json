@@ -1,0 +1,182 @@
+[
+  {
+    "engine": "webkit",
+    "standalone": false,
+    "pages": [
+      {
+        "path": "/",
+        "errors": [],
+        "transport": [],
+        "state": {
+          "ready": "ready",
+          "standalone": "false",
+          "cover": "none",
+          "error": "none",
+          "controller": true,
+          "title": "A little curiosity.A better discovery."
+        }
+      },
+      {
+        "path": "/products",
+        "errors": [],
+        "transport": [],
+        "state": {
+          "ready": "ready",
+          "standalone": "false",
+          "cover": "none",
+          "error": "none",
+          "controller": true,
+          "title": "Find your next option."
+        }
+      },
+      {
+        "path": "/products/megamax?variantId=bb3ad9fc-9dea-4f07-b179-5bc3f66b7d7e",
+        "errors": [],
+        "transport": [],
+        "state": {
+          "ready": "ready",
+          "standalone": "false",
+          "cover": "none",
+          "error": "none",
+          "controller": true,
+          "title": "NorthShore MEGAMAX Black"
+        }
+      }
+    ]
+  },
+  {
+    "engine": "webkit",
+    "standalone": true,
+    "pages": [
+      {
+        "path": "/",
+        "errors": [],
+        "transport": [],
+        "state": {
+          "ready": "ready",
+          "standalone": "true",
+          "cover": "none",
+          "error": "none",
+          "controller": true,
+          "title": "A little curiosity.A better discovery."
+        }
+      },
+      {
+        "path": "/products",
+        "errors": [],
+        "transport": [],
+        "state": {
+          "ready": "ready",
+          "standalone": "true",
+          "cover": "none",
+          "error": "none",
+          "controller": true,
+          "title": "Find your next option."
+        }
+      },
+      {
+        "path": "/products/megamax?variantId=bb3ad9fc-9dea-4f07-b179-5bc3f66b7d7e",
+        "errors": [],
+        "transport": [],
+        "state": {
+          "ready": "ready",
+          "standalone": "true",
+          "cover": "none",
+          "error": "none",
+          "controller": true,
+          "title": "NorthShore MEGAMAX Black"
+        }
+      }
+    ]
+  },
+  {
+    "engine": "chromium",
+    "standalone": false,
+    "pages": [
+      {
+        "path": "/",
+        "errors": [],
+        "transport": [],
+        "state": {
+          "ready": "ready",
+          "standalone": "false",
+          "cover": "none",
+          "error": "none",
+          "controller": true,
+          "title": "A little curiosity.A better discovery."
+        }
+      },
+      {
+        "path": "/products",
+        "errors": [],
+        "transport": [],
+        "state": {
+          "ready": "ready",
+          "standalone": "false",
+          "cover": "none",
+          "error": "none",
+          "controller": true,
+          "title": "Find your next option."
+        }
+      },
+      {
+        "path": "/products/megamax?variantId=bb3ad9fc-9dea-4f07-b179-5bc3f66b7d7e",
+        "errors": [],
+        "transport": [],
+        "state": {
+          "ready": "ready",
+          "standalone": "false",
+          "cover": "none",
+          "error": "none",
+          "controller": true,
+          "title": "NorthShore MEGAMAX Black"
+        }
+      }
+    ]
+  },
+  {
+    "engine": "chromium",
+    "standalone": true,
+    "pages": [
+      {
+        "path": "/",
+        "errors": [],
+        "transport": [],
+        "state": {
+          "ready": "ready",
+          "standalone": "true",
+          "cover": "none",
+          "error": "none",
+          "controller": true,
+          "title": "A little curiosity.A better discovery."
+        }
+      },
+      {
+        "path": "/products",
+        "errors": [],
+        "transport": [],
+        "state": {
+          "ready": "ready",
+          "standalone": "true",
+          "cover": "none",
+          "error": "none",
+          "controller": true,
+          "title": "Find your next option."
+        }
+      },
+      {
+        "path": "/products/megamax?variantId=bb3ad9fc-9dea-4f07-b179-5bc3f66b7d7e",
+        "errors": [],
+        "transport": [],
+        "state": {
+          "ready": "ready",
+          "standalone": "true",
+          "cover": "none",
+          "error": "none",
+          "controller": true,
+          "title": "NorthShore MEGAMAX Black"
+        }
+      }
+    ]
+  }
+]

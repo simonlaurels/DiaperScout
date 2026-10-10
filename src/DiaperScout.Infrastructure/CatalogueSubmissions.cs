@@ -10,7 +10,8 @@ internal sealed class CatalogueSubmissions(
     DiaperScoutDbContext db,
     IEditorialAuthorisation editorialAuthorisation,
     ICanonicalCatalogue canonicalCatalogue,
-    ICatalogueSubmissionImageStorage imageStorage) : ICatalogueSubmissions
+    ICatalogueSubmissionImageStorage imageStorage,
+    IPublicProductContributions publicContributions) : ICatalogueSubmissions
 {
     public async Task<IReadOnlyList<CatalogueSubmissionQueueItem>> GetSubmissionsAsync(
         AuthenticatedUser actor,
@@ -66,20 +67,38 @@ internal sealed class CatalogueSubmissions(
                 await using var transaction =
                     await db.Database.BeginTransactionAsync(cancellationToken);
 
+                // Serialize CSV imports so two retries cannot both observe an empty queue.
+                await db.Database.ExecuteSqlRawAsync(
+                    "SELECT pg_advisory_xact_lock(683492710246301)", cancellationToken);
+
+                var canonicalGtins = await db.ProductIdentifiers.AsNoTracking()
+                    .Where(value => value.Type == IdentifierType.Gtin)
+                    .Select(value => value.Value).ToListAsync(cancellationToken);
+                var submissionGtins = await db.CatalogueSubmissionSizeVariants.AsNoTracking()
+                    .Where(value => value.Gtin != null)
+                    .Select(value => value.Gtin!).ToListAsync(cancellationToken);
+                var identityGtins = await db.CatalogueSubmissions.AsNoTracking()
+                    .Where(value => value.ProposedGtin != null)
+                    .Select(value => value.ProposedGtin!).ToListAsync(cancellationToken);
+                var occupiedGtins = canonicalGtins.Concat(submissionGtins).Concat(identityGtins)
+                    .Select(ImportGtinKey).ToHashSet(StringComparer.Ordinal);
+
+                var suppliedGtins = groupRows.Where(row => !string.IsNullOrWhiteSpace(row.Gtin))
+                    .Select(row => ImportGtinKey(row.Gtin!)).ToList();
+                if (suppliedGtins.Distinct(StringComparer.Ordinal).Count() != suppliedGtins.Count)
+                    throw new CatalogueValidationException("GTIN",
+                        "The import product group assigns equivalent GTINs to more than one row.");
+
                 var eligibleRows = new List<CatalogueSubmissionCsvRow>();
 
                 foreach (var row in groupRows)
                 {
                     if (!string.IsNullOrWhiteSpace(row.Gtin) &&
-                        await db.ProductIdentifiers.AnyAsync(
-                            value =>
-                                value.Type == IdentifierType.Gtin &&
-                                value.Value == row.Gtin,
-                            cancellationToken))
+                        occupiedGtins.Contains(ImportGtinKey(row.Gtin)))
                     {
                         groupRowsSkipped++;
                         warnings.Add(
-                            $"Line {row.LineNumber}: GTIN {row.Gtin} already exists in the canonical catalogue; the row was skipped.");
+                            $"Line {row.LineNumber}: GTIN {row.Gtin} or an equivalent zero-padded identifier already exists in the catalogue or a submission; the row was skipped.");
                         continue;
                     }
 
@@ -96,6 +115,25 @@ internal sealed class CatalogueSubmissions(
                 ValidateProductGroup(eligibleRows);
 
                 var submissionTemplate = eligibleRows[0];
+
+                var queuedIdentities = await db.CatalogueSubmissions.AsNoTracking()
+                    .Select(value => new { Manufacturer = value.ProposedManufacturerName,
+                        Brand = value.ProposedBrandName, Product = value.ProposedProductName })
+                    .ToListAsync(cancellationToken);
+                var canonicalIdentities = await (
+                    from product in db.Products.AsNoTracking()
+                    join manufacturer in db.Manufacturers on product.ManufacturerId equals manufacturer.Id
+                    join brand in db.Brands on product.BrandId equals brand.Id into brands
+                    from brand in brands.DefaultIfEmpty()
+                    select new { Manufacturer = manufacturer.Name,
+                        Brand = brand == null ? null : brand.Name, Product = product.Name })
+                    .ToListAsync(cancellationToken);
+                if (queuedIdentities.Concat(canonicalIdentities).Any(value =>
+                        SameImportIdentity(value.Manufacturer, submissionTemplate.Manufacturer) &&
+                        SameImportIdentity(value.Brand, submissionTemplate.Brand) &&
+                        SameImportIdentity(value.Product, submissionTemplate.ProductName)))
+                    throw new CatalogueValidationException("productName",
+                        "This manufacturer/brand/product identity already exists in the catalogue or a submission. Review and enrich that record instead of creating another submission.");
 
                 var submission = new CatalogueSubmission(
                     CatalogueSubmissionSource.BulkImport,
@@ -254,6 +292,8 @@ internal sealed class CatalogueSubmissions(
                 CatalogueValidationException or
                 FormatException)
             {
+                // A failed group must not leak tracked additions into the next group's save.
+                db.ChangeTracker.Clear();
                 skipped += productGroup.Count();
                 warnings.Add(
                     $"Import product key '{productGroup.Key}' was skipped: {exception.Message}");
@@ -267,6 +307,13 @@ internal sealed class CatalogueSubmissions(
             skipped,
             warnings);
     }
+
+    private static string ImportGtinKey(string value) =>
+        value.Replace(" ", string.Empty).Replace("-", string.Empty).PadLeft(14, '0');
+
+    private static bool SameImportIdentity(string? left, string? right) =>
+        string.Equals(left?.Trim() ?? string.Empty, right?.Trim() ?? string.Empty,
+            StringComparison.OrdinalIgnoreCase);
 
     private static void ValidateProductGroup(
         IReadOnlyList<CatalogueSubmissionCsvRow> rows)
@@ -603,6 +650,35 @@ internal sealed class CatalogueSubmissions(
         return CatalogueSubmissionSizeVariantsResult.Found(sizes);
     }
 
+    public async Task<CatalogueSubmissionSizeVariantReceipt> AddSizeVariantToAllVariantsAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        Guid variantId,
+        AddCatalogueSubmissionSizeVariant command,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireModeratorAsync(actor, cancellationToken);
+        var submission = await GetSubmissionAsync(submissionId, cancellationToken);
+        EnsureDraftEditable(submission);
+
+        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+        var receipt = await AddSizeVariantAsync(actor, submissionId, variantId, command, cancellationToken);
+        var sizeName = receipt.ManufacturerSize.ToLowerInvariant();
+        var otherVariantIds = await db.CatalogueSubmissionVariants
+            .Where(variant => variant.SubmissionId == submissionId && variant.Id != variantId &&
+                !db.CatalogueSubmissionSizeVariants.Any(size =>
+                    size.VariantId == variant.Id && size.ManufacturerSize.ToLower() == sizeName))
+            .Select(variant => variant.Id)
+            .ToListAsync(cancellationToken);
+
+        // Seed independent rows, preserving existing variant-specific sizes and identifiers.
+        foreach (var otherVariantId in otherVariantIds)
+            await AddSizeVariantAsync(actor, submissionId, otherVariantId,
+                command with { Gtin = null }, cancellationToken);
+
+        await transaction.CommitAsync(cancellationToken);
+        return receipt;
+    }
     public async Task<CatalogueSubmissionSizeVariantReceipt> AddSizeVariantAsync(
         AuthenticatedUser actor,
         Guid submissionId,
@@ -1679,6 +1755,33 @@ internal sealed class CatalogueSubmissions(
         }
     }
 
+    public async Task<CatalogueSubmissionReceipt> ReturnToDraftAsync(
+        AuthenticatedUser actor,
+        Guid submissionId,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireModeratorAsync(actor, cancellationToken);
+
+        var submission = await GetSubmissionAsync(
+            submissionId,
+            cancellationToken);
+
+        try
+        {
+            submission.ReturnToDraft();
+        }
+        catch (InvalidOperationException exception)
+        {
+            throw new CatalogueValidationException(
+                "status",
+                exception.Message);
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+
+        return ToReceipt(submission);
+    }
+
     public async Task<CatalogueSubmissionReceipt> ReturnToVerificationAsync(
         AuthenticatedUser actor,
         Guid submissionId,
@@ -1712,6 +1815,9 @@ internal sealed class CatalogueSubmissions(
         CancellationToken cancellationToken = default)
     {
         await RequireModeratorAsync(actor, cancellationToken);
+
+        await using var publicationTransaction = await db.Database.BeginTransactionAsync(cancellationToken);
+        await db.Database.ExecuteSqlInterpolatedAsync($"SELECT pg_advisory_xact_lock(hashtextextended({submissionId.ToString()}, 0))", cancellationToken);
 
         var submission = await GetSubmissionAsync(
             submissionId,
@@ -1903,7 +2009,7 @@ internal sealed class CatalogueSubmissions(
             cancellationToken);
 
         var submissionImages = await db.CatalogueSubmissionImages
-            .Where(value => value.SubmissionId == submission.Id && value.ProductId == null)
+            .Where(value => value.SubmissionId == submission.Id && value.ProductId == null && !value.IsExplorerEvidence)
             .ToListAsync(cancellationToken);
 
         foreach (var image in submissionImages)
@@ -1912,8 +2018,19 @@ internal sealed class CatalogueSubmissions(
         submission.Publish(
             canonicalReceipt.ProductId);
 
+        if (submission.PendingLocationId.HasValue) {
+            var barcode = submission.ProposedGtin?.TrimStart('0');
+            var exactPacks = await (from i in db.ProductIdentifiers join p in db.PackTypes on i.PackTypeId equals p.Id
+                join s in db.SizeVariants on p.SizeVariantId equals s.Id join v in db.ProductVariants on s.ProductVariantId equals v.Id
+                where v.ProductId == canonicalReceipt.ProductId && i.Type == IdentifierType.Gtin && i.Value.TrimStart('0') == barcode select p.Id).Distinct().ToListAsync(cancellationToken);
+            if (exactPacks.Count != 1) throw new CatalogueValidationException("gtin", "The proposal barcode must identify one verified exact pack before its pending discovery can be reconciled.");
+            await publicContributions.ReconcileAsync(submission.Id, exactPacks[0], cancellationToken);
+        }
+
         await db.SaveChangesAsync(
             cancellationToken);
+
+        await publicationTransaction.CommitAsync(cancellationToken);
 
         return new CataloguePublicationReceipt(
             submission.Id,
@@ -2010,6 +2127,22 @@ internal sealed class CatalogueSubmissions(
 
         try
         {
+            var incompleteSizes = await (
+                from size in db.CatalogueSubmissionSizeVariants.AsNoTracking()
+                join variant in db.CatalogueSubmissionVariants.AsNoTracking()
+                    on size.VariantId equals variant.Id
+                where variant.SubmissionId == submission.Id && size.ManufacturerPackQuantity == null
+                orderby variant.CreatedAtUtc, size.CreatedAtUtc
+                select new { VariantName = variant.Name, size.ManufacturerSize })
+                .ToListAsync(cancellationToken);
+
+            if (incompleteSizes.Count > 0)
+                throw new CatalogueValidationException(
+                    "manufacturerPackQuantity",
+                    "Manufacturer pack quantity is required before verification for: " +
+                    string.Join(", ", incompleteSizes.Select(size =>
+                        $"{size.VariantName ?? "Original"} / {size.ManufacturerSize}")) + ".");
+
             submission.BeginVerification();
         }
         catch (InvalidOperationException exception)
@@ -2304,7 +2437,12 @@ internal sealed class CatalogueSubmissions(
             submission.SharedConstructionNotes,
             submission.Notes,
             submission.CreatedAtUtc,
-            submission.UpdatedAtUtc);
+            submission.UpdatedAtUtc,
+            submission.ProposedPackQuantity,
+            submission.ResolvedPackTypeId,
+            submission.SuggestedExistingProductId,
+            submission.PendingLocationId.HasValue && submission.PendingObservedAtUtc.HasValue ? new PendingPhysicalDiscovery(submission.PendingLocationId.Value, submission.PendingObservedAtUtc.Value, submission.PendingPriceAmount, submission.PendingCurrencyCode) : null,
+            submission.ResultingObservationId);
 
     private static string GetEditorialOutcomeFieldName(
         string? parameterName)

@@ -1,0 +1,70 @@
+[
+  {
+    "run": "baseline",
+    "total": 5,
+    "passed": 0,
+    "failed": 5,
+    "failures": [
+      "DiaperScout.Api.IntegrationTests.PwaReliabilityTests.Static_standalone_brand_is_visible_before_external_scripts_or_styles(engine: \"webkit\", withoutStyles: True)",
+      "DiaperScout.Api.IntegrationTests.PwaWelcomeBrowserTests.Welcome_waits_for_real_readiness_and_blocked_storage_does_not_block_guest_entry",
+      "DiaperScout.Api.IntegrationTests.PwaReliabilityTests.Static_standalone_brand_is_visible_before_external_scripts_or_styles(engine: \"chromium\", withoutStyles: True)",
+      "DiaperScout.Api.IntegrationTests.PwaReliabilityTests.Static_standalone_brand_is_visible_before_external_scripts_or_styles(engine: \"chromium\", withoutStyles: False)",
+      "DiaperScout.Api.IntegrationTests.PwaReliabilityTests.Static_standalone_brand_is_visible_before_external_scripts_or_styles(engine: \"webkit\", withoutStyles: False)"
+    ]
+  },
+  {
+    "run": "final-access",
+    "total": 51,
+    "passed": 51,
+    "failed": 0,
+    "failures": []
+  },
+  {
+    "run": "final-access",
+    "total": 240,
+    "passed": 238,
+    "failed": 2,
+    "failures": [
+      "DiaperScout.Api.IntegrationTests.PasskeyBrowserTests.NativeWebAuthn_profileless_account_contributes_and_auth_continuation_preserves_draft(authenticatedFirst: False)",
+      "DiaperScout.Api.IntegrationTests.PwaWelcomeBrowserTests.First_run_choices_use_real_routes_and_guest_completion_survives_launch(engine: \"webkit\", width: 375, height: 667)"
+    ]
+  },
+  {
+    "run": "recheck",
+    "total": 7,
+    "passed": 7,
+    "failed": 0,
+    "failures": []
+  },
+  {
+    "run": "final-clean",
+    "total": 51,
+    "passed": 51,
+    "failed": 0,
+    "failures": []
+  },
+  {
+    "run": "final-clean",
+    "total": 240,
+    "passed": 238,
+    "failed": 2,
+    "failures": [
+      "DiaperScout.Api.IntegrationTests.PwaWelcomeBrowserTests.First_run_choices_use_real_routes_and_guest_completion_survives_launch(engine: \"webkit\", width: 390, height: 844)",
+      "DiaperScout.Api.IntegrationTests.PrototypeProductBrowserTests.Approved_product_to_availability_preserves_exact_pack_and_real_sources(width: 430, webkit: True)"
+    ]
+  },
+  {
+    "run": "serialized",
+    "total": 51,
+    "passed": 51,
+    "failed": 0,
+    "failures": []
+  },
+  {
+    "run": "serialized",
+    "total": 240,
+    "passed": 240,
+    "failed": 0,
+    "failures": []
+  }
+]

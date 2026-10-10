@@ -69,12 +69,31 @@ public sealed class RetailListingBrowserTests(PostgreSqlFixture fixture) : IClas
                 await page.ScreenshotAsync(new() { Path = Path.Combine(artifacts, $"retail-listings-{width}.png"), FullPage = true });
             }
         }
-        await page.GotoAsync(origin + "/products/integration-test-product");
-        var link = page.Locator($"a[href='{destination}']");
-        await Assertions.Expect(link).ToHaveCountAsync(1);
-        var popup = await page.RunAndWaitForPopupAsync(() => link.ClickAsync());
-        await popup.WaitForLoadStateAsync();
-        Assert.Equal(destination, popup.Url);
-        await Assertions.Expect(popup.GetByRole(AriaRole.Heading)).ToHaveTextAsync("Retailer product destination");
+        var confirmed = (await moderator.GetFromJsonAsync<CatalogueProductDetails>(
+            $"/api/v1/products/integration-test-product?variantId={variant.Id}&packTypeId={fixture.PackTypeId}"))!;
+        var offer = Assert.Single(confirmed.RetailOffers, x => x.RetailerName == retailer.Name);
+        Assert.Equal(fixture.PackTypeId, offer.PackTypeId);
+        Assert.Equal(destination, offer.DestinationUrl);
+
+        await page.GotoAsync(origin + $"/products/integration-test-product?variantId={variant.Id}&packTypeId={fixture.PackTypeId}");
+        foreach (var width in new[] { 1280, 390 })
+        {
+            await page.SetViewportSizeAsync(width, 900);
+            // Both responsive presentations share the same exact-pack offer in the DOM.
+            // Only the active presentation should expose one usable retailer destination.
+            var root = page.Locator(width >= 1000 ? ".ds-desktop-product" : ".pwa-prototype.product-page");
+            var inactive = page.Locator(width >= 1000 ? ".pwa-prototype.product-page" : ".ds-desktop-product");
+            await Assertions.Expect(root).ToBeVisibleAsync();
+            await Assertions.Expect(inactive).ToBeHiddenAsync();
+            var link = root.Locator($"a[href='{destination}']");
+            await Assertions.Expect(link).ToHaveCountAsync(1);
+            await Assertions.Expect(link).ToBeVisibleAsync();
+            await Assertions.Expect(page.Locator($"a[href='{destination}']:visible")).ToHaveCountAsync(1);
+            var popup = await page.RunAndWaitForPopupAsync(() => link.ClickAsync());
+            await popup.WaitForLoadStateAsync();
+            Assert.Equal(destination, popup.Url);
+            await Assertions.Expect(popup.GetByRole(AriaRole.Heading)).ToHaveTextAsync("Retailer product destination");
+            await popup.CloseAsync();
+        }
     }
 }

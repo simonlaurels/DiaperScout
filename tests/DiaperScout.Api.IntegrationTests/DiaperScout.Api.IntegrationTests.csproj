@@ -24,4 +24,7 @@
     <ProjectReference Include="..\..\src\DiaperScout.Infrastructure\DiaperScout.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup><Content Include="Fixtures/prototype-tena1.png" CopyToOutputDirectory="PreserveNewest" /></ItemGroup>
+  <!-- Each collection can own PostgreSQL, two web hosts and a browser. Bound
+       concurrency independently of logical CPU count on developer machines. -->
+  <ItemGroup><None Update="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" /></ItemGroup>
 </Project>

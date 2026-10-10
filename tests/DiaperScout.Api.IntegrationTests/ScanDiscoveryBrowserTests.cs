@@ -79,6 +79,9 @@ public sealed class ScanDiscoveryBrowserTests(PostgreSqlFixture fixture) : IClas
         await page.GotoAsync(origin + retailers); await page.WaitForFunctionAsync("() => document.documentElement.dataset.pwaState === 'ready'"); await page.WaitForLoadStateAsync(LoadState.NetworkIdle); await Assertions.Expect(page.Locator("#blazor-error-ui")).ToBeHiddenAsync();
         await ScanAsync(page, origin, "96385074"); await page.GetByRole(AriaRole.Link,new(){Name="Add this product",Exact=true}).ClickAsync();
         await Assertions.Expect(page.GetByRole(AriaRole.Heading,new(){Name="Take photos of the pack",Exact=true})).ToBeVisibleAsync();
+        // InputFile can be visible before Blazor installs its native change handler.
+        // Wait for that initialization so file selection cannot lose its notification.
+        await page.WaitForFunctionAsync("() => typeof document.querySelector('#proposal-photo')?._blazorInputFileNextFileId === 'number'");
         await page.Locator("#proposal-photo").SetInputFilesAsync(new FilePayload {Name="pack.png",MimeType="image/png",Buffer=Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aN1sAAAAASUVORK5CYII=")});
         await page.WaitForFunctionAsync("() => document.querySelector('.proposal-photos img') || document.querySelector('.proposal-flow [role=alert]')");
         Assert.True(await page.Locator(".proposal-photos img").CountAsync() == 1, await page.Locator(".proposal-flow").InnerTextAsync()); await page.GetByRole(AriaRole.Button,new(){Name="Continue",Exact=true}).ClickAsync();

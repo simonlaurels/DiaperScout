@@ -74,6 +74,8 @@ public sealed class ExploreBrowserTests(PostgreSqlFixture fixture) : IClassFixtu
         await Evidence(page,$"explore-populated-{width}");
         // Location denial and absence are nonblocking and never trigger an automatic retry.
         await page.ReloadAsync();
+        // Products load from OnAfterRender after the location module is attached.
+        await Assertions.Expect(page.Locator(".explore-product")).ToHaveCountAsync(5);
         await page.EvaluateAsync("() => {navigator.geolocation.getCurrentPosition=(success,failure)=>{window.locationRequests++;failure({code:1});};}");
         await page.GetByRole(AriaRole.Button,new(){Name="Use my location",Exact=true}).ClickAsync();
         await Assertions.Expect(page.Locator(".explore-location")).ToContainTextAsync("wasn’t allowed");

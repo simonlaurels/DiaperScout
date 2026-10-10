@@ -1,0 +1,18 @@
+[
+  {
+    "managedBy": null,
+    "name": "rg-diaperscout-prod"
+  },
+  {
+    "managedBy": null,
+    "name": "DefaultResourceGroup-SUK"
+  },
+  {
+    "managedBy": null,
+    "name": "NetworkWatcherRG"
+  },
+  {
+    "managedBy": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourcegroups/rg-diaperscout-prod/providers/microsoft.app/managedenvironments/diaperscout-prod-env-vnet",
+    "name": "ME_diaperscout-prod-env-vnet_rg-diaperscout-prod_uksouth"
+  }
+]

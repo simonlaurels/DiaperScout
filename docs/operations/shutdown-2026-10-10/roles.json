@@ -1,0 +1,44 @@
+[
+  {
+    "principalId": "134d711e-1521-42d2-a6c1-02c5a155c035",
+    "principalType": "ServicePrincipal",
+    "role": "AcrPull",
+    "scope": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.ContainerRegistry/registries/diaperscoutprod"
+  },
+  {
+    "principalId": "642a6dca-a4ce-4e6c-b88c-1bc35236726b",
+    "principalType": "ServicePrincipal",
+    "role": "AcrPull",
+    "scope": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.ContainerRegistry/registries/diaperscoutprod"
+  },
+  {
+    "principalId": "86504b9b-a2ca-4772-8960-a90e717bb000",
+    "principalType": "ServicePrincipal",
+    "role": "AcrPull",
+    "scope": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.ContainerRegistry/registries/diaperscoutprod"
+  },
+  {
+    "principalId": "2ed34980-da90-483e-8937-fe94e9c5236f",
+    "principalType": "ServicePrincipal",
+    "role": "AcrPull",
+    "scope": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.ContainerRegistry/registries/diaperscoutprod"
+  },
+  {
+    "principalId": "bb2a6be4-0fd1-463a-acc4-0111b4dbe4de",
+    "principalType": "ServicePrincipal",
+    "role": "AcrPull",
+    "scope": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.ContainerRegistry/registries/diaperscoutprod"
+  },
+  {
+    "principalId": "2ed34980-da90-483e-8937-fe94e9c5236f",
+    "principalType": "ServicePrincipal",
+    "role": "Storage Blob Data Contributor",
+    "scope": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.Storage/storageAccounts/dsprodwebkeys21a5de71/blobServices/default/containers/web-production"
+  },
+  {
+    "principalId": "2ed34980-da90-483e-8937-fe94e9c5236f",
+    "principalType": "ServicePrincipal",
+    "role": "Key Vault Crypto Service Encryption User",
+    "scope": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.KeyVault/vaults/ds-prod-webkeys-21a5de71/keys/web-production"
+  }
+]

@@ -1,0 +1,5 @@
+Test run for C:\Users\hails\.codex\.chatgpt-projects\g-p-6a5fc1e552e48191b387b855f8288fa2\integration-browser-investigation\tests\DiaperScout.Api.IntegrationTests\bin\Release\net10.0\DiaperScout.Api.IntegrationTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+Results File: C:\Users\hails\.codex\.chatgpt-projects\g-p-6a5fc1e552e48191b387b855f8288fa2\integration-browser-investigation\tests\DiaperScout.Api.IntegrationTests\TestResults\shutdown-local.trx
+
+Passed!  - Failed:     0, Passed:    76, Skipped:     0, Total:    76, Duration: 1 m 59 s - DiaperScout.Api.IntegrationTests.dll (net10.0)

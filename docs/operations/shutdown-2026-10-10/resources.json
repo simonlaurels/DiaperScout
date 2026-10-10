@@ -1,0 +1,128 @@
+[
+  {
+    "id": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.DBforPostgreSQL/flexibleServers/diaperscout-prod-pg",
+    "location": "uksouth",
+    "name": "diaperscout-prod-pg",
+    "resourceGroup": "rg-diaperscout-prod",
+    "type": "Microsoft.DBforPostgreSQL/flexibleServers"
+  },
+  {
+    "id": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.ContainerRegistry/registries/diaperscoutprod",
+    "location": "uksouth",
+    "name": "diaperscoutprod",
+    "resourceGroup": "rg-diaperscout-prod",
+    "type": "Microsoft.ContainerRegistry/registries"
+  },
+  {
+    "id": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.OperationalInsights/workspaces/diaperscout-prod-logs",
+    "location": "uksouth",
+    "name": "diaperscout-prod-logs",
+    "resourceGroup": "rg-diaperscout-prod",
+    "type": "Microsoft.OperationalInsights/workspaces"
+  },
+  {
+    "id": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.Network/virtualNetworks/vnet-diaperscout-prod",
+    "location": "uksouth",
+    "name": "vnet-diaperscout-prod",
+    "resourceGroup": "rg-diaperscout-prod",
+    "type": "Microsoft.Network/virtualNetworks"
+  },
+  {
+    "id": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/NetworkWatcherRG/providers/Microsoft.Network/networkWatchers/NetworkWatcher_uksouth",
+    "location": "uksouth",
+    "name": "NetworkWatcher_uksouth",
+    "resourceGroup": "NetworkWatcherRG",
+    "type": "Microsoft.Network/networkWatchers"
+  },
+  {
+    "id": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.App/managedEnvironments/diaperscout-prod-env-vnet",
+    "location": "uksouth",
+    "name": "diaperscout-prod-env-vnet",
+    "resourceGroup": "rg-diaperscout-prod",
+    "type": "Microsoft.App/managedEnvironments"
+  },
+  {
+    "id": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/ME_diaperscout-prod-env-vnet_rg-diaperscout-prod_uksouth/providers/Microsoft.Network/publicIPAddresses/capp-svc-lb-ip",
+    "location": "uksouth",
+    "name": "capp-svc-lb-ip",
+    "resourceGroup": "ME_diaperscout-prod-env-vnet_rg-diaperscout-prod_uksouth",
+    "type": "Microsoft.Network/publicIPAddresses"
+  },
+  {
+    "id": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/ME_diaperscout-prod-env-vnet_rg-diaperscout-prod_uksouth/providers/Microsoft.Network/loadBalancers/capp-svc-lb",
+    "location": "uksouth",
+    "name": "capp-svc-lb",
+    "resourceGroup": "ME_diaperscout-prod-env-vnet_rg-diaperscout-prod_uksouth",
+    "type": "Microsoft.Network/loadBalancers"
+  },
+  {
+    "id": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.App/containerApps/diaperscout-api-vnet",
+    "location": "uksouth",
+    "name": "diaperscout-api-vnet",
+    "resourceGroup": "rg-diaperscout-prod",
+    "type": "Microsoft.App/containerApps"
+  },
+  {
+    "id": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.App/containerApps/diaperscout-web-vnet",
+    "location": "uksouth",
+    "name": "diaperscout-web-vnet",
+    "resourceGroup": "rg-diaperscout-prod",
+    "type": "Microsoft.App/containerApps"
+  },
+  {
+    "id": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.App/managedEnvironments/diaperscout-prod-env-vnet/managedCertificates/mc-diaperscout-pr-diaperscout-app-6419",
+    "location": "uksouth",
+    "name": "diaperscout-prod-env-vnet/mc-diaperscout-pr-diaperscout-app-6419",
+    "resourceGroup": "rg-diaperscout-prod",
+    "type": "Microsoft.App/managedEnvironments/managedCertificates"
+  },
+  {
+    "id": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.App/jobs/ds-bootstrap-admin",
+    "location": "uksouth",
+    "name": "ds-bootstrap-admin",
+    "resourceGroup": "rg-diaperscout-prod",
+    "type": "Microsoft.App/jobs"
+  },
+  {
+    "id": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.Network/privateEndpoints/pe-diaperscout-prod-pg",
+    "location": "uksouth",
+    "name": "pe-diaperscout-prod-pg",
+    "resourceGroup": "rg-diaperscout-prod",
+    "type": "Microsoft.Network/privateEndpoints"
+  },
+  {
+    "id": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.Network/networkInterfaces/nic-pe-diaperscout-prod-pg",
+    "location": "uksouth",
+    "name": "nic-pe-diaperscout-prod-pg",
+    "resourceGroup": "rg-diaperscout-prod",
+    "type": "Microsoft.Network/networkInterfaces"
+  },
+  {
+    "id": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.Network/privateDnsZones/privatelink.postgres.database.azure.com",
+    "location": "global",
+    "name": "privatelink.postgres.database.azure.com",
+    "resourceGroup": "rg-diaperscout-prod",
+    "type": "Microsoft.Network/privateDnsZones"
+  },
+  {
+    "id": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.Network/privateDnsZones/privatelink.postgres.database.azure.com/virtualNetworkLinks/link-vnet-diaperscout-prod",
+    "location": "global",
+    "name": "privatelink.postgres.database.azure.com/link-vnet-diaperscout-prod",
+    "resourceGroup": "rg-diaperscout-prod",
+    "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks"
+  },
+  {
+    "id": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.Storage/storageAccounts/dsprodwebkeys21a5de71",
+    "location": "uksouth",
+    "name": "dsprodwebkeys21a5de71",
+    "resourceGroup": "rg-diaperscout-prod",
+    "type": "Microsoft.Storage/storageAccounts"
+  },
+  {
+    "id": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.KeyVault/vaults/ds-prod-webkeys-21a5de71",
+    "location": "uksouth",
+    "name": "ds-prod-webkeys-21a5de71",
+    "resourceGroup": "rg-diaperscout-prod",
+    "type": "Microsoft.KeyVault/vaults"
+  }
+]

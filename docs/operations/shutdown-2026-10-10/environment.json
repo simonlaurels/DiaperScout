@@ -1,0 +1,20 @@
+{
+  "domain": "mangograss-ae5d4035.uksouth.azurecontainerapps.io",
+  "logs": "log-analytics",
+  "name": "diaperscout-prod-env-vnet",
+  "profiles": [
+    {
+      "enableFips": false,
+      "name": "Consumption",
+      "workloadProfileType": "Consumption"
+    }
+  ],
+  "staticIp": "51.132.50.148",
+  "vnet": {
+    "dockerBridgeCidr": null,
+    "infrastructureSubnetId": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.Network/virtualNetworks/vnet-diaperscout-prod/subnets/snet-containerapps",
+    "internal": false,
+    "platformReservedCidr": null,
+    "platformReservedDnsIP": null
+  }
+}

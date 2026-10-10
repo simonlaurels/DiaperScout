@@ -1,0 +1,32 @@
+{
+  "backup": {
+    "backupRetentionDays": 7,
+    "earliestRestoreDate": "2026-10-03T21:06:57.377654+00:00",
+    "geoRedundantBackup": "Disabled"
+  },
+  "fqdn": "diaperscout-prod-pg.postgres.database.azure.com",
+  "highAvailability": {
+    "mode": "Disabled",
+    "standbyAvailabilityZone": null,
+    "state": "NotEnabled"
+  },
+  "name": "diaperscout-prod-pg",
+  "network": {
+    "delegatedSubnetResourceId": null,
+    "privateDnsZoneArmResourceId": null,
+    "publicNetworkAccess": "Enabled"
+  },
+  "sku": {
+    "name": "Standard_B1ms",
+    "tier": "Burstable"
+  },
+  "storage": {
+    "autoGrow": "Enabled",
+    "iops": 120,
+    "storageSizeGb": 32,
+    "throughput": null,
+    "tier": "P4",
+    "type": "Premium_LRS"
+  },
+  "version": "18"
+}

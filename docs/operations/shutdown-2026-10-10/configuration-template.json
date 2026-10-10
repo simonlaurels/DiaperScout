@@ -1,0 +1,38 @@
+{
+  "purpose": "Non-deployable operator checklist. Replace placeholders; never commit secret values.",
+  "api": {
+    "settings": {
+      "ASPNETCORE_ENVIRONMENT": "Production",
+      "CloudflareR2__Enabled": "true",
+      "CloudflareR2__Endpoint": "https://e5feb375654ff90ed3e02537d3586405.r2.cloudflarestorage.com",
+      "CloudflareR2__BucketName": "diaperscout-prod-images",
+      "Resend__FromEmail": "hello@diaperscout.app",
+      "Authentication__MagicLink__BaseUrl": "https://diaperscout.app/signin/magic-link",
+      "Authentication__Passkeys__RpId": "diaperscout.app",
+      "Authentication__Passkeys__Origins__0": "https://diaperscout.app",
+      "Editorial__CatalogueWritesEnabled": "true",
+      "Authentication__Development__Enabled": "false",
+      "DevelopmentCatalogue__Enabled": "false"
+    },
+    "secretReferences": {
+      "ConnectionStrings__diaperscout": "pg-connection",
+      "CloudflareR2__AccessKeyId": "r2-access-key-id",
+      "CloudflareR2__SecretAccessKey": "r2-secret-access-key",
+      "RESEND_APITOKEN": "resend-api-key-v2",
+      "Authentication__Production__InternalSecret": "production-internal-secret",
+      "Geoapify__ApiKey": "geoapify-api-key"
+    },
+    "secretsToProvision": ["pg-connection", "r2-access-key-id", "r2-secret-access-key", "resend-api-key-v2", "production-internal-secret", "geoapify-api-key"]
+  },
+  "web": {
+    "settings": {
+      "ASPNETCORE_ENVIRONMENT": "Production",
+      "Api__BaseUrl": "https://<new-internal-api-fqdn>",
+      "DataProtection__ApplicationName": "DiaperScout.Web.Production",
+      "DataProtection__BlobUri": "https://<new-storage-account>.blob.core.windows.net/web-production/keys.xml",
+      "DataProtection__KeyVaultKeyUri": "https://<new-vault-name>.vault.azure.net/keys/web-production"
+    },
+    "secretReferences": {"Authentication__Production__InternalSecret": "production-internal-secret"},
+    "secretsToProvision": ["production-internal-secret"]
+  }
+}

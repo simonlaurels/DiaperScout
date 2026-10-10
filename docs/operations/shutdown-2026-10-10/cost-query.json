@@ -1,0 +1,1 @@
+{"type":"ActualCost","timeframe":"Custom","timePeriod":{"from":"2026-10-01T00:00:00Z","to":"2026-10-11T00:00:00Z"},"dataset":{"granularity":"Daily","aggregation":{"totalCost":{"name":"PreTaxCost","function":"Sum"}},"grouping":[{"type":"Dimension","name":"ResourceId"}]}}

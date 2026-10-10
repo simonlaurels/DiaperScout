@@ -1,0 +1,208 @@
+[
+  {
+    "containers": [
+      {
+        "env": [
+          {
+            "name": "ConnectionStrings__diaperscout",
+            "secretRef": "pg-connection"
+          },
+          {
+            "name": "CloudflareR2__Enabled",
+            "secretRef": null
+          },
+          {
+            "name": "CloudflareR2__Endpoint",
+            "secretRef": null
+          },
+          {
+            "name": "CloudflareR2__BucketName",
+            "secretRef": null
+          },
+          {
+            "name": "CloudflareR2__AccessKeyId",
+            "secretRef": "r2-access-key-id"
+          },
+          {
+            "name": "CloudflareR2__SecretAccessKey",
+            "secretRef": "r2-secret-access-key"
+          },
+          {
+            "name": "RESEND_APITOKEN",
+            "secretRef": "resend-api-key-v2"
+          },
+          {
+            "name": "Resend__FromEmail",
+            "secretRef": null
+          },
+          {
+            "name": "Authentication__MagicLink__BaseUrl",
+            "secretRef": null
+          },
+          {
+            "name": "Authentication__Production__InternalSecret",
+            "secretRef": "production-internal-secret"
+          },
+          {
+            "name": "Editorial__CatalogueWritesEnabled",
+            "secretRef": null
+          },
+          {
+            "name": "Geoapify__ApiKey",
+            "secretRef": "geoapify-api-key"
+          }
+        ],
+        "image": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-api@sha256:5042a81533cdb8897cdb75e51702e048803ecf86d067dfeeb399cc911716bcc9",
+        "name": "diaperscout-api-vnet",
+        "resources": {
+          "cpu": 0.5,
+          "ephemeralStorage": "2Gi",
+          "memory": "1Gi"
+        }
+      }
+    ],
+    "environment": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.App/managedEnvironments/diaperscout-prod-env-vnet",
+    "identity": {
+      "principalId": "86504b9b-a2ca-4772-8960-a90e717bb000",
+      "tenantId": "20b40506-48b5-471d-b73f-7daf978cdff0",
+      "type": "SystemAssigned"
+    },
+    "ingress": {
+      "additionalPortMappings": null,
+      "allowInsecure": false,
+      "clientCertificateMode": null,
+      "corsPolicy": null,
+      "customDomains": null,
+      "exposedPort": 0,
+      "external": false,
+      "fqdn": "diaperscout-api-vnet.internal.mangograss-ae5d4035.uksouth.azurecontainerapps.io",
+      "ipSecurityRestrictions": null,
+      "stickySessions": null,
+      "targetPort": 8080,
+      "targetPortHttpScheme": null,
+      "traffic": [
+        {
+          "latestRevision": true,
+          "weight": 100
+        }
+      ],
+      "transport": "Auto"
+    },
+    "name": "diaperscout-api-vnet",
+    "registries": [
+      {
+        "identity": "system",
+        "passwordSecretRef": "",
+        "server": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io",
+        "username": ""
+      }
+    ],
+    "revisionMode": "Single",
+    "scale": {
+      "cooldownPeriod": 300,
+      "maxReplicas": 10,
+      "minReplicas": 0,
+      "pollingInterval": 30,
+      "rules": null
+    },
+    "secrets": [
+      "resend-api-key",
+      "resend-api-key-v2",
+      "pg-connection",
+      "production-internal-secret",
+      "r2-access-key-id",
+      "r2-secret-access-key",
+      "geoapify-api-key"
+    ]
+  },
+  {
+    "containers": [
+      {
+        "env": [
+          {
+            "name": "Api__BaseUrl",
+            "secretRef": null
+          },
+          {
+            "name": "Authentication__Production__InternalSecret",
+            "secretRef": "production-internal-secret"
+          },
+          {
+            "name": "DataProtection__ApplicationName",
+            "secretRef": null
+          },
+          {
+            "name": "DataProtection__BlobUri",
+            "secretRef": null
+          },
+          {
+            "name": "DataProtection__KeyVaultKeyUri",
+            "secretRef": null
+          }
+        ],
+        "image": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io/diaperscout-web@sha256:02a8d4eb5ec918687d4dc7eee66dcb1fb2c1d0211e18b3f64744c9b38c606623",
+        "name": "diaperscout-web-vnet",
+        "resources": {
+          "cpu": 0.5,
+          "ephemeralStorage": "2Gi",
+          "memory": "1Gi"
+        }
+      }
+    ],
+    "environment": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.App/managedEnvironments/diaperscout-prod-env-vnet",
+    "identity": {
+      "principalId": "2ed34980-da90-483e-8937-fe94e9c5236f",
+      "tenantId": "20b40506-48b5-471d-b73f-7daf978cdff0",
+      "type": "SystemAssigned"
+    },
+    "ingress": {
+      "additionalPortMappings": null,
+      "allowInsecure": false,
+      "clientCertificateMode": null,
+      "corsPolicy": null,
+      "customDomains": [
+        {
+          "bindingType": "SniEnabled",
+          "certificateId": "/subscriptions/21a5de71-5404-4671-8511-e5808a114028/resourceGroups/rg-diaperscout-prod/providers/Microsoft.App/managedEnvironments/diaperscout-prod-env-vnet/managedCertificates/mc-diaperscout-pr-diaperscout-app-6419",
+          "name": "diaperscout.app"
+        }
+      ],
+      "exposedPort": 0,
+      "external": true,
+      "fqdn": "diaperscout-web-vnet.mangograss-ae5d4035.uksouth.azurecontainerapps.io",
+      "ipSecurityRestrictions": null,
+      "stickySessions": {
+        "affinity": "sticky"
+      },
+      "targetPort": 8080,
+      "targetPortHttpScheme": null,
+      "traffic": [
+        {
+          "latestRevision": true,
+          "weight": 100
+        }
+      ],
+      "transport": "Auto"
+    },
+    "name": "diaperscout-web-vnet",
+    "registries": [
+      {
+        "identity": "system",
+        "passwordSecretRef": "",
+        "server": "diaperscoutprod-dsg9bgg6dkgkcwbs.azurecr.io",
+        "username": ""
+      }
+    ],
+    "revisionMode": "Single",
+    "scale": {
+      "cooldownPeriod": 600,
+      "maxReplicas": 2,
+      "minReplicas": 0,
+      "pollingInterval": 30,
+      "rules": null
+    },
+    "secrets": [
+      "production-internal-secret"
+    ]
+  }
+]
